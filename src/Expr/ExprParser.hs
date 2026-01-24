@@ -22,126 +22,70 @@ import Control.Applicative
 -- import Text.Megaparsec (anySingle, lookAhead)
 
 -- === 式の構文解析 ===
-import Debug.Trace (trace, traceIO, traceShowId)
+
 import Expr.AST
 import Expr.Combinator
 import Expr.PatternParser
 import Expr.TokenParser
 import Expr.TypeParser
 import Lexer (Token (..))
+import MyTrace (myTrace, myTraceIO, myTraceShowId)
 
 toplevel :: Parser (String, Expr)
 toplevel = do
-  name <- traceShowId <$> ident -- ← ここで name を強制的に表示！
+  name <- myTraceShowId <$> ident -- ← ここで name を強制的に表示！
   args <- many ident
   symbol "="
   exprBody <- expr
   return (name, foldr ELam exprBody args)
 
 expr :: Parser Expr
--- expr = doExpr <|> expr2 -- doExpr を先に置くと優先される
 expr =
   try doExpr
     <|> binOpExpr
 
---  <|> try exprOthers
-
-{-}
-doExpr :: Parser Expr
-doExpr = do
-  keyword "do"
-  stmts <- braces (stmt `sepBy1` symbol ";")
-  return (EDo stmts)
-
-doExpr :: Parser Expr
-doExpr = do
-  trace ">> doExpr" (pure ())
-  keyword "do"
-  stmts <- braces (stmt `sepBy1` symbol ";")
-  trace ("<< doExpr: " ++ show stmts) (pure (EDo stmts))
-
-stmt :: Parser Stmt
-stmt = try bindStmt <|> exprStmt
-
-bindStmt :: Parser Stmt
-bindStmt = do
-  pat <- pattern
-  symbol "<-"
-  e <- expr
-  return (Bind pat e)
-
-exprStmt :: Parser Stmt
-exprStmt = ExprStmt <$> expr
--}
-{-}
-doExpr :: Parser Expr
-doExpr = do
-  trace ">> doExpr" (pure ())
-  keyword "do"
-  stmts <- braces (stmt `sepBy` symbol ";")
-  trace ("<< doExpr: " ++ show stmts) (pure (EDo stmts))
--}
-
 doExpr :: Parser Expr
 doExpr = try $ do
-  trace ">> doExpr" (pure ())
+  myTrace ">> doExpr" (pure ())
   keyword "do"
   symbol "{"
   stmts <- stmt `sepBy` symbol ";"
   symbol "}"
   return (EDo stmts)
 
-{-}
 stmt :: Parser Stmt
-stmt = trace ">> stmt" (pure ()) *> (try bindStmt <|> exprStmt)
--}
-
-stmt :: Parser Stmt
-stmt = trace ">> stmt" (pure ()) *> (try letStmt <|> try bindStmt <|> exprStmt)
+stmt = myTrace ">> stmt" (pure ()) *> (try letStmt <|> try bindStmt <|> exprStmt)
 
 letStmt :: Parser Stmt
 letStmt = do
-  trace ">> letStmt" (pure ())
+  myTrace ">> letStmt" (pure ())
   keyword "let"
   defs <- def `sepBy1` symbol ";"
-  trace ("<< letStmt: " ++ show defs) (pure (LetStmt defs))
-
--- return (LetStmt defs)
+  myTrace ("<< letStmt: " ++ show defs) (pure (LetStmt defs))
 
 bindStmt :: Parser Stmt
 bindStmt = do
-  trace ">> bindStmt" (pure ())
+  myTrace ">> bindStmt" (pure ())
   pat <- pattern
   symbol "<-"
   e <- expr
-  trace ("<< bindStmt: " ++ show pat) (pure (Bind pat e))
+  myTrace ("<< bindStmt: " ++ show pat) (pure (Bind pat e))
 
 exprStmt :: Parser Stmt
 exprStmt = do
-  trace ">> exprStmt" (pure ())
+  myTrace ">> exprStmt" (pure ())
   e <- expr
-  trace ("<< exprStmt: " ++ show e) (pure (ExprStmt e))
+  myTrace ("<< exprStmt: " ++ show e) (pure (ExprStmt e))
 
 exprOthers :: Parser Expr
 exprOthers = do
-  trace ">> entering exprOthers" (pure ())
-  -- _ <- pure $ trace ">> entering exprOthers" ()
+  myTrace ">> entering exprOthers" (pure ())
   e <- binOpExpr
   mdefs <- optional whereClause
   case mdefs of
     Nothing -> return e
-    Just defs -> trace "<< parsed whereClause" (return (ELet defs e))
+    Just defs -> myTrace "<< parsed whereClause" (return (ELet defs e))
 
-{-}
-binOpExpr :: Parser Expr
-binOpExpr = exprLevel1
-
-exprLevel1 :: Parser Expr
-exprLevel1 = chainl1 exprLevel2 (binOp ["+"])
-
-exprLevel2 :: Parser Expr
-exprLevel2 = exprLevel3
--}
 binOpExpr :: Parser Expr
 binOpExpr = exprCmp
 
@@ -154,28 +98,9 @@ exprLevel1 = chainl1 exprLevel2 (binOp ["+", "-"])
 exprLevel2 :: Parser Expr
 exprLevel2 = chainl1 exprLevel3 (binOp ["*", "/"])
 
-{-}
 exprLevel3 :: Parser Expr
 exprLevel3 = do
-  _ <- pure $ trace ">> entering exprLevel3" ()
-  try lambdaExpr
-    <|> try letExpr
-    <|> try ifExpr
-    <|> try caseExpr
-    <|> appExpr
-exprLevel3 :: Parser Expr
-exprLevel3 = do
-  trace ">> entering exprLevel3" (pure ())
-  try ifExpr
-    <|> try letExpr
-    <|> try lambdaExpr
-    <|> try caseExpr
-    <|> appExpr
--}
-
-exprLevel3 :: Parser Expr
-exprLevel3 = do
-  trace ">> entering exprLevel3" (pure ())
+  myTrace ">> entering exprLevel3" (pure ())
   try doExpr
     <|> try ifExpr
     <|> try letExpr
@@ -183,24 +108,12 @@ exprLevel3 = do
     <|> try caseExpr
     <|> appExpr
 
-{-}
 caseExpr :: Parser Expr
 caseExpr = do
-  trace ">> caseExpr" (pure ())
+  myTrace ">> caseExpr" (pure ())
   keyword "case"
   scrutinee <- expr
-  trace ">> after scrutinee" (pure ())
-  keyword "of"
-  alts <- braces (sepBy caseAlt (symbol ";"))
-  return (ECase scrutinee alts)
--}
-
-caseExpr :: Parser Expr
-caseExpr = do
-  trace ">> caseExpr" (pure ())
-  keyword "case"
-  scrutinee <- expr
-  trace ">> after scrutinee" (pure ())
+  myTrace ">> after scrutinee" (pure ())
   keyword "of"
   alts <- braces (sepBy caseAlt (symbol ";")) <|> sepBy1 caseAlt (symbol ";")
   -- alts <- braces (some caseAlt) <|> some caseAlt
@@ -208,7 +121,7 @@ caseExpr = do
 
 whereClause :: Parser [(Pattern, Expr)]
 whereClause = do
-  trace ">> entering whereClause" (pure ())
+  myTrace ">> entering whereClause" (pure ())
   keyword "where"
   defs <- braces (sepBy def (symbol ";"))
   return defs
@@ -216,7 +129,7 @@ whereClause = do
 debugPeek :: Parser ()
 debugPeek = do
   t <- peekToken
-  Parser $ \tokens -> Just (trace ("Next token: " ++ show t) (), tokens)
+  Parser $ \tokens -> Just (myTrace ("Next token: " ++ show t) (), tokens)
 
 peekToken :: Parser Token
 peekToken = Parser $ \tokens -> case tokens of
@@ -241,19 +154,9 @@ lambdaExpr = do
   body <- expr
   return (ELam arg body)
 
-{-}
 letExpr :: Parser Expr
 letExpr = do
-  keyword "let"
-  defs <- def `sepBy1` symbol ";"
-  keyword "in"
-  body <- expr
-  return (ELet defs body)
--}
-
-letExpr :: Parser Expr
-letExpr = do
-  trace ">> letExpr" (pure ())
+  myTrace ">> letExpr" (pure ())
   keyword "let"
   defs <- def `sepBy1` symbol ";"
   -- defs <- some letBinding
@@ -274,21 +177,9 @@ def = do
   e <- expr
   return (p, e)
 
-{-}
 ifExpr :: Parser Expr
 ifExpr = do
-  trace ">> ifExpr" (pure ())
-  keyword "if"
-  cond <- expr
-  keyword "then"
-  thenBranch <- expr
-  keyword "else"
-  elseBranch <- expr
-  return (EIf cond thenBranch elseBranch)
--}
-ifExpr :: Parser Expr
-ifExpr = do
-  trace ">> ifExpr" (pure ())
+  myTrace ">> ifExpr" (pure ())
   keyword "if"
   cond <- binOpExpr
   keyword "then"
@@ -305,13 +196,13 @@ plainCase = some caseAlt
 
 caseAlt :: Parser (Pattern, Expr)
 caseAlt = do
-  trace ">> caseAlt" (pure ())
+  myTrace ">> caseAlt" (pure ())
   pat <- pattern
   token TokArrow
-  trace ">> before body" (pure ())
+  myTrace ">> before body" (pure ())
   body <- exprLevel3
   -- body <- expr
-  trace ("<< caseAlt done: " ++ show pat) (pure (pat, body))
+  myTrace ("<< caseAlt done: " ++ show pat) (pure (pat, body))
 
 elist :: Parser Expr
 elist = brackets (try listComp <|> try range <|> list)

@@ -14,9 +14,9 @@ where
 
 import Control.Applicative (empty)
 import qualified Data.Set as Set
-import Debug.Trace (trace)
 import Expr.Combinator
 import Lexer (Token (..))
+import MyTrace (myTrace)
 
 -- import Text.Megaparsec (token, (<?>))
 
@@ -32,46 +32,17 @@ parens p = between (symbol "(") (symbol ")") p
 brackets :: Parser a -> Parser a
 brackets p = between (symbol "[") (symbol "]") p
 
-{-}
 ident :: Parser String
 ident = do
   t <- satisfy isIdent
   case t of
-    TokIdent s -> trace (">> ident: " ++ show s) (pure s)
-    _ -> empty
-  where
-    isIdentTok (TokKeyword "return") = True
-    isIdent (TokIdent _) = True
-    isIdent _ = False
--}
-
-ident :: Parser String
-ident = do
-  t <- satisfy isIdent
-  case t of
-    TokIdent s -> trace (">> ident: " ++ show s) (pure s)
-    TokKeyword "return" -> trace ">> ident: return" (pure "return")
+    TokIdent s -> myTrace (">> ident: " ++ show s) (pure s)
+    TokKeyword "return" -> myTrace ">> ident: return" (pure "return")
     _ -> empty
   where
     isIdent (TokIdent _) = True
     isIdent (TokKeyword "return") = True
     isIdent _ = False
-
-{-}
-ident :: Parser String
-ident = satisfy isIdentTok <?> "identifier"
-  where
-    isIdentTok (TokIdent s) = True
-    isIdentTok (TokKeyword "return") = True
-    isIdentTok _ = False
-
-ident :: Parser String
-ident = tokenPrim show updatePos getIdent
-  where
-    getIdent (TokIdent s) = Just s
-    getIdent (TokKeyword "return") = Just "return" -- ← ここで許可！
-    getIdent _ = Nothing
--}
 
 int :: Parser Int
 int = tokenIs $ \case
@@ -82,7 +53,7 @@ keyword :: String -> Parser ()
 keyword kw = do
   t <- satisfy isKeyword
   case t of
-    TokKeyword s | s == kw -> trace (">> keyword: " ++ s) (pure ())
+    TokKeyword s | s == kw -> myTrace (">> keyword: " ++ s) (pure ())
     _ -> empty
   where
     isKeyword (TokKeyword _) = True
