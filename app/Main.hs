@@ -4,13 +4,13 @@ import Control.Monad (forM_)
 import Debug.Trace (trace, traceShow)
 import Expr.AST (Expr)
 import Expr.Combinator (Parser (..), runParser)
-import Expr.ExprParser (toplevel)
+import Expr.ExprParser (exprTop, toplevel)
 import Expr.Parser (expr, parseExpr, runExprTest, runToplevelTest)
-import Lexer (runLexer)
+import Lexer (Token, runLexer)
 import qualified Lexer
+import MyTrace (setTrace)
 import System.IO (hFlush, stdout)
 import Text.Megaparsec.Error (errorBundlePretty)
-
 
 testCasesDo :: [(String, String)]
 testCasesDo =
@@ -38,24 +38,78 @@ testCasesDo =
     ( "Do in case",
       "case v of Just x -> do { let y = x + 1; return y }; Nothing -> return 0"
     ),
+    ( "Empty do",
+      "do { }"
+    ),
+    ( "Case with as-pattern",
+      "case v of x@(Just y) -> return x _ -> return 0"
+    ),
+    ( "x; y; z statements",
+      "x; y; z"
+    ),
     ( "Let with case",
       "do { let x = case v of Just n -> n; Nothing -> 0; return x }"
     ),
-    ( "Empty do",
-      "do { }"
-    )
+    ("simple", "{ x = 1 }"),
+    ("2", "{ x = 1, y = 2 }"),
+    ("tag", "r { x = 3 }"),
+    ("nest", "{ a = { b = 3 } }"),
+    ("2 equation", "{ x = 1 + 2, y = f 3 }"),
+    ("space", "{  x=1 , y =2}"),
+    ("", "r { x = 3, y = 4 }"),
+    ("", "(f x) { y = 10 }"),
+    ("", "{ x = 1, y = 2 } { x = 9 }"),
+    ("", "(+ 1)"),
+    ("", "(1 +)"),
+    ("", "(* 2) (2 *) (> 3) (3 >)"),
+    ("", "((+ 1))"),
+    ("", "{ f = (+ 1) }"),
+    ("", "r { f = (1 +) }"),
+    ("", "({ x = 1 } +)"),
+    ("", "do { let r = { x = 1 }; return r }"),
+    ("", "do { let r = { x = 1 }; return (r { x = 2 }) }"),
+    ("", "do { let f = (+ 1); return (f 10) }"),
+    ("error1", "{ = 1 }"),
+    ("error2", "{ x = 1,, y = 2 }"),
+    ("error3", "()"),
+    ("error4", "(1 + 2)")
   ]
+
+runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)
+runParserWithTrace p tokens = do
+  setTrace False -- 最初はトレースOFF
+  case runParser p tokens of
+    Just (result, []) -> return (Just result) -- 成功 → そのまま返す
+    _ -> do
+      putStrLn "XX Parser failed! Re-running with trace:"
+      setTrace True
+      case runParser p tokens of
+        Just (result, []) -> return (Just result)
+        _ -> return Nothing
 
 main :: IO ()
 main = do
   putStrLn "=== Running Parser Test Suite ==="
   forM_ testCasesDo $ \(label, input) -> do
-    putStrLn $ "\n-- " ++ label ++ " --"
+    putStrLn $ "\n-- " ++ label ++ " --\n-- Input: " ++ input
     case runLexer input of
       Left err -> putStrLn $ "X Lexer error: " ++ show err
       Right toks -> do
         putStrLn $ "Tokens: " ++ show toks
-        case runParser expr toks of
+        result <- runParserWithTrace exprTop toks
+        print result
+
+{-}
+main :: IO ()
+main = do
+  putStrLn "=== Running Parser Test Suite ==="
+  forM_ testCasesDo $ \(label, input) -> do
+    putStrLn $ "\n-- " ++ label ++ " --\n-- Input: " ++ input
+    case runLexer input of
+      Left err -> putStrLn $ "X Lexer error: " ++ show err
+      Right toks -> do
+        putStrLn $ "Tokens: " ++ show toks
+        case runParser exprTop toks of
           Just (result, []) -> do
             putStrLn "Ok Parse succeeded:"
             print result
@@ -65,6 +119,7 @@ main = do
             putStrLn $ "Unconsumed tokens: " ++ show rest
           Nothing -> putStrLn "XX Parser failed!"
     hFlush stdout
+-}
 
 {-}
 main :: IO ()
@@ -77,7 +132,7 @@ main = do
   -- let input = "do { }"
   -- let input = "case v of Just x -> do { let y = x + 1; return y }; Nothing -> return 0"
   let input = "do { let x = case v of Just n -> n; Nothing -> 0; return x }"
- 
+
   case runLexer input of
     Left err -> putStrLn $ "Lexer error: " ++ show err
     Right toks -> do

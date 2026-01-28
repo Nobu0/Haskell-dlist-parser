@@ -9,6 +9,7 @@ data Pattern
   | PTuple [Pattern]
   | PConstr String [Pattern]
   | PApp Pattern Pattern -- ← これを追加！
+  | PAs String Pattern -- ← 追加！
   deriving (Show, Eq)
 
 data Expr
@@ -26,6 +27,12 @@ data Expr
   | EListComp Expr [Qualifier]
   | EAnn Expr Type
   | EDo [Stmt]
+  | ESeq [Expr] -- ← 追加！
+  | EReturn Expr
+  | ERecord [(String, Expr)]
+  | ERecordUpdate Expr [(String, Expr)]
+  | EOpSectionL String Expr
+  | EOpSectionR Expr String
   deriving (Eq, Show)
 
 data Stmt

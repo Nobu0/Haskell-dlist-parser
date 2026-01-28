@@ -162,7 +162,7 @@ symbolToken =
         try (string "/=") >> return (TokSymbol "/="),
         try (string "<=") >> return (TokSymbol "<="),
         try (string ">=") >> return (TokSymbol ">="),
-        oneOf ("=(){}[]:;,\\'_|" :: String) >>= \c -> return (TokSymbol [c])
+        oneOf ("=(){}[]:;,\\'_|@" :: String) >>= \c -> return (TokSymbol [c])
       ]
 
 tokenParser :: Parser [Token]

@@ -18,10 +18,18 @@ import Expr.TokenParser
 import Lexer (Token (..))
 import MyTrace (myTrace)
 
+{-}
 pattern :: Parser Pattern
 pattern = do
   p <- makeCons
   myTrace ("<< pattern: " ++ show p) (pure p)
+-- pattern = makeCons =<< (pAsPattern <|> pAtom)
+pattern = (pAsPattern <|> pAtom) >>= makeCons
+-}
+pattern :: Parser Pattern
+pattern = do
+  p <- pAsPattern <|> makeCons
+  myTrace ("<< pattern: " ++ show p) >> pure p
 
 makeCons :: Parser Pattern
 makeCons = do
@@ -31,11 +39,25 @@ makeCons = do
 
 pAtom :: Parser Pattern
 pAtom =
-  myTrace ">> pWildcard" pWildcard
-    <|> myTrace ">> pList" pList
-    <|> myTrace ">> pParenOrTuple" pParenOrTuple
-    <|> myTrace ">> pConstrOrVar" pConstrOrVar
-    <|> myTrace ">> pInt" pInt
+  try
+    ( do
+        name <- ident
+        symbol "@"
+        pat <- pattern
+        return (PAs name pat)
+    )
+    <|> pList
+    <|> pParenOrTuple
+    <|> pConstrOrVar
+    <|> pInt
+    <|> (symbol "_" >> return PWildcard)
+
+pAsPattern :: Parser Pattern
+pAsPattern = do
+  name <- ident
+  symbol "@"
+  pat <- pAtom
+  return (PAs name pat)
 
 pConstrOrVar :: Parser Pattern
 pConstrOrVar = tokenIs $ \case
@@ -44,6 +66,7 @@ pConstrOrVar = tokenIs $ \case
   -- TokTypeIdent name -> Just (PConstr name)
   _ -> Nothing
 
+isIdentOnly :: Token -> Bool
 isIdentOnly (TokIdent _) = True
 isIdentOnly _ = False
 

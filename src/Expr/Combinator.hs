@@ -1,3 +1,5 @@
+{-# LANGUAGE InstanceSigs #-}
+
 module Expr.Combinator
   ( Parser (..),
     runParser,
@@ -23,13 +25,16 @@ import Lexer (Token)
 newtype Parser a = Parser {runParser :: [Token] -> Maybe (a, [Token])}
 
 instance Functor Parser where
+  fmap :: (a -> b) -> Parser a -> Parser b
   fmap f p = Parser $ \input ->
     case runParser p input of
       Just (a, rest) -> Just (f a, rest)
       Nothing -> Nothing
 
 instance Applicative Parser where
+  pure :: a -> Parser a
   pure a = Parser $ \input -> Just (a, input)
+  (<*>) :: Parser (a -> b) -> Parser a -> Parser b
   pf <*> pa = Parser $ \input ->
     case runParser pf input of
       Just (f, rest1) ->
@@ -39,13 +44,16 @@ instance Applicative Parser where
       Nothing -> Nothing
 
 instance Monad Parser where
+  (>>=) :: Parser a -> (a -> Parser b) -> Parser b
   p >>= f = Parser $ \input ->
     case runParser p input of
       Just (a, rest) -> runParser (f a) rest
       Nothing -> Nothing
 
 instance Alternative Parser where
+  empty :: Parser a
   empty = Parser $ const Nothing
+  (<|>) :: Parser a -> Parser a -> Parser a
   p1 <|> p2 = Parser $ \input ->
     runParser p1 input <|> runParser p2 input
 
