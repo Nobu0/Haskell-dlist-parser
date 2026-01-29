@@ -30,7 +30,7 @@ testCasesDo =
       "if cond then do { let x = 1; return x } else return 0"
     ),
     ( "Let with lambda",
-      "do { let f = \\x -> x + 1; return (f 10) }"
+      "do { let f = \\x -> x + 1 * 2; return (f 10) }"
     ),
     ( "Let without semicolon",
       "do { let x = 1 return x }" -- 失敗するかも？

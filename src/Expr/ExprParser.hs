@@ -43,28 +43,25 @@ toplevel = do
 exprTop :: Parser Expr
 exprTop = exprSeq <|> expr
 
+exprSeq :: Parser Expr
+exprSeq = do
+  myTrace ">> exprSeq"
+  es <- sepEndBy1 (try expr) (symbol ";")
+  return $ if length es == 1 then head es else ESeq es
+
 expr :: Parser Expr
 expr =
   try doExpr
     <|> try caseExpr
-    <|> try binOpExpr
-    <|> exprAtomic -- exprSeq
-
--- exprLevel3: 通常の式（再帰あり）
-exprLevel3 :: Parser Expr
-exprLevel3 = do
-  try returnExpr
-    <|> try doExpr
     <|> try ifExpr
     <|> try letExpr
     <|> try lambdaExpr
-    <|> try caseExpr
-    <|> appExpr
+    <|> binOpExpr
 
--- exprAtomic: exprSeq 専用の「再帰しない」式
-exprAtomic :: Parser Expr
-exprAtomic =
-  try returnExpr
+exprLevel3 :: Parser Expr
+exprLevel3 =
+  atomBase
+    <|> try returnExpr
     <|> try doExpr
     <|> try ifExpr
     <|> try letExpr
@@ -75,22 +72,56 @@ exprAtomic =
 -- ここがparensエリア --
 atom :: Parser Expr
 atom =
-  try pRecordExpr
-    <|> try pRecordUpdate
-    <|> try pOpSection
-    <|> parens exprOrTuple
-    <|> try elist
-    <|> try (EVar <$> ident)
-    <|> (EInt <$> int)
+  parens parenExpr
+    <|> atomBase
+
+parenExpr :: Parser Expr
+parenExpr =
+  try oPsection
+    <|> try tupleExpr
+    <|> exprLevel3
+
+tupleExpr :: Parser Expr
+tupleExpr = do
+  e1 <- expr
+  _ <- symbol ","
+  es <- expr `sepBy1` symbol ","
+  return (ETuple (e1 : es))
+
+oPsection :: Parser Expr
+oPsection =
+  try (EOpSectionL <$> operator <*> expr)
+    <|> try (EOpSectionR <$> expr <*> operator)
+
+atomBase :: Parser Expr
+atomBase =
+  EVar <$> ident
+    <|> EInt <$> int
+    <|> elist
+    <|> pRecordExpr
+
+postfix :: Expr -> Parser Expr
+postfix base =
+  pRecordUpdate base
+    <|> return base
+
+pRecordUpdate :: Expr -> Parser Expr
+pRecordUpdate base = do
+  updates <- braces (sepBy field (symbol ","))
+  return (ERecordUpdate base updates)
+
+pRecord :: Parser [(String, Expr)]
+pRecord = braces (sepBy field (symbol ","))
+
+pRecordExpr :: Parser Expr
+pRecordExpr = ERecord <$> pRecord
 
 appExpr :: Parser Expr
-appExpr = chainl1 atom (pure EApp)
-
-exprSeq :: Parser Expr
-exprSeq = do
-  myTrace ">> exprSeq"
-  es <- sepEndBy1 (try exprAtomic) (symbol ";")
-  return $ if length es == 1 then head es else ESeq es
+appExpr = do
+  f <- atom
+  args <- many atom
+  let base = foldl EApp f args
+  postfix base
 
 anyToken :: Parser Token
 anyToken = Parser $ \input ->
@@ -145,12 +176,12 @@ bindStmt = do
   pat <- pattern
   -- myTrace ">> bindStmt" >> pure ()
   symbol "<-"
-  e <- exprAtomic -- expr
+  e <- expr -- expr
   myTrace ("<< bindStmt: " ++ show pat) >> pure (Bind pat e)
 
 exprStmt :: Parser Stmt
 exprStmt = do
-  e <- exprAtomic
+  e <- expr
   myTrace "<< exprStmt" >> pure (ExprStmt e)
 
 exprOthers :: Parser Expr
@@ -205,9 +236,6 @@ caseAlt :: Parser (Pattern, Expr)
 caseAlt = do
   pat <- pattern
   token TokArrow
-  -- t <- lookAhead anyToken
-  -- myTrace ("next token: " ++ show t)
-  -- myTrace "caseAlt" >> pure ()
   body <- exprSeq -- <* optional (symbol ";")
   return (pat, body)
 
@@ -223,11 +251,6 @@ debugPeek :: Parser ()
 debugPeek = do
   t <- peekToken
   Parser $ \tokens ->
-    -- Just (myTrace ("Next token: " ++ show t) (), tokens)
-    -- myTrace
-    --  ("Next token: " ++ show t)
-    --  >> pure
-    --    ()
     Just ((), tokens)
 
 peekToken :: Parser Token
@@ -331,88 +354,32 @@ guardExpr = EGuard <$> expr
 
 returnExpr :: Parser Expr
 returnExpr = do
-  t <- lookAhead anyToken
-  myTrace ("returnExpr next token: " ++ show t)
   keyword "return"
   -- myTrace "<< returnExpr key" >> pure ()
   notFollowedBy (symbol "_") -- ← これで `return _` を防ぐ
-  e <- exprAtomic
+  e <- expr
   myTrace "<< returnExpr" >> pure ()
   return (EReturn e)
-
-exprOrTuple :: Parser Expr
-exprOrTuple = do
-  es <- expr `sepBy1` symbol ","
-  -- es <- exprAtomic `sepBy1` symbol ","
-  return $ case es of
-    [single] -> single
-    _ -> ETuple es
 
 binOp :: [String] -> Parser (Expr -> Expr -> Expr)
 binOp ops = tokenIs $ \case
   TokOperator op | op `elem` ops -> Just (EBinOp op)
   _ -> Nothing
 
-exprAtomic2 :: Parser Expr
-exprAtomic2 =
-  --  try returnExpr
-  try doExpr
-    <|> try ifExpr
-    <|> try letExpr
-    <|> try lambdaExpr
-    <|> try caseExpr
-    <|> appExpr
-
-exprAtomicP :: Parser Expr
-exprAtomicP = do
-  f <- atomBase
-  args <- many atomBase
-  return (foldl EApp f args)
-
-atomBase :: Parser Expr
-atomBase =
-  try (EVar <$> ident)
-    <|> parens expr
-
-pRecord :: Parser [(String, Expr)]
-pRecord = braces (sepBy field (symbol ","))
-
-pRecordExpr :: Parser Expr
-pRecordExpr = ERecord <$> pRecord
-
-pRecordUpdate :: Parser Expr
-pRecordUpdate = do
-  base <- atomBase
-  updates <- braces (sepBy field (symbol ","))
-  return (ERecordUpdate base updates)
-
 pOpSection :: Parser Expr
-pOpSection =
+pOpSection = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("pOpSection next token: " ++ show t)
   parens $
-    try
-      ( do
-          e <- exprAtomic2
-          op <- operator
-          return (EOpSectionL op e)
-      )
-      <|> try
-        ( do
-            op <- operator
-            e <- exprAtomic2
-            return (EOpSectionR e op)
-        )
+    try (do e <- expr; op <- operator; return (EOpSectionL op e))
+      <|> try (do op <- operator; e <- expr; return (EOpSectionR e op))
 
 field :: Parser (String, Expr)
 field = do
   name <- ident
   symbol "="
-  val <- expr -- exprAtomicP
+  val <- expr -- exprAtomic
   return (name, val)
-
-operator :: Parser String
-operator = choice (map (\s -> symbol s >> return s) allOps)
-  where
-    allOps = ["+", "-", "*", "/", ">", "<", ">=", "<=", "==", "/="]
 
 choice1 :: Parser a -> Parser a -> Parser a
 choice1 p q = Parser $ \input ->
@@ -423,3 +390,8 @@ choice1 p q = Parser $ \input ->
 choice :: [Parser a] -> Parser a
 choice [] = empty
 choice (p : ps) = choice1 p (choice ps)
+
+operator :: Parser String
+operator = choice (map (\s -> symbol s >> return s) allOps)
+  where
+    allOps = ["==", "/=", ">=", "<=", "+", "-", "*", "/", ">", "<"]

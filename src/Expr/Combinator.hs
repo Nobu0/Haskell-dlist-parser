@@ -20,6 +20,7 @@ where
 import Control.Applicative
 import Data.List (isPrefixOf)
 import Lexer (Token)
+--import app.MyTrace (myTrace)
 
 -- 差分リスト風パーサー
 newtype Parser a = Parser {runParser :: [Token] -> Maybe (a, [Token])}
