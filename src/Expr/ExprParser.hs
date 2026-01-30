@@ -24,6 +24,7 @@ import Control.Applicative
 
 -- === 式の構文解析 ===
 
+import Data.Functor (void)
 import Expr.AST
 import Expr.Combinator
 import Expr.PatternParser
@@ -41,7 +42,7 @@ toplevel = do
   return (name, foldr ELam exprBody args)
 
 exprTop :: Parser Expr
-exprTop = exprSeq <|> expr
+exprTop = try exprSeq <|> expr
 
 exprSeq :: Parser Expr
 exprSeq = do
@@ -50,26 +51,36 @@ exprSeq = do
   return $ if length es == 1 then head es else ESeq es
 
 expr :: Parser Expr
-expr =
-  try doExpr
-    <|> try caseExpr
-    <|> try ifExpr
-    <|> try letExpr
-    <|> try lambdaExpr
-    <|> binOpExpr
-
-exprLevel3 :: Parser Expr
-exprLevel3 =
-  atomBase
-    <|> try returnExpr
+expr = do
+  t <- lookAhead anyToken
+  myTrace ("<< expr next token: " ++ show t)
+  try caseExpr
     <|> try doExpr
     <|> try ifExpr
     <|> try letExpr
     <|> try lambdaExpr
-    <|> try caseExpr
+    <|> try binOpExpr -- ここを追加
+    <|> infixExpr
+
+infixExpr :: Parser Expr
+infixExpr = exprLevel1
+
+exprLevel3 :: Parser Expr
+exprLevel3 =
+  -- try caseExpr
+  try returnExpr
+    <|> try doExpr
+    <|> try ifExpr
+    <|> try letExpr
+    <|> try lambdaExpr
     <|> appExpr
 
--- ここがparensエリア --
+appExpr :: Parser Expr
+appExpr = do
+  f <- atom
+  args <- many atom
+  postfix (foldl EApp f args)
+
 atom :: Parser Expr
 atom =
   parens parenExpr
@@ -79,7 +90,7 @@ parenExpr :: Parser Expr
 parenExpr =
   try oPsection
     <|> try tupleExpr
-    <|> exprLevel3
+    <|> infixExpr
 
 tupleExpr :: Parser Expr
 tupleExpr = do
@@ -90,11 +101,13 @@ tupleExpr = do
 
 oPsection :: Parser Expr
 oPsection =
-  try (EOpSectionL <$> operator <*> expr)
-    <|> try (EOpSectionR <$> expr <*> operator)
+  try (EOpSectionL <$> operator <*> infixExpr)
+    <|> try (EOpSectionR <$> infixExpr <*> operator)
 
 atomBase :: Parser Expr
-atomBase =
+atomBase = do
+  t <- lookAhead anyToken
+  myTrace ("<< atomBase next token: " ++ show t)
   EVar <$> ident
     <|> EInt <$> int
     <|> elist
@@ -116,24 +129,87 @@ pRecord = braces (sepBy field (symbol ","))
 pRecordExpr :: Parser Expr
 pRecordExpr = ERecord <$> pRecord
 
-appExpr :: Parser Expr
-appExpr = do
-  f <- atom
-  args <- many atom
-  let base = foldl EApp f args
-  postfix base
+caseExpr :: Parser Expr
+caseExpr = do
+  keyword "case"
+  scrutinee <- expr
+  keyword "of"
+  alts <-
+    braces (many (caseAlt <* optional (symbol ";")))
+      <|> many (caseAlt <* optional (symbol ";"))
+  if null alts
+    then empty -- "case expression requires at least one alternative"
+    else return (ECase scrutinee alts)
 
-anyToken :: Parser Token
-anyToken = Parser $ \input ->
-  case input of
-    (t : ts) -> Just (t, ts)
-    [] -> Nothing
+{-}
+caseAlt :: Parser CaseAlt
+caseAlt = do
+  alt <- try caseAltGuarded <|> caseAltSimple
+  myTrace (">> caseAlt after alt")
+  lookAhead caseAltEnd
+  return alt
+-}
+caseAlt :: Parser CaseAlt
+caseAlt = do
+  myTrace ("<< caseAlt")
+  pat <- pattern
+  alt <-
+    (CaseAltGuard pat <$> some caseGuard)
+      <|> (CaseAlt pat <$> (token TokArrow *> expr))
+  skipMany (symbol ";" <|> newline)
+  return alt
 
-lookAhead :: Parser a -> Parser a
-lookAhead (Parser p) = Parser $ \input ->
-  case p input of
-    Just (a, _) -> Just (a, input) -- 結果はそのまま、入力は消費しない
-    Nothing -> Nothing
+newline :: Parser ()
+newline = void (token TokNewline)
+
+skipMany :: Parser a -> Parser ()
+skipMany p = Parser $ \ts ->
+  case runParser p ts of
+    Just (_, ts') -> runParser (skipMany p) ts'
+    Nothing -> Just ((), ts)
+
+caseAltEnd :: Parser ()
+caseAltEnd =
+  symbol ";"
+    <|> symbol "}"
+    <|> pure ()
+
+caseAltGuarded :: Parser CaseAlt
+caseAltGuarded = do
+  myTrace ("<< caseAltGuarded")
+  pat <- pattern
+  guards <- some caseGuard
+  return (CaseAltGuard pat guards)
+
+{-}
+caseGuard :: Parser (Expr, Expr)
+caseGuard = do
+  myTrace ("<< caseGuard")
+  symbol "|"
+  cond <- expr
+  t <- lookAhead anyToken
+  myTrace ("in caseGuard expr next token: " ++ show t)
+  token TokArrow
+  body <- expr
+  myTrace (">> caseGuard")
+  return (cond, body)
+-}
+
+caseGuard :: Parser (Expr, Expr)
+caseGuard = do
+  symbol "|"
+  cond <- expr
+  token TokArrow
+  body <- expr
+  return (cond, body)
+
+caseAltSimple :: Parser CaseAlt
+caseAltSimple = do
+  myTrace ("<< caseAltSimple")
+  pat <- pattern
+  token TokArrow
+  body <- expr
+  return (CaseAlt pat body)
 
 doExpr :: Parser Expr
 doExpr = do
@@ -165,12 +241,6 @@ binding = do
   e <- expr -- ← ここが exprSeq だと壊れる可能性あり！
   return (pat, e)
 
-some1 :: Parser a -> Parser [a]
-some1 p = do
-  x <- p
-  xs <- many p
-  return (x : xs)
-
 bindStmt :: Parser Stmt
 bindStmt = do
   pat <- pattern
@@ -200,12 +270,6 @@ binOpExpr = do
   -- <?> "unexpected semicolon"
   return e
 
-notFollowedBy :: Parser a -> Parser ()
-notFollowedBy p = Parser $ \input ->
-  case runParser p input of
-    Nothing -> Just ((), input) -- p が失敗 → 成功
-    Just _ -> Nothing -- p が成功 → 失敗
-
 exprCmp :: Parser Expr
 exprCmp = chainl1 exprLevel1 (binOp [">", "<", ">=", "<=", "==", "/="])
 
@@ -214,30 +278,6 @@ exprLevel1 = chainl1 exprLevel2 (binOp ["+", "-"])
 
 exprLevel2 :: Parser Expr
 exprLevel2 = chainl1 exprLevel3 (binOp ["*", "/"])
-
-caseExpr :: Parser Expr
-caseExpr = do
-  keyword "case"
-  scrutinee <- expr
-  keyword "of"
-  alts <-
-    braces (some (caseAlt <* optional (symbol ";")))
-      <|> some (caseAlt <* optional (symbol ";"))
-  myTrace "<< caseExpr" >> pure ()
-  return (ECase scrutinee alts)
-
-caseAltWithSemi :: Parser (Pattern, Expr)
-caseAltWithSemi = do
-  alt <- caseAlt
-  optional (symbol ";")
-  return alt
-
-caseAlt :: Parser (Pattern, Expr)
-caseAlt = do
-  pat <- pattern
-  token TokArrow
-  body <- exprSeq -- <* optional (symbol ";")
-  return (pat, body)
 
 whereClause :: Parser [(Pattern, Expr)]
 whereClause = do
@@ -311,11 +351,11 @@ ifExpr = do
   myTrace "<< ifExpr" >> pure ()
   return (EIf cond thenBranch elseBranch)
 
-bracesCase :: Parser [(Pattern, Expr)]
-bracesCase = braces (caseAlt `sepEndBy1` symbol ";")
+-- bracesCase :: Parser [(Pattern, Expr)]
+-- bracesCase = braces (caseAlt `sepEndBy1` symbol ";")
 
-plainCase :: Parser [(Pattern, Expr)]
-plainCase = some caseAlt
+-- plainCase :: Parser [(Pattern, Expr)]
+-- plainCase = some caseAlt
 
 elist :: Parser Expr
 elist = brackets (try listComp <|> try range <|> list)
@@ -395,3 +435,9 @@ operator :: Parser String
 operator = choice (map (\s -> symbol s >> return s) allOps)
   where
     allOps = ["==", "/=", ">=", "<=", "+", "-", "*", "/", ">", "<"]
+
+some1 :: Parser a -> Parser [a]
+some1 p = do
+  x <- p
+  xs <- many p
+  return (x : xs)

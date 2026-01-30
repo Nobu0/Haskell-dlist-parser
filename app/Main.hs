@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Monad (forM_)
+import Data.Char (ord)
 import Debug.Trace (trace, traceShow)
 import Expr.AST (Expr)
 import Expr.Combinator (Parser (..), runParser)
@@ -72,12 +73,17 @@ testCasesDo =
     ("error1", "{ = 1 }"),
     ("error2", "{ x = 1,, y = 2 }"),
     ("error3", "()"),
-    ("error4", "(1 + 2)")
+    ("error4 Ok", "(1 + 2)"),
+    ("case gard1", "case x of { p | cond1 -> e1; p2 | cond2 -> e2; p3 -> e3 }"),
+    ("case gard2", "case x of n | n < 0 -> 1 "),
+    ("case gard3", "case x of n | n < 0 -> -1 | n > 0 -> 1"),
+    ("case gard4", "case x of n | n < 0 -> -1\n  0 -> 0\n  n | n > 0 -> 1")
   ]
 
 runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)
 runParserWithTrace p tokens = do
   setTrace False -- 最初はトレースOFF
+  -- setTrace True
   case runParser p tokens of
     Just (result, []) -> return (Just result) -- 成功 → そのまま返す
     _ -> do
@@ -92,6 +98,7 @@ main = do
   putStrLn "=== Running Parser Test Suite ==="
   forM_ testCasesDo $ \(label, input) -> do
     putStrLn $ "\n-- " ++ label ++ " --\n-- Input: " ++ input
+    putStrLn $ "Bytes: " ++ show (map ord input)
     case runLexer input of
       Left err -> putStrLn $ "X Lexer error: " ++ show err
       Right toks -> do

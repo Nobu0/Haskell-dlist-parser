@@ -9,6 +9,10 @@ module Expr.TokenParser
     parens,
     brackets,
     braces,
+    notFollowedBy,
+    lookAhead,
+    (<?>),
+    anyToken,
   )
 where
 
@@ -32,24 +36,10 @@ parens p = between (symbol "(") (symbol ")") p
 brackets :: Parser a -> Parser a
 brackets p = between (symbol "[") (symbol "]") p
 
-{-}
 ident :: Parser String
 ident = do
-  t <- satisfy isIdent
-  case t of
-    -- TokIdent s -> myTrace ("<< ident: " ++ show s) >> pure s
-    TokIdent s -> pure (s)
-    TokKeyword "return" -> myTrace "<< ident: return" >> pure "return"
-    -- TokKeyword "return" -> pure ("return")
-    _ -> empty
-  where
-    isIdent (TokIdent _) = True
-    isIdent (TokKeyword "return") = True
-    isIdent _ = False
--}
-
-ident :: Parser String
-ident = do
+  notFollowedBy (symbol "|")
+  notFollowedBy (token TokArrow)
   t <- satisfy isIdent
   myTrace ("<< ident token: " ++ show t)
   case t of
@@ -72,12 +62,6 @@ int = do
     isNumber (TokNumber _) = True
     isNumber _ = False
 
-{-}
-  tokenIs $ \case
-  TokNumber n -> Just n
-  _ -> Nothing
--}
-
 keyword :: String -> Parser ()
 keyword kw = do
   t <- satisfy isKeyword
@@ -89,12 +73,10 @@ keyword kw = do
     isKeyword (TokKeyword _) = True
     isKeyword _ = False
 
--- keyword :: String -> Parser ()
--- keyword kw = void (satisfy (== TokKeyword kw))
-
 symbol :: String -> Parser ()
 symbol s = tokenIs $ \case
-  TokSymbol s' | s == s' -> Just ()
+  TokSymbol s' | s' == s -> Just ()
+  TokOperator s' | s' == s -> Just ()
   _ -> Nothing
 
 tokenIs :: (Token -> Maybe a) -> Parser a
@@ -103,3 +85,21 @@ tokenIs f = Parser $ \case
     Just a -> Just (a, ts)
     Nothing -> Nothing
   [] -> Nothing
+
+notFollowedBy :: Parser a -> Parser ()
+notFollowedBy p = Parser $ \input ->
+  case runParser p input of
+    Nothing -> Just ((), input) -- p が失敗 → 成功
+    Just _ -> Nothing -- p が成功 → 失敗
+
+lookAhead :: Parser a -> Parser a
+lookAhead (Parser p) = Parser $ \input ->
+  case p input of
+    Just (a, _) -> Just (a, input) -- 結果はそのまま、入力は消費しない
+    Nothing -> Nothing
+
+anyToken :: Parser Token
+anyToken = Parser $ \input ->
+  case input of
+    (t : ts) -> Just (t, ts)
+    [] -> Nothing

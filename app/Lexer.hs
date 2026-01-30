@@ -13,9 +13,11 @@ where
 
 -- import Text.Megaparsec (ParseErrorBundle, Parsec, between, choice, errorBundlePretty, many, manyTill, oneOf, parse, some, try, (<|>))
 
+import Control.Applicative
 import Data.Char (isUpper)
+import Data.Functor
 import Data.Void
-import Text.Megaparsec (ParseErrorBundle, Parsec, choice, many, manyTill, oneOf, parse, try, (<|>))
+import Text.Megaparsec (ParseErrorBundle, Parsec, choice, manyTill, oneOf, parse, try, (<|>))
 import Text.Megaparsec.Char
   ( alphaNumChar,
     char,
@@ -28,29 +30,6 @@ import qualified Text.Megaparsec.Char.Lexer as L
 -- import Text.Megaparsec.Error (errorBundlePretty)
 
 type Parser = Parsec Void String
-
-{-}
-instance Ord Token where
-  compare (TokKeyword a) (TokKeyword b) = compare a b
-  compare (TokKeyword _) _ = LT
-  compare _ (TokKeyword _) = GT
-  compare (TokIdent a) (TokIdent b) = compare a b
-  compare (TokIdent _) _ = LT
-  compare _ (TokIdent _) = GT
-  compare (TokNumber a) (TokNumber b) = compare a b
-  compare (TokNumber _) _ = LT
-  compare _ (TokNumber _) = GT
-  compare (TokFloat a) (TokFloat b) = compare (show a) (show b) -- 安全な比較
-  compare (TokFloat _) _ = LT
-  compare _ (TokFloat _) = GT
-  compare (TokString a) (TokString b) = compare a b
-  compare (TokString _) _ = LT
-  compare _ (TokString _) = GT
-  compare (TokSymbol a) (TokSymbol b) = compare a b
-  compare (TokSymbol _) _ = LT
-  compare _ (TokSymbol _) = GT
-  compare (TokOperator a) (TokOperator b) = compare a b
--}
 
 data Token
   = TokKeyword String
@@ -66,18 +45,24 @@ data Token
   | TokArrow
   | TokLParen
   | TokRParen
+  | TokNewline
   deriving (Show, Eq, Ord)
-
--- keywords :: [String]
--- keywords =
---  ["let", "in", "if", "then", "else", "case", "of", "data", "where"]
 
 multiCharSymbols :: [String]
 multiCharSymbols =
   ["->", "<-", "::", "==", "/=", ">=", "<=", "++"]
 
+{-}
 sc :: Parser ()
 sc = L.space space1 (L.skipLineComment "--") (L.skipBlockCommentNested "{-" "-}")
+-}
+
+sc :: Parser ()
+sc =
+  L.space
+    (void $ some (char ' ' <|> char '\t'))
+    (L.skipLineComment "--")
+    (L.skipBlockCommentNested "{-" "-}")
 
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme sc
@@ -120,32 +105,10 @@ identifier = lexeme $ do
       | isUpper first -> TokTypeIdent name
       | otherwise -> TokIdent name
 
-{-}
-identifier :: Parser Token
-identifier = lexeme $ do
-  first <- letterChar
-  rest <- many (alphaNumChar <|> char '_')
-  let name = first : rest
-  return $
-    if name `elem` keywords
-      then TokKeyword name
-      else
-        if isUpper first
-          then TokTypeIdent name -- ★ 大文字始まりなら型名
-          else TokIdent name
--}
-
 operator :: Parser Token
 operator = lexeme $ try $ do
   op <- choice (map (try . string) (reverse multiCharSymbols ++ map pure "+-*/=<>"))
   return $ TokOperator op
-
-{-}
-isOperatorChar c = c `elem` "+-*/=<>"
-
-lexer = ...
-  <|> (TokOperator <$> some (satisfy isOperatorChar))
--}
 
 symbolToken :: Parser Token
 symbolToken =
@@ -165,11 +128,15 @@ symbolToken =
         oneOf ("=(){}[]:;,\\'_|@" :: String) >>= \c -> return (TokSymbol [c])
       ]
 
+newlineToken :: Parser Token
+newlineToken = TokNewline <$ char '\n'
+
 tokenParser :: Parser [Token]
 tokenParser =
   many $
     choice
-      [ stringLiteral,
+      [ newlineToken,
+        stringLiteral,
         number,
         identifier,
         symbolToken,

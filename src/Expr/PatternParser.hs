@@ -12,12 +12,6 @@ where
 
 import Control.Applicative
 import Data.Char (isUpper)
-import Expr.AST
-import Expr.Combinator
-import Expr.TokenParser
-import Lexer (Token (..))
-import MyTrace (myTrace)
-
 {-}
 pattern :: Parser Pattern
 pattern = do
@@ -26,10 +20,44 @@ pattern = do
 -- pattern = makeCons =<< (pAsPattern <|> pAtom)
 pattern = (pAsPattern <|> pAtom) >>= makeCons
 -}
+
+import Data.Functor (void)
+import Expr.AST
+import Expr.Combinator
+import Expr.TokenParser
+import Expr.TokenParser (lookAhead, notFollowedBy)
+import Lexer (Token (..))
+import MyTrace (myTrace)
+
+{-}
+patternStart :: Parser ()
+patternStart = do
+  t <- lookAhead anyToken
+  case t of
+    TokIdent _ -> return ()
+    TokSymbol "(" -> return ()
+    TokSymbol "[" -> return ()
+    TokSymbol "{" -> return ()
+    _ -> empty
+-}
+
 pattern :: Parser Pattern
 pattern = do
   p <- pAsPattern <|> makeCons
-  myTrace ("<< pattern: " ++ show p) >> pure p
+  myTrace ("<< pattern1: (pAsPattern <|> makeCons)" ++ show p)
+  stopPattern
+  t <- lookAhead anyToken
+  myTrace ("<< patten2 next token: stopPattern" ++ show t)
+  return p
+
+stopPattern :: Parser ()
+stopPattern =
+  lookAhead $
+    symbol "|"
+      <|> void (token TokArrow)
+      <|> symbol ";"
+      <|> symbol "}"
+      <|> pure ()
 
 makeCons :: Parser Pattern
 makeCons = do
@@ -85,3 +113,51 @@ pWildcard = symbol "_" >> return PWildcard
 
 pInt :: Parser Pattern
 pInt = PInt <$> int
+
+------------------------------
+-- 拡張
+-----------------------------
+patternAtom :: Parser Pattern
+patternAtom =
+  pWildcard
+    <|> pInt
+    <|> pList
+    -- <|> pTuple
+    <|> pConstrOrVar
+    <|> pParenOrTuple
+
+patternApp :: Parser Pattern
+patternApp = do
+  p <- patternAtom
+  ps <- many patternAtom
+  return (foldl PApp p ps)
+
+patternCons :: Parser Pattern
+patternCons = do
+  p1 <- patternApp
+  rest p1
+  where
+    rest p =
+      ( do
+          token (TokSymbol ":")
+          p2 <- patternCons
+          return (PCons p p2)
+      )
+        <|> return p
+
+{-}
+patternAs :: Parser Pattern
+patternAs = do
+  TokIdent name <- satisfy isVar
+  token (TokSymbol "@")
+  pat <- pattern
+  return (PAs name pat)
+  where
+    isVar (TokIdent _) = True
+    isVar _ = False
+
+pattern :: Parser Pattern
+pattern =
+  try patternAs
+    <|> patternCons
+-}

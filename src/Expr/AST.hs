@@ -20,7 +20,8 @@ data Expr
   | EIf Expr Expr Expr
   | ELam String Expr
   | EApp Expr Expr
-  | ECase Expr [(Pattern, Expr)]
+  | -- | ECase Expr [(Pattern, Expr)]
+    ECase Expr [CaseAlt]
   | EList [Expr]
   | ETuple [Expr]
   | ERange Expr Expr
@@ -59,4 +60,9 @@ data Type
   deriving (Eq, Show)
 
 data Constraint = Constraint String [Type]
+  deriving (Eq, Show)
+
+data CaseAlt
+  = CaseAlt Pattern Expr -- ガードなし
+  | CaseAltGuard Pattern [(Expr, Expr)] -- ガード付き
   deriving (Eq, Show)
