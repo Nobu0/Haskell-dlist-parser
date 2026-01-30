@@ -98,7 +98,7 @@ main = do
   putStrLn "=== Running Parser Test Suite ==="
   forM_ testCasesDo $ \(label, input) -> do
     putStrLn $ "\n-- " ++ label ++ " --\n-- Input: " ++ input
-    putStrLn $ "Bytes: " ++ show (map ord input)
+    -- putStrLn $ "Bytes: " ++ show (map ord input)
     case runLexer input of
       Left err -> putStrLn $ "X Lexer error: " ++ show err
       Right toks -> do

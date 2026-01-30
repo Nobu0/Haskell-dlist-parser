@@ -36,6 +36,7 @@ parens p = between (symbol "(") (symbol ")") p
 brackets :: Parser a -> Parser a
 brackets p = between (symbol "[") (symbol "]") p
 
+{-}
 ident :: Parser String
 ident = do
   notFollowedBy (symbol "|")
@@ -50,6 +51,11 @@ ident = do
     isIdent (TokIdent _) = True
     -- isIdent (TokKeyword "return") = True
     isIdent _ = False
+-}
+ident :: Parser String
+ident = tokenIs $ \case
+  TokIdent s -> Just s
+  _ -> Nothing
 
 int :: Parser Int
 int = do

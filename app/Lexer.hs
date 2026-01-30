@@ -129,7 +129,7 @@ symbolToken =
       ]
 
 newlineToken :: Parser Token
-newlineToken = TokNewline <$ char '\n'
+newlineToken = lexeme (TokNewline <$ char '\n')
 
 tokenParser :: Parser [Token]
 tokenParser =

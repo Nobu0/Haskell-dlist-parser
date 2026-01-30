@@ -57,7 +57,7 @@ expr = do
   try caseExpr
     <|> try doExpr
     <|> try ifExpr
-    <|> try letExpr
+    -- <|> try letExpr
     <|> try lambdaExpr
     <|> try binOpExpr -- ここを追加
     <|> infixExpr
@@ -71,7 +71,7 @@ exprLevel3 =
   try returnExpr
     <|> try doExpr
     <|> try ifExpr
-    <|> try letExpr
+    -- <|> try letExpr
     <|> try lambdaExpr
     <|> appExpr
 
@@ -108,7 +108,8 @@ atomBase :: Parser Expr
 atomBase = do
   t <- lookAhead anyToken
   myTrace ("<< atomBase next token: " ++ show t)
-  EVar <$> ident
+  try letExpr
+    <|> EVar <$> ident
     <|> EInt <$> int
     <|> elist
     <|> pRecordExpr
@@ -129,6 +130,7 @@ pRecord = braces (sepBy field (symbol ","))
 pRecordExpr :: Parser Expr
 pRecordExpr = ERecord <$> pRecord
 
+{-}
 caseExpr :: Parser Expr
 caseExpr = do
   keyword "case"
@@ -141,6 +143,32 @@ caseExpr = do
     then empty -- "case expression requires at least one alternative"
     else return (ECase scrutinee alts)
 
+caseExpr = do
+  keyword "case"
+  scrutinee <- expr
+  keyword "of"
+  alts <-
+    braces (sepEndBy1 caseAlt (skipMany (symbol ";" <|> void (token TokNewline))))
+      <|> sepEndBy1 caseAlt (skipMany (symbol ";" <|> void (token TokNewline)))
+  return (ECase scrutinee alts)
+-}
+
+caseExpr :: Parser Expr
+caseExpr = do
+  keyword "case"
+  scrutinee <- expr
+  keyword "of"
+  skipMany newline
+  alts <- caseBody
+  return (ECase scrutinee alts)
+
+caseBody :: Parser [CaseAlt]
+caseBody =
+  braces (sepEndBy1 caseAlt sep)
+    <|> sepEndBy1 caseAlt sep
+  where
+    sep = skipMany (symbol ";" <|> void (token TokNewline))
+
 {-}
 caseAlt :: Parser CaseAlt
 caseAlt = do
@@ -149,8 +177,11 @@ caseAlt = do
   lookAhead caseAltEnd
   return alt
 -}
+
 caseAlt :: Parser CaseAlt
 caseAlt = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< caseAlt next token: " ++ show t)
   myTrace ("<< caseAlt")
   pat <- pattern
   alt <-

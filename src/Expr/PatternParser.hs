@@ -43,13 +43,14 @@ patternStart = do
 
 pattern :: Parser Pattern
 pattern = do
-  p <- pAsPattern <|> makeCons
+  p <- pAs <|> makeCons
   myTrace ("<< pattern1: (pAsPattern <|> makeCons)" ++ show p)
-  stopPattern
-  t <- lookAhead anyToken
-  myTrace ("<< patten2 next token: stopPattern" ++ show t)
+  -- stopPattern
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< patten2 next token: stopPattern" ++ show t)
   return p
 
+{-}
 stopPattern :: Parser ()
 stopPattern =
   lookAhead $
@@ -57,31 +58,81 @@ stopPattern =
       <|> void (token TokArrow)
       <|> symbol ";"
       <|> symbol "}"
-      <|> pure ()
+-}
+stopPattern :: Parser ()
+stopPattern =
+  lookAhead $
+    symbol "|"
+      <|> void (token TokArrow)
+      <|> void (token TokNewline)
+      <|> symbol ";"
+      <|> symbol "}"
+      <|> keyword "return"
+      <|> keyword "case"
+      <|> keyword "let"
+      <|> keyword "if"
+      <|> keyword "do"
+      <|> eof
 
+eof :: Parser ()
+eof = Parser $ \ts ->
+  case ts of
+    [] -> Just ((), [])
+    _ -> Nothing
+
+makeCons :: Parser Pattern
+makeCons = do
+  p <- makeApp
+  rest p
+  where
+    rest p =
+      ( do
+          symbol ":"
+          p2 <- makeCons
+          return (PCons p p2)
+      )
+        <|> return p
+
+{-}
 makeCons :: Parser Pattern
 makeCons = do
   hd <- pAtom
   tl <- many pAtom
   return (foldl PApp hd tl)
+-}
 
+makeApp :: Parser Pattern
+makeApp = do
+  p <- pAtom
+  ps <- many pAtom
+  return (foldl PApp p ps)
+
+{-}
 pAtom :: Parser Pattern
 pAtom =
-  try
-    ( do
-        name <- ident
-        symbol "@"
-        pat <- pattern
-        return (PAs name pat)
-    )
+  pAs
+    <|> pList
+    <|> pParenOrTuple
+    <|> pConstrOrVar
+    <|> pInt
+    <|> (symbol "_" >> return PWildcard)
+-}
+
+pAtom :: Parser Pattern
+pAtom = do
+  t <- lookAhead anyToken
+  case t of
+    TokKeyword _ -> empty -- ★ キーワードはパターンにならない
+    _ -> pure ()
+  pAs
     <|> pList
     <|> pParenOrTuple
     <|> pConstrOrVar
     <|> pInt
     <|> (symbol "_" >> return PWildcard)
 
-pAsPattern :: Parser Pattern
-pAsPattern = do
+pAs :: Parser Pattern
+pAs = do
   name <- ident
   symbol "@"
   pat <- pAtom
@@ -91,8 +142,28 @@ pConstrOrVar :: Parser Pattern
 pConstrOrVar = tokenIs $ \case
   TokIdent name -> Just (PVar name)
   TokTypeIdent name -> Just (PConstr name [])
-  -- TokTypeIdent name -> Just (PConstr name)
   _ -> Nothing
+
+{-}
+pConstrOrVar :: Parser Pattern
+pConstrOrVar = tokenIs $ \case
+  TokIdent name | not (isKeyword name) -> Just (PVar name)
+  TokTypeIdent name -> Just (PConstr name [])
+  _ -> Nothing
+-}
+isKeyword :: String -> Bool
+isKeyword s =
+  s
+    `elem` [ "case",
+             "of",
+             "let",
+             "in",
+             "if",
+             "then",
+             "else",
+             "do",
+             "return"
+           ]
 
 isIdentOnly :: Token -> Bool
 isIdentOnly (TokIdent _) = True
@@ -114,6 +185,7 @@ pWildcard = symbol "_" >> return PWildcard
 pInt :: Parser Pattern
 pInt = PInt <$> int
 
+{-}
 ------------------------------
 -- 拡張
 -----------------------------
@@ -145,7 +217,6 @@ patternCons = do
       )
         <|> return p
 
-{-}
 patternAs :: Parser Pattern
 patternAs = do
   TokIdent name <- satisfy isVar
