@@ -33,7 +33,7 @@ testCasesDo =
     ( "Let with lambda",
       "do { let f = \\x -> x + 1 * 2; return (f 10) }"
     ),
-    ( "Let without semicolon",
+    ( "Let without semicolon error case",
       "do { let x = 1 return x }" -- 失敗するかも？
     ),
     ( "Do in case",
@@ -74,10 +74,37 @@ testCasesDo =
     ("error2", "{ x = 1,, y = 2 }"),
     ("error3", "()"),
     ("error4 Ok", "(1 + 2)"),
-    ("case gard1", "case x of { p | cond1 -> e1; p2 | cond2 -> e2; p3 -> e3 }"),
-    ("case gard2", "case x of n | n < 0 -> 1 "),
-    ("case gard3", "case x of n | n < 0 -> -1 | n > 0 -> 1"),
-    ("case gard4", "case x of n | n < 0 -> -1\n  0 -> 0\n  n | n > 0 -> 1")
+    ("case guard1", "case x of { p | cond1 -> e1; p2 | cond2 -> e2; p3 -> e3 }"),
+    ("case guard2", "case x of n | n < 0 -> 1 "),
+    ("case guard3", "case x of n | n < 0 -> -1 | n > 0 -> 1"),
+    ("case guard4", "case x of n | n < 0 -> -1\n  0 -> 0\n  n | n > 0 -> 1"),
+    ("list1", "[1, 2, 3]"),
+    ("list2", "[x * 2 | x <- xs]"),
+    ("list3", "[x | x <- xs, x > 0]"),
+    ("list4", "[(x, y) | x <- xs, y <- ys]"),
+    ("list5", "[x | let y = f x, y > 0]"),
+    ("list6", "[x | Just x <- xs]"),
+    ("list7", "do { let xs = [x | x <- ys]; return xs }"),
+    ("list8", "[x | let y = f x, y > 0]"),
+    ("for1", "for x in xs -> x * 2"),
+    ("for2", "for x in xs, y in ys -> (x, y)"),
+    ("for3", "for x in xs, y in ys, z in zs -> (x,y,z)"),
+    ("for3", "for x in xs, y in ys, z in zs -> ..."),
+    ("for4", "for x in xs, x > 0 -> x"),
+    ("for5", "for x in xs, let y = f x -> y"),
+    ("do1", "do {\n  (x, y) <- f z;\n  return x }"),
+    ("do2", "do {\n      let y = f x;\n      z <- g y;\n      print z }"),
+    ("do3", "do {\n      x <- xs;\n      if x > 0 then return x else fail }  "),
+    {-}
+            ("",""),
+            ("",""),
+    -}
+    ("do2", "do {\n  let xs = [1,2,3];\n  for x in xs, x > 1 -> x\n}"),
+    ("do3", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x -> y\n}"),
+    ("do4", "do {\n  let xs = [1,2,3];\n  for x in xs -> ...\n}"),
+    ("nested do", "do {\n  let x = 1;\n  do {\n    let y = x + 1;\n    return y\n  }\n}"),
+    ("complex", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x, y > 1 -> y\n}"),
+    ("complex2", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x, y > 1 -> ...\n}")
   ]
 
 runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)

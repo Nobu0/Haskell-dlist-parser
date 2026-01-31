@@ -2,6 +2,7 @@
 
 module Expr.PatternParser
   ( pattern,
+    patternStart,
     pConstrOrVar,
     pParenOrTuple,
     pList,
@@ -26,6 +27,7 @@ import Expr.AST
 import Expr.Combinator
 import Expr.TokenParser
 import Expr.TokenParser (lookAhead, notFollowedBy)
+import Expr.TypeParser (typeIdent)
 import Lexer (Token (..))
 import MyTrace (myTrace)
 
@@ -58,7 +60,23 @@ stopPattern =
       <|> void (token TokArrow)
       <|> symbol ";"
       <|> symbol "}"
+
+patternStart :: Parser ()
+patternStart =
+  void (token TokIdent _)
+    <|> void (token TokTypeIdent _)
+    <|> symbol "_"
+    <|> void (token TokNumber _)
+    <|> symbol "("
 -}
+patternStart :: Parser ()
+patternStart =
+  void (symbol "_")
+    <|> void ident
+    <|> void typeIdent
+    <|> void int
+    <|> void (symbol "(")
+
 stopPattern :: Parser ()
 stopPattern =
   lookAhead $

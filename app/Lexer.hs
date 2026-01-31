@@ -42,6 +42,8 @@ data Token
   | TokOperator String
   | TokForall -- "forall" キーワード
   | TokDot
+  | TokDot2
+  | TokEllipsis
   | TokArrow
   | TokLParen
   | TokRParen
@@ -91,6 +93,7 @@ identifier = lexeme $ do
     "forall" -> TokForall
     -- "->" -> TokArrow
     "do" -> TokKeyword "do"
+    "for" -> TokKeyword "for"
     "return" -> TokKeyword "return"
     "let" -> TokKeyword "let"
     "in" -> TokKeyword "in"
@@ -117,9 +120,9 @@ symbolToken =
       [ try (string "->") >> return TokArrow,
         try (string "=>") >> return (TokSymbol "=>"),
         try (string "<-") >> return (TokSymbol "<-"),
-        try (string "...") >> return (TokSymbol "..."),
-        try (string "..") >> return (TokSymbol ".."),
-        try (string ".") >> return TokDot,
+        --        try (string "...") >> return (TokSymbol "..."),
+        --        try (string "..") >> return (TokSymbol ".."),
+        --        try (string ".") >> return TokDot,
         try (string "::") >> return (TokSymbol "::"),
         try (string "==") >> return (TokSymbol "=="),
         try (string "/=") >> return (TokSymbol "/="),
@@ -127,6 +130,21 @@ symbolToken =
         try (string ">=") >> return (TokSymbol ">="),
         oneOf ("=(){}[]:;,\\'_|@" :: String) >>= \c -> return (TokSymbol [c])
       ]
+
+dotTokens :: Parser Token
+dotTokens =
+  TokEllipsis <$ string "..."
+    <|> TokDot2 <$ string ".."
+    <|> TokDot <$ string "."
+
+ellipsis :: Parser Token
+ellipsis = TokEllipsis <$ string "..."
+
+dot2 :: Parser Token
+dot2 = TokDot2 <$ string ".."
+
+dot :: Parser Token
+dot = TokDot <$ string "."
 
 newlineToken :: Parser Token
 newlineToken = lexeme (TokNewline <$ char '\n')
@@ -136,6 +154,7 @@ tokenParser =
   many $
     choice
       [ newlineToken,
+        dotTokens,
         stringLiteral,
         number,
         identifier,

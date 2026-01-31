@@ -7,13 +7,13 @@ module Expr.ExprParser
     letExpr,
     ifExpr,
     caseExpr,
-    elist,
+    -- elist,
     list,
     range,
     listComp,
     qualifier,
-    generator,
-    guardExpr,
+    -- generator,
+    -- guardExpr,
     toplevel,
     toplevels,
   )
@@ -67,8 +67,8 @@ infixExpr = exprLevel1
 
 exprLevel3 :: Parser Expr
 exprLevel3 =
-  -- try caseExpr
-  try returnExpr
+  try forExpr
+    <|> try returnExpr
     <|> try doExpr
     <|> try ifExpr
     -- <|> try letExpr
@@ -109,9 +109,10 @@ atomBase = do
   t <- lookAhead anyToken
   myTrace ("<< atomBase next token: " ++ show t)
   try letExpr
+    <|> (token TokEllipsis >> return EPlaceholder)
     <|> EVar <$> ident
     <|> EInt <$> int
-    <|> elist
+    <|> listExpr
     <|> pRecordExpr
 
 postfix :: Expr -> Parser Expr
@@ -130,68 +131,41 @@ pRecord = braces (sepBy field (symbol ","))
 pRecordExpr :: Parser Expr
 pRecordExpr = ERecord <$> pRecord
 
-{-}
 caseExpr :: Parser Expr
 caseExpr = do
   keyword "case"
-  scrutinee <- expr
+  scrut <- expr
   keyword "of"
   alts <-
-    braces (many (caseAlt <* optional (symbol ";")))
-      <|> many (caseAlt <* optional (symbol ";"))
-  if null alts
-    then empty -- "case expression requires at least one alternative"
-    else return (ECase scrutinee alts)
+    braces (sepBy1 caseAlt caseSep)
+      <|> sepBy1 caseAlt caseSep
+  return (ECase scrut alts)
 
-caseExpr = do
-  keyword "case"
-  scrutinee <- expr
-  keyword "of"
-  alts <-
-    braces (sepEndBy1 caseAlt (skipMany (symbol ";" <|> void (token TokNewline))))
-      <|> sepEndBy1 caseAlt (skipMany (symbol ";" <|> void (token TokNewline)))
-  return (ECase scrutinee alts)
--}
-
-caseExpr :: Parser Expr
-caseExpr = do
-  keyword "case"
-  scrutinee <- expr
-  keyword "of"
-  skipMany newline
-  alts <- caseBody
-  return (ECase scrutinee alts)
-
-caseBody :: Parser [CaseAlt]
-caseBody =
-  braces (sepEndBy1 caseAlt sep)
-    <|> sepEndBy1 caseAlt sep
-  where
-    sep = skipMany (symbol ";" <|> void (token TokNewline))
-
-{-}
-caseAlt :: Parser CaseAlt
-caseAlt = do
-  alt <- try caseAltGuarded <|> caseAltSimple
-  myTrace (">> caseAlt after alt")
-  lookAhead caseAltEnd
-  return alt
--}
+caseSep :: Parser ()
+caseSep =
+  void (symbol ";")
+    <|> void newline
+    <|> lookAhead patternStart
 
 caseAlt :: Parser CaseAlt
 caseAlt = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< caseAlt next token: " ++ show t)
-  myTrace ("<< caseAlt")
   pat <- pattern
-  alt <-
-    (CaseAltGuard pat <$> some caseGuard)
-      <|> (CaseAlt pat <$> (token TokArrow *> expr))
-  skipMany (symbol ";" <|> newline)
-  return alt
+  guards <- many caseGuard
+  case guards of
+    [] -> do
+      token TokArrow
+      body <- expr
+      -- skipMany newline -- ★ 追加
+      return (CaseAlt pat body)
+    _ -> do
+      -- skipMany newline -- ★ 追加
+      return (CaseAltGuard pat guards)
 
 newline :: Parser ()
 newline = void (token TokNewline)
+
+skipMany1 :: Parser a -> Parser ()
+skipMany1 p = p *> skipMany p
 
 skipMany :: Parser a -> Parser ()
 skipMany p = Parser $ \ts ->
@@ -212,20 +186,6 @@ caseAltGuarded = do
   guards <- some caseGuard
   return (CaseAltGuard pat guards)
 
-{-}
-caseGuard :: Parser (Expr, Expr)
-caseGuard = do
-  myTrace ("<< caseGuard")
-  symbol "|"
-  cond <- expr
-  t <- lookAhead anyToken
-  myTrace ("in caseGuard expr next token: " ++ show t)
-  token TokArrow
-  body <- expr
-  myTrace (">> caseGuard")
-  return (cond, body)
--}
-
 caseGuard :: Parser (Expr, Expr)
 caseGuard = do
   symbol "|"
@@ -241,44 +201,6 @@ caseAltSimple = do
   token TokArrow
   body <- expr
   return (CaseAlt pat body)
-
-doExpr :: Parser Expr
-doExpr = do
-  keyword "do"
-  myTrace "<< doExpr" >> pure ()
-  symbol "{"
-  stmts <- many stmt
-  symbol "}"
-  myTrace ">> doExpr" >> pure ()
-  return (EDo stmts)
-
-stmt :: Parser Stmt
-stmt = do
-  notFollowedBy (symbol "}")
-  s <- try letStmt <|> try bindStmt <|> exprStmt
-  optional (symbol ";") -- ← ここで吸収！
-  return s
-
-letStmt :: Parser Stmt
-letStmt = do
-  keyword "let"
-  binds <- sepBy1 binding (symbol ";")
-  return (LetStmt binds)
-
-binding :: Parser (Pattern, Expr)
-binding = do
-  pat <- pattern
-  symbol "="
-  e <- expr -- ← ここが exprSeq だと壊れる可能性あり！
-  return (pat, e)
-
-bindStmt :: Parser Stmt
-bindStmt = do
-  pat <- pattern
-  -- myTrace ">> bindStmt" >> pure ()
-  symbol "<-"
-  e <- expr -- expr
-  myTrace ("<< bindStmt: " ++ show pat) >> pure (Bind pat e)
 
 exprStmt :: Parser Stmt
 exprStmt = do
@@ -382,14 +304,40 @@ ifExpr = do
   myTrace "<< ifExpr" >> pure ()
   return (EIf cond thenBranch elseBranch)
 
--- bracesCase :: Parser [(Pattern, Expr)]
--- bracesCase = braces (caseAlt `sepEndBy1` symbol ";")
+listExpr :: Parser Expr
+listExpr = do
+  symbol "["
+  -- 空リスト or 内包表現 or 普通のリスト
+  (try listComprehension) <|> listLiteral
 
--- plainCase :: Parser [(Pattern, Expr)]
--- plainCase = some caseAlt
+listLiteral :: Parser Expr
+listLiteral = do
+  elems <- sepBy expr (symbol ",")
+  symbol "]"
+  return (EList elems)
 
-elist :: Parser Expr
-elist = brackets (try listComp <|> try range <|> list)
+listComprehension :: Parser Expr
+listComprehension = do
+  body <- expr
+  symbol "|"
+  qs <- sepBy1 qualifier (symbol ",")
+  symbol "]"
+  return (EListComp body qs)
+
+qualifier :: Parser Qualifier
+qualifier =
+  try genQualifier
+    <|> guardQualifier
+
+genQualifier :: Parser Qualifier
+genQualifier = do
+  pat <- pattern
+  symbol "<-"
+  e <- expr
+  return (QGenerator pat e)
+
+guardQualifier :: Parser Qualifier
+guardQualifier = QGuard <$> expr
 
 range :: Parser Expr
 range = do
@@ -410,18 +358,35 @@ listComp = do
   qualifiers <- qualifier `sepBy` symbol ","
   return (EListComp body qualifiers)
 
-qualifier :: Parser Qualifier
-qualifier = try generator <|> guardExpr
+forExpr :: Parser Expr
+forExpr = do
+  keyword "for"
+  qs <- sepBy1 qualifier (symbol ",")
+  token TokArrow
+  body <- expr
+  return (EListComp body qs)
+  where
+    qualifier =
+      try genQualifier
+        <|> guardQualifier
 
-generator :: Parser Qualifier
-generator = do
-  var <- ident
-  symbol "<-"
-  val <- expr
-  return (EGenerator var val)
+    genQualifier = do
+      pat <- pattern
+      keyword "in"
+      src <- exprNoArrow
+      return (QGenerator pat src)
 
-guardExpr :: Parser Qualifier
-guardExpr = EGuard <$> expr
+    guardQualifier =
+      QGuard <$> exprNoArrow
+
+exprNoArrow :: Parser Expr
+exprNoArrow = do
+  t <- lookAhead anyToken
+  myTrace ("<< exprNoArrow next token: " ++ show t)
+  case t of
+    TokArrow -> empty -- ★ これが重要
+    _ -> pure ()
+  expr
 
 returnExpr :: Parser Expr
 returnExpr = do
@@ -472,3 +437,48 @@ some1 p = do
   x <- p
   xs <- many p
   return (x : xs)
+
+doStmt :: Parser Stmt
+doStmt = do
+  many (token TokNewline)
+  try bindStmt
+    <|> try letStmt
+    <|> ExprStmt <$> expr
+
+bindStmt :: Parser Stmt
+bindStmt = do
+  pat <- pattern
+  symbol "<-"
+  e <- expr
+  return (Bind pat e)
+
+letStmt :: Parser Stmt
+letStmt = do
+  keyword "let"
+  binds <- sepBy1 binding (symbol ";")
+  return (LetStmt binds)
+  where
+    binding = do
+      pat <- pattern
+      symbol "="
+      e <- expr
+      return (pat, e)
+
+doExpr :: Parser Expr
+doExpr = do
+  keyword "do"
+  symbol "{"
+  many (token TokNewline)
+  stmts <- doBlock
+  many (token TokNewline)
+  symbol "}"
+  return (EDo stmts)
+
+doBlock :: Parser [Stmt]
+doBlock =
+  sepBy doStmt doSemi
+
+doSemi :: Parser ()
+doSemi = do
+  optional (token TokNewline)
+  symbol ";"

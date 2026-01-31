@@ -34,8 +34,16 @@ data Expr
   | ERecordUpdate Expr [(String, Expr)]
   | EOpSectionL String Expr
   | EOpSectionR Expr String
+  | EPlaceholder -- 追加！
   deriving (Eq, Show)
 
+{-}
+data Stmt
+  = BindStmt Pattern Expr
+  | LetStmt [(Pattern, Expr)]
+  | ExprStmt Expr
+  deriving (Show, Eq)
+-}
 data Stmt
   = Bind Pattern Expr
   | ExprStmt Expr
@@ -43,11 +51,17 @@ data Stmt
   deriving (Show, Eq)
 
 --  | ELet [(String, Expr)] Expr
-
+{-}
 data Qualifier
   = EGenerator String Expr
   | EGuard Expr
   deriving (Eq, Show)
+-}
+
+data Qualifier
+  = QGenerator Pattern Expr
+  | QGuard Expr
+  deriving (Show, Eq)
 
 data Type
   = TVar String
@@ -66,3 +80,10 @@ data CaseAlt
   = CaseAlt Pattern Expr -- ガードなし
   | CaseAltGuard Pattern [(Expr, Expr)] -- ガード付き
   deriving (Eq, Show)
+
+{-}
+data CaseAlt
+  = CaseAlt Pattern Expr
+  | CaseAltGuard Pattern [Expr] Expr
+  deriving (Eq, Show)
+-}
