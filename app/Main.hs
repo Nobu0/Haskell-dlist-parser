@@ -96,15 +96,20 @@ testCasesDo =
     ("do2", "do {\n      let y = f x;\n      z <- g y;\n      print z }"),
     ("do3", "do {\n      x <- xs;\n      if x > 0 then return x else fail }  "),
     {-}
-            ("",""),
-            ("",""),
+                ("",""),
     -}
     ("do2", "do {\n  let xs = [1,2,3];\n  for x in xs, x > 1 -> x\n}"),
     ("do3", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x -> y\n}"),
     ("do4", "do {\n  let xs = [1,2,3];\n  for x in xs -> ...\n}"),
     ("nested do", "do {\n  let x = 1;\n  do {\n    let y = x + 1;\n    return y\n  }\n}"),
     ("complex", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x, y > 1 -> y\n}"),
-    ("complex2", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x, y > 1 -> ...\n}")
+    ("complex2", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x, y > 1 -> ...\n}"),
+    ("list1", "[1 .. 10]\n    [x .. y]\n    [0 .. -5]\n    [a .. b]"),
+    ("list2", "[1, 3 .. 10]\n[10, 8 .. 0]\n[x, y .. z]\n[0, 0 .. 0]"),
+    ("list3", "[1,2,3]\n[x, y, z]\n[1, 2, 3,]\n[]\n[   ]"),
+    ("list4", "[1, 2 .. 3]     -- rangeStep\n[1 ,2 ..3]      -- whitespace variations\n[1 .. 2, 3]     -- should be normal list? or error?（仕様確認"),
+    ("list error1", "[1 ..]          -- エラーになるべき"),
+    ("list error2", "[.. 10]         -- エラーになるべき")
   ]
 
 runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)

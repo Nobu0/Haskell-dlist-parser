@@ -109,3 +109,14 @@ anyToken = Parser $ \input ->
   case input of
     (t : ts) -> Just (t, ts)
     [] -> Nothing
+
+debugPeek :: Parser ()
+debugPeek = do
+  t <- peekToken
+  Parser $ \tokens ->
+    Just ((), tokens)
+
+peekToken :: Parser Token
+peekToken = Parser $ \tokens -> case tokens of
+  [] -> Nothing
+  (t : _) -> Just (t, tokens)

@@ -25,6 +25,7 @@ data Expr
   | EList [Expr]
   | ETuple [Expr]
   | ERange Expr Expr
+  | ERangeStep Expr Expr Expr
   | EListComp Expr [Qualifier]
   | EAnn Expr Type
   | EDo [Stmt]

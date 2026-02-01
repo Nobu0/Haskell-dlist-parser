@@ -42,8 +42,8 @@ data Token
   | TokOperator String
   | TokForall -- "forall" キーワード
   | TokDot
-  | TokDot2
-  | TokEllipsis
+  | -- | TokDot2
+    TokEllipsis
   | TokArrow
   | TokLParen
   | TokRParen
@@ -120,9 +120,9 @@ symbolToken =
       [ try (string "->") >> return TokArrow,
         try (string "=>") >> return (TokSymbol "=>"),
         try (string "<-") >> return (TokSymbol "<-"),
-        --        try (string "...") >> return (TokSymbol "..."),
-        --        try (string "..") >> return (TokSymbol ".."),
-        --        try (string ".") >> return TokDot,
+        try (string "...") >> return TokEllipsis,
+        try (string "..") >> return (TokSymbol ".."),
+        try (string ".") >> return TokDot,
         try (string "::") >> return (TokSymbol "::"),
         try (string "==") >> return (TokSymbol "=="),
         try (string "/=") >> return (TokSymbol "/="),
@@ -134,14 +134,14 @@ symbolToken =
 dotTokens :: Parser Token
 dotTokens =
   TokEllipsis <$ string "..."
-    <|> TokDot2 <$ string ".."
+    -- <|> TokDot2 <$ string ".."
     <|> TokDot <$ string "."
 
 ellipsis :: Parser Token
 ellipsis = TokEllipsis <$ string "..."
 
-dot2 :: Parser Token
-dot2 = TokDot2 <$ string ".."
+-- dot2 :: Parser Token
+-- dot2 = TokDot2 <$ string ".."
 
 dot :: Parser Token
 dot = TokDot <$ string "."
@@ -154,11 +154,11 @@ tokenParser =
   many $
     choice
       [ newlineToken,
-        dotTokens,
         stringLiteral,
         number,
         identifier,
         symbolToken,
+        dotTokens,
         operator -- ← operator は identifier より後ろに！
       ]
 

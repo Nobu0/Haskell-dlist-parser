@@ -8,7 +8,7 @@ module Expr.ExprParser
     ifExpr,
     caseExpr,
     -- elist,
-    list,
+    -- list,
     range,
     listComp,
     qualifier,
@@ -41,14 +41,27 @@ toplevel = do
   exprBody <- expr
   return (name, foldr ELam exprBody args)
 
+choice1 :: Parser a -> Parser a -> Parser a
+choice1 p q = Parser $ \input ->
+  case runParser p input of
+    Just r -> Just r
+    Nothing -> runParser q input
+
+choice :: [Parser a] -> Parser a
+choice [] = empty
+choice (p : ps) = choice1 p (choice ps)
+
 exprTop :: Parser Expr
 exprTop = try exprSeq <|> expr
 
 exprSeq :: Parser Expr
 exprSeq = do
   myTrace ">> exprSeq"
-  es <- sepEndBy1 (try expr) (symbol ";")
+  es <- sepEndBy1 (try expr) exprSep -- (symbol ";")
   return $ if length es == 1 then head es else ESeq es
+
+exprSep :: Parser ()
+exprSep = skipMany1 (symbol ";" <|> newline)
 
 expr :: Parser Expr
 expr = do
@@ -64,6 +77,22 @@ expr = do
 
 infixExpr :: Parser Expr
 infixExpr = exprLevel1
+
+binOpExpr :: Parser Expr
+binOpExpr = do
+  e <- exprCmp
+  -- notFollowedBy (symbol ";")
+  -- <?> "unexpected semicolon"
+  return e
+
+exprCmp :: Parser Expr
+exprCmp = chainl1 exprLevel1 (binOp [">", "<", ">=", "<=", "==", "/="])
+
+exprLevel1 :: Parser Expr
+exprLevel1 = chainl1 exprLevel2 (binOp ["+", "-"])
+
+exprLevel2 :: Parser Expr
+exprLevel2 = chainl1 exprLevel3 (binOp ["*", "/"])
 
 exprLevel3 :: Parser Expr
 exprLevel3 =
@@ -216,22 +245,6 @@ exprOthers = do
     Nothing -> return e
     Just defs -> myTrace "<< parsed whereClause" >> (return (ELet defs e))
 
-binOpExpr :: Parser Expr
-binOpExpr = do
-  e <- exprCmp
-  -- notFollowedBy (symbol ";")
-  -- <?> "unexpected semicolon"
-  return e
-
-exprCmp :: Parser Expr
-exprCmp = chainl1 exprLevel1 (binOp [">", "<", ">=", "<=", "==", "/="])
-
-exprLevel1 :: Parser Expr
-exprLevel1 = chainl1 exprLevel2 (binOp ["+", "-"])
-
-exprLevel2 :: Parser Expr
-exprLevel2 = chainl1 exprLevel3 (binOp ["*", "/"])
-
 whereClause :: Parser [(Pattern, Expr)]
 whereClause = do
   keyword "where"
@@ -239,17 +252,6 @@ whereClause = do
   defs <- braces (sepBy def (symbol ";"))
   myTrace "<< whereClause" >> pure ()
   return defs
-
-debugPeek :: Parser ()
-debugPeek = do
-  t <- peekToken
-  Parser $ \tokens ->
-    Just ((), tokens)
-
-peekToken :: Parser Token
-peekToken = Parser $ \tokens -> case tokens of
-  [] -> Nothing
-  (t : _) -> Just (t, tokens)
 
 toplevels :: Parser [(String, Expr)]
 toplevels = sepBy toplevel (symbol ";")
@@ -305,23 +307,103 @@ ifExpr = do
   return (EIf cond thenBranch elseBranch)
 
 listExpr :: Parser Expr
-listExpr = do
-  symbol "["
-  -- 空リスト or 内包表現 or 普通のリスト
-  (try listComprehension) <|> listLiteral
+listExpr =
+  brackets
+    ( try listComprehension
+        <|> try rangeStep
+        <|> try range
+        <|> normalList
+    )
+
+listItemExpr :: Parser Expr
+listItemExpr = exprNoList
+
+atomBaseNoList :: Parser Expr
+atomBaseNoList = do
+  t <- lookAhead anyToken
+  myTrace ("<< atomBaseNoList next token: " ++ show t)
+  try letExpr
+    <|> (token TokEllipsis >> return EPlaceholder)
+    <|> EVar <$> ident
+    <|> EInt <$> int
+    <|> pRecordExpr
+    <|> tupleOrParenNoList
+
+tupleOrParenNoList :: Parser Expr
+tupleOrParenNoList = do
+  symbol "("
+  e1 <- exprNoList
+  ( do
+      symbol ","
+      es <- sepBy1 exprNoList (symbol ",")
+      symbol ")"
+      return (ETuple (e1 : es))
+    )
+    <|> (symbol ")" >> return e1)
+
+appExprNoList :: Parser Expr
+appExprNoList = chainl1 atomBaseNoList (return EApp)
+
+exprLevel1NoList :: Parser Expr
+exprLevel1NoList = chainl1 exprLevel2NoList (binOp ["+", "-"])
+
+exprLevel2NoList :: Parser Expr
+exprLevel2NoList = chainl1 exprLevel3NoList (binOp ["*", "/"])
+
+exprLevel3NoList :: Parser Expr
+exprLevel3NoList =
+  try forExpr
+    <|> try returnExpr
+    <|> try doExpr
+    <|> try ifExpr
+    <|> try lambdaExpr
+    <|> appExprNoList
+
+exprCmpNoList :: Parser Expr
+exprCmpNoList = chainl1 exprLevel1NoList (binOp [">", "<", ">=", "<=", "==", "/="])
+
+binOpExprNoList :: Parser Expr
+binOpExprNoList = exprCmpNoList
+
+exprNoList :: Parser Expr
+exprNoList = do
+  t <- lookAhead anyToken
+  myTrace ("<< exprNoList next token: " ++ show t)
+  try caseExpr
+    <|> try doExpr
+    <|> try ifExpr
+    <|> try lambdaExpr
+    <|> try binOpExprNoList
+    <|> exprLevel1NoList
+
+rangeStep :: Parser Expr
+rangeStep = try $ do
+  start <- listItemExpr
+  symbol ","
+  step <- listItemExpr
+  symbol ".."
+  end <- listItemExpr
+  return (ERangeStep start step end)
+
+range :: Parser Expr
+range = try $ do
+  start <- listItemExpr
+  symbol ".."
+  end <- listItemExpr
+  return (ERange start end)
 
 listLiteral :: Parser Expr
 listLiteral = do
-  elems <- sepBy expr (symbol ",")
+  elems <- sepBy listItemExpr (symbol ",")
   symbol "]"
   return (EList elems)
 
 listComprehension :: Parser Expr
 listComprehension = do
-  body <- expr
+  body <- listItemExpr
   symbol "|"
   qs <- sepBy1 qualifier (symbol ",")
-  symbol "]"
+  -- symbol "]"
   return (EListComp body qs)
 
 qualifier :: Parser Qualifier
@@ -333,27 +415,19 @@ genQualifier :: Parser Qualifier
 genQualifier = do
   pat <- pattern
   symbol "<-"
-  e <- expr
+  e <- listItemExpr
   return (QGenerator pat e)
 
 guardQualifier :: Parser Qualifier
-guardQualifier = QGuard <$> expr
+guardQualifier = QGuard <$> listItemExpr
 
-range :: Parser Expr
-range = do
-  start <- expr
-  symbol ".."
-  end <- expr
-  return (ERange start end)
-
-list :: Parser Expr
-list = do
-  elems <- expr `sepBy` symbol ","
-  return (EList elems)
+normalList :: Parser Expr
+-- normalList = EList <$> sepBy expr (symbol ",")
+normalList = EList <$> sepEndBy listItemExpr (symbol ",")
 
 listComp :: Parser Expr
 listComp = do
-  body <- expr
+  body <- listItemExpr
   symbol "|"
   qualifiers <- qualifier `sepBy` symbol ","
   return (EListComp body qualifiers)
@@ -416,16 +490,6 @@ field = do
   symbol "="
   val <- expr -- exprAtomic
   return (name, val)
-
-choice1 :: Parser a -> Parser a -> Parser a
-choice1 p q = Parser $ \input ->
-  case runParser p input of
-    Just r -> Just r
-    Nothing -> runParser q input
-
-choice :: [Parser a] -> Parser a
-choice [] = empty
-choice (p : ps) = choice1 p (choice ps)
 
 operator :: Parser String
 operator = choice (map (\s -> symbol s >> return s) allOps)
