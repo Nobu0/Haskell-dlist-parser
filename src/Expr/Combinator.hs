@@ -14,10 +14,11 @@ module Expr.Combinator
     sepEndBy1,
     try,
     chainl1,
+    many1,
   )
 where
 
-import Control.Applicative
+import Control.Applicative(many, Alternative(..) )
 import Data.List (isPrefixOf)
 import Lexer (Token)
 --import app.MyTrace (myTrace)
@@ -130,5 +131,8 @@ chainl1 p op = do
           rest (f x y)
       )
         <|> return x
+
+many1 :: Parser a -> Parser [a]
+many1 p = (:) <$> p <*> many p
 
 -- 依存：symbol は TokenParser 側で定義されるため、ここでは定義しない

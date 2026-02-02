@@ -1,14 +1,25 @@
-module Expr.Parser (parseExpr, runToplevelTest, runExprTest, expr) where
+module Expr.Parser (parseExpr, runToplevelTest, runExprTest, toplevel) where
 
+import Control.Applicative (many, (<|>))
 import Expr.AST
 import Expr.Combinator
-import Expr.ExprParser
+import Expr.ExprCore (exprCore)
+-- import Expr.ExprParser
+
+import Expr.ExprExtensions (expr, letExpr)
 import Expr.PatternParser
 import Expr.TokenParser
 import Expr.TypeParser
 import Lexer (Token (..), runLexer)
 
 -- === 実行関数 ===
+
+toplevel :: Parser (String, Expr)
+toplevel = do
+  name <- ident
+  symbol "="
+  body <- exprCore
+  return (name, body)
 
 parseExpr :: [Token] -> IO (Maybe Expr)
 parseExpr toks = case runParser expr toks of
