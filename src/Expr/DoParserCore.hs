@@ -51,50 +51,5 @@ letStmt expr = do
 
 doSemi :: Parser ()
 doSemi = do
-  optional (token TokNewline)
+  -- optional (token TokNewline)
   symbol ";"
-
-{-}
-doExpr :: Parser Expr
-doExpr = do
-  keyword "do"
-  symbol "{"
-  many (token TokNewline)
-  stmts <- doBlock
-  many (token TokNewline)
-  symbol "}"
-  return (EDo stmts)
-
-doBlock :: Parser [Stmt]
-doBlock = sepBy doStmt doSemi
-
-doStmt :: Parser Stmt
-doStmt =
-  try bindStmt
-    <|> try letStmt
-    <|> ExprStmt <$> exprCore
-
-bindStmt :: Parser Stmt
-bindStmt = do
-  pat <- pattern
-  symbol "<-"
-  e <- exprCore
-  return (Bind pat e)
-
-letStmt :: Parser Stmt
-letStmt = do
-  keyword "let"
-  binds <- sepBy1 binding (symbol ";")
-  return (LetStmt binds)
-  where
-    binding = do
-      pat <- pattern
-      symbol "="
-      e <- exprCore
-      return (pat, e)
-
-doSemi :: Parser ()
-doSemi = do
-  optional (token TokNewline)
-  symbol ";"
--}

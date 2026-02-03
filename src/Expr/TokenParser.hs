@@ -36,22 +36,6 @@ parens p = between (symbol "(") (symbol ")") p
 brackets :: Parser a -> Parser a
 brackets p = between (symbol "[") (symbol "]") p
 
-{-}
-ident :: Parser String
-ident = do
-  notFollowedBy (symbol "|")
-  notFollowedBy (token TokArrow)
-  t <- satisfy isIdent
-  myTrace ("<< ident token: " ++ show t)
-  case t of
-    TokIdent s -> pure s
-    -- TokKeyword "return" -> myTrace "<< ident: return" >> pure "return"
-    _ -> empty
-  where
-    isIdent (TokIdent _) = True
-    -- isIdent (TokKeyword "return") = True
-    isIdent _ = False
--}
 ident :: Parser String
 ident = tokenIs $ \case
   TokIdent s -> Just s

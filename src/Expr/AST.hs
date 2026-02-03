@@ -1,22 +1,27 @@
 module Expr.AST where
 
+type Name = String
+
+type Binding = (Pattern, Expr)
+
 data Pattern
-  = PVar String
+  = PVar Name
   | PInt Int
   | PWildcard
   | PCons Pattern Pattern
   | PList [Pattern]
   | PTuple [Pattern]
-  | PConstr String [Pattern]
-  | PApp Pattern Pattern -- ← これを追加！
-  | PAs String Pattern -- ← 追加！
+  | PConstr Name [Pattern]
+  | PAs Name Pattern -- ← 追加！
+  | PApp Pattern [Pattern] -- ★ 修正
   deriving (Show, Eq)
 
 data Expr
   = EVar String
+  | EVarType String
   | EInt Int
   | EBinOp String Expr Expr
-  | ELet [(Pattern, Expr)] Expr
+  | ELet [Binding] Expr
   | EIf Expr Expr Expr
   | ELam String Expr
   | EApp Expr Expr
@@ -36,7 +41,19 @@ data Expr
   | EOpSectionL String Expr
   | EOpSectionR Expr String
   | EPlaceholder -- 追加！
+  | EWhere Expr [Binding]
   deriving (Eq, Show)
+
+{-}
+data Decl
+  = FunDecl Name [Pattern] Expr
+  | ValueDecl Pattern Expr
+-}
+
+data Decl
+  = FunDecl Name [Pattern] Expr
+  | ValueDecl Pattern Expr
+  deriving (Show, Eq)
 
 {-}
 data Stmt

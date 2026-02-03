@@ -4,8 +4,6 @@ import Control.Applicative (many, (<|>))
 import Expr.AST
 import Expr.Combinator
 import Expr.ExprCore (exprCore)
--- import Expr.ExprParser
-
 import Expr.ExprExtensions (expr, letExpr)
 import Expr.PatternParser
 import Expr.TokenParser

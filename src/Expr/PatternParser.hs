@@ -31,18 +31,6 @@ import Expr.TypeParser (typeIdent)
 import Lexer (Token (..))
 import MyTrace (myTrace)
 
-{-}
-patternStart :: Parser ()
-patternStart = do
-  t <- lookAhead anyToken
-  case t of
-    TokIdent _ -> return ()
-    TokSymbol "(" -> return ()
-    TokSymbol "[" -> return ()
-    TokSymbol "{" -> return ()
-    _ -> empty
--}
-
 pattern :: Parser Pattern
 pattern = do
   p <- pAs <|> makeCons
@@ -52,23 +40,6 @@ pattern = do
   -- myTrace ("<< patten2 next token: stopPattern" ++ show t)
   return p
 
-{-}
-stopPattern :: Parser ()
-stopPattern =
-  lookAhead $
-    symbol "|"
-      <|> void (token TokArrow)
-      <|> symbol ";"
-      <|> symbol "}"
-
-patternStart :: Parser ()
-patternStart =
-  void (token TokIdent _)
-    <|> void (token TokTypeIdent _)
-    <|> symbol "_"
-    <|> void (token TokNumber _)
-    <|> symbol "("
--}
 patternStart :: Parser ()
 patternStart =
   void (symbol "_")
@@ -111,19 +82,11 @@ makeCons = do
       )
         <|> return p
 
-{-}
-makeCons :: Parser Pattern
-makeCons = do
-  hd <- pAtom
-  tl <- many pAtom
-  return (foldl PApp hd tl)
--}
-
 makeApp :: Parser Pattern
 makeApp = do
   p <- pAtom
   ps <- many pAtom
-  return (foldl PApp p ps)
+  return (PApp p ps)
 
 {-}
 pAtom :: Parser Pattern
@@ -162,13 +125,6 @@ pConstrOrVar = tokenIs $ \case
   TokTypeIdent name -> Just (PConstr name [])
   _ -> Nothing
 
-{-}
-pConstrOrVar :: Parser Pattern
-pConstrOrVar = tokenIs $ \case
-  TokIdent name | not (isKeyword name) -> Just (PVar name)
-  TokTypeIdent name -> Just (PConstr name [])
-  _ -> Nothing
--}
 isKeyword :: String -> Bool
 isKeyword s =
   s

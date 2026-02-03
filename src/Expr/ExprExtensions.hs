@@ -9,6 +9,7 @@ module Expr.ExprExtensions
     ifExpr,
     returnExpr,
     forExpr,
+    postfix,
   )
 where
 
@@ -33,35 +34,34 @@ import MyTrace
 
 expr :: Parser Expr
 expr = do
-  t <- lookAhead anyToken
-  case t of
-    TokKeyword "do" -> doExprCore expr
-    TokKeyword "case" -> caseExprCore expr
-    TokKeyword "let" -> letExpr
-    TokKeyword "if" -> ifExpr
-    TokKeyword "for" -> forExpr
-    TokKeyword "return" -> returnExpr
-    TokSymbol "[" -> listExprCore expr
-    _ -> exprCore
+  e <- exprDispatch
+  postfix e
+  where
+    -- すべての構文の入口
+    exprDispatch = do
+      t <- lookAhead anyToken
+      myTrace ("<< expr dispatch: " ++ show t)
+      case t of
+        TokKeyword "do" -> doExprCore expr
+        TokKeyword "case" -> caseExprCore expr
+        TokKeyword "let" -> letExpr
+        TokKeyword "if" -> ifExpr
+        TokKeyword "for" -> forExpr
+        TokKeyword "return" -> returnExpr
+        TokSymbol "[" -> listExprCore expr
+        _ -> exprCore
 
--- ============================================
---  ディスパッチ式 expr
--- ============================================
-{-}
-expr :: Parser Expr
-expr = do
-  t <- lookAhead anyToken
-  myTrace ("<< expr next token: " ++ show t)
-  case t of
-    TokKeyword "do" -> doExpr
-    TokKeyword "case" -> caseExpr
-    TokKeyword "let" -> letExpr
-    TokKeyword "if" -> ifExpr
-    TokKeyword "for" -> forExpr
-    TokKeyword "return" -> returnExpr
-    TokSymbol "[" -> listExpr
-    _ -> exprCore
--}
+-- 後置構文（where など）
+postfix :: Expr -> Parser Expr
+postfix e =
+  try
+    ( do
+        t <- lookAhead anyToken
+        myTrace ("<< postfix next token: " ++ show t)
+        binds <- whereClause
+        postfix (EWhere e binds)
+    )
+    <|> return e
 
 -- ============================================
 --  exprTop / exprSeq
@@ -93,16 +93,6 @@ skipMany p = Parser $ \ts ->
 -- ============================================
 --  let / if / return / for
 -- ============================================
-
-letExpr :: Parser Expr
-letExpr = do
-  keyword "let"
-  defs <- def `sepBy1` symbol ";"
-  mIn <- optional (keyword "in")
-  case mIn of
-    Just _ -> ELet defs <$> expr
-    Nothing -> return (ELet defs (EVar "__unit__"))
-
 def :: Parser (Pattern, Expr)
 def = do
   p <- pattern
@@ -134,14 +124,81 @@ forExpr = do
   body <- expr
   return (EListComp body qs)
 
+qualifier :: Parser Qualifier
 qualifier =
   try genQualifier
     <|> guardQualifier
 
+genQualifier :: Parser Qualifier
 genQualifier = do
   pat <- pattern
   keyword "in"
   src <- expr
   return (QGenerator pat src)
 
+guardQualifier :: Parser Qualifier
 guardQualifier = QGuard <$> expr
+
+funDecl :: Parser Decl
+funDecl = do
+  name <- ident
+  args <- many pattern
+  symbol "="
+  body <- expr
+  return (FunDecl name args body)
+
+binding :: Parser Binding
+-- binding = try valueBinding <|> funBinding
+binding = try funBinding <|> valueBinding
+
+funBinding :: Parser Binding
+funBinding = do
+  optional (newline)
+  t <- lookAhead anyToken
+  myTrace ("<< funBinding next token: " ++ show t)
+  name <- ident
+  args <- many pattern
+  symbol "="
+  body <- expr
+  -- optional (newline)
+  return (PApp (PVar name) args, body)
+
+valueBinding :: Parser Binding
+valueBinding = do
+  optional (newline)
+  t <- lookAhead anyToken
+  myTrace ("<< valueBinding next token: " ++ show t)
+  pat <- pattern
+  symbol "="
+  body <- expr
+  -- optional (newline)
+  return (pat, body)
+
+letExpr :: Parser Expr
+letExpr = do
+  keyword "let"
+  -- myTrace ("<< letExpr")
+  binds <- bindingsBlock
+  optional (newline)
+  mIn <- optional (keyword "in")
+  optional (newline)
+  case mIn of
+    Just _ -> do
+      body <- expr
+      return (ELet binds body)
+    Nothing ->
+      return (ELet binds (EVar "__unit__"))
+
+bindingsBlock :: Parser [Binding]
+bindingsBlock = do
+  -- optional (token TokNewline)
+  braces (sepBy binding (symbol ";"))
+    <|> sepBy binding (symbol ";")
+
+whereClause :: Parser [Binding]
+whereClause = do
+  optional (newline)
+  t <- lookAhead anyToken
+  myTrace ("<< whereClause next token: " ++ show t)
+  keyword "where"
+  bindingsBlock

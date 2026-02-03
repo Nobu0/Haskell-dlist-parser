@@ -109,8 +109,21 @@ testCasesDo =
     ("list3", "[1,2,3]\n[x, y, z]\n[1, 2, 3,]\n[]\n[   ]"),
     ("list4", "[1, 2 .. 3]     -- rangeStep\n[1 ,2 ..3]      -- whitespace variations\n[1 .. 2, 3]     -- should be normal list? or error?（仕様確認"),
     ("list error1", "[1 ..]          -- エラーになるべき"),
-    ("list error2", "[.. 10]         -- エラーになるべき")
+    ("list error2", "[.. 10]         -- エラーになるべき"),
+    ("func1", "x + y where z = 3"),
+    ("func2", "case x of Just n | n > 0 -> n   | n < 1 -> 2  where m = 10"),
+    ("func2-2", "case x of\n  Just n | n > 0 -> n\n         | n < 1 -> 2\n         where m = 10"),
+    ("func3", "do {\n  x <- foo;\n  y <- bar;\n  x + y\n} where foo = 1; bar = 2"),
+    ("func4", "[x | Just x <- xs] where xs = [1..10]"),
+    ("func5", "let\n  f x = x + 1;\n  g y = f y * 2\nin g 10"),
+    ("func6", "x + y where\n  f x = x + 1;\n  y = f 10"),
+    ("func7", "let f x = x + 1 in\n  case f 3 of\n    n | n > 3 -> n\n      | otherwise -> 0\n      where otherwise = True")
+    -- ("func5", "f x y = x + y where x = 10")
   ]
+
+{-}
+
+-}
 
 runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)
 runParserWithTrace p tokens = do

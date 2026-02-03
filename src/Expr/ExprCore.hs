@@ -24,6 +24,7 @@ import Expr.AST
 import Expr.Combinator (Parser (..), chainl1)
 import Expr.PatternParser (pattern)
 import Expr.TokenParser (ident, int, symbol, tokenIs)
+import Expr.TypeParser (typeIdent)
 import Lexer (Token (..))
 import MyTrace
 
@@ -201,6 +202,7 @@ atomBaseCore = do
   t <- lookAhead anyToken
   myTrace ("<< atomBaseCore next token: " ++ show t)
   EVar <$> ident
+    <|> EVarType <$> typeIdent
     <|> (ellipsis >> return EPlaceholder)
     <|> EInt <$> int
     <|> pRecordExpr

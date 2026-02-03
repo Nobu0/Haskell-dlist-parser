@@ -9,16 +9,6 @@ import Expr.ExprCore (exprCore)
 import Expr.PatternParser
 import Expr.TokenParser
 
-{-}
-listExprCore :: Parser Expr -> Parser Expr
-listExprCore expr =
-  brackets $
-    try (stepRangeExpr expr)
-      <|> try (rangeExpr expr)
-      <|> try (listLiteralExpr expr)
-      <|> listCompExpr expr
--}
-
 listExprCore :: Parser Expr -> Parser Expr
 listExprCore expr =
   brackets $
@@ -87,56 +77,3 @@ letQualifier expr = do
       symbol "="
       e <- expr
       return (pat, e)
-
-{-}
-listExpr :: Parser Expr
-listExpr =
-  brackets $
-    try stepRangeExpr
-      <|> try rangeExpr
-      <|> try listLiteralExpr
-      <|> listCompExpr
-
-listLiteralExpr :: Parser Expr
-listLiteralExpr = do
-  elems <- sepBy exprCore (symbol ",")
-  optional (symbol ",") -- 許容: [1,2,3,]
-  return (EList elems)
-
-stepRangeExpr :: Parser Expr
-stepRangeExpr = do
-  start <- exprCore
-  symbol ","
-  step <- exprCore
-  symbol ".."
-  end <- exprCore
-  return (ERangeStep start step end)
-
-rangeExpr :: Parser Expr
-rangeExpr = do
-  start <- exprCore
-  symbol ".."
-  end <- exprCore
-  return (ERange start end)
-
-listCompExpr :: Parser Expr
-listCompExpr = do
-  body <- exprCore
-  qs <- many qualifier
-  return (EListComp body qs)
-
-qualifier :: Parser Qualifier
-qualifier =
-  try genQualifier
-    <|> guardQualifier
-
-genQualifier :: Parser Qualifier
-genQualifier = do
-  pat <- pattern
-  keyword "in"
-  src <- exprCore
-  return (QGenerator pat src)
-
-guardQualifier :: Parser Qualifier
-guardQualifier = QGuard <$> exprCore
--}
