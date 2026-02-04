@@ -1,0 +1,126 @@
+module AST.Decl where
+
+import AST.Pattern (Pattern)
+import AST.Expr (Expr)
+import AST.Type (Type)
+-- import AST.Module (Name)
+
+type Binding = (Pattern, Expr)
+
+data Decl
+  = DeclFun Pattern Expr
+  | DeclValue Pattern Expr
+  | DeclData Name [Name] [Constr]
+  | DeclNewtype Name [Name] Constr
+  | DeclImport Name
+  deriving (Show, Eq)
+
+data Constr = Constr Name [Type]
+  deriving (Show, Eq)
+module AST.Expr where
+
+type Name = String
+
+-- Binding
+type Binding = (Pattern, Expr)
+
+-- CaseAlt
+data CaseAlt
+  = CaseAlt Pattern Expr
+  | CaseAltGuard Pattern [(Expr, Expr)]
+  deriving (Eq, Show)
+
+-- Stmt
+data Stmt
+  = Bind Pattern Expr
+  | ExprStmt Expr
+  | LetStmt [(Pattern, Expr)]
+  deriving (Eq, Show)
+
+-- Qualifier
+data Qualifier
+  = QGenerator Pattern Expr
+  | QGuard Expr
+  deriving (Eq, Show)
+
+-- Expr 本体
+data Expr
+  = EVar String
+  | EVarType String
+  | EInt Int
+  | EBinOp String Expr Expr
+  | ELet [Binding] Expr
+  | EIf Expr Expr Expr
+  | ELam String Expr
+  | EApp Expr Expr
+  | ECase Expr [CaseAlt]
+  | EList [Expr]
+  | ETuple [Expr]
+  | ERange Expr Expr
+  | ERangeStep Expr Expr Expr
+  | EListComp Expr [Qualifier]
+  | EAnn Expr Type
+  | EDo [Stmt]
+  | ESeq [Expr]
+  | EReturn Expr
+  | ERecord [(String, Expr)]
+  | ERecordUpdate Expr [(String, Expr)]
+  | EOpSectionL String Expr
+  | EOpSectionR Expr String
+  | EPlaceholder
+  | EWhere Expr [Binding]
+  deriving (Eq, Show)
+module AST.Module where
+
+import AST.Type
+import AST.Decl (Decl)
+
+type Name = String
+
+data Module = Module
+  { moduleName :: Name
+  , moduleImports :: [Import]
+  , moduleDecls :: [Decl]
+  }
+  deriving (Show, Eq)
+
+data Import = Import
+  { importName :: Name
+  }
+  deriving (Show, Eq)
+module AST.Pattern where
+
+-- import AST.Type (Type)
+-- import AST.Module (Name)
+-- import AST.Pattern (Pattern)
+-- import AST.Expr (Expr)
+
+type Name = String
+
+data Pattern
+  = PVar Name
+  | PInt Int
+  | PWildcard
+  | PCons Pattern Pattern
+  | PList [Pattern]
+  | PTuple [Pattern]
+  | PConstr Name [Pattern]
+  | PAs Name Pattern -- ← 追加！
+  | PApp Pattern [Pattern] -- ★ 修正
+  deriving (Show, Eq)
+module AST.Type where
+
+-- import AST.Decl (Binding)
+
+data Type
+  = TVar String
+  | TCon String
+  | TArrow Type Type
+  | TList Type
+  | TApp Type Type
+  | TConstraint [Constraint] Type
+  | TForall [String] Type
+  deriving (Eq, Show)
+
+data Constraint = Constraint String [Type]
+  deriving (Eq, Show)

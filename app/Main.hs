@@ -3,13 +3,13 @@ module Main where
 import Control.Monad (forM_)
 import Data.Char (ord)
 import Debug.Trace (trace, traceShow)
-import Expr.AST (Expr)
-import Expr.Combinator (Parser (..), runParser)
-import Expr.ExprParser (exprTop)
-import Expr.Parser (parseExpr, runExprTest, runToplevelTest, toplevel)
-import Lexer (Token, runLexer)
-import qualified Lexer
-import MyTrace (setTrace)
+import AST.Expr (Expr)
+import Parser.Core.Combinator (Parser (..), runParser)
+import Parser.Expr.ExprParser (exprTop)
+import Parser.Core.Parser (parseExpr, runExprTest, runToplevelTest, toplevel)
+import Lexer.Lexer (Token, runLexer)
+--import qualified Lexer.
+import Utils.MyTrace (setTrace)
 import System.IO (hFlush, stdout)
 import Text.Megaparsec.Error (errorBundlePretty)
 
