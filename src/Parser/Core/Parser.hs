@@ -1,14 +1,16 @@
-module Parser.Core.Parser (parseExpr, runToplevelTest, runExprTest, toplevel) where
+-- module Parser.Core.Parser (parseExpr, runToplevelTest, runExprTest, toplevel) where
+module Parser.Core.Parser (parseExpr, toplevel) where
 
-import Control.Applicative (many, (<|>))
 import AST.Expr
+import Control.Applicative (many, (<|>))
+import Lexer.Token (Token (..))
+import Lexer.Lexer (runLexer)
 import Parser.Core.Combinator
+import Parser.Core.TokenParser
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.ExprExtensions (expr, letExpr)
 import Parser.Expr.PatternParser
-import Parser.Core.TokenParser
 import Parser.Type.TypeParser
-import Lexer.Lexer (Token (..), runLexer)
 
 -- === 実行関数 ===
 
@@ -29,6 +31,7 @@ parseToplevel toks = case runParser toplevel toks of
   Just (result, rest) | null rest -> return (Just result)
   _ -> return Nothing
 
+{-}
 -- 式のテスト
 runExprTest :: ([Char], [Char]) -> IO ()
 runExprTest (input, expected) = do
@@ -56,6 +59,7 @@ runToplevelTest (input, expected) = do
         Nothing -> putStrLn "  Parser error!\n"
         Just (_, ast) ->
           compareAST (show ast) expected
+-}
 
 -- 共通の比較処理
 compareAST actualRaw expectedRaw = do

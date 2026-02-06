@@ -13,14 +13,14 @@ module Parser.Type.TypeParser
   )
 where
 
+import AST.Decl
+import AST.Type
 import Control.Applicative
 import Data.Char (isUpper)
 import Data.List (isPrefixOf)
-import AST.Decl
-import AST.Type
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Lexer.Lexer (Token (..))
 
 parseType :: Parser Type
 parseType = parseForall <|> arrowType

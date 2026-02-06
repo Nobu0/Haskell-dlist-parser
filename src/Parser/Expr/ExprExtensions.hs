@@ -13,25 +13,26 @@ module Parser.Expr.ExprExtensions
   )
 where
 
-import Control.Applicative (many, optional, (<|>))
 -- import Expr.CaseParserCore (caseExpr)
 
 -- import Expr.DoParserCore (doExpr)
 
 -- import Expr.ListParserCore (listExpr)
 
-import Data.Functor (void)
 import AST.Expr
 -- import AST.Decl
 import AST.Pattern
-import Parser.Expr.CaseParserCore (caseExprCore)
+import Control.Applicative (many, optional, (<|>))
+import Data.Functor (void)
+-- (keyword) -- , whereClause)
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
+import Parser.Core.TokenParser
+import Parser.Expr.CaseParserCore (caseExprCore)
 import Parser.Expr.DoParserCore (doExprCore)
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.ListParserCore (listExprCore)
 import Parser.Expr.PatternParser (pattern)
-import Parser.Core.TokenParser -- (keyword) -- , whereClause)
-import Lexer.Lexer (Token (..))
 import Utils.MyTrace
 
 expr :: Parser Expr
@@ -140,6 +141,7 @@ genQualifier = do
 
 guardQualifier :: Parser Qualifier
 guardQualifier = QGuard <$> expr
+
 {-}
 funDecl :: Parser Decl
 funDecl = do

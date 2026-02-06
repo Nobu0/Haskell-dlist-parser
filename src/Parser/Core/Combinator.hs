@@ -20,7 +20,7 @@ where
 
 import Control.Applicative(many, Alternative(..) )
 import Data.List (isPrefixOf)
-import Lexer.Lexer (Token)
+import Lexer.Token (Token(..))
 --import app.MyTrace (myTrace)
 
 -- 差分リスト風パーサー

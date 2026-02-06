@@ -2,13 +2,13 @@
 
 module Parser.Expr.DoParserCore (doExprCore) where
 
-import Control.Applicative (many, optional, (<|>))
 import AST.Expr
+import Control.Applicative (many, optional, (<|>))
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
+import Parser.Core.TokenParser
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.PatternParser
-import Parser.Core.TokenParser
-import Lexer.Lexer (Token (..))
 
 doExprCore :: Parser Expr -> Parser Expr
 doExprCore expr = do

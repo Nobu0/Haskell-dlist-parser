@@ -18,8 +18,8 @@ where
 
 import Control.Applicative (empty)
 import qualified Data.Set as Set
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
-import Lexer.Lexer (Token (..))
 import Utils.MyTrace (myTrace)
 
 -- import Text.Megaparsec (token, (<?>))

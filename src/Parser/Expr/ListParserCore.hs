@@ -2,14 +2,13 @@
 
 module Parser.Expr.ListParserCore (listExprCore) where
 
-import Control.Applicative (many, optional, (<|>))
 import AST.Expr
+import Control.Applicative (many, optional, (<|>))
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
+import Parser.Core.TokenParser (brackets, keyword, symbol)
 import Parser.Expr.ExprCore (exprCore)
-
 import Parser.Expr.PatternParser (pattern)
-import Parser.Core.TokenParser (keyword, symbol, brackets)
-import Lexer.Lexer (Token (..))
 import Utils.MyTrace
 
 listExprCore :: Parser Expr -> Parser Expr

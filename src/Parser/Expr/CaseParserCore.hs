@@ -2,15 +2,15 @@
 
 module Parser.Expr.CaseParserCore (caseExprCore) where
 
-import Control.Applicative (empty, many, optional, some, (<|>))
-import Data.Functor (void)
 import AST.Expr
 import AST.Pattern
+import Control.Applicative (empty, many, optional, some, (<|>))
+import Data.Functor (void)
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
+import Parser.Core.TokenParser
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.PatternParser
-import Parser.Core.TokenParser
-import Lexer.Lexer (Token (..))
 import Utils.MyTrace
 
 caseExprCore :: Parser Expr -> Parser Expr

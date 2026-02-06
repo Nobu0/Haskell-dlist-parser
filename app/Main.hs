@@ -1,17 +1,19 @@
 module Main where
 
+-- import AST.Expr (Expr)
 import Control.Monad (forM_)
 import Data.Char (ord)
 import Debug.Trace (trace, traceShow)
-import AST.Expr (Expr)
+import Lexer.Lexer (runLexer)
+import Lexer.Token (Token)
 import Parser.Core.Combinator (Parser (..), runParser)
+import Parser.Core.Parser (parseExpr, toplevel)
 import Parser.Expr.ExprParser (exprTop)
-import Parser.Core.Parser (parseExpr, runExprTest, runToplevelTest, toplevel)
-import Lexer.Lexer (Token, runLexer)
---import qualified Lexer.
-import Utils.MyTrace (setTrace)
+-- import qualified Lexer.
+
 import System.IO (hFlush, stdout)
 import Text.Megaparsec.Error (errorBundlePretty)
+import Utils.MyTrace (setTrace)
 
 testCasesDo :: [(String, String)]
 testCasesDo =
@@ -144,12 +146,10 @@ main = do
   forM_ testCasesDo $ \(label, input) -> do
     putStrLn $ "\n-- " ++ label ++ " --\n-- Input: " ++ input
     -- putStrLn $ "Bytes: " ++ show (map ord input)
-    case runLexer input of
-      Left err -> putStrLn $ "X Lexer error: " ++ show err
-      Right toks -> do
-        putStrLn $ "Tokens: " ++ show toks
-        result <- runParserWithTrace exprTop toks
-        print result
+    let toks = runLexer input
+    putStrLn $ "Tokens: " ++ show toks
+    result <- runParserWithTrace exprTop toks
+    print result
 
 {-}
 main :: IO ()

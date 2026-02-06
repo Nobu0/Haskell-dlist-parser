@@ -18,7 +18,7 @@ import Parser.Expr.ExprExtensions (expr) -- ★ ここが正しい
 import Parser.Type.TypeParser (parseType, typeIdent)
 import Utils.MyTrace
 import Parser.Core.TokenParser -- (keyword) -- , whereClause)
-import Lexer.Lexer (Token (..))
+import Lexer.Token (Token (..))
 
 -- 1つの Decl をパース
 {-}

@@ -18,14 +18,14 @@ module Parser.Expr.ExprCore
   )
 where
 
+import AST.Expr
 import Control.Applicative (many, (<|>))
 import Data.Functor (void)
-import AST.Expr
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator (Parser (..), chainl1, token)
-import Parser.Expr.PatternParser (pattern)
 import Parser.Core.TokenParser (ident, int, symbol, tokenIs)
+import Parser.Expr.PatternParser (pattern)
 import Parser.Type.TypeParser (typeIdent)
-import Lexer.Lexer (Token (..))
 import Utils.MyTrace
 
 pRecordExpr :: Parser Expr
@@ -213,13 +213,13 @@ stringLiteralExpr =
   satisfyToken f
   where
     f (TokString s) = Just s
-    f _             = Nothing
+    f _ = Nothing
 
 satisfyToken :: (Token -> Maybe a) -> Parser a
 satisfyToken f = Parser $ \ts -> case ts of
   [] -> Nothing
-  (t:ts') -> case f t of
-    Just x  -> Just (x, ts')
+  (t : ts') -> case f t of
+    Just x -> Just (x, ts')
     Nothing -> Nothing
 
 ellipsis :: Parser ()

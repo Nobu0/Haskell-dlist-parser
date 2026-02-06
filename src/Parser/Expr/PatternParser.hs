@@ -12,8 +12,6 @@ module Parser.Expr.PatternParser
   )
 where
 
-import Control.Applicative
-import Data.Char (isUpper)
 {-}
 pattern :: Parser Pattern
 pattern = do
@@ -23,14 +21,16 @@ pattern = do
 pattern = (pAsPattern <|> pAtom) >>= makeCons
 -}
 
-import Data.Functor (void)
 import AST.Decl
 import AST.Pattern
+import Control.Applicative
+import Data.Char (isUpper)
+import Data.Functor (void)
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Core.TokenParser (lookAhead, notFollowedBy)
 import Parser.Type.TypeParser (typeIdent)
-import Lexer.Lexer (Token (..))
 import Utils.MyTrace (myTrace)
 
 patternParser :: Parser Pattern
@@ -41,7 +41,6 @@ patternParser = do
   -- t <- lookAhead anyToken
   -- myTrace ("<< patten2 next token: stopPattern" ++ show t)
   return p
-
 
 pattern :: Parser Pattern
 pattern = do
