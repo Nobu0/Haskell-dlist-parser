@@ -1,7 +1,7 @@
 module AST.Expr where
 
-import AST.Type (Type)
 import AST.Pattern (Pattern)
+import AST.Type (Type)
 
 type Name = String
 
@@ -24,6 +24,7 @@ data Stmt
 -- Qualifier
 data Qualifier
   = QGenerator Pattern Expr
+  | QLet [(Pattern, Expr)]
   | QGuard Expr
   deriving (Eq, Show)
 
@@ -34,9 +35,11 @@ data Expr
   | EInt Int
   | EString String
   | EBinOp String Expr Expr
-  | ELet [Binding] Expr
+  | EBool Bool
+  | ELet Pattern Expr Expr
+  | ELetBlock [(Pattern, Expr)] Expr
   | EIf Expr Expr Expr
-  | ELam String Expr
+  | ELam Pattern Expr
   | EApp Expr Expr
   | ECase Expr [CaseAlt]
   | EList [Expr]

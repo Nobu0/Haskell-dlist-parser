@@ -123,7 +123,7 @@ binOp ops = tokenIs $ \case
 lambdaExpr :: Parser Expr
 lambdaExpr = do
   symbol "\\"
-  arg <- ident
+  arg <- pattern
   tokenIs (\case TokArrow -> Just (); _ -> Nothing)
   body <- exprCore
   return (ELam arg body)
@@ -150,7 +150,7 @@ exprCmpCore :: Parser Expr
 exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
 
 exprLevel1Core :: Parser Expr
-exprLevel1Core = chainl1 exprLevel2Core (binOp ["+", "-"])
+exprLevel1Core = chainl1 exprLevel2Core (binOp ["+", "-", "++"])
 
 exprLevel2Core :: Parser Expr
 exprLevel2Core = chainl1 exprLevel3Core (binOp ["*", "/"])

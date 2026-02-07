@@ -68,11 +68,25 @@ genQualifier expr = do
 guardQualifier :: Parser Expr -> Parser Qualifier
 guardQualifier expr = QGuard <$> expr
 
+{-}
 letQualifier :: Parser Expr -> Parser Qualifier
 letQualifier expr = do
   keyword "let"
   binds <- sepBy1 binding (symbol ",")
   return (QGuard (ELet binds (EVar "__unit__")))
+  where
+    binding = do
+      pat <- pattern
+      symbol "="
+      e <- expr
+      return (pat, e)
+-}
+
+letQualifier :: Parser Expr -> Parser Qualifier
+letQualifier expr = do
+  keyword "let"
+  binds <- sepBy1 binding (symbol ",")
+  return (QLet binds)
   where
     binding = do
       pat <- pattern

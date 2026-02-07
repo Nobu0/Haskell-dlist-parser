@@ -1,15 +1,13 @@
 module AST.Decl where
 
-import AST.Pattern (Pattern)
 import AST.Expr
+import AST.Pattern (Pattern)
 import AST.Type (Type)
--- import AST.Module (Name)
-
--- type Binding = (Pattern, Expr)
 
 data Decl
-  = DeclFun Pattern Expr
+  = DeclFun Name [Pattern] Expr
   | DeclValue Pattern Expr
+  | DeclTypeSig Name Type
   | DeclData Name [Name] [Constr]
   | DeclNewtype Name [Name] Constr
   | DeclImport Name

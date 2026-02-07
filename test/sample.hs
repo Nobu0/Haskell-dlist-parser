@@ -1,11 +1,8 @@
--- sample.hs
-module Main where
+-- module Main where
+
+myprint :: String -> String
+myprint str = str ++ "abc"
 
 main = do
-  putStrLn "THIS is a sample Haskell file."
-  putStrLn "THIS is a sample Haskell file." ++ "test add"
-
-main2 =
-  do
-    putStrLn "THIS is a sample Haskell file."
-    putStrLn "THIS is a sample Haskell file." ++ "test add"
+  print (myprint "THIS is a sample Haskell file.")
+  print ("THIS is a sample Haskell file." ++ "test add")

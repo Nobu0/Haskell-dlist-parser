@@ -10,6 +10,7 @@ data Type
   | TApp Type Type
   | TConstraint [Constraint] Type
   | TForall [String] Type
+  | TTuple [Type]
   deriving (Eq, Show)
 
 data Constraint = Constraint String [Type]

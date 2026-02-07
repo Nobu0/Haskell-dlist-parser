@@ -10,6 +10,7 @@ module Parser.Expr.ExprExtensions
     returnExpr,
     forExpr,
     postfix,
+    skipNewlines,
   )
 where
 
@@ -47,24 +48,45 @@ expr = do
       case t of
         TokKeyword "do" -> doExprCore expr
         TokKeyword "case" -> caseExprCore expr
-        TokKeyword "let" -> letExpr
+        TokKeyword "let" -> (try letExpr <|> pLetExpr)
         TokKeyword "if" -> ifExpr
         TokKeyword "for" -> forExpr
         TokKeyword "return" -> returnExpr
         TokSymbol "[" -> listExprCore expr
         _ -> exprCore
 
+{-}
 -- 後置構文（where など）
 postfix :: Expr -> Parser Expr
 postfix e =
   try
     ( do
-        t <- lookAhead anyToken
-        myTrace ("<< postfix next token: " ++ show t)
+        skipNewlines
+        -- t <- lookAhead anyToken
+        -- myTrace ("<< postfix next token: " ++ show t)
         binds <- whereClause
         postfix (EWhere e binds)
     )
     <|> return e
+-}
+
+postfix :: Expr -> Parser Expr
+postfix e = do
+  skipNewlines
+  mbBinds <- whereClause
+  case mbBinds of
+    Just binds -> postfix (EWhere e binds)
+    Nothing -> return e
+
+whereClause :: Parser (Maybe [Binding])
+whereClause =
+  try (keyword "where" >> bindings >>= \bs -> return (Just bs))
+    <|> return Nothing
+
+bindings = do
+  b <- binding
+  bs <- many binding
+  return (b : bs)
 
 -- ============================================
 --  exprTop / exprSeq
@@ -179,6 +201,7 @@ valueBinding = do
   -- optional (newline)
   return (pat, body)
 
+{-}
 letExpr :: Parser Expr
 letExpr = do
   keyword "let"
@@ -193,6 +216,30 @@ letExpr = do
       return (ELet binds body)
     Nothing ->
       return (ELet binds (EVar "__unit__"))
+-}
+letExpr :: Parser Expr
+letExpr = do
+  keyword "let"
+  binds <- bindingsBlock
+  optional newline
+  mIn <- optional (keyword "in")
+  optional newline
+  case mIn of
+    Just _ -> do
+      body <- expr
+      return (ELetBlock binds body)
+    Nothing ->
+      return (ELetBlock binds (EVar "__unit__"))
+
+pLetExpr :: Parser Expr
+pLetExpr = do
+  keyword "let"
+  pat <- pattern
+  symbol "="
+  e1 <- expr
+  keyword "in"
+  e2 <- expr
+  return (ELet pat e1 e2)
 
 bindingsBlock :: Parser [Binding]
 bindingsBlock = do
@@ -200,6 +247,7 @@ bindingsBlock = do
   braces (sepBy binding (symbol ";"))
     <|> sepBy binding (symbol ";")
 
+{-}
 whereClause :: Parser [Binding]
 whereClause = do
   optional (newline)
@@ -207,3 +255,9 @@ whereClause = do
   myTrace ("<< whereClause next token: " ++ show t)
   keyword "where"
   bindingsBlock
+-}
+
+skipNewlines :: Parser ()
+skipNewlines = do
+  _ <- many (tokenIs (\t -> if t == TokNewline then Just () else Nothing))
+  return ()
