@@ -4,13 +4,14 @@ module Main where
 import Control.Monad (forM_)
 import Data.Char (ord)
 import Debug.Trace (trace, traceShow)
+-- import qualified Lexer.
+-- import Layout.LayoutTransform (layoutTransform)
+-- import Lexer.LayoutLexer (layoutLexer)
 import Lexer.Lexer (runLexer)
 import Lexer.Token (Token)
 import Parser.Core.Combinator (Parser (..), runParser)
 import Parser.Core.Parser (parseExpr, toplevel)
 import Parser.Expr.ExprParser (exprTop)
--- import qualified Lexer.
-
 import System.IO (hFlush, stdout)
 import Text.Megaparsec.Error (errorBundlePretty)
 import Utils.MyTrace (setTrace)
@@ -69,9 +70,9 @@ testCasesDo =
     ("", "{ f = (+ 1) }"),
     ("", "r { f = (1 +) }"),
     ("", "({ x = 1 } +)"),
-    ("", "do { let r = { x = 1 }; return r }"),
-    ("", "do { let r = { x = 1 }; return (r { x = 2 }) }"),
-    ("", "do { let f = (+ 1); return (f 10) }"),
+    ("do1", "do { let r = { x = 1 }; return r }"),
+    ("do2", "do { let r = { x = 1 }; return (r { x = 2 }) }"),
+    ("do3", "do { let f = (+ 1); return (f 10) }"),
     ("error1", "{ = 1 }"),
     ("error2", "{ x = 1,, y = 2 }"),
     ("error3", "()"),
@@ -79,7 +80,7 @@ testCasesDo =
     ("case guard1", "case x of { p | cond1 -> e1; p2 | cond2 -> e2; p3 -> e3 }"),
     ("case guard2", "case x of n | n < 0 -> 1 "),
     ("case guard3", "case x of n | n < 0 -> -1 | n > 0 -> 1"),
-    ("case guard4", "case x of n | n < 0 -> -1\n  0 -> 0\n  n | n > 0 -> 1"),
+    ("case guard4", "case x of n | n < 0 -> -1;  0 -> 0;  n | n > 0 -> 1"),
     ("list1", "[1, 2, 3]"),
     ("list2", "[x * 2 | x <- xs]"),
     ("list3", "[x | x <- xs, x > 0]"),
@@ -94,33 +95,44 @@ testCasesDo =
     ("for3", "for x in xs, y in ys, z in zs -> ..."),
     ("for4", "for x in xs, x > 0 -> x"),
     ("for5", "for x in xs, let y = f x -> y"),
-    ("do1", "do {\n  (x, y) <- f z;\n  return x }"),
-    ("do2", "do {\n      let y = f x;\n      z <- g y;\n      print z }"),
-    ("do3", "do {\n      x <- xs;\n      if x > 0 then return x else fail }  "),
+    ("do1", "do {  (x, y) <- f z;  return x }"),
+    ("do2", "do {      let y = f x;      z <- g y;      print z }"),
+    ("do3", "do {      x <- xs;      if x > 0 then return x else fail }  "),
     {-}
                 ("",""),
     -}
-    ("do2", "do {\n  let xs = [1,2,3];\n  for x in xs, x > 1 -> x\n}"),
-    ("do3", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x -> y\n}"),
-    ("do4", "do {\n  let xs = [1,2,3];\n  for x in xs -> ...\n}"),
-    ("nested do", "do {\n  let x = 1;\n  do {\n    let y = x + 1;\n    return y\n  }\n}"),
-    ("complex", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x, y > 1 -> y\n}"),
-    ("complex2", "do {\n  let xs = [1,2,3];\n  for x in xs, let y = f x, y > 1 -> ...\n}"),
-    ("list1", "[1 .. 10]\n    [x .. y]\n    [0 .. -5]\n    [a .. b]"),
-    ("list2", "[1, 3 .. 10]\n[10, 8 .. 0]\n[x, y .. z]\n[0, 0 .. 0]"),
-    ("list3", "[1,2,3]\n[x, y, z]\n[1, 2, 3,]\n[]\n[   ]"),
-    ("list4", "[1, 2 .. 3]     -- rangeStep\n[1 ,2 ..3]      -- whitespace variations\n[1 .. 2, 3]     -- should be normal list? or error?（仕様確認"),
+    ("do2", "do {  let xs = [1,2,3];  for x in xs, x > 1 -> x}"),
+    ("do3", "do {  let xs = [1,2,3];  for x in xs, let y = f x -> y}"),
+    ("do4", "do {  let xs = [1,2,3];  for x in xs -> ...}"),
+    ("nested do", "do {  let x = 1;  do {    let y = x + 1;    return y  }}"),
+    ("complex", "do {  let xs = [1,2,3];  for x in xs, let y = f x, y > 1 -> y}"),
+    ("complex2", "do {  let xs = [1,2,3];  for x in xs, let y = f x, y > 1 -> ...}"),
+    ("list1", "[1 .. 10];    [x .. y];    [0 .. -5];    [a .. b]"),
+    ("list2", "[1, 3 .. 10]; [10, 8 .. 0]; [x, y .. z]; [0, 0 .. 0]"),
+    ("list3", "[1,2,3]; [x, y, z]; [1, 2, 3,]; []; [   ]"),
+    ("list4", "[1, 2 .. 3]; [1 ,2 ..3]; [1 .. 2, 3]     -- should be normal list? or error?（仕様確認"),
     ("list error1", "[1 ..]          -- エラーになるべき"),
     ("list error2", "[.. 10]         -- エラーになるべき"),
     ("func1", "x + y where z = 3"),
     ("func2", "case x of Just n | n > 0 -> n   | n < 1 -> 2  where m = 10"),
-    ("func2-2", "case x of\n  Just n | n > 0 -> n\n         | n < 1 -> 2\n         where m = 10"),
-    ("func3", "do {\n  x <- foo;\n  y <- bar;\n  x + y\n} where foo = 1; bar = 2"),
+    -- ("func2-2", "case x of Just n | n > 0 -> n   | n < 1 -> 2   where m = 10"),
+    ("func3", "do { x <- foo;  y <- bar;  x + y} where foo = 1; bar = 2"),
     ("func4", "[x | Just x <- xs] where xs = [1..10]"),
-    ("func5", "let\n  f x = x + 1;\n  g y = f y * 2\nin g 10"),
-    ("func6", "x + y where\n  f x = x + 1;\n  y = f 10"),
-    ("func7", "let f x = x + 1 in\n  case f 3 of\n    n | n > 3 -> n\n      | otherwise -> 0\n      where otherwise = True")
-    -- ("func5", "f x y = x + y where x = 10")
+    ("func5", "let  f x = x + 1;  g y = f y * 2 in g 10"),
+    ("func6", "x + y where  f x = x + 1;  y = f 10"),
+    ("func7", "let f x = x + 1 in case f 3 of n | n > 3 -> n| otherwise -> 0 where otherwise = True"),
+    ("sql1", "sql \"SELECT * FROM users\""),
+    ("sql2", "sql \"SELECT * FROM users WHERE id = {x}\""),
+    ("sql3", "sql \"INSERT INTO t(a,b) VALUES({a}, {b})\""),
+    ("sql4", "sql \"UPDATE t SET a={a}, b={b}, c={c}\""),
+    ("sqlx1", "let x = sql \"SELECT * FROM t\" in x"),
+    ("sqlx2", "f (sql \"SELECT * FROM t WHERE id = {i}\")"),
+    ("sqlx3", "x where y = sql \"SELECT * FROM t WHERE a = {a}\""),
+    ("sqlx4", "do { x <- sql \"SELECT * FROM t\";  return x }"),
+    ("sqlx5", "(sql \"SELECT {a}\") + (sql \"SELECT {b}\")"),
+    ("sqlx6", "let x = sql \"SELECT {a}\" in x where y = sql \"SELECT {b}\""),
+    ("let1", "let (a, b) = (1, 2) in a + b"),
+    ("let1", "do {let (a, b) = (1, 2) in let f = a + b in f}")
   ]
 
 {-}
@@ -146,9 +158,12 @@ main = do
   forM_ testCasesDo $ \(label, input) -> do
     putStrLn $ "\n-- " ++ label ++ " --\n-- Input: " ++ input
     -- putStrLn $ "Bytes: " ++ show (map ord input)
-    let toks = runLexer input
-    putStrLn $ "Tokens: " ++ show toks
-    result <- runParserWithTrace exprTop toks
+    let toks3 = runLexer input
+    -- let toks2 = layoutLexer toks1
+    -- let toks3 = layoutTransform toks2
+
+    putStrLn $ "Tokens: " ++ show toks3
+    result <- runParserWithTrace exprTop toks3
     print result
 
 {-}

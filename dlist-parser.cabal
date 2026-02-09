@@ -10,26 +10,23 @@ extra-doc-files: CHANGELOG.md
 common warnings
     ghc-options: -Wall
 
-
-executable layout
-  main-is: MainV.hs
-  hs-source-dirs: app, src
-  build-depends:    base >=4.7 && <5,
-                    megaparsec >= 9.0,
-                    text,
-                    containers,
-                    parser-combinators
-  default-language: Haskell2010
-  other-modules:
+library
+  exposed-modules:
     TypeInference.Infer
+    TypeInference.SQLInfer
     TypeInference.Subst
     TypeInference.Unify
     TypeInference.TypeEnv
+    TypeInference.Type
     TypeInference.Error
+    TypeInference.Pretty
     Lexer.Lexer
+    Lexer.SimpleLexer
     Lexer.Token
     Lexer.LayoutLexer
+    Layout.LayoutTransform
     Utils.MyTrace
+    Utils.SQLUtils
     AST.Expr
     AST.Type
     AST.Pattern
@@ -46,8 +43,58 @@ executable layout
     Parser.Core.TokenParser
     Parser.Expr.ExprParser
     Parser.Core.Parser
+    Parser.SQL.SQLParser
     Decl.DeclParserCore
+  hs-source-dirs: src
+  build-depends:
+      base >=4.14 && <5,
+      containers,
+      text
+  default-language: Haskell2010
+
+executable layout
+  main-is: MainV.hs
+  hs-source-dirs: app, src
+  build-depends:    base >=4.7 && <5,
+                    megaparsec >= 9.0,
+                    text,
+                    containers,
+                    parser-combinators
+  default-language: Haskell2010
+  other-modules:
+    TypeInference.Infer
+    TypeInference.SQLInfer
+    TypeInference.Subst
+    TypeInference.Unify
+    TypeInference.TypeEnv
+    TypeInference.Type
+    TypeInference.Error
+    TypeInference.Pretty
+    Lexer.Lexer
+    Lexer.SimpleLexer
+    Lexer.Token
+    Lexer.LayoutLexer
     Layout.LayoutTransform
+    Utils.MyTrace
+    Utils.SQLUtils
+    AST.Expr
+    AST.Type
+    AST.Pattern
+    AST.Decl
+    AST.Module
+    Parser.Type.TypeParser
+    Parser.Expr.PatternParser
+    Parser.Expr.ExprCore
+    Parser.Expr.ExprExtensions
+    Parser.Expr.ListParserCore
+    Parser.Expr.DoParserCore
+    Parser.Expr.CaseParserCore
+    Parser.Core.Combinator
+    Parser.Core.TokenParser
+    Parser.Expr.ExprParser
+    Parser.Core.Parser
+    Parser.SQL.SQLParser
+    Decl.DeclParserCore
 
 executable myapp
   main-is: Main.hs
@@ -60,8 +107,12 @@ executable myapp
   default-language: Haskell2010
   other-modules:
     Lexer.Lexer
+    Lexer.SimpleLexer
     Lexer.Token
+    Lexer.LayoutLexer
+    Layout.LayoutTransform
     Utils.MyTrace
+    Utils.SQLUtils
     AST.Expr
     AST.Type
     AST.Pattern
@@ -81,6 +132,7 @@ executable myapp
     Parser.Core.TokenParser
     Parser.Expr.ExprParser
     Parser.Core.Parser
+    Parser.SQL.SQLParser
     Decl.DeclParserCore
 
 
@@ -103,8 +155,12 @@ executable dlist
   default-language: Haskell2010
   other-modules:
     Lexer.Lexer
+    Lexer.SimpleLexer
     Lexer.Token
+    Lexer.LayoutLexer
+    Layout.LayoutTransform
     Utils.MyTrace
+    Utils.SQLUtils
     AST.Expr
     AST.Type
     AST.Pattern
@@ -124,7 +180,51 @@ executable dlist
     Parser.Core.TokenParser
     Parser.Expr.ExprParser
     Parser.Core.Parser
+    Parser.SQL.SQLParser
     Decl.DeclParserCore
 
-                      
-
+executable test-type-infer-sql
+  main-is: Test/TypeInferSQL.hs
+  hs-source-dirs:
+      src
+      test
+  build-depends:
+      base >=4.14 && <5,
+      dlist-parser,
+      containers,
+      text
+  default-language: Haskell2010
+  other-modules:
+    TypeInference.Infer
+    TypeInference.SQLInfer
+    TypeInference.Subst
+    TypeInference.Unify
+    TypeInference.TypeEnv
+    TypeInference.Type
+    TypeInference.Error
+    TypeInference.Pretty
+    Lexer.Lexer
+    Lexer.SimpleLexer
+    Lexer.Token
+    Lexer.LayoutLexer
+    Layout.LayoutTransform
+    Utils.MyTrace
+    Utils.SQLUtils
+    AST.Expr
+    AST.Type
+    AST.Pattern
+    AST.Decl
+    AST.Module
+    Parser.Type.TypeParser
+    Parser.Expr.PatternParser
+    Parser.Expr.ExprCore
+    Parser.Expr.ExprExtensions
+    Parser.Expr.ListParserCore
+    Parser.Expr.DoParserCore
+    Parser.Expr.CaseParserCore
+    Parser.Core.Combinator
+    Parser.Core.TokenParser
+    Parser.Expr.ExprParser
+    Parser.Core.Parser
+    Parser.SQL.SQLParser
+    Decl.DeclParserCore
