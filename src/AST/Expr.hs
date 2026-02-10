@@ -34,7 +34,7 @@ data Expr
   | EVarType String
   | EInt Int
   | EString String
-  | EBinOp String Expr Expr
+  | EBinOp BinOp Expr Expr
   | EBool Bool
   | ELet Pattern Expr Expr
   | ELetBlock [(Pattern, Expr)] Expr
@@ -58,4 +58,19 @@ data Expr
   | EPlaceholder
   | EWhere Expr [Binding]
   | ESQL String [Expr]
+  deriving (Eq, Show)
+
+data BinOp
+  = Add
+  | Sub
+  | Mul
+  | Div
+  | And
+  | Or
+  | Eq
+  | Neq
+  | Lt
+  | Gt
+  | Le
+  | Ge
   deriving (Eq, Show)

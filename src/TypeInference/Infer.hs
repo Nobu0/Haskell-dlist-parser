@@ -1,9 +1,11 @@
 module TypeInference.Infer
-  ( inferExpr
-  , inferPattern
-  , ...
-  ) where
+  ( inferExpr,
+    inferProgram,
+    -- inferProgramPattern
+  )
+where
 
-import TypeInference.Infer.Expr
-import TypeInference.Infer.Pattern
-import TypeInference.Infer.Core
+import TypeInference.Infer.Expr (inferExpr, inferProgram)
+
+-- import TypeInference.Infer.Pattern
+-- import TypeInference.Infer.Core

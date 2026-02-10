@@ -117,26 +117,6 @@ inferBranch env tScrut sScrut (CaseAlt pat expr) = do
     let s = sUnify `composeSubst` sPat `composeSubst` sScrut
     inferExpr (applyEnv s (mergeEnvs env envPat)) expr
 
-unifyManyExpr :: [(Subst, Type)] -> Either InferError (Subst, Type)
-unifyManyExpr [] = Left (InferOther "empty case")
-unifyManyExpr ((s, t) : xs) = foldM step (s, t) xs
-  where
-    step (sAcc, tAcc) (sNext, tNext) = do
-      sU <- case unify (apply sAcc tAcc) (apply sAcc tNext) of
-        Left uerr -> Left (InferUnifyError uerr)
-        Right s -> Right s
-      let sFinal = sU `composeSubst` sNext `composeSubst` sAcc
-      Right (sFinal, apply sFinal tAcc)
-
-unifyList :: Type -> [(Subst, Type)] -> Either InferError Subst
-unifyList t [] = Right emptySubst
-unifyList t ((s, tElem) : rest) = do
-  sU <- case unify (apply s t) tElem of
-    Left uerr -> Left (InferUnifyError uerr)
-    Right su -> Right su
-  let s' = sU `composeSubst` s
-  unifyList (apply s' t) rest
-
 -- 式の型推論（まだ中身は空）
 -- inferExpr :: TypeEnv -> Expr -> Either InferError InferResult
 inferExpr :: TypeEnv -> Expr -> Either InferError (Subst, Type)

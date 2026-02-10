@@ -12,6 +12,7 @@ data Type
   | TForall [String] Type
   | TTuple [Type]
   | TUnit
+  | TFun Type Type
   deriving (Eq, Show)
 
 data Constraint = Constraint String [Type]

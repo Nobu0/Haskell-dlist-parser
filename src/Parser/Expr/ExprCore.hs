@@ -19,6 +19,7 @@ module Parser.Expr.ExprCore
 where
 
 import AST.Expr
+import AST.Expr (BinOp (..), Expr (..))
 import Control.Applicative (empty, many, (<|>))
 import Control.Monad (guard)
 import Data.Functor (void)
@@ -112,10 +113,36 @@ operator = choice (map (\s -> symbol s >> return s) allOps)
 -- ============================================
 --  binOp（元 ExprParser から移植）
 -- ============================================
-
+{-}
 binOp :: [String] -> Parser (Expr -> Expr -> Expr)
 binOp ops = tokenIs $ \case
   TokOperator op | op `elem` ops -> Just (EBinOp op)
+  _ -> Nothing
+-}
+binOp :: [String] -> Parser (Expr -> Expr -> Expr)
+binOp ops = tokenIs $ \case
+  TokOperator op | op `elem` ops ->
+    case parseBinOp op of
+      Just bop -> Just (EBinOp bop)
+      Nothing -> Nothing
+  _ -> Nothing
+
+-- TokOperator op -> EBinOp <$> parseBinOp op
+
+parseBinOp :: String -> Maybe BinOp
+parseBinOp s = case s of
+  "+" -> Just Add
+  "-" -> Just Sub
+  "*" -> Just Mul
+  "/" -> Just Div
+  "==" -> Just Eq
+  "!=" -> Just Neq
+  "<" -> Just Lt
+  ">" -> Just Gt
+  "<=" -> Just Le
+  ">=" -> Just Ge
+  "&&" -> Just And
+  "||" -> Just Or
   _ -> Nothing
 
 -- ============================================
