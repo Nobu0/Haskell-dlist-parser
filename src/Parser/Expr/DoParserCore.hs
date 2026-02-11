@@ -23,7 +23,7 @@ doExprCore expr = do
 
 doBlock :: Parser Expr -> Parser [Stmt]
 doBlock expr = do
-  sepBy1 (doStmt expr) doSemi
+  sepBy (doStmt expr) doSemi
 
 doStmt :: Parser Expr -> Parser Stmt
 doStmt expr = do

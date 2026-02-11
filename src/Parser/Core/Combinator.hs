@@ -15,13 +15,18 @@ module Parser.Core.Combinator
     try,
     chainl1,
     many1,
+    manyTill,
+    choice,
+    choice1,
+    lookAhead,
   )
 where
 
-import Control.Applicative(many, Alternative(..) )
+import Control.Applicative (Alternative (..), many)
 import Data.List (isPrefixOf)
-import Lexer.Token (Token(..))
---import app.MyTrace (myTrace)
+import Lexer.Token (Token (..))
+
+-- import app.MyTrace (myTrace)
 
 -- 差分リスト風パーサー
 newtype Parser a = Parser {runParser :: [Token] -> Maybe (a, [Token])}
@@ -134,5 +139,39 @@ chainl1 p op = do
 
 many1 :: Parser a -> Parser [a]
 many1 p = (:) <$> p <*> many p
+
+manyTill :: Parser a -> Parser end -> Parser [a]
+manyTill p end = go
+  where
+    go =
+      end
+        *> pure []
+          <|> (:)
+        <$> p
+        <*> go
+
+choice1 :: Parser a -> Parser a -> Parser a
+choice1 p q = Parser $ \input ->
+  case runParser p input of
+    Just r -> Just r
+    Nothing -> runParser q input
+
+choice :: [Parser a] -> Parser a
+choice [] = Parser $ \_ -> Nothing
+choice (p : ps) = choice1 p (choice ps)
+
+{-}
+lookAhead :: Parser a -> Parser a
+lookAhead p = Parser $ \input ->
+  case runParser p input of
+    Just (a, _) -> Just (a, input) -- 成功しても input を消費しない
+    Nothing -> Nothing
+-}
+
+lookAhead :: Parser a -> Parser a
+lookAhead (Parser p) = Parser $ \input ->
+  case p input of
+    Just (a, _) -> Just (a, input) -- 結果はそのまま、入力は消費しない
+    Nothing -> Nothing
 
 -- 依存：symbol は TokenParser 側で定義されるため、ここでは定義しない

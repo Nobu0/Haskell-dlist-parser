@@ -38,13 +38,6 @@ inferPattern pat = case pat of
     Right (emptySubst, env, tv)
   -- ★ 追加：PApp の一般形（引数なし）
   PApp p [] -> inferPattern p
-  {-}
-  -- 変数パターン
-  PVar v ->
-    let t = TVar ("t_" ++ v)
-        env = extendEnv emptyEnv v (Forall [] t)
-     in Right (emptySubst, env, t)
-     -}
   -- 整数リテラル
   PInt _ ->
     Right (emptySubst, emptyEnv, TCon "Int")

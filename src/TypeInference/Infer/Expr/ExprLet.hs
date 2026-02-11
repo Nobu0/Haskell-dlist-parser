@@ -1,4 +1,3 @@
--- TypeInference/Infer/Expr/ExprLet.hs
 module TypeInference.Infer.Expr.ExprLet
   ( inferLet,
     inferLetBlock,

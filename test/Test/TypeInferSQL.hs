@@ -29,7 +29,6 @@ runInfer cm src = do
         Right (_, ty) -> putStrLn $ "Type: " ++ prettyType ty
         _ -> putStrLn $ "error"
 
--- テストケース群
 testSQLInfer :: IO ()
 testSQLInfer = do
   -- sqlti1
@@ -50,7 +49,6 @@ testSQLInfer = do
   -- sqlti6
   runInfer "sqlt6" "do { let a = 1 in let x = (sql \"SELECT {a}\") in x }"
 
-  -- sqlti7（型エラーになるべき）
   runInfer "sqltERROR" "(sql \"SELECT {a}\") + (sql \"SELECT {b}\")"
 
   -- sqlti8

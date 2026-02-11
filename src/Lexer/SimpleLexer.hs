@@ -1,6 +1,7 @@
 module Lexer.SimpleLexer (slexer) where
 
 import Data.Char
+import Data.Char (isLetter)
 import Lexer.Token
 
 slexer :: String -> [Token]
@@ -62,7 +63,7 @@ slexer = go
     -- 識別子
     ------------------------------------------------------------
     go (c : rest)
-      | isAlpha c =
+      | isLetter c =
           let (letters, rest') = span isIdentChar rest
               name = c : letters
            in classifyIdent name : go rest'
@@ -70,6 +71,7 @@ slexer = go
     -- 複数文字記号
     ------------------------------------------------------------
     go ('-' : '>' : rest) = TokArrow : go rest
+    go ('=' : '>' : rest) = TokKeyword "=>" : go rest
     go (':' : ':' : rest) = TokSymbol "::" : go rest
     go ('+' : '+' : rest) = TokOperator "++" : go rest
     go ('=' : '=' : rest) = TokSymbol "==" : go rest
@@ -84,7 +86,7 @@ slexer = go
     go ('-' : rest) = TokOperator "-" : go rest
     go ('*' : rest) = TokOperator "*" : go rest
     go ('/' : rest) = TokOperator "/" : go rest
-    go ('=' : rest) = TokOperator "=" : go rest
+    -- go ('=' : rest) = TokOperator "=" : go rest
     go ('<' : rest) = TokOperator "<" : go rest
     go ('>' : rest) = TokOperator ">" : go rest
     ------------------------------------------------------------
@@ -103,8 +105,10 @@ slexer = go
     -- 補助関数
     ------------------------------------------------------------
 
-    isIdentChar x = isAlphaNum x || x == '_' || x == '\''
-    --isSymbolChar x = x `elem` "=(){}[]:;,+-*/<>|&."
+    -- isIdentChar x = isAlphaNum x || x == '_' || x == '\''
+    isIdentChar c = isLetter c || isDigit c || c == '_' || c == '\''
+
+    -- isSymbolChar x = x `elem` "=(){}[]:;,+-*/<>|&."
     isSymbolChar x = x `elem` "=(){}[]:;,\\'_|@&"
 
     classifyIdent "sql" = TokKeyword "sql"
@@ -119,12 +123,15 @@ slexer = go
     classifyIdent "if" = TokKeyword "if"
     classifyIdent "then" = TokKeyword "then"
     classifyIdent "else" = TokKeyword "else"
-    classifyIdent "data" = TokKeyword "data"
     classifyIdent "module" = TokKeyword "module"
     classifyIdent "import" = TokKeyword "import"
     classifyIdent "return" = TokKeyword "return"
-    classifyIdent "clase" = TokKeyword "class"
+    classifyIdent "data" = TokKeyword "data"
+    classifyIdent "class" = TokKeyword "class"
+    classifyIdent "type" = TokKeyword "type"
+    classifyIdent "newtype" = TokKeyword "newtype"
     classifyIdent "instance" = TokKeyword "instance"
+    classifyIdent "=>" = TokKeyword "=>"
     classifyIdent "->" = TokArrow
     -- classifyIdent "..." = TokEllipsis
     classifyIdent "." = TokDot

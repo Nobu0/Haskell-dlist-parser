@@ -1,4 +1,3 @@
--- TypeInference/Infer/Expr/ExprDo.hs
 module TypeInference.Infer.Expr.ExprDo (inferDo, inferStmt) where
 
 import AST.Expr

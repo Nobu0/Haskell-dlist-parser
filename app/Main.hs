@@ -132,7 +132,8 @@ testCasesDo =
     ("sqlx5", "(sql \"SELECT {a}\") + (sql \"SELECT {b}\")"),
     ("sqlx6", "let x = sql \"SELECT {a}\" in x where y = sql \"SELECT {b}\""),
     ("let1", "let (a, b) = (1, 2) in a + b"),
-    ("let1", "do {let (a, b) = (1, 2) in let f = a + b in f}")
+    ("let1", "do {let (a, b) = (1, 2) in let f = a + b in f}"),
+    ("funx1", "max' a b | a > b = a | otherwise = b")
   ]
 
 {-}

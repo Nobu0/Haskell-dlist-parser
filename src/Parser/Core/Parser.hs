@@ -10,7 +10,7 @@ import Parser.Core.TokenParser
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.ExprExtensions (expr, letExpr)
 import Parser.Expr.PatternParser
-import Parser.Type.TypeParser
+-- import Parser.Type.TypeParser
 
 -- === 実行関数 ===
 

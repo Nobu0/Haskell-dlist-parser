@@ -13,8 +13,6 @@ module Parser.Expr.ExprCore
     oPsectionCore,
     pRecordExpr,
     lambdaExpr,
-    lookAhead,
-    binOp,
   )
 where
 
@@ -24,8 +22,8 @@ import Control.Applicative (empty, many, (<|>))
 import Control.Monad (guard)
 import Data.Functor (void)
 import Lexer.Token (Token (..))
-import Parser.Core.Combinator (Parser (..), chainl1, token)
-import Parser.Core.TokenParser (ident, int, stringLiteralExpr, symbol, tokenIs)
+import Parser.Core.Combinator
+import Parser.Core.TokenParser
 import Parser.Expr.PatternParser (pattern)
 import Parser.SQL.SQLParser
 import Parser.Type.TypeParser (typeIdent)
@@ -44,106 +42,6 @@ field = do
   symbol "="
   value <- exprCore
   return (name, value)
-
-sepBy1 :: Parser a -> Parser sep -> Parser [a]
-sepBy1 p sep = do
-  x <- p
-  xs <- many (sep >> p)
-  return (x : xs)
-
-try :: Parser a -> Parser a
-try p = Parser $ \input ->
-  case runParser p input of
-    Just r -> Just r
-    Nothing -> Nothing
-
-parens :: Parser a -> Parser a
-parens p = do
-  symbol "("
-  x <- p
-  symbol ")"
-  return x
-
-anyToken :: Parser Token
-anyToken = Parser $ \input ->
-  case input of
-    [] -> Nothing
-    (t : ts) -> Just (t, ts)
-
-lookAhead :: Parser a -> Parser a
-lookAhead p = Parser $ \input ->
-  case runParser p input of
-    Just (a, _) -> Just (a, input) -- 成功しても input を消費しない
-    Nothing -> Nothing
-
--- ============================================
---  基本的な choice 実装（元 ExprParser から移植）
--- ============================================
-
-choice1 :: Parser a -> Parser a -> Parser a
-choice1 p q = Parser $ \input ->
-  case runParser p input of
-    Just r -> Just r
-    Nothing -> runParser q input
-
-choice :: [Parser a] -> Parser a
-choice [] = Parser $ \_ -> Nothing
-choice (p : ps) = choice1 p (choice ps)
-
--- ============================================
---  演算子パーサー（元 ExprParser から移植）
--- ============================================
-
-operator :: Parser String
-operator = choice (map (\s -> symbol s >> return s) allOps)
-  where
-    allOps =
-      [ "==",
-        "/=",
-        ">=",
-        "<=",
-        "+",
-        "-",
-        "*",
-        "/",
-        ">",
-        "<"
-      ]
-
--- ============================================
---  binOp（元 ExprParser から移植）
--- ============================================
-{-}
-binOp :: [String] -> Parser (Expr -> Expr -> Expr)
-binOp ops = tokenIs $ \case
-  TokOperator op | op `elem` ops -> Just (EBinOp op)
-  _ -> Nothing
--}
-binOp :: [String] -> Parser (Expr -> Expr -> Expr)
-binOp ops = tokenIs $ \case
-  TokOperator op | op `elem` ops ->
-    case parseBinOp op of
-      Just bop -> Just (EBinOp bop)
-      Nothing -> Nothing
-  _ -> Nothing
-
--- TokOperator op -> EBinOp <$> parseBinOp op
-
-parseBinOp :: String -> Maybe BinOp
-parseBinOp s = case s of
-  "+" -> Just Add
-  "-" -> Just Sub
-  "*" -> Just Mul
-  "/" -> Just Div
-  "==" -> Just Eq
-  "!=" -> Just Neq
-  "<" -> Just Lt
-  ">" -> Just Gt
-  "<=" -> Just Le
-  ">=" -> Just Ge
-  "&&" -> Just And
-  "||" -> Just Or
-  _ -> Nothing
 
 -- ============================================
 --  lambdaExpr（ExprCore に戻す）
@@ -243,15 +141,6 @@ atomBaseCore = do
     <|> EInt <$> int
     <|> EString <$> stringLiteralExpr
     <|> pRecordExpr
-
-{-}
-stringLiteralExpr :: Parser String
-stringLiteralExpr =
-  satisfyToken f
-  where
-    f (TokString s) = Just s
-    f _ = Nothing
--}
 
 ellipsis :: Parser ()
 ellipsis = tokenIs (\t -> if t == TokEllipsis then Just () else Nothing)

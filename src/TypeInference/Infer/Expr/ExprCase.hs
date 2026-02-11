@@ -1,4 +1,3 @@
--- TypeInference/Infer/Expr/ExprCase.hs
 module TypeInference.Infer.Expr.ExprCase (inferCase) where
 
 import AST.Expr

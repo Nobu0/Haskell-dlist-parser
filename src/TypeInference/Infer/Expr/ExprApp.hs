@@ -1,4 +1,3 @@
--- TypeInference/Infer/Expr/ExprApp.hs
 module TypeInference.Infer.Expr.ExprApp (inferApp) where
 
 import AST.Expr

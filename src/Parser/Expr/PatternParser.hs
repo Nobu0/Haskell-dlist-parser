@@ -21,7 +21,6 @@ import Data.Functor (void)
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Parser.Core.TokenParser (lookAhead, notFollowedBy)
 import Parser.Type.TypeParser (typeIdent)
 import Utils.MyTrace (myTrace)
 

@@ -23,20 +23,23 @@ inferExpr env (EVar name) =
     Just sigma -> do
       t <- instantiate sigma
       Right (emptySubst, t)
+-- AST で定義された型で分岐 ここが欠損すると型推論ができなくなる
 inferExpr env expr = case expr of
   ELet pat e1 e2 -> inferLet inferExpr env pat e1 e2
   ELetBlock binds body -> inferLetBlock inferExpr env binds body
   EWhere e binds -> inferWhere inferExpr env e binds
   EIf c t f -> inferIf inferExpr env c t f
   EDo stmts -> inferDo inferExpr env stmts
+  ECase scrut alts -> inferCase inferExpr env scrut alts
+  EApp e1 e2 -> inferApp inferExpr env e1 e2
+  EBinOp op e1 e2 -> inferBinOp inferExpr env op e1 e2
+  -- リテラル
   EInt _ -> inferInt
   EBool _ -> inferBool
   EString _ -> inferString
   ETuple es -> inferTuple inferExpr env es
   EList es -> inferList inferExpr env es
-  ECase scrut alts -> inferCase inferExpr env scrut alts
-  EApp e1 e2 -> inferApp inferExpr env e1 e2
-  EBinOp op e1 e2 -> inferBinOp inferExpr env op e1 e2
+  -- 拡張タイプ SQL
   ESQL _ params -> inferSQL inferExpr env params
 
 {-}
@@ -53,11 +56,5 @@ inferExpr env expr = case expr of
   EString _ -> inferString
   ETuple es -> inferTuple env es
   EList es -> inferList env es
--}
-{-}
-inferExpr :: TypeEnv -> Expr -> Either InferError (Subst, Type)
-inferExpr env expr = case expr of
   ESQL _ params -> inferSQL env params
-  -- 他の構文もここに追加していく
-  _ -> Left (InferOther "Not implemented yet")
 -}

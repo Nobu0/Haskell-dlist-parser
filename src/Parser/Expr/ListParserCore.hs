@@ -6,7 +6,7 @@ import AST.Expr
 import Control.Applicative (many, optional, (<|>))
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
-import Parser.Core.TokenParser (brackets, keyword, symbol)
+import Parser.Core.TokenParser
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.PatternParser (pattern)
 import Utils.MyTrace

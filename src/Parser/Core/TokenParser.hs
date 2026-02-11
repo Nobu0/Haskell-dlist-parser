@@ -10,16 +10,21 @@ module Parser.Core.TokenParser
     brackets,
     braces,
     notFollowedBy,
-    lookAhead,
     (<?>),
     anyToken,
     stringLiteralExpr,
     skipNewlines,
     skipSeparators,
+    name,
+    operator,
+    bracedBlock,
+    anyToken,
+    binOp,
   )
 where
 
-import Control.Applicative (empty, many)
+import AST.Expr
+import Control.Applicative (empty, many, (<|>))
 import qualified Data.Set as Set
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
@@ -33,8 +38,14 @@ p <?> _ = p
 braces :: Parser a -> Parser a
 braces p = between (symbol "{") (symbol "}") p
 
+-- parens :: Parser a -> Parser a
+-- parens p = between (symbol "(") (symbol ")") p
 parens :: Parser a -> Parser a
-parens p = between (symbol "(") (symbol ")") p
+parens p = do
+  symbol "("
+  x <- p
+  symbol ")"
+  return x
 
 brackets :: Parser a -> Parser a
 brackets p = between (symbol "[") (symbol "]") p
@@ -86,12 +97,6 @@ notFollowedBy p = Parser $ \input ->
     Nothing -> Just ((), input) -- p が失敗 → 成功
     Just _ -> Nothing -- p が成功 → 失敗
 
-lookAhead :: Parser a -> Parser a
-lookAhead (Parser p) = Parser $ \input ->
-  case p input of
-    Just (a, _) -> Just (a, input) -- 結果はそのまま、入力は消費しない
-    Nothing -> Nothing
-
 anyToken :: Parser Token
 anyToken = Parser $ \input ->
   case input of
@@ -136,3 +141,93 @@ skipNewlines :: Parser ()
 skipNewlines = do
   _ <- many (tokenIs (\t -> if t == TokNewline then Just () else Nothing))
   return ()
+
+binOp :: [String] -> Parser (Expr -> Expr -> Expr)
+binOp ops = tokenIs $ \case
+  TokOperator op | op `elem` ops ->
+    case parseBinOp op of
+      Just bop -> Just (EBinOp bop)
+      Nothing -> Nothing
+  _ -> Nothing
+
+parseBinOp :: String -> Maybe BinOp
+parseBinOp s = case s of
+  "+" -> Just Add
+  "-" -> Just Sub
+  "*" -> Just Mul
+  "/" -> Just Div
+  "==" -> Just Eq
+  "!=" -> Just Neq
+  "<" -> Just Lt
+  ">" -> Just Gt
+  "<=" -> Just Le
+  ">=" -> Just Ge
+  "&&" -> Just And
+  "||" -> Just Or
+  _ -> Nothing
+
+operator :: Parser String
+operator = choice (map (\s -> symbol s >> return s) allOps)
+  where
+    allOps =
+      [ "==",
+        "/=",
+        ">=",
+        "<=",
+        "+",
+        "-",
+        "*",
+        "/",
+        ">",
+        "<"
+      ]
+
+{-}
+operator :: Parser String
+operator = do
+  symbol "("
+  op <- operatorTok
+  symbol ")"
+  return (op)
+-}
+
+-- 関数名や演算子名をパースする共通パーサー
+-- 例: "f" や "==" や "(==)"
+name :: Parser String
+name = try parenOp <|> ident <|> symbolOp
+
+-- 括弧付きオペレータ: (==)
+parenOp :: Parser String
+parenOp = do
+  symbol "("
+  op <- symbolOp
+  symbol ")"
+  return op
+
+-- 括弧なしのオペレータ: ==
+symbolOp :: Parser String
+symbolOp = do
+  tok <- satisfy isSymbol
+  case tok of
+    TokSymbol s -> return s
+    _ -> empty -- ここには来ないはずだけど、安全のため
+
+-- 文字列がオペレータかどうか
+isSymbol :: Token -> Bool
+isSymbol (TokSymbol _) = True
+isSymbol _ = False
+
+bracedBlock :: Parser a -> Parser [a]
+bracedBlock p = do
+  symbol "{"
+  go 1 []
+  where
+    go 0 acc = return (reverse acc)
+    go n acc = do
+      t <- lookAhead anyToken
+      case t of
+        TokSymbol "{" -> symbol "{" >> go (n + 1) acc
+        TokSymbol "}" -> symbol "}" >> go (n - 1) acc
+        _ -> do
+          x <- p
+          go n (x : acc)

@@ -1,4 +1,3 @@
--- TypeInference/Infer/Expr/ExprBinOp.hs
 module TypeInference.Infer.Expr.ExprBinOp (inferBinOp) where
 
 import AST.Expr (BinOp (..), Expr (..))

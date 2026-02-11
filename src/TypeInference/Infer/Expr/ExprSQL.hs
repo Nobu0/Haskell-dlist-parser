@@ -1,4 +1,3 @@
--- TypeInference/Infer/Expr/ExprSQL.hs
 module TypeInference.Infer.Expr.ExprSQL (inferSQL) where
 
 import AST.Expr

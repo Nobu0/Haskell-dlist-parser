@@ -5,7 +5,7 @@ module Decl.DeclParserCore where
 import AST.Decl
 import AST.Module (Name)
 import AST.Pattern (Pattern (..))
-import AST.Type (Type (..))
+import AST.Type (Constraint (Constraint), Type (..))
 import Control.Applicative (empty, many, optional, some, (<|>))
 import Data.List (intercalate)
 -- ★ ここが正しい
@@ -16,7 +16,7 @@ import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.ExprExtensions (expr, skipNewlines)
 import Parser.Expr.PatternParser (pattern, patternParser)
-import Parser.Type.TypeParser (parseType, typeIdent, typeP)
+import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
 import Utils.MyTrace
 
 -- decls :: Parser [Decl]
@@ -37,6 +37,8 @@ isEOF = Parser $ \ts ->
 decl :: Parser Decl
 decl = do
   skipNewlines
+  t <- lookAhead anyToken
+  myTrace ("<< decl next token: " ++ show t)
   eof <- isEOF
   if eof
     then Parser $ \_ -> Nothing -- many decl に「もう終わり」と伝える
@@ -55,9 +57,13 @@ declBody = do
         TokKeyword "data" -> dataDecl
         TokKeyword "newType" -> newtypeDecl
         TokKeyword "import" -> importDecl
+        TokKeyword "instance" -> instanceDecl
         TokKeyword "module" -> moduleDecl
+        TokKeyword "class" -> classDecl
+        TokKeyword "type" -> typeAliasDecl
         -- _ -> try funDecl <|> valueDecl
-        TokIdent _ -> try typeSigDecl <|> funDecl <|> valueDecl
+        TokIdent _ -> try typeSigDecl <|> try funDecl <|> valueDecl
+        TokSymbol "(" -> try typeSigDecl <|> empty -- "unexpected symbol in declaration"
 
 -- Haskell ファイル全体
 program :: Parser [Decl]
@@ -98,71 +104,26 @@ funHead = do
       myTrace "Function definition must start with a variable name"
       empty
 
-typeSigDecl :: Parser Decl
-typeSigDecl = do
-  name <- ident
-  symbol "::"
-  ty <- typeP
-  return (DeclTypeSig name ty)
-
 {-}
 typeSigDecl :: Parser Decl
 typeSigDecl = do
   name <- ident
   symbol "::"
-  ty <- typeParser
-  return (DeclTypeSig name ty)
-
-typeParser :: Parser Type
-typeParser = typeForall
-
-typeForall :: Parser Type
-typeForall =
-  try
-    ( do
-        keyword "forall"
-        vars <- many1 ident
-        symbol "."
-        TForall vars <$> typeConstraint
-    )
-    <|> typeConstraint
-
-typeConstraint :: Parser Type
-typeConstraint =
-  try
-    ( do
-        cs <- constraint `sepBy1` symbol ","
-        symbol "=>"
-        TConstraint cs <$> typeArrow
-    )
-    <|> typeArrow
-
-typeArrow :: Parser Type
-typeArrow =
-  do
-    t1 <- typeApp
-    (symbol "->" >> TArrow t1 <$> typeArrow)
-      <|> return t1
-
-typeApp :: Parser Type
-typeApp =
-  do
-    ts <- some typeAtom
-    return (foldl1 TApp ts)
-
-typeAtom :: Parser Type
-typeAtom =
-  TVar <$> ident
-    <|> TCon <$> typeIdent
-    <|> TList <$> brackets typeParser
-    <|> parens (typeParser `sepBy` symbol ",")
-
-constraint :: Parser Constraint
-constraint = do
-  cls <- typeIdent -- "Eq", "Ord", "Show" など
-  tys <- many typeAtom -- 引数
-  return (Constraint cls tys)
+  ty <- parseType
+  myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
+  let decl = DeclTypeSig name ty
+  myTrace ("<< returning DeclTypeSig: " ++ show decl)
+  return decl
 -}
+typeSigDecl :: Parser Decl
+typeSigDecl = do
+  name <- name -- operator <|> ident
+  symbol "::"
+  ty <- parseType
+  myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
+  let decl = DeclTypeSig name ty
+  myTrace ("<< returning DeclTypeSig: " ++ show decl)
+  return decl
 
 -- 値宣言
 valueDecl :: Parser Decl
@@ -196,12 +157,12 @@ dataDecl = do
   return (DeclData name vars constrs)
 
 -- コンストラクタ
-constr :: Parser Constr
+constr :: Parser Constraint
 constr = do
   myTrace "<< constr parser called"
   cname <- typeIdent
   tys <- many parseType
-  return (Constr cname tys)
+  return (Constraint cname tys)
 
 -- newtype 宣言
 newtypeDecl :: Parser Decl
@@ -220,3 +181,35 @@ moduleDecl = do
   name <- typeIdent -- <|> token TokTypeIdent)
   keyword "where"
   return (DeclModule name)
+
+instanceDecl :: Parser Decl
+instanceDecl = do
+  myTrace "<< instanceDecl parser called"
+  keyword "instance"
+  ctx <- optional (try (constraintList <* keyword "=>"))
+  className <- typeIdent
+  args <- some typeAtom
+  keyword "where"
+  methods <- bracedBlock decl
+  return (DeclInstance ctx className args methods)
+
+classDecl :: Parser Decl
+classDecl = do
+  myTrace "<< classDecl parser called"
+  keyword "class"
+  className <- typeIdent
+  vars <- some ident
+  keyword "where"
+  t <- lookAhead anyToken
+  methods <- bracedBlock decl
+  return $ DeclClass className vars methods
+
+typeAliasDecl :: Parser Decl
+typeAliasDecl = do
+  myTrace "<< typeAliasDecl parser called"
+  keyword "type"
+  name <- typeIdent
+  vars <- many ident
+  symbol "="
+  body <- parseType
+  return $ DeclTypeAlias name vars body

@@ -1,0 +1,285 @@
+{-# LANGUAGE LambdaCase #-}
+
+module Parser.Type.TypeParser
+  ( parseType,
+    parseForall,
+    arrowType,
+    typeApp,
+    typeAtom,
+    typeIdent,
+    constraintP,
+    constraintList,
+    typeP,
+  )
+where
+
+import AST.Decl
+import AST.Expr
+import AST.Type
+import Control.Applicative
+import Data.Char (isUpper)
+import Data.List (isPrefixOf)
+import Lexer.Token (Token (..))
+import Parser.Core.Combinator
+import Parser.Core.TokenParser
+import Utils.MyTrace
+
+{-}
+parseType :: Parser Type
+parseType = try constrainedType <|> parseForall <|> arrowType
+-}
+
+parseType :: Parser Type
+parseType = do
+  t1 <- arrowType
+  rest <-
+    optional
+      ( do
+          token (TokKeyword "=>")
+          t2 <- parseType
+          return (t1, t2)
+      )
+  case rest of
+    Just (TApp (TCon cls) arg, body) ->
+      return $ TConstraint [Constraint cls [arg]] body
+    Just (TCon cls, body) ->
+      return $ TConstraint [Constraint cls []] body
+    Just (TTuple cs, body) ->
+      return $ TConstraint (map toConstraint cs) body
+    Nothing -> return t1
+    _ -> empty
+
+arrowType :: Parser Type
+arrowType = do
+  t <- lookAhead anyToken
+  myTrace ("<< arrowType: next token " ++ show t)
+  t1 <- typeApp
+  rest <- optional (token TokArrow *> arrowType)
+  return $ maybe t1 (TFun t1) rest
+
+typeApp :: Parser Type
+typeApp = do
+  t <- lookAhead anyToken
+  myTrace ("<< typeApp: next token " ++ show t)
+  f <- typeAtom
+  args <- many typeAtom
+  return $ foldl TApp f args
+
+typeAtom :: Parser Type
+typeAtom = do
+  t <- lookAhead anyToken
+  myTrace ("<< typeAtom: next token " ++ show t)
+  (TCon <$> typeIdent)
+    <|> (TVar <$> ident)
+    <|> brackets (TList <$> parseType)
+    <|> parensWithConstraints
+    <|> do
+      -- parens typeInParens
+      -- typeAtom =
+      --      (TCon <$> typeIdent)
+      --  <|> (TVar <$> ident)
+      --  <|> brackets (TList <$> parseType)
+      --  <|> do
+      symbol "("
+      ty <- typeInParens
+      symbol ")"
+      return ty
+
+parensWithConstraints :: Parser Type
+parensWithConstraints = do
+  symbol "("
+  ts <- parseType `sepBy1` symbol ","
+  next <- lookAhead anyToken
+  myTrace ("<< parensWithConstraints: parsed " ++ show ts ++ ", lookAhead: " ++ show next)
+  case next of
+    TokKeyword "=>" -> do
+      token (TokKeyword "=>")
+      ty <- parseType
+      symbol ")" -- ← ここで閉じる！
+      let constraints = map toConstraint ts
+      return $ TConstraint constraints ty
+    _ -> do
+      symbol ")" -- ← 通常の型やタプルとして閉じる
+      return $ case ts of
+        [t] -> t
+        _ -> TTuple ts
+
+{-}
+typeInParens :: Parser Type
+typeInParens = do
+  ts <- parseType `sepBy1` symbol ","
+  return $ case ts of
+    [t] -> t
+    _ -> TTuple ts
+
+typeInParens :: Parser Type
+typeInParens = do
+  -- 先読みで `=>` が来るか確認
+  t <- lookAhead anyToken
+  myTrace ("<< typeInParens: next token " ++ show t)
+  ts <- parseType `sepBy1` symbol ","
+  t2 <- lookAhead anyToken
+  myTrace ("<< typeInParens:2 next token " ++ show t2)
+  look <- optional (keyword "=>")
+  myTrace ("<< typeInParens: parsed " ++ show ts ++ ", next token: " ++ show look)
+  case look of
+    Just _ -> do
+      -- 制約だった！
+      ty <- parseType
+      let constraints = map toConstraint ts
+      return $ TConstraint constraints ty
+    Nothing -> return $ case ts of
+      [t] -> t
+      _ -> TTuple ts
+-}
+typeInParens :: Parser Type
+typeInParens = do
+  ts <- parseType `sepBy1` symbol ","
+  next <- lookAhead (optional anyToken)
+  myTrace ("<< typeInParens: parsed " ++ show ts ++ ", lookAhead: " ++ show next)
+  case next of
+    Just (TokKeyword "=>") -> do
+      _ <- token (TokKeyword "=>")
+      ty <- parseType
+      let constraints = map toConstraint ts
+      return $ TConstraint constraints ty
+    _ -> return $ case ts of
+      [t] -> t
+      _ -> TTuple ts
+
+toConstraint :: Type -> Constraint
+toConstraint (TApp (TCon cls) arg) = do
+  -- myTrace ("<< toConstraiont1")
+  (Constraint cls [arg])
+toConstraint (TCon cls) = do
+  -- myTrace ("<< toConstraiont2")
+  (Constraint cls [])
+toConstraint other = error $ "Invalid constraint form: " ++ show other
+
+constrainedType :: Parser Type
+constrainedType = do
+  t <- lookAhead anyToken
+  myTrace ("<< constrainedType: next token " ++ show t)
+  symbol "("
+  cs <- sepBy1 constraint (symbol ",")
+  symbol ")"
+  keyword "=>"
+  ty <- arrowType
+  return (TConstraint cs ty)
+
+parseForall :: Parser Type
+parseForall = do
+  t <- lookAhead anyToken
+  myTrace ("<< parseForall: next token " ++ show t)
+  token TokForall
+  vars <- some ident
+  token TokDot
+  body <- parseType
+  return $ TForall vars body
+
+typeIdent :: Parser String
+typeIdent = satisfyMap $ \case
+  TokTypeIdent s -> Just s
+  _ -> Nothing
+
+constraint :: Parser Constraint
+constraint = do
+  t <- lookAhead anyToken
+  myTrace ("<< constraint: next token " ++ show t)
+  cls <- ident
+  ty <- typeApp
+  return (Constraint cls [ty])
+
+constraintP :: Parser Constraint
+constraintP = do
+  t <- lookAhead anyToken
+  myTrace ("<< constraintP: next token " ++ show t)
+  className <- typeIdent
+  args <- some typeAtom
+  return $ Constraint className args
+
+constraintList :: Parser [Constraint]
+constraintList = do
+  t <- lookAhead anyToken
+  myTrace ("<< constraintList: next token " ++ show t)
+  try (parens (constraintP `sepBy1` symbol ","))
+    <|> fmap (: []) constraintP
+
+typeP :: Parser Type
+typeP = try forallType <|> typeAtom
+
+forallType :: Parser Type
+forallType = do
+  t <- lookAhead anyToken
+  myTrace ("<< forallType: next token " ++ show t)
+  token TokForall
+  vars <- some ident
+  token TokDot
+  t <- constrainedType
+  return (TForall vars t)
+
+{-}
+parseType :: Parser Type
+parseType =
+  try constrainedType
+    <|> parseForall
+    <|> arrowType
+
+parseForall :: Parser Type
+parseForall = do
+  token TokForall
+  vars <- some ident
+  token TokDot
+  body <- parseType
+  return $ TForall vars body
+
+arrowType :: Parser Type
+arrowType = do
+  t1 <- typeP
+  rest <- optional (token TokArrow *> arrowType)
+  return $ maybe t1 (TArrow t1) rest
+
+typeApp :: Parser Type
+typeApp = do
+  f <- typeAtom
+  args <- many typeAtom
+  return $ foldl TApp f args
+
+typeAtom :: Parser Type
+typeAtom =
+  (TCon <$> typeIdent)
+    <|> (TVar <$> ident)
+    <|> brackets (TList <$> typeP)
+    <|> parens typeP
+
+-- tupleOrParens
+
+-- <|> constrainedType
+
+tupleOrParens :: Parser Type
+tupleOrParens = do
+  ts <- typeAtom `sepBy1` symbol ","
+  return $ case ts of
+    [t] -> t
+    _ -> TTuple ts
+
+constrainedType :: Parser Type
+constrainedType = do
+  symbol "("
+  cs <- sepBy1 constraint (symbol ",")
+  symbol ")"
+  symbol "=>"
+  ty <- arrowType
+  return (TConstraint cs ty)
+
+-}
+{-}
+constrainedType :: Parser Type
+constrainedType = do
+  constraints <- optional $ try $ do
+    cs <- constraintList
+    keyword "=>"
+    return cs
+  t <- arrowType
+  return $ maybe t (`TConstraint` t) constraints
+-}
