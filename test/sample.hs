@@ -1,6 +1,12 @@
 module Main where
 
-import AST.Expr
+import AST.Expr (Expr(..), BinOp)
+import Data.List
+import qualified Data.Map
+import qualified Data.Map as M
+import Data.Maybe (fromJust, isJust)
+import Data.Char hiding (isDigit)
+import Data.Maybe (..)  -- ← これ！
 
 data AAA = {A,B}
 type T = TokString

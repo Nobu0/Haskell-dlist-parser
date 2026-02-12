@@ -10,11 +10,25 @@ data Decl
   | DeclTypeSig Name Type
   | DeclData Name [Name] [Constraint]
   | DeclNewtype Name [Name] Constraint
-  | DeclImport Name
-  | DeclModule Name
+  | -- | DeclImport Name (Maybe [Name])
+    DeclModule Name
   | DeclClass String [String] [Decl]
   | DeclInstance (Maybe [Constraint]) String [Type] [Decl]
   | DeclTypeAlias String [String] Type
+  | DeclImport
+      { importQualified :: Bool,
+        importModule :: Name,
+        importAlias :: Maybe Name,
+        importHiding :: Bool,
+        importItems :: Maybe [ImportItem]
+      }
+  deriving (Show, Eq)
+
+data ImportItem
+  = ImportVar Name
+  | ImportTypeAll Name
+  | ImportTypeSome Name [Name]
+  | ImportAllItems -- ← 追加！
   deriving (Show, Eq)
 
 -- data Constr = Constr Name [Type]

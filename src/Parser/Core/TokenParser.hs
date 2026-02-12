@@ -164,6 +164,7 @@ parseBinOp s = case s of
   ">=" -> Just Ge
   "&&" -> Just And
   "||" -> Just Or
+  "++" -> Just Concat
   _ -> Nothing
 
 operator :: Parser String

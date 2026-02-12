@@ -48,22 +48,28 @@ decl = do
 
 declBody :: Parser Decl
 declBody = do
-  declDispatch
-  where
-    declDispatch = do
-      t <- lookAhead anyToken
-      myTrace ("<< decl dispatch: " ++ show t)
-      case t of
-        TokKeyword "data" -> dataDecl
-        TokKeyword "newType" -> newtypeDecl
-        TokKeyword "import" -> importDecl
-        TokKeyword "instance" -> instanceDecl
-        TokKeyword "module" -> moduleDecl
-        TokKeyword "class" -> classDecl
-        TokKeyword "type" -> typeAliasDecl
-        -- _ -> try funDecl <|> valueDecl
-        TokIdent _ -> try typeSigDecl <|> try funDecl <|> valueDecl
-        TokSymbol "(" -> try typeSigDecl <|> empty -- "unexpected symbol in declaration"
+  d <- declDispatch
+  myTrace ("<< declBody: return " ++ show d)
+  return d
+
+declDispatch :: Parser Decl
+declDispatch = do
+  t <- lookAhead anyToken
+  myTrace ("<< decl dispatch: " ++ show t)
+  case t of
+    TokKeyword "data" -> dataDecl
+    TokKeyword "newType" -> newtypeDecl
+    TokKeyword "import" -> importDecl
+    TokKeyword "instance" -> instanceDecl
+    TokKeyword "module" -> moduleDecl
+    TokKeyword "class" -> classDecl
+    TokKeyword "type" -> typeAliasDecl
+    -- _ -> try funDecl <|> valueDecl
+    TokIdent _ -> try typeSigDecl <|> try funDecl <|> valueDecl
+    TokSymbol "(" -> try typeSigDecl <|> empty -- "unexpected symbol in declaration"
+    _ -> do
+      myTrace ("<< unknown token in decl: " ++ show t)
+      empty
 
 -- Haskell ファイル全体
 program :: Parser [Decl]
@@ -88,11 +94,13 @@ funDecl = do
   (name, args) <- funHead
   symbol "="
   body <- expr
+  myTrace ("<< funDecl return" ++ show body)
   return (DeclFun name args body)
 
 funHead :: Parser (Name, [Pattern])
 funHead = do
   p <- pattern
+  myTrace ("<< funHead pattern: " ++ show p)
   case p of
     PVar name -> do
       args <- many pattern
@@ -117,7 +125,7 @@ typeSigDecl = do
 -}
 typeSigDecl :: Parser Decl
 typeSigDecl = do
-  name <- name -- operator <|> ident
+  name <- ident <|> operator -- name
   symbol "::"
   ty <- parseType
   myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
@@ -128,8 +136,12 @@ typeSigDecl = do
 -- 値宣言
 valueDecl :: Parser Decl
 valueDecl = do
-  myTrace "<< valueDecl parser called"
+  t <- lookAhead anyToken
+  myTrace ("<< valueDecl: " ++ show t)
   pat <- patternParser
+  myTrace ("<< valueDecl pattern: " ++ show pat)
+  t2 <- lookAhead anyToken
+  myTrace ("<< valueDecl: " ++ show t2)
   symbol "="
   body <- expr
   return (DeclValue pat body)
@@ -138,12 +150,40 @@ valueDecl = do
 importDecl :: Parser Decl
 importDecl = do
   myTrace "<< importDecl parser called"
-  keyword "import"
+  _ <- keyword "import"
+  isQual <- option False (True <$ keyword "qualified")
   modName <- moduleName
-  return (DeclImport modName)
+  alias <- optional (keyword "as" *> (ident <|> typeIdent))
+  isHiding <- option False (True <$ keyword "hiding")
+  items <- optional importList
+  return $ DeclImport isQual modName alias isHiding items
 
-moduleName :: Parser Name
-moduleName = intercalate "." <$> sepBy1 ident (symbol ".")
+importList :: Parser [ImportItem]
+importList =
+  parens $
+    pure ImportAllItems <$ symbol ".."
+      <|> sepBy1 importIdent (symbol ",")
+
+importIdent :: Parser ImportItem
+importIdent = do
+  name <- ident <|> typeIdent
+  m <-
+    optional $
+      parensI $
+        (ImportTypeAll name <$ symbol "..")
+          <|> (ImportTypeSome name <$> sepBy1 (ident <|> typeIdent) (symbol ","))
+  return $ case m of
+    Just x -> x
+    Nothing -> ImportVar name
+
+parensI :: Parser a -> Parser a
+parensI p = symbol "(" *> p <* symbol ")"
+
+moduleName :: Parser String
+moduleName = intercalate "." <$> sepBy1 (ident <|> typeIdent) tokdot
+
+tokdot :: Parser String
+tokdot = token TokDot *> pure "."
 
 -- data 宣言
 dataDecl :: Parser Decl

@@ -74,6 +74,7 @@ slexer = go
     go ('=' : '>' : rest) = TokKeyword "=>" : go rest
     go (':' : ':' : rest) = TokSymbol "::" : go rest
     go ('+' : '+' : rest) = TokOperator "++" : go rest
+    -- go ('+' : '+' : rest) = TokSymbol "++" : go rest
     go ('=' : '=' : rest) = TokSymbol "==" : go rest
     go ('/' : '=' : rest) = TokSymbol "/=" : go rest
     go ('<' : '=' : rest) = TokSymbol "<=" : go rest

@@ -73,4 +73,5 @@ data BinOp
   | Gt
   | Le
   | Ge
+  | Concat
   deriving (Eq, Show)

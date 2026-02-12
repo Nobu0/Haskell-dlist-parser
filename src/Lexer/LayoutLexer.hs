@@ -28,8 +28,10 @@ go stack 0 (TokNewline : rest) =
       prevLevel = length stack - 1
    in TokVNewline (prevLevel, 0) : go stack' 0 rest
 -- 括弧内の TokSpace や TokNewline はスキップ
-go stack depth (TokSpace _ : rest)
-  | depth > 0 = go stack depth rest
+go stack depth (TokSpace _ : rest) =
+  go stack depth rest
+-- go stack depth (TokSpace _ : rest)
+--  | depth > 0 = go stack depth rest
 go stack depth (TokNewline : rest)
   | depth > 0 = go stack depth rest
 -- 括弧のネスト制御

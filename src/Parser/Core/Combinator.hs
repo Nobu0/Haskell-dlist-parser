@@ -19,6 +19,7 @@ module Parser.Core.Combinator
     choice,
     choice1,
     lookAhead,
+    option,
   )
 where
 
@@ -159,6 +160,9 @@ choice1 p q = Parser $ \input ->
 choice :: [Parser a] -> Parser a
 choice [] = Parser $ \_ -> Nothing
 choice (p : ps) = choice1 p (choice ps)
+
+option :: a -> Parser a -> Parser a
+option x p = p <|> pure x
 
 {-}
 lookAhead :: Parser a -> Parser a
