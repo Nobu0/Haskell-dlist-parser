@@ -3,7 +3,8 @@
 module Decl.DeclParserCore where
 
 import AST.Decl
-import AST.Module (Name)
+import AST.Expr
+-- import AST.Module (Name)
 import AST.Pattern (Pattern (..))
 import AST.Type (Constraint (Constraint), Type (..))
 import Control.Applicative (empty, many, optional, some, (<|>))
@@ -86,7 +87,6 @@ funDecl = do
   symbol "="
   body <- expr
   return (DeclFun (PConstr name args) body)
--}
 
 funDecl :: Parser Decl
 funDecl = do
@@ -96,6 +96,54 @@ funDecl = do
   body <- expr
   myTrace ("<< funDecl return" ++ show body)
   return (DeclFun name args body)
+-}
+
+funDecl :: Parser Decl
+funDecl = do
+  name <- ident
+  args <- many patternParser
+  myTrace ("<< funcdecl: " ++ show args)
+  t <- lookAhead anyToken
+  myTrace ("<< decl dispatch: " ++ show t)
+  case t of
+    TokSymbol "=" -> parseSimple name args
+    TokSymbol "{" -> parseGuarded name args
+    TokSymbol "|" -> parseGuarded2 name args
+    _ -> empty
+
+parseSimple :: Name -> [Pattern] -> Parser Decl
+parseSimple name args = do
+  symbol "="
+  e <- expr
+  return (DeclFun name args Nothing (Just e))
+
+parseGuarded :: Name -> [Pattern] -> Parser Decl
+parseGuarded name args = do
+  symbol "{"
+  guards <- guardedRhs
+  symbol "}"
+  return (DeclFun name args (Just guards) Nothing)
+
+parseGuarded2 :: Name -> [Pattern] -> Parser Decl
+parseGuarded2 name args = do
+  guards <- guardedRhs2
+  return (DeclFun name args (Just guards) Nothing)
+
+guardedRhs2 :: Parser [(Expr, Expr)]
+guardedRhs2 = many guardedLine
+
+guardedRhs :: Parser [(Expr, Expr)]
+guardedRhs = sepBy1 guardedLine (symbol ";")
+
+guardedLine :: Parser (Expr, Expr)
+guardedLine = do
+  t <- lookAhead anyToken
+  myTrace ("<< guredLine: " ++ show t)
+  symbol "|"
+  cond <- expr
+  symbol "="
+  body <- expr
+  return (cond, body)
 
 funHead :: Parser (Name, [Pattern])
 funHead = do
@@ -139,9 +187,6 @@ valueDecl = do
   t <- lookAhead anyToken
   myTrace ("<< valueDecl: " ++ show t)
   pat <- patternParser
-  myTrace ("<< valueDecl pattern: " ++ show pat)
-  t2 <- lookAhead anyToken
-  myTrace ("<< valueDecl: " ++ show t2)
   symbol "="
   body <- expr
   return (DeclValue pat body)
@@ -152,8 +197,10 @@ importDecl = do
   myTrace "<< importDecl parser called"
   _ <- keyword "import"
   isQual <- option False (True <$ keyword "qualified")
+  t <- lookAhead anyToken
+  myTrace ("<< importDecl: " ++ show t)
   modName <- moduleName
-  alias <- optional (keyword "as" *> (ident <|> typeIdent))
+  alias <- optional (keyword "as" *> identI)
   isHiding <- option False (True <$ keyword "hiding")
   items <- optional importList
   return $ DeclImport isQual modName alias isHiding items
@@ -166,21 +213,24 @@ importList =
 
 importIdent :: Parser ImportItem
 importIdent = do
-  name <- ident <|> typeIdent
+  name <- identI
   m <-
     optional $
       parensI $
         (ImportTypeAll name <$ symbol "..")
-          <|> (ImportTypeSome name <$> sepBy1 (ident <|> typeIdent) (symbol ","))
+          <|> (ImportTypeSome name <$> sepBy1 identI (symbol ","))
   return $ case m of
     Just x -> x
     Nothing -> ImportVar name
+
+identI :: Parser String
+identI = ident <|> typeIdent
 
 parensI :: Parser a -> Parser a
 parensI p = symbol "(" *> p <* symbol ")"
 
 moduleName :: Parser String
-moduleName = intercalate "." <$> sepBy1 (ident <|> typeIdent) tokdot
+moduleName = intercalate "." <$> sepBy1 identI tokdot
 
 tokdot :: Parser String
 tokdot = token TokDot *> pure "."

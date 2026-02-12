@@ -5,7 +5,7 @@ import AST.Pattern (Pattern)
 import AST.Type (Constraint, Type)
 
 data Decl
-  = DeclFun Name [Pattern] Expr
+  = DeclFun String [Pattern] (Maybe [(Expr, Expr)]) (Maybe Expr)
   | DeclValue Pattern Expr
   | DeclTypeSig Name Type
   | DeclData Name [Name] [Constraint]

@@ -132,6 +132,9 @@ slexer = go
     classifyIdent "type" = TokKeyword "type"
     classifyIdent "newtype" = TokKeyword "newtype"
     classifyIdent "instance" = TokKeyword "instance"
+    classifyIdent "as" = TokKeyword "as"
+    classifyIdent "qualified" = TokKeyword "qualified"
+    classifyIdent "hiding" = TokKeyword "hiding"
     classifyIdent "=>" = TokKeyword "=>"
     classifyIdent "->" = TokArrow
     -- classifyIdent "..." = TokEllipsis
