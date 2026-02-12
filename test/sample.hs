@@ -21,7 +21,9 @@ max' a b
 max' :: (Ord a) => a -> a -> a
 max' a b | a > b = a | otherwise = b
 
-fxx x = (x + 1)
+fxx x = f (x + 1)
+  where
+    f x = x
 
 myprint :: String -> String
 myprint str = str ++ "abc"

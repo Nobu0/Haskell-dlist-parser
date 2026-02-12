@@ -76,58 +76,46 @@ declDispatch = do
 program :: Parser [Decl]
 program = many decl
 
-{-}
 -- 関数宣言
 funDecl :: Parser Decl
 funDecl = do
   name <- ident
   args <- many patternParser
   t <- lookAhead anyToken
-  myTrace ("<< funcdecl 2: " ++ show t)
-  symbol "="
-  body <- expr
-  return (DeclFun (PConstr name args) body)
-
-funDecl :: Parser Decl
-funDecl = do
-  myTrace "<< funDecl parser called"
-  (name, args) <- funHead
-  symbol "="
-  body <- expr
-  myTrace ("<< funDecl return" ++ show body)
-  return (DeclFun name args body)
--}
-
-funDecl :: Parser Decl
-funDecl = do
-  name <- ident
-  args <- many patternParser
-  myTrace ("<< funcdecl: " ++ show args)
-  t <- lookAhead anyToken
-  myTrace ("<< decl dispatch: " ++ show t)
   case t of
     TokSymbol "=" -> parseSimple name args
-    TokSymbol "{" -> parseGuarded name args
     TokSymbol "|" -> parseGuarded2 name args
+    TokSymbol "{" -> parseGuarded name args
     _ -> empty
 
 parseSimple :: Name -> [Pattern] -> Parser Decl
 parseSimple name args = do
   symbol "="
   e <- expr
-  return (DeclFun name args Nothing (Just e))
+  w <- optional whereBlock
+  return (DeclFun name args Nothing (Just e) w)
 
 parseGuarded :: Name -> [Pattern] -> Parser Decl
 parseGuarded name args = do
   symbol "{"
   guards <- guardedRhs
   symbol "}"
-  return (DeclFun name args (Just guards) Nothing)
+  w <- optional whereBlock
+  return (DeclFun name args (Just guards) Nothing w)
 
 parseGuarded2 :: Name -> [Pattern] -> Parser Decl
 parseGuarded2 name args = do
   guards <- guardedRhs2
-  return (DeclFun name args (Just guards) Nothing)
+  w <- optional whereBlock
+  return (DeclFun name args (Just guards) Nothing w)
+
+whereBlock :: Parser [Decl]
+whereBlock = do
+  keyword "where"
+  symbol "{"
+  decls <- many decl -- 再帰的にパース
+  symbol "}"
+  return decls
 
 guardedRhs2 :: Parser [(Expr, Expr)]
 guardedRhs2 = many guardedLine
