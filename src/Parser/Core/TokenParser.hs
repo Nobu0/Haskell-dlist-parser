@@ -14,12 +14,16 @@ module Parser.Core.TokenParser
     anyToken,
     stringLiteralExpr,
     skipNewlines,
+    newline,
     skipSeparators,
     name,
     operator,
     bracedBlock,
     anyToken,
     binOp,
+    operatorVar,
+    satisfyToken,
+    symbolToken
   )
 where
 
@@ -29,6 +33,7 @@ import qualified Data.Set as Set
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Utils.MyTrace (myTrace)
+import Data.Functor (void)
 
 -- import Text.Megaparsec (token, (<?>))
 
@@ -137,6 +142,11 @@ skipSeparators = do
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
 
+
+newline :: Parser ()
+newline = void (token TokNewline)
+
+
 skipNewlines :: Parser ()
 skipNewlines = do
   _ <- many (tokenIs (\t -> if t == TokNewline then Just () else Nothing))
@@ -182,6 +192,14 @@ operator = choice (map (\s -> symbol s >> return s) allOps)
         ">",
         "<"
       ]
+
+operatorVar :: Parser Expr
+operatorVar = do
+  op <- satisfyToken isOp
+  return (EVar op)
+  where
+    isOp (TokOperator s) = Just s
+    isOp _ = Nothing
 
 {-}
 operator :: Parser String
@@ -232,3 +250,11 @@ bracedBlock p = do
         _ -> do
           x <- p
           go n (x : acc)
+
+symbolToken :: Token -> Parser Token
+symbolToken tok = satisfyToken match
+  where
+    match t
+      | t == tok = Just t
+      | otherwise = Nothing
+

@@ -136,6 +136,7 @@ atomBaseCore = do
   --    TokKeyword "let" -> empty
   --    _ ->
   EVar <$> ident
+    <|> operatorVar
     <|> EVarType <$> typeIdent
     <|> (ellipsis >> return EPlaceholder)
     <|> EInt <$> int

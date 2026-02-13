@@ -20,6 +20,8 @@ module Parser.Core.Combinator
     choice1,
     lookAhead,
     option,
+    skipMany,
+    skipMany1
   )
 where
 
@@ -177,5 +179,15 @@ lookAhead (Parser p) = Parser $ \input ->
   case p input of
     Just (a, _) -> Just (a, input) -- 結果はそのまま、入力は消費しない
     Nothing -> Nothing
+
+
+skipMany1 :: Parser a -> Parser ()
+skipMany1 p = p *> skipMany p
+
+skipMany :: Parser a -> Parser ()
+skipMany p = Parser $ \ts ->
+  case runParser p ts of
+    Just (_, ts') -> runParser (skipMany p) ts'
+    Nothing -> Just ((), ts)
 
 -- 依存：symbol は TokenParser 側で定義されるため、ここでは定義しない

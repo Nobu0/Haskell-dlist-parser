@@ -135,19 +135,6 @@ exprSeq = do
 
 exprSep :: Parser ()
 exprSep = skipMany1 (symbol ";" <|> newline)
-
-newline :: Parser ()
-newline = void (token TokNewline)
-
-skipMany1 :: Parser a -> Parser ()
-skipMany1 p = p *> skipMany p
-
-skipMany :: Parser a -> Parser ()
-skipMany p = Parser $ \ts ->
-  case runParser p ts of
-    Just (_, ts') -> runParser (skipMany p) ts'
-    Nothing -> Just ((), ts)
-
 -- ============================================
 --  let / if / return / for
 -- ============================================

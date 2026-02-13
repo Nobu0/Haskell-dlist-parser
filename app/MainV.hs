@@ -10,17 +10,18 @@ main :: IO ()
 main = do
   -- h [] = 0
   -- h (x:xs) = x + h xs
-  let decls =
-        [ DeclFun "h" [PList []] (EInt 0),
-          DeclFun
-            "h"
-            [PCons (PVar "x") (PVar "xs")]
-            ( EApp
-                (EApp (EVar "+") (EVar "x"))
-                (EApp (EVar "h") (EVar "xs"))
-            )
-        ]
-
+  let decls = []
+  {-}
+          [ DeclFun "h" [PList []] (EInt 0),
+            DeclFun
+              "h"
+              [PCons (PVar "x") (PVar "xs")]
+              ( EApp
+                  (EApp (EVar "+") (EVar "x"))
+                  (EApp (EVar "h") (EVar "xs"))
+              )
+          ]
+  -}
   case inferProgram emptyEnv decls of
     Left err -> putStrLn ("Error: " ++ show err)
     Right env -> putStrLn ("Success: " ++ show env)

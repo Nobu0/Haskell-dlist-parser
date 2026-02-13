@@ -1,5 +1,3 @@
--- stack はインデントのリスト --
-
 module Layout.LayoutTransform (layoutTransform) where
 
 import Lexer.Token

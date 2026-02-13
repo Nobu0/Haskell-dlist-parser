@@ -12,6 +12,9 @@ import Data.List (intercalate)
 -- ★ ここが正しい
 
 -- (keyword) -- , whereClause)
+
+import Decl.DeclParser.Fun
+import Decl.DeclParser.Import
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
@@ -66,7 +69,7 @@ declDispatch = do
     TokKeyword "class" -> classDecl
     TokKeyword "type" -> typeAliasDecl
     -- _ -> try funDecl <|> valueDecl
-    TokIdent _ -> try typeSigDecl <|> try funDecl <|> valueDecl
+    TokIdent _ -> try typeSigDecl <|> try (funDecl decl) <|> valueDecl
     TokSymbol "(" -> try typeSigDecl <|> empty -- "unexpected symbol in declaration"
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)
@@ -76,91 +79,10 @@ declDispatch = do
 program :: Parser [Decl]
 program = many decl
 
--- 関数宣言
-funDecl :: Parser Decl
-funDecl = do
-  name <- ident
-  args <- many patternParser
-  t <- lookAhead anyToken
-  case t of
-    TokSymbol "=" -> parseSimple name args
-    TokSymbol "|" -> parseGuarded2 name args
-    TokSymbol "{" -> parseGuarded name args
-    _ -> empty
-
-parseSimple :: Name -> [Pattern] -> Parser Decl
-parseSimple name args = do
-  symbol "="
-  e <- expr
-  w <- optional whereBlock
-  return (DeclFun name args Nothing (Just e) w)
-
-parseGuarded :: Name -> [Pattern] -> Parser Decl
-parseGuarded name args = do
-  symbol "{"
-  guards <- guardedRhs
-  symbol "}"
-  w <- optional whereBlock
-  return (DeclFun name args (Just guards) Nothing w)
-
-parseGuarded2 :: Name -> [Pattern] -> Parser Decl
-parseGuarded2 name args = do
-  guards <- guardedRhs2
-  w <- optional whereBlock
-  return (DeclFun name args (Just guards) Nothing w)
-
-whereBlock :: Parser [Decl]
-whereBlock = do
-  keyword "where"
-  symbol "{"
-  decls <- many decl -- 再帰的にパース
-  symbol "}"
-  return decls
-
-guardedRhs2 :: Parser [(Expr, Expr)]
-guardedRhs2 = many guardedLine
-
-guardedRhs :: Parser [(Expr, Expr)]
-guardedRhs = sepBy1 guardedLine (symbol ";")
-
-guardedLine :: Parser (Expr, Expr)
-guardedLine = do
-  t <- lookAhead anyToken
-  myTrace ("<< guredLine: " ++ show t)
-  symbol "|"
-  cond <- expr
-  symbol "="
-  body <- expr
-  return (cond, body)
-
-funHead :: Parser (Name, [Pattern])
-funHead = do
-  p <- pattern
-  myTrace ("<< funHead pattern: " ++ show p)
-  case p of
-    PVar name -> do
-      args <- many pattern
-      return (name, args)
-    PApp (PVar name) args -> do
-      moreArgs <- many pattern
-      return (name, args ++ moreArgs)
-    _ -> do
-      myTrace "Function definition must start with a variable name"
-      empty
-
-{-}
 typeSigDecl :: Parser Decl
 typeSigDecl = do
-  name <- ident
-  symbol "::"
-  ty <- parseType
-  myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
-  let decl = DeclTypeSig name ty
-  myTrace ("<< returning DeclTypeSig: " ++ show decl)
-  return decl
--}
-typeSigDecl :: Parser Decl
-typeSigDecl = do
+  t <- lookAhead anyToken
+  myTrace ("<< typeSigDecl: " ++ show t)
   name <- ident <|> operator -- name
   symbol "::"
   ty <- parseType
@@ -178,50 +100,6 @@ valueDecl = do
   symbol "="
   body <- expr
   return (DeclValue pat body)
-
--- import 文
-importDecl :: Parser Decl
-importDecl = do
-  myTrace "<< importDecl parser called"
-  _ <- keyword "import"
-  isQual <- option False (True <$ keyword "qualified")
-  t <- lookAhead anyToken
-  myTrace ("<< importDecl: " ++ show t)
-  modName <- moduleName
-  alias <- optional (keyword "as" *> identI)
-  isHiding <- option False (True <$ keyword "hiding")
-  items <- optional importList
-  return $ DeclImport isQual modName alias isHiding items
-
-importList :: Parser [ImportItem]
-importList =
-  parens $
-    pure ImportAllItems <$ symbol ".."
-      <|> sepBy1 importIdent (symbol ",")
-
-importIdent :: Parser ImportItem
-importIdent = do
-  name <- identI
-  m <-
-    optional $
-      parensI $
-        (ImportTypeAll name <$ symbol "..")
-          <|> (ImportTypeSome name <$> sepBy1 identI (symbol ","))
-  return $ case m of
-    Just x -> x
-    Nothing -> ImportVar name
-
-identI :: Parser String
-identI = ident <|> typeIdent
-
-parensI :: Parser a -> Parser a
-parensI p = symbol "(" *> p <* symbol ")"
-
-moduleName :: Parser String
-moduleName = intercalate "." <$> sepBy1 identI tokdot
-
-tokdot :: Parser String
-tokdot = token TokDot *> pure "."
 
 -- data 宣言
 dataDecl :: Parser Decl

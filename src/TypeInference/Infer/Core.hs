@@ -87,7 +87,9 @@ generalizeInfer env t =
 
 groupDecls :: [Decl] -> M.Map Name [Decl]
 groupDecls decls =
-  M.fromListWith (++) [(name, [d]) | d@(DeclFun name _ _) <- decls]
+  M.fromListWith (++) [(name, [d]) | d@(DeclFun name _ _ _ _) <- decls]
+
+--  M.fromListWith (++) [(name, [d]) | d@(DeclFun name _ _) <- decls]
 
 unifyMany :: [Type] -> Either InferError Subst
 unifyMany [] = Right emptySubst

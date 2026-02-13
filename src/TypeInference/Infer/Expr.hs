@@ -48,7 +48,8 @@ inferGroup env (name, clauses) = do
   Right (extendEnv env name scheme)
 
 inferClause :: TypeEnv -> Decl -> Either InferError (Subst, Type)
-inferClause env (DeclFun _ pats body) = do
+inferClause env (DeclFun _ pats Nothing (Just body) _) = do
+  -- inferClause env (DeclFun _ pats body) = do
   (sPats, envPats, argTypes) <- inferPatterns pats
   let env' = mergeEnvs env envPats
   (sBody, tBody) <- inferExpr (applyEnv sPats env') body
@@ -63,15 +64,16 @@ inferDecl env decl = case decl of
   DeclTypeSig name ty ->
     let scheme = Forall [] ty
      in Right (extendEnv env name scheme, emptySubst)
-  DeclFun name pats body -> do
-    -- パターンごとに型推論
+  DeclFun name pats Nothing (Just body) _ -> do
+    -- ガードなし、式あり
     (sPats, envPats, argTypes) <- inferPatterns pats
-    -- パターンで拡張した環境で body を推論
     (sBody, tBody) <- inferExpr (applyEnv sPats (mergeEnvs env envPats)) body
     let funType = foldr TArrow tBody argTypes
     let s = composeSubst sBody sPats
     let scheme = generalizeInfer env (apply s funType)
     Right (extendEnv env name scheme, s)
+  DeclFun _ _ (Just _) _ _ ->
+    Left (InferOther "Guarded function inference not implemented yet")
   DeclValue pat expr ->
     Left (InferOther "DeclValue not implemented yet")
   _ ->
