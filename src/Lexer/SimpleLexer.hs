@@ -72,8 +72,9 @@ slexer = go
     ------------------------------------------------------------
     go ('-' : '>' : rest) = TokArrow : go rest
     go ('=' : '>' : rest) = TokKeyword "=>" : go rest
-    go (':' : ':' : rest) = TokSymbol "::" : go rest
     go ('+' : '+' : rest) = TokOperator "++" : go rest
+    go (':' : ':' : rest) = TokSymbol "::" : go rest
+    go (':' : rest) = TokOperator ":" : go rest
     go ('$' : rest) = TokOperator "$" : go rest
     go ('*' : '>' : rest) = TokOperator "*>" : go rest
     go ('<' : '*' : rest) = TokOperator "<*" : go rest
@@ -84,6 +85,7 @@ slexer = go
     -- go ('+' : '+' : rest) = TokSymbol "++" : go rest
     go ('=' : '=' : rest) = TokSymbol "==" : go rest
     go ('(' : ')' : rest) = TokSymbol "()" : go rest
+    -- go ('[' : ']' : rest) = TokSymbol "[]" : go rest
     go ('/' : '=' : rest) = TokSymbol "/=" : go rest
     go ('<' : '=' : rest) = TokSymbol "<=" : go rest
     go ('>' : '=' : rest) = TokSymbol ">=" : go rest

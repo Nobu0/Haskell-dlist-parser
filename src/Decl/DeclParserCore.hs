@@ -15,6 +15,7 @@ import Data.List (intercalate)
 
 import Decl.DeclParser.Fun
 import Decl.DeclParser.Import
+import Decl.DeclParser.Module
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
@@ -69,8 +70,9 @@ declDispatch = do
     TokKeyword "class" -> classDecl
     TokKeyword "type" -> typeAliasDecl
     -- _ -> try funDecl <|> valueDecl
-    TokIdent _ -> try typeSigDecl <|> try (funDecl decl) <|> valueDecl
-    TokSymbol "(" -> try typeSigDecl <|> empty -- "unexpected symbol in declaration"
+    TokIdent _ -> try (funDecl) <|> try typeSigDecl <|> valueDecl
+    -- TokSymbol "{" -> try (braces (funDecl decl)) <|> empty
+    TokSymbol "(" -> try typeSigDecl <|> empty
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)
       empty
@@ -130,13 +132,6 @@ newtypeDecl = do
   symbol "="
   c <- constr
   return (DeclNewtype name vars c)
-
-moduleDecl :: Parser Decl
-moduleDecl = do
-  keyword "module"
-  name <- typeIdent -- <|> token TokTypeIdent)
-  keyword "where"
-  return (DeclModule name)
 
 instanceDecl :: Parser Decl
 instanceDecl = do

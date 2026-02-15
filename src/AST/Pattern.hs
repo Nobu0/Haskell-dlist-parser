@@ -10,6 +10,8 @@ type Name = String
 data Pattern
   = PVar Name
   | PInt Int
+  | PChar Char
+  | PString String
   | PWildcard
   | PCons Pattern Pattern
   | PList [Pattern]

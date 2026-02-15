@@ -68,7 +68,8 @@ exprCore = do
     -- <|> void (token TokEllipsis >> return EPlaceholder)
     <|> try binOpExprCore
     <|> try parseSQL
-    <|> exprLevel1Core
+
+-- <|> exprLevel1Core
 
 -- ===== 演算子階層 =====
 
@@ -79,13 +80,18 @@ exprCmpCore :: Parser Expr
 exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
 
 exprLevel1Core :: Parser Expr
-exprLevel1Core = chainl1 exprLevel2Core (binOp ["+", "-", "++"])
+exprLevel1Core = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< exprLevel1Core next token: " ++ show t)
+  chainl1 exprLevel2Core (binOp ["+", "-", "++", ":"])
 
 exprLevel2Core :: Parser Expr
 exprLevel2Core = chainl1 exprLevel3Core (binOp ["*", "/"])
 
 exprLevel3Core :: Parser Expr
-exprLevel3Core =
+exprLevel3Core = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< exprLevel3Core next token: " ++ show t)
   try lambdaExpr
     <|> appExprCore
 
@@ -109,9 +115,11 @@ atomCore =
     <|> atomBaseCore
 
 parenExprCore :: Parser Expr
-parenExprCore =
-  try tupleExprCore
-    <|> try oPsectionCore
+parenExprCore = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< parenExprCore next token: " ++ show t)
+  try oPsectionCore
+    <|> try tupleExprCore
     <|> exprCore
 
 tupleExprCore :: Parser Expr
@@ -124,24 +132,44 @@ tupleExprCore = do
   return (ETuple (e1 : es))
 
 oPsectionCore :: Parser Expr
-oPsectionCore =
+oPsectionCore = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< oPsectionCore next token: " ++ show t)
   try (EOpSectionL <$> operator <*> exprCore)
-    <|> try (EOpSectionR <$> exprCore <*> operator)
+    <|> (EOpSectionR <$> exprCore <*> operator)
 
 atomBaseCore :: Parser Expr
 atomBaseCore = do
   t <- lookAhead anyToken
   myTrace ("<< atomBaseCore next token: " ++ show t)
+
   --  case t of
   --    TokKeyword "let" -> empty
   --    _ ->
-  EVar <$> ident
-    <|> operatorVar
+  lambdaExpr
+    <|> EVar <$> ident
+    <|> EInt <$> int
     <|> EVarType <$> typeIdent
     <|> (ellipsis >> return EPlaceholder)
-    <|> EInt <$> int
+    <|> elistExpr
     <|> EString <$> stringLiteralExpr
+    <|> EChar <$> charLiteralExpr
     <|> pRecordExpr
+    <|> operatorVar
+    <|> emptyListExpr
+
+elistExpr :: Parser Expr
+elistExpr = do
+  symbol "["
+  elems <- exprCore `sepBy` symbol ","
+  symbol "]"
+  return (EList elems)
 
 ellipsis :: Parser ()
 ellipsis = tokenIs (\t -> if t == TokEllipsis then Just () else Nothing)
+
+emptyListExpr :: Parser Expr
+emptyListExpr = do
+  symbol "["
+  symbol "]"
+  return (EList [])

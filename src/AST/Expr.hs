@@ -34,6 +34,7 @@ data Expr
   | EVarType String
   | EInt Int
   | EString String
+  | EChar Char
   | EBinOp BinOp Expr Expr
   | EBool Bool
   | ELet Pattern Expr Expr
@@ -74,4 +75,5 @@ data BinOp
   | Le
   | Ge
   | Concat
+  | Cons
   deriving (Eq, Show)

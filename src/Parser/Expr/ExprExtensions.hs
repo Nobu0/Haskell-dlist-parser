@@ -135,6 +135,7 @@ exprSeq = do
 
 exprSep :: Parser ()
 exprSep = skipMany1 (symbol ";" <|> newline)
+
 -- ============================================
 --  let / if / return / for
 -- ============================================
@@ -259,16 +260,17 @@ letExpr = do
   myTrace ("<< letExpr next token: " ++ show t)
   binds <- bindingsBlock
   optional newline
-  mIn <- optional (keyword "in")
-  optional newline
-  case mIn of
-    Just _ -> do
-      body <- expr
-      return (ELetBlock binds body)
-    Nothing ->
-      if null binds
-        then empty -- ← これが正しい
-        else return (ELetBlock binds (EVar "__unit__"))
+  bracesV3 $ do
+    mIn <- optional (keyword "in")
+    optional newline
+    case mIn of
+      Just _ -> do
+        body <- expr
+        return (ELetBlock binds body)
+      Nothing ->
+        if null binds
+          then empty -- ← これが正しい
+          else return (ELetBlock binds (EVar "__unit__"))
 
 {-}
   case mIn of
@@ -287,9 +289,10 @@ pLetExpr = do
   pat <- pattern
   symbol "="
   e1 <- expr
-  keyword "in"
-  e2 <- expr
-  return (ELet pat e1 e2)
+  bracesV3 $ do
+    keyword "in"
+    e2 <- expr
+    return (ELet pat e1 e2)
 
 bindingsBlock :: Parser [Binding]
 bindingsBlock = do

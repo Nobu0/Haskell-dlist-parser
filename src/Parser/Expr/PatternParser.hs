@@ -103,6 +103,8 @@ pAtom = do
     <|> pParenOrTuple
     <|> pConstrOrVar
     <|> pInt
+    <|> pChar
+    <|> pString
     <|> (symbol "_" >> return PWildcard)
 
 pAs :: Parser Pattern
@@ -163,3 +165,11 @@ pWildcard = symbol "_" >> return PWildcard
 
 pInt :: Parser Pattern
 pInt = PInt <$> int
+
+pChar :: Parser Pattern
+pChar = do
+  c <- charLiteralExpr -- すでに定義済みならそれを使う
+  return (PChar c)
+
+pString :: Parser Pattern
+pString = PString <$> stringLiteralExpr

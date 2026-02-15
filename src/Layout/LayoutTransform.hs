@@ -10,12 +10,14 @@ go [] = []
 go (TokVNewline (x, y) : rest)
   | x == 0 && x == y = TokNewline : go rest
   | x == y = TokSymbol ";" : go rest
-  | x < y = TokSymbol "{" : go rest
+  -- \| x < y = TokSymbol "{" : go rest
+  | x < y = TokVLBrace : go rest
   | x > y = closeBlocks (x, y) rest
 go (t : rest) =
   t : go rest
 
 closeBlocks :: (Int, Int) -> [Token] -> [Token]
 closeBlocks (x, y) rest
-  | x > y = TokSymbol "}" : closeBlocks (x - 1, y) rest
+  -- \| x > y = TokSymbol "}" : closeBlocks (x - 1, y) rest
+  | x > y = TokVRBrace : closeBlocks (x - 1, y) rest
   | otherwise = TokNewline : go rest

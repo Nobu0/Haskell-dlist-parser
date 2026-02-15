@@ -1,4 +1,3 @@
-{-}
 module Main where
 
 -- module Test.TypeInferSQL where
@@ -28,7 +27,7 @@ runInfer cm src = do
         Left err -> putStrLn $ "TypeError: " ++ show err
         Right (_, ty) -> putStrLn $ "Type: " ++ prettyType ty
         _ -> putStrLn $ "error"
--}
+
 inferCase ::
   (TypeEnv -> Expr -> Either InferError (Subst, Type)) ->
   TypeEnv ->

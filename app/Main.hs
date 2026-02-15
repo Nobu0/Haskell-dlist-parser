@@ -134,7 +134,7 @@ testCasesDo =
     ("let1", "let (a, b) = (1, 2) in a + b"),
     ("let1", "do {let (a, b) = (1, 2) in let f = a + b in f}"),
     ("string", "\"max' a b\" ++ \" | a > b = a | otherwise = b\""),
-    ("???", "max' a b \n  | a > b = a\n  | otherwise = b")
+    ("list1", "let x = [] in (1 : x)")
   ]
 
 {-}

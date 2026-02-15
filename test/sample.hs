@@ -1,6 +1,5 @@
 
-{-}
-module Main where
+module Test(main, max', Expr(..)) where
 
 import AST.Expr (Expr(..), BinOp)
 import Data.List
@@ -12,6 +11,7 @@ import Data.Maybe (..)  -- ← これ！
 
 -- data AAA = {A,B}
 -- type T = TokString
+
 maximum' :: (Ord a) => [a]-> a
 maximum' [] = error "maximum of empty list"
 maximum' [x] = x
@@ -19,7 +19,6 @@ maximum' (x:xs)
 | x > maxTail = x
 | otherwise = maxTail
 where maxTail = maximum' xs
--}
 
 
 max' :: (Ord a) => a -> a -> a

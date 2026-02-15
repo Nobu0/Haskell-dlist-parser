@@ -9,10 +9,13 @@ module Parser.Core.TokenParser
     parens,
     brackets,
     braces,
+    bracesV,
+    bracesV3,
     notFollowedBy,
     (<?>),
     anyToken,
     stringLiteralExpr,
+    charLiteralExpr,
     skipNewlines,
     newline,
     skipSeparators,
@@ -23,17 +26,17 @@ module Parser.Core.TokenParser
     binOp,
     operatorVar,
     satisfyToken,
-    symbolToken
+    symbolToken,
   )
 where
 
 import AST.Expr
 import Control.Applicative (empty, many, (<|>))
+import Data.Functor (void)
 import qualified Data.Set as Set
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Utils.MyTrace (myTrace)
-import Data.Functor (void)
 
 -- import Text.Megaparsec (token, (<?>))
 
@@ -42,6 +45,20 @@ p <?> _ = p
 
 braces :: Parser a -> Parser a
 braces p = between (symbol "{") (symbol "}") p
+
+bracesv :: Parser a -> Parser a
+bracesv p = between (token TokVLBrace) (token TokVRBrace) p
+
+-- bracesV :: Parser a -> Parser a
+-- bracesV p = between (token TokVLBrace) (token TokVRBrace) p
+
+-- 仮想括弧
+bracesV :: Parser a -> Parser a
+bracesV p = try (bracesv p) <|> (braces p)
+
+-- 括弧無しでも扱う
+bracesV3 :: Parser a -> Parser a
+bracesV3 p = do try (bracesv p) <|> (braces p) <|> p
 
 -- parens :: Parser a -> Parser a
 -- parens p = between (symbol "(") (symbol ")") p
@@ -126,6 +143,13 @@ stringLiteralExpr =
     f (TokString s) = Just s
     f _ = Nothing
 
+charLiteralExpr :: Parser Char
+charLiteralExpr =
+  satisfyToken f
+  where
+    f (TokChar s) = Just s
+    f _ = Nothing
+
 satisfyToken :: (Token -> Maybe a) -> Parser a
 satisfyToken f = Parser $ \ts -> case ts of
   [] -> Nothing
@@ -142,10 +166,8 @@ skipSeparators = do
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
 
-
 newline :: Parser ()
 newline = void (token TokNewline)
-
 
 skipNewlines :: Parser ()
 skipNewlines = do
@@ -175,6 +197,7 @@ parseBinOp s = case s of
   "&&" -> Just And
   "||" -> Just Or
   "++" -> Just Concat
+  ":" -> Just Cons
   _ -> Nothing
 
 operator :: Parser String
@@ -190,7 +213,8 @@ operator = choice (map (\s -> symbol s >> return s) allOps)
         "*",
         "/",
         ">",
-        "<"
+        "<",
+        ":"
       ]
 
 operatorVar :: Parser Expr
@@ -257,4 +281,3 @@ symbolToken tok = satisfyToken match
     match t
       | t == tok = Just t
       | otherwise = Nothing
-

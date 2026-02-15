@@ -19,7 +19,7 @@ caseExprCore expr = do
   scrut <- expr
   keyword "of"
   alts <-
-    braces (sepBy1 (caseAlt expr) caseSep)
+    bracesV (sepBy1 (caseAlt expr) caseSep)
       <|> sepBy1 (caseAlt expr) caseSep
   return (ECase scrut alts)
 

@@ -14,11 +14,9 @@ import Utils.MyTrace
 doExprCore :: Parser Expr -> Parser Expr
 doExprCore expr = do
   keyword "do"
-  symbol "{"
-  many (token TokNewline)
-  stmts <- doBlock expr
-  many (token TokNewline)
-  symbol "}"
+  -- many (token TokNewline)
+  stmts <- bracesV (doBlock expr)
+  -- many (token TokNewline)
   return (EDo stmts)
 
 doBlock :: Parser Expr -> Parser [Stmt]

@@ -7,6 +7,15 @@ layoutLexer toks = go [0] 0 toks -- 追加: parenDepth = 0
 
 go :: [Int] -> Int -> [Token] -> [Token]
 go stack _ [] = []
+-- コメント行（空白＋コメント＋改行）を空行とみなす
+go stack 0 (TokNewline : TokSpace n : TokNewline : rest)
+  | n == head stack =
+      TokVNewline (level, level) : TokVNewline (level, level) : go stack 0 rest
+  where
+    level = length stack - 1
+-- 空行（TokNewline のあとに TokNewline または EOF）
+go stack 0 (TokNewline : TokNewline : rest) =
+  go stack 0 (TokNewline : rest)
 -- 行頭のスペース（括弧外のみ処理）
 go stack 0 (TokNewline : TokSpace n : rest)
   | n == head stack =

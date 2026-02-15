@@ -30,9 +30,8 @@ parseType = do
   t <- lookAhead anyToken
   myTrace ("<< parseType dispatch: " ++ show t)
   case t of
-    TokSymbol "{" -> braces parseTypeCore
+    TokVLBrace -> bracesV parseTypeCore
     _ -> parseTypeCore
-
 
 parseTypeCore :: Parser Type
 parseTypeCore = do
@@ -64,7 +63,6 @@ arrowType = do
     token (TokArrow)
     parseTypeCore
   return $ maybe t1 (TFun t1) rest
-
 
 parensTuple :: Parser Type
 parensTuple = do
