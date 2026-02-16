@@ -10,7 +10,7 @@ data Decl
   = DeclFunGroup Name [FunClause]
   | DeclValue Pattern Expr
   | DeclTypeSig Name Type
-  | DeclData Name [Name] [Constraint]
+  | DeclData Name [Name] [Constraint] [Name]
   | DeclNewtype Name [Name] Constraint
   | DeclModule String (Maybe [Export])
   | DeclClass String [String] [Decl]

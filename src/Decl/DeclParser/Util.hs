@@ -1,11 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Decl.DeclParser.Util (
-  parensI,
-  identI,
-  moduleName,
-  tokdot  
-) where
+module Decl.DeclParser.Util
+  ( parensI,
+    identI,
+    moduleName,
+    tokdot,
+    operatorI,
+  )
+where
 
 import AST.Decl
 import AST.Expr
@@ -36,3 +38,9 @@ moduleName = intercalate "." <$> sepBy1 identI tokdot
 
 tokdot :: Parser String
 tokdot = token TokDot *> pure "."
+
+operatorI :: Parser Name
+operatorI = satisfyToken isOp
+  where
+    isOp (TokOperator s) = Just s
+    isOp _ = Nothing

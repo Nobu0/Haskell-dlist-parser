@@ -117,7 +117,7 @@ slexer = go
     ------------------------------------------------------------
 
     -- isIdentChar x = isAlphaNum x || x == '_' || x == '\''
-    isIdentChar c = isLetter c || isDigit c || c == '_' || c == '\''
+    isIdentChar c = isLetter c || isDigit c || c == '_' || c == '\'' || c == '`'
 
     -- isSymbolChar x = x `elem` "=(){}[]:;,+-*/<>|&."
     isSymbolChar x = x `elem` "=(){}[]:;,\\'_|@&"
@@ -145,6 +145,7 @@ slexer = go
     classifyIdent "as" = TokKeyword "as"
     classifyIdent "qualified" = TokKeyword "qualified"
     classifyIdent "hiding" = TokKeyword "hiding"
+    classifyIdent "deriving" = TokKeyword "deriving"
     classifyIdent "=>" = TokKeyword "=>"
     classifyIdent "->" = TokArrow
     -- classifyIdent "..." = TokEllipsis

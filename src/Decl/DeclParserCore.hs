@@ -13,6 +13,7 @@ import Data.List (intercalate)
 
 -- (keyword) -- , whereClause)
 
+import Decl.DeclParser.Data
 import Decl.DeclParser.Fun
 import Decl.DeclParser.Import
 import Decl.DeclParser.Module
@@ -102,17 +103,6 @@ valueDecl = do
   symbol "="
   body <- expr
   return (DeclValue pat body)
-
--- data 宣言
-dataDecl :: Parser Decl
-dataDecl = do
-  myTrace "<< dataDecl parser called"
-  keyword "data"
-  name <- typeIdent
-  vars <- many typeIdent
-  symbol "="
-  constrs <- constr `sepBy1` symbol "|"
-  return (DeclData name vars constrs)
 
 -- コンストラクタ
 constr :: Parser Constraint

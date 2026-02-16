@@ -1,6 +1,6 @@
 module AST.Type where
 
--- import AST.Decl (Binding)
+-- import AST.Expr (Name)
 
 data Type
   = TVar String
@@ -15,5 +15,13 @@ data Type
   | TFun Type Type
   deriving (Eq, Show)
 
-data Constraint = Constraint String [Type]
-  deriving (Eq, Show)
+data Constraint
+  = Constraint String [Type] -- 通常のコンストラクタ
+  | ConstraintRecord String [Field] -- レコード構文のコンストラクタ
+  deriving (Show, Eq)
+
+data Field = Field String Type
+  deriving (Show, Eq)
+
+-- data Constraint = Constraint String [Type]
+--  deriving (Eq, Show)

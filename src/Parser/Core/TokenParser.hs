@@ -9,6 +9,7 @@ module Parser.Core.TokenParser
     parens,
     brackets,
     braces,
+    bracesv,
     bracesV,
     bracesV3,
     notFollowedBy,

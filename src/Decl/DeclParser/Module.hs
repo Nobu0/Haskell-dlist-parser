@@ -27,16 +27,28 @@ moduleDecl :: Parser Decl
 moduleDecl = do
   keyword "module"
   name <- moduleName
+  try (exportWhere name) <|> exportWhere2 name
+
+exportWhere :: String -> Parser Decl
+exportWhere name = do
   exports <- optional (bracesV3 exportList)
   skipSeparators
   keyword "where"
   return (DeclModule name exports)
 
+exportWhere2 :: String -> Parser Decl
+exportWhere2 name = do
+  bracesV $ do
+    exports <- optional exportList
+    skipSeparators
+    keyword "where"
+    return (DeclModule name exports)
+
 exportItem :: Parser Export
 exportItem = do
   t <- lookAhead anyToken
   myTrace ("<< exportItem: next token=" ++ show t)
-  name <- typeIdent <|> ident
+  name <- typeIdent <|> ident <|> parens operatorI
   hasAll <- optional (parens (symbol ".."))
   return $ case hasAll of
     Just _ -> ExportType name True

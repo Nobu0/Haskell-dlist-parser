@@ -21,8 +21,8 @@ maximum' (x:xs)
 where maxTail = maximum' xs
 
 
-max' :: (Ord a) => a -> a -> a
-max' a b
+`max` :: (Ord a) => a -> a -> a
+`max` a b
   | a > b = a
   | otherwise = b
 

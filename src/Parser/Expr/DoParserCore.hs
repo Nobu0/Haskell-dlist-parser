@@ -14,10 +14,10 @@ import Utils.MyTrace
 doExprCore :: Parser Expr -> Parser Expr
 doExprCore expr = do
   keyword "do"
-  -- many (token TokNewline)
-  stmts <- bracesV (doBlock expr)
-  -- many (token TokNewline)
-  return (EDo stmts)
+  bracesV3 $ do
+    stmts <- doBlock expr
+    -- many (token TokNewline)
+    return (EDo stmts)
 
 doBlock :: Parser Expr -> Parser [Stmt]
 doBlock expr = do
