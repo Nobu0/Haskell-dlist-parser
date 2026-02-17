@@ -27,6 +27,140 @@ dataDecl = do
   typeName <- identI
   typeVars <- many identI
   bracesV3 $ do
+    symbol "="
+    constrs <- sepBy1 dataConstr (symbol "|")
+    derivs <- option [] derivingClause
+    skipSeparators
+    return $ DeclData typeName typeVars constrs derivs
+
+dataConstr :: Parser Constraint
+dataConstr = try dataConstrRecord <|> dataConstrNormal
+
+dataConstrNormal :: Parser Constraint
+dataConstrNormal = do
+  name <- identI
+  args <- many typeAtom
+  myTrace ("<< dataConstrNormal: " ++ show name ++ " " ++ show args)
+  optional (symbol ";")
+  return $ Constraint name args
+
+dataConstrRecord :: Parser Constraint
+dataConstrRecord = do
+  name <- identI
+  skipBlk
+  t <- lookAhead anyToken
+  myTrace ("<< dataConstrRecord: " ++ show t)
+  case t of
+    TokSymbol "{" -> do
+      -- symbol "{"
+      -- fields <- braces (sepBy1Skip fieldDef (symbol ";"))
+      fields <- fieldDefs
+      -- symbol "}"
+      myTrace ("<< dataConstrRecord: " ++ show name ++ " " ++ show fields)
+      return $ ConstraintRecord name fields
+    _ -> empty
+
+fieldDef :: Parser Field
+fieldDef = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< fieldDef: " ++ show t)
+  name <- identI
+  symbol "::"
+  ty <- typeExpr
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< fieldDef:2 " ++ show name ++ " " ++ show ty ++ " " ++ show t)
+  return $ Field name ty
+
+fieldDefs :: Parser [Field]
+fieldDefs = do
+  symbol "{"
+  skipBlk
+  fields <- sepBy1Skip fieldDef (symbol ",")
+  -- fields <- getTypeDefs []
+  skipBlk
+  symbol "}"
+  skipBlk
+  return (reverse fields)
+
+getTypeDefs :: [Field] -> Parser [Field]
+getTypeDefs acc = do
+  t <- lookAhead anyToken
+  myTrace ("<< typeDef:1 next token " ++ show t)
+  case t of
+    TokSymbol "}" -> do
+      return acc
+    _ -> do
+      name <- identI
+      symbol "::"
+      ty <- typeExpr
+      skipBlk
+      t <- lookAhead anyToken
+      myTrace ("<< typeDef:2 next token " ++ show t ++ " " ++ show name ++ " " ++ show ty)
+      case t of
+        TokSymbol "," -> do
+          symbol ","
+          skipBlk
+          optional (symbol ";")
+          getTypeDefs (Field name ty : acc)
+        TokSymbol ";" -> do
+          symbol ";"
+          getTypeDefs (Field name ty : acc)
+        TokSymbol "}" -> do
+          return (Field name ty : acc)
+        _ -> empty
+
+skipBlk :: Parser ()
+skipBlk = do
+  optional (token TokVLBrace)
+  optional (token TokVRBrace)
+  optional (token TokNewline)
+  optional (token $ TokSymbol ";")
+  return ()
+
+derivingClause :: Parser [Name]
+derivingClause = do
+  keyword "deriving"
+  parens (sepBy1 typeIdent (symbol ",")) <|> fmap pure typeIdent
+
+sepBy1Skip :: Parser a -> Parser sep -> Parser [a]
+sepBy1Skip p sep = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< sepBy1Skip: next token " ++ show t)
+  skipControlTokens
+  x <- p
+  xs <- many $ do
+    skipControlTokens
+    _ <- sep
+    skipControlTokens
+    p
+  return (x : xs)
+
+isControlToken :: Token -> Bool
+isControlToken t = case t of
+  TokVLBrace -> True
+  TokVRBrace -> True
+  TokNewline -> True
+  TokSymbol ";" -> True
+  _ -> False
+
+skipControlTokens :: Parser ()
+skipControlTokens = skipMany $ satisfyToken (\t -> if isControlToken t then Just () else Nothing)
+
+{-}
+data Constraint
+  = Constraint String [Type] -- 通常のコンストラクタ
+  | ConstraintRecord String [Field] -- レコード構文のコンストラクタ
+  deriving (Show, Eq)
+
+data Field = Field String Type
+  deriving (Show, Eq)
+
+dataDecl :: Parser Decl
+dataDecl = do
+  keyword "data"
+  typeName <- identI
+  typeVars <- many identI
+  bracesV3 $ do
     t <- lookAhead anyToken
     myTrace ("<< dataDecl: next token " ++ show t)
     -- bracesV3 $ do
@@ -36,37 +170,44 @@ dataDecl = do
     constr <- constrs
     t3 <- lookAhead anyToken
     myTrace ("<< dataDecl:2 next token " ++ show t3 ++ show constr)
-    -- restConstrs <- restBlock
-
-    -- bracesV3 $ do
-    -- restConstrs <- many (try dataConstrNx <|> dataConstrRc)
-    -- restConstrs <- restBlock
-    -- myTrace ("<< dataDecl:3 next token" ++ show restConstrs)
     derivs <- option [] derivingClause
     myTrace ("<< dataDecl:4 next token " ++ show derivs)
     return $ DeclData typeName typeVars constr derivs
 
+constrs :: Parser Constraint
 constrs = do
-  constrS <|> try constrOne
+  try constrS <|> try constrOne <|> constrBlk
 
--- constrs :: Parser [Type]
+constrS :: Parser Constraint
 constrS = do
   t <- lookAhead anyToken
   myTrace ("<< constrS: next token " ++ show t)
   firstConstr <- dataConstr
-  t <- lookAhead anyToken
-  myTrace ("<< constrS:1 next token " ++ show t ++ " " ++ show firstConstr)
+  t1 <- lookAhead anyToken
+  myTrace ("<< constrS:1 next token " ++ show t1 ++ " " ++ show firstConstr)
   bracesV3 $ do
     t2 <- lookAhead anyToken
     myTrace ("<< constrS:2 next token " ++ show t2)
     case t2 of
       TokVLBrace -> do empty
+      TokSymbol "{" -> do empty
       _ -> do
-        -- bracesV3 $ do
-        -- restConstrs <- many (try dataConstrNx <|> dataConstrRc)
-        restConstrs <- many (try dataConstrRc <|> dataConstrNx <|> empty)
+        restConstrs <- many (try dataConstrRc <|> dataConstrNx)
+        skipNewlines -- <|> empty)
+        t3 <- lookAhead anyToken
+        myTrace ("<< constrS:3 next token " ++ show t3)
         return (firstConstr : restConstrs)
 
+constrBlk :: Parser Constraint
+constrBlk = do
+  t <- lookAhead anyToken
+  myTrace ("<< constrBlk: next token " ++ show t)
+  bk <- dataConstrBk
+  t2 <- lookAhead anyToken
+  myTrace ("<< constrBlk:2 next token " ++ show t2)
+  return bk
+
+constrOne :: Parser Constraint
 constrOne = do
   firstConstr <- dataConstrOne
   skipNewlines
@@ -85,9 +226,6 @@ dataConstr = do
   myTrace ("<< dataConstr: next token " ++ show t)
   name <- identI
   args <- many typeAtom
-  -- case args of
-  --  [] -> do empty
-  --  _ -> do
   myTrace ("<< dataConstr:2 " ++ show args)
   optional (symbol ";")
   t <- lookAhead anyToken
@@ -133,42 +271,64 @@ dataConstrRc = do
   myTrace ("<< dataConstrRc: next token " ++ show t)
   symbol "|"
   name <- identI
-  rt <- dataConstrRc2 name
-  -- t2 <- lookAhead anyToken
-  -- myTrace ("<< dataConstrRc:2 next token" ++ show t2)
-  skipNewlines
-  return rt
+  t <- lookAhead anyToken
+  case t of
+    TokSymbol "{" -> do
+      args <- dataConstrBk
+      return $ ConstraintRecord name args
+    _ -> empty
 
 dataConstrRc2 :: String -> Parser Constraint
 dataConstrRc2 name = do
+  t <- lookAhead anyToken
+  myTrace ("<< dataConstrRc2: next token " ++ show t)
+  args <- typeDefBlk
   t2 <- lookAhead anyToken
-  myTrace ("<< dataConstrRc:2 next token " ++ show t2)
-  bracesv $ do
-    symbol "{"
-    arg <- typeDef
-    args <- bracesv $ sepBy1 typeDef (symbol ";")
-    skipNewlines
-    symbol "}"
-    return $ ConstraintRecord name (arg : args)
+  myTrace ("<< dataConstrRc2:2 next token " ++ show t2)
+  return $ ConstraintRecord name args
 
--- skipNewlines
+dataConstrBk :: String -> Parser Constraint
+dataConstrBk name = do
+  t <- lookAhead anyToken
+  myTrace ("<< dataConstrBk: next token " ++ show t)
+  args <- typeDefBlk
+  return $ ConstraintRecord name args
 
-typeDef :: Parser Field
-typeDef = do
+typeDefBlk :: Parser Field
+typeDefBlk = do
   t <- lookAhead anyToken
   myTrace ("<< typeDef: next token " ++ show t)
+  getTypeDefs
+
+getTypeDef :: Parser Field
+getTypeDef = do
+  skipBlk
+  symbol "{"
+  skipBlk
+  rt <- getTypeDefs ([])
+  skipBlk
+  symbol "}"
+  skipSeparators
+  skipBlk
+  return rt
+
+getTypeDefs :: Field -> Parser Field
+getTypeDefs rs = do
   name <- identI
   symbol "::"
   ty <- typeExpr
-  optional (symbol ",")
-  return $ Field name ty
+  skipBlk
+  t <- lookAhead anyToken
+  myTrace ("<< typeDef: next token " ++ show t)
+  case t of
+    TokSymbol "," -> do
+      optional (symbol ";")
+      getTypeDefs
+      return $ Field name (ty : rs)
+    TokSymbol "}" -> do
+      return $ Field name (ty : rs)
+    _ -> empty
 
-{-}
-typeAtom :: Parser Type
-typeAtom =
-  TyVar <$> identI
-    <|> TyCon <$> typeIdent
-    <|> parens typeExpr
 -}
 
 typeExpr :: Parser Type

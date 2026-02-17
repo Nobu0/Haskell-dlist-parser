@@ -17,6 +17,7 @@ import Decl.DeclParser.Data
 import Decl.DeclParser.Fun
 import Decl.DeclParser.Import
 import Decl.DeclParser.Module
+import Decl.DeclParser.Type
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
@@ -104,25 +105,6 @@ valueDecl = do
   body <- expr
   return (DeclValue pat body)
 
--- コンストラクタ
-constr :: Parser Constraint
-constr = do
-  myTrace "<< constr parser called"
-  cname <- typeIdent
-  tys <- many parseType
-  return (Constraint cname tys)
-
--- newtype 宣言
-newtypeDecl :: Parser Decl
-newtypeDecl = do
-  myTrace "<< newtypeDecl parser called"
-  keyword "newtype"
-  name <- typeIdent
-  vars <- many typeIdent
-  symbol "="
-  c <- constr
-  return (DeclNewtype name vars c)
-
 instanceDecl :: Parser Decl
 instanceDecl = do
   myTrace "<< instanceDecl parser called"
@@ -144,13 +126,3 @@ classDecl = do
   t <- lookAhead anyToken
   methods <- bracedBlock decl
   return $ DeclClass className vars methods
-
-typeAliasDecl :: Parser Decl
-typeAliasDecl = do
-  myTrace "<< typeAliasDecl parser called"
-  keyword "type"
-  name <- typeIdent
-  vars <- many ident
-  symbol "="
-  body <- parseType
-  return $ DeclTypeAlias name vars body

@@ -18,9 +18,7 @@ import Decl.DeclParser.Util
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Parser.Expr.ExprExtensions (expr, skipNewlines)
-import Parser.Expr.PatternParser (pattern, patternParser)
-import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
+import Parser.Type.TypeParser
 import Utils.MyTrace
 
 moduleDecl :: Parser Decl

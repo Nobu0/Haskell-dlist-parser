@@ -9,12 +9,23 @@ type Name = String
 -- Binding
 type Binding = (Pattern, Expr)
 -}
+
+data Import
+  = Import
+  { importName :: Name
+  }
+  deriving (Show, Eq)
+
+data Module
+  = Module
+  { moduleName :: Name,
+    moduleImports :: [Import],
+    moduleDecls :: [Decl]
+  }
+  deriving (Show, Eq)
+
 data FunClause
-  = FunClause
-      [Pattern]
-      (Maybe [(Expr, Expr)])
-      (Maybe Expr)
-      (Maybe [Decl])
+  = FunClause [Pattern] (Maybe [(Expr, Expr)]) (Maybe Expr) (Maybe [Decl])
   deriving (Show, Eq)
 
 data CaseAlt
