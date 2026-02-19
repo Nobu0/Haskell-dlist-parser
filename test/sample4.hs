@@ -20,7 +20,7 @@ data Module
   = Module
   { moduleName :: Name,
     moduleImports :: [Import],
-    moduleDecls :: [Decl]
+    moduleDecls :: [Decl],
   }
   deriving (Show, Eq)
 

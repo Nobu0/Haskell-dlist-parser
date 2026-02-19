@@ -18,7 +18,7 @@ import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.ExprExtensions (expr, skipNewlines)
-import Parser.Expr.PatternParser (pattern, patternParser)
+import Parser.Expr.PatternParser (pattern)
 import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
 import Utils.MyTrace
 
@@ -57,17 +57,33 @@ importIdent = do
 -}
 importIdent :: Parser ImportItem
 importIdent = do
-  name <- identI <|> parens operatorI
+  t <- lookAhead anyToken
+  myTrace ("<< importIdent: next token " ++ show t)
+  name <-
+    try identI <|> operatorIAsName
+  --  <|> do
+  --    op <- parens operatorI
+  --    return $ "(" ++ op ++ ")"
   m <-
     optional $
       parensI $
         (ImportTypeAll name <$ symbol "..")
-          <|> (ImportTypeSome name <$> sepBy1 identI (symbol ","))
+          <|> ImportTypeSome name
+            <$> sepBy1 getNameList (symbol ",")
+  -- <|> (ImportTypeSome name <$> sepBy1 identI (symbol ","))
   return $ case m of
     Just x -> x
     Nothing -> ImportVar name
 
-{-}
+getNameList = do
+  t <- lookAhead anyToken
+  myTrace ("<< getNameList: next token " ++ show t)
+  nm <- try identI <|> parens operatorIAsName
+  myTrace ("<< getNameList:2 next token " ++ show t ++ " " ++ show nm)
+  return nm
+
+{-}  myTrace ("<< getNameList: next token " ++ show t ++ " " ++ show nm)
+
 operatorI :: Parser Name
 operatorI = do
   TokOperator op <- token satisfyOperator

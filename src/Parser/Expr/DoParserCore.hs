@@ -14,7 +14,8 @@ import Utils.MyTrace
 doExprCore :: Parser Expr -> Parser Expr
 doExprCore expr = do
   keyword "do"
-  bracesV3 $ do
+  bracesV $ do
+    -- skipSeparators
     stmts <- doBlock expr
     -- many (token TokNewline)
     return (EDo stmts)
@@ -25,7 +26,7 @@ doBlock expr = do
 
 doStmt :: Parser Expr -> Parser Stmt
 doStmt expr = do
-  many (token TokNewline)
+  -- many (token TokNewline)
   t <- lookAhead anyToken
   myTrace ("<< doStmt next token: " ++ show t)
   try (bindStmt expr)

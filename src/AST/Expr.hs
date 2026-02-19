@@ -52,12 +52,14 @@ data Expr
   | EDo [Stmt]
   | ESeq [Expr]
   | EReturn Expr
+  | EUnit
   | ERecord [(String, Expr)]
   | ERecordUpdate Expr [(String, Expr)]
   | EOpSectionL String Expr
   | EOpSectionR Expr String
   | EPlaceholder
   | EWhere Expr [Binding]
+  | ELambdaCase [CaseAlt] -- [(Pattern, Expr)]
   | ESQL String [Expr]
   deriving (Eq, Show)
 

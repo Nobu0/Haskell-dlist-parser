@@ -1,0 +1,634 @@
+Build profile: -w ghc-9.6.7 -O1
+In order, the following will be built (use -v for more details):
+ - dlist-parser-0.1.0.0 (exe:dlist) (file src\Parser\Expr\CaseParserCore.hs changed)
+Preprocessing executable 'dlist' for dlist-parser-0.1.0.0...
+Building executable 'dlist' for dlist-parser-0.1.0.0...
+[21 of 32] Compiling Parser.Expr.CaseParserCore ( src\Parser\Expr\CaseParserCore.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Parser\Expr\CaseParserCore.o ) [Source file changed]
+[33 of 33] Linking C:\\Users\\blue3\\haskell\\dlist-parser\\dist-newstyle\\build\\x86_64-windows\\ghc-9.6.7\\dlist-parser-0.1.0.0\\x\\dlist\\build\\dlist\\dlist.exe [Objects changed]
+=== Running Parser Test Suite ===
+
+-- Simple let-return --
+-- Input: do { let x = 1; return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))])
+
+-- Multiple lets --
+-- Input: do { let x = 1; let y = 2; return (x + y) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "let",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol ")",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],LetStmt [(PApp (PVar "y") [],EInt 2)],ExprStmt (EReturn (EApp (EApp (EVar "x") (EVar "+")) (EVar "y")))])
+
+-- If in do --
+-- Input: do { let x = 10; if x > 5 then return x else return 0 }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 10,TokSymbol ";",TokKeyword "if",TokIdent "x",TokOperator ">",TokNumber 5,TokKeyword "then",TokKeyword "return",TokIdent "x",TokKeyword "else",TokKeyword "return",TokNumber 0,TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 10)],ExprStmt (EIf (EApp (EApp (EVar "x") (EVar ">")) (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0)))])
+
+-- Nested do --
+-- Input: do { let x = 1; do { let y = x + 1; return y } }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EApp (EApp (EVar "x") (EVar "+")) (EInt 1))],ExprStmt (EReturn (EVar "y"))])])
+
+-- Do in if --
+-- Input: if cond then do { let x = 1; return x } else return 0
+Tokens: [TokKeyword "if",TokIdent "cond",TokKeyword "then",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokKeyword "else",TokKeyword "return",TokNumber 0]
+Parser: Just (EIf (EVar "cond") (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]) (EReturn (EInt 0)))
+
+-- Let with lambda --
+-- Input: do { let f = \x -> x + 1 * 2; return (f 10) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokSymbol "\\",TokIdent "x",TokArrow,TokIdent "x",TokOperator "+",TokNumber 1,TokOperator "*",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EApp (EApp (EApp (EApp (EVar "x") (EVar "+")) (EInt 1)) (EVar "*")) (EInt 2)))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))])
+
+-- Let without semicolon error case --
+-- Input: do { let x = 1 return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokKeyword "return",TokIdent "x",TokSymbol "}"]
+XX Parser failed! Re-running with trace:
+<< expr: next token TokKeyword "do"
+<< exprTerm: next token TokKeyword "do"
+<< expr dispatch: TokKeyword "do"
+<< doStmt next token: TokKeyword "let"
+<< pConstrOrVar: next token TokIdent "x"
+<< pConstrOrVar: next token TokSymbol "="
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokKeyword "return"
+<< letStmt:binding next token: TokKeyword "return"
+<< expr: next token TokKeyword "do"
+<< exprTerm: next token TokKeyword "do"
+<< expr dispatch: TokKeyword "do"
+<< doStmt next token: TokKeyword "let"
+<< pConstrOrVar: next token TokIdent "x"
+<< pConstrOrVar: next token TokSymbol "="
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokKeyword "return"
+<< letStmt:binding next token: TokKeyword "return"
+Parser: Nothing
+
+-- Do in case --
+-- Input: case v of Just x -> do { let y = x + 1; return y }; Nothing -> return 0
+Tokens: [TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "x",TokArrow,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokNumber 0]
+Parser: Just (ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "x"]) (EDo [LetStmt [(PApp (PVar "y") [],EApp (EApp (EVar "x") (EVar "+")) (EInt 1))],ExprStmt (EReturn (EVar "y"))]),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EInt 0))])
+
+-- Empty do --
+-- Input: do { }
+Tokens: [TokKeyword "do",TokSymbol "{",TokSymbol "}"]
+Parser: Just (EDo [])
+
+-- Case with as-pattern --
+-- Input: case v of x@(Just y) -> return x _ -> return 0
+Tokens: [TokKeyword "case",TokIdent "v",TokKeyword "of",TokIdent "x",TokSymbol "@",TokSymbol "(",TokTypeIdent "Just",TokIdent "y",TokSymbol ")",TokArrow,TokKeyword "return",TokIdent "x",TokIdent "_",TokArrow,TokKeyword "return",TokNumber 0]
+XX Parser failed! Re-running with trace:
+<< expr: next token TokKeyword "case"
+<< exprTerm: next token TokKeyword "case"
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "v"
+<< exprCore next token: TokIdent "v"
+<< atomCore: next token TokIdent "v"
+<< atomCore: next token TokKeyword "of"
+<< pConstrOrVar: next token TokTypeIdent "Just"
+<< pConstrOrVar: next token TokIdent "y"
+<< pConstrOrVar: next token TokSymbol ")"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "y"]
+<< pattern: (pAs <|> makeCons)PAs "x" (PApp (PVar "Just") [PVar "y"])
+<< caseAlt: next token TokArrow PAs "x" (PApp (PVar "Just") [PVar "y"])
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokKeyword "return"
+<< expr dispatch: TokIdent "x"
+<< exprCore next token: TokIdent "x"
+<< atomCore: next token TokIdent "x"
+<< atomCore: next token TokIdent "_"
+<< atomCore: next token TokArrow
+<< infixOp: next token TokArrow
+Parser: Nothing
+
+-- x; y; z statements --
+-- Input: x; y; z
+Tokens: [TokIdent "x",TokSymbol ";",TokIdent "y",TokSymbol ";",TokIdent "z"]
+Parser: Just (ESeq [EVar "x",EVar "y",EVar "z"])
+
+-- Let with case --
+-- Input: do { let x = case v of Just n -> n; Nothing -> 0; return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokArrow,TokIdent "n",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokNumber 0,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))])
+
+-- simple --
+-- Input: { x = 1 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}"]
+Parser: Just (ERecord [("x",EInt 1)])
+
+-- 2 --
+-- Input: { x = 1, y = 2 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}"]
+Parser: Just (ERecord [("x",EInt 1),("y",EInt 2)])
+
+-- tag --
+-- Input: r { x = 3 }
+Tokens: [TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol "}"]
+Parser: Just (EApp (EVar "r") (ERecord [("x",EInt 3)]))
+
+-- nest --
+-- Input: { a = { b = 3 } }
+Tokens: [TokSymbol "{",TokIdent "a",TokSymbol "=",TokSymbol "{",TokIdent "b",TokSymbol "=",TokNumber 3,TokSymbol "}",TokSymbol "}"]
+Parser: Just (ERecord [("a",ERecord [("b",EInt 3)])])
+
+-- 2 equation --
+-- Input: { x = 1 + 2, y = f 3 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokOperator "+",TokNumber 2,TokSymbol ",",TokIdent "y",TokSymbol "=",TokIdent "f",TokNumber 3,TokSymbol "}"]
+Parser: Just (ERecord [("x",EApp (EApp (EInt 1) (EVar "+")) (EInt 2)),("y",EApp (EVar "f") (EInt 3))])
+
+-- space --
+-- Input: {  x=1 , y =2}
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}"]
+Parser: Just (ERecord [("x",EInt 1),("y",EInt 2)])
+
+--  --
+-- Input: r { x = 3, y = 4 }
+Tokens: [TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 4,TokSymbol "}"]
+Parser: Just (EApp (EVar "r") (ERecord [("x",EInt 3),("y",EInt 4)]))
+
+--  --
+-- Input: (f x) { y = 10 }
+Tokens: [TokSymbol "(",TokIdent "f",TokIdent "x",TokSymbol ")",TokSymbol "{",TokIdent "y",TokSymbol "=",TokNumber 10,TokSymbol "}"]
+Parser: Just (EApp (EApp (EVar "f") (EVar "x")) (ERecord [("y",EInt 10)]))
+
+--  --
+-- Input: { x = 1, y = 2 } { x = 9 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 9,TokSymbol "}"]
+Parser: Just (EApp (ERecord [("x",EInt 1),("y",EInt 2)]) (ERecord [("x",EInt 9)]))
+
+--  --
+-- Input: (+ 1)
+Tokens: [TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")"]
+Parser: Just (EOpSectionL "+" (EInt 1))
+
+--  --
+-- Input: (1 +)
+Tokens: [TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")"]
+Parser: Just (EApp (EInt 1) (EVar "+"))
+
+--  --
+-- Input: (* 2) (2 *) (> 3) (3 >)
+Tokens: [TokSymbol "(",TokOperator "*",TokNumber 2,TokSymbol ")",TokSymbol "(",TokNumber 2,TokOperator "*",TokSymbol ")",TokSymbol "(",TokOperator ">",TokNumber 3,TokSymbol ")",TokSymbol "(",TokNumber 3,TokOperator ">",TokSymbol ")"]
+Parser: Just (EApp (EApp (EApp (EOpSectionL "*" (EInt 2)) (EApp (EInt 2) (EVar "*"))) (EOpSectionL ">" (EInt 3))) (EApp (EInt 3) (EVar ">")))
+
+--  --
+-- Input: ((+ 1))
+Tokens: [TokSymbol "(",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ")"]
+Parser: Just (EOpSectionL "+" (EInt 1))
+
+--  --
+-- Input: { f = (+ 1) }
+Tokens: [TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol "}"]
+Parser: Just (ERecord [("f",EOpSectionL "+" (EInt 1))])
+
+--  --
+-- Input: r { f = (1 +) }
+Tokens: [TokIdent "r",TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")",TokSymbol "}"]
+Parser: Just (EApp (EVar "r") (ERecord [("f",EApp (EInt 1) (EVar "+"))]))
+
+--  --
+-- Input: ({ x = 1 } +)
+Tokens: [TokSymbol "(",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokOperator "+",TokSymbol ")"]
+Parser: Just (EApp (ERecord [("x",EInt 1)]) (EVar "+"))
+
+-- do1 --
+-- Input: do { let r = { x = 1 }; return r }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokIdent "r",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "r") [],ERecord [("x",EInt 1)])],ExprStmt (EReturn (EVar "r"))])
+
+-- do2 --
+-- Input: do { let r = { x = 1 }; return (r { x = 2 }) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 2,TokSymbol "}",TokSymbol ")",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "r") [],ERecord [("x",EInt 1)])],ExprStmt (EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)])))])
+
+-- do3 --
+-- Input: do { let f = (+ 1); return (f 10) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))])
+
+-- error1 --
+-- Input: { = 1 }
+Tokens: [TokSymbol "{",TokSymbol "=",TokNumber 1,TokSymbol "}"]
+XX Parser failed! Re-running with trace:
+<< expr: next token TokSymbol "{"
+<< exprTerm: next token TokSymbol "{"
+<< expr dispatch: TokSymbol "{"
+<< exprCore next token: TokSymbol "{"
+<< atomCore: next token TokSymbol "{"
+<< expr: next token TokSymbol "{"
+<< exprTerm: next token TokSymbol "{"
+<< expr dispatch: TokSymbol "{"
+<< exprCore next token: TokSymbol "{"
+<< atomCore: next token TokSymbol "{"
+Parser: Nothing
+
+-- error2 --
+-- Input: { x = 1,, y = 2 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}"]
+XX Parser failed! Re-running with trace:
+<< expr: next token TokSymbol "{"
+<< exprTerm: next token TokSymbol "{"
+<< expr dispatch: TokSymbol "{"
+<< exprCore next token: TokSymbol "{"
+<< atomCore: next token TokSymbol "{"
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ","
+<< expr: next token TokSymbol "{"
+<< exprTerm: next token TokSymbol "{"
+<< expr dispatch: TokSymbol "{"
+<< exprCore next token: TokSymbol "{"
+<< atomCore: next token TokSymbol "{"
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ","
+Parser: Nothing
+
+-- error3 --
+-- Input: ()
+Tokens: [TokSymbol "(",TokSymbol ")"]
+Parser: Just EUnit
+
+-- error4 Ok --
+-- Input: (1 + 2)
+Tokens: [TokSymbol "(",TokNumber 1,TokOperator "+",TokNumber 2,TokSymbol ")"]
+Parser: Just (EApp (EApp (EInt 1) (EVar "+")) (EInt 2))
+
+-- case guard1 --
+-- Input: case x of { p | cond1 -> e1; p2 | cond2 -> e2; p3 -> e3 }
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokSymbol "{",TokIdent "p",TokSymbol "|",TokIdent "cond1",TokArrow,TokIdent "e1",TokSymbol ";",TokIdent "p2",TokSymbol "|",TokIdent "cond2",TokArrow,TokIdent "e2",TokSymbol ";",TokIdent "p3",TokArrow,TokIdent "e3",TokSymbol "}"]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "p") []) [(EVar "cond1",EVar "e1")],CaseAltGuard (PApp (PVar "p2") []) [(EVar "cond2",EVar "e2")],CaseAlt (PApp (PVar "p3") []) (EVar "e3")])
+
+-- case guard2 --
+-- Input: case x of n | n < 0 -> 1 
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EApp (EApp (EVar "n") (EVar "<")) (EInt 0),EInt 1)]])
+
+-- case guard3 --
+-- Input: case x of n | n < 0 -> -1 | n > 0 -> 1
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1,TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EApp (EApp (EVar "n") (EVar "<")) (EInt 0),EInt 1),(EApp (EApp (EVar "n") (EVar ">")) (EInt 0),EInt 1)]])
+
+-- case guard4 --
+-- Input: case x of n | n < 0 -> -1;  0 -> 0;  n | n > 0 -> 1
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1,TokSymbol ";",TokNumber 0,TokArrow,TokNumber 0,TokSymbol ";",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EApp (EApp (EVar "n") (EVar "<")) (EInt 0),EInt 1)],CaseAlt (PApp (PInt 0) []) (EInt 0),CaseAltGuard (PApp (PVar "n") []) [(EApp (EApp (EVar "n") (EVar ">")) (EInt 0),EInt 1)]])
+
+-- list1 --
+-- Input: [1, 2, 3]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]"]
+Parser: Just (EList [EInt 1,EInt 2,EInt 3])
+
+-- list2 --
+-- Input: [x * 2 | x <- xs]
+Tokens: [TokSymbol "[",TokIdent "x",TokOperator "*",TokNumber 2,TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]"]
+Parser: Just (EListComp (EApp (EApp (EVar "x") (EVar "*")) (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")])
+
+-- list3 --
+-- Input: [x | x <- xs, x > 0]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokSymbol "]"]
+Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EApp (EApp (EVar "x") (EVar ">")) (EInt 0))])
+
+-- list4 --
+-- Input: [(x, y) | x <- xs, y <- ys]
+Tokens: [TokSymbol "[",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "y",TokSymbol "<-",TokIdent "ys",TokSymbol "]"]
+Parser: Just (EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")])
+
+-- list5 --
+-- Input: [x | let y = f x, y > 0]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 0,TokSymbol "]"]
+Parser: Just (EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EApp (EApp (EVar "y") (EVar ">")) (EInt 0))])
+
+-- list6 --
+-- Input: [x | Just x <- xs]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]"]
+Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")])
+
+-- list7 --
+-- Input: do { let xs = [x | x <- ys]; return xs }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "ys",TokSymbol "]",TokSymbol ";",TokKeyword "return",TokIdent "xs",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])],ExprStmt (EReturn (EVar "xs"))])
+
+-- list8 --
+-- Input: [x | let y = f x, y > 0]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 0,TokSymbol "]"]
+Parser: Just (EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EApp (EApp (EVar "y") (EVar ">")) (EInt 0))])
+
+-- for1 --
+-- Input: for x in xs -> x * 2
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokArrow,TokIdent "x",TokOperator "*",TokNumber 2]
+Parser: Just (EListComp (EApp (EApp (EVar "x") (EVar "*")) (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")])
+
+-- for2 --
+-- Input: for x in xs, y in ys -> (x, y)
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")"]
+Parser: Just (EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")])
+
+-- for3 --
+-- Input: for x in xs, y in ys, z in zs -> (x,y,z)
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol ")"]
+Parser: Just (EListComp (ETuple [EVar "x",EVar "y",EVar "z"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")])
+
+-- for3 --
+-- Input: for x in xs, y in ys, z in zs -> ...
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokEllipsis]
+Parser: Just (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")])
+
+-- for4 --
+-- Input: for x in xs, x > 0 -> x
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokArrow,TokIdent "x"]
+Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EApp (EApp (EVar "x") (EVar ">")) (EInt 0))])
+
+-- for5 --
+-- Input: for x in xs, let y = f x -> y
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokArrow,TokIdent "y"]
+Parser: Just (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])
+
+-- do1 --
+-- Input: do {  (x, y) <- f z;  return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "<-",TokIdent "f",TokIdent "z",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+Parser: Just (EDo [Bind (PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []) (EApp (EVar "f") (EVar "z")),ExprStmt (EReturn (EVar "x"))])
+
+-- do2 --
+-- Input: do {      let y = f x;      z <- g y;      print z }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ";",TokIdent "z",TokSymbol "<-",TokIdent "g",TokIdent "y",TokSymbol ";",TokIdent "print",TokIdent "z",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],Bind (PApp (PVar "z") []) (EApp (EVar "g") (EVar "y")),ExprStmt (EApp (EVar "print") (EVar "z"))])
+
+-- do3 --
+-- Input: do {      x <- xs;      if x > 0 then return x else fail }  
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ";",TokKeyword "if",TokIdent "x",TokOperator ">",TokNumber 0,TokKeyword "then",TokKeyword "return",TokIdent "x",TokKeyword "else",TokIdent "fail",TokSymbol "}"]
+Parser: Just (EDo [Bind (PApp (PVar "x") []) (EVar "xs"),ExprStmt (EIf (EApp (EApp (EVar "x") (EVar ">")) (EInt 0)) (EReturn (EVar "x")) (EVar "fail"))])
+
+-- do2 --
+-- Input: do {  let xs = [1,2,3];  for x in xs, x > 1 -> x}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 1,TokArrow,TokIdent "x",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EApp (EApp (EVar "x") (EVar ">")) (EInt 1))])])
+
+-- do3 --
+-- Input: do {  let xs = [1,2,3];  for x in xs, let y = f x -> y}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokArrow,TokIdent "y",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])])
+
+-- do4 --
+-- Input: do {  let xs = [1,2,3];  for x in xs -> ...}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokArrow,TokEllipsis,TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")])])
+
+-- nested do --
+-- Input: do {  let x = 1;  do {    let y = x + 1;    return y  }}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EApp (EApp (EVar "x") (EVar "+")) (EInt 1))],ExprStmt (EReturn (EVar "y"))])])
+
+-- complex --
+-- Input: do {  let xs = [1,2,3];  for x in xs, let y = f x, y > 1 -> y}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 1,TokArrow,TokIdent "y",TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EApp (EApp (EVar "y") (EVar ">")) (EInt 1))])])
+
+-- complex2 --
+-- Input: do {  let xs = [1,2,3];  for x in xs, let y = f x, y > 1 -> ...}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 1,TokArrow,TokEllipsis,TokSymbol "}"]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EApp (EApp (EVar "y") (EVar ">")) (EInt 1))])])
+
+-- list1 --
+-- Input: [1 .. 10];    [x .. y];    [0 .. -5];    [a .. b]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol "..",TokIdent "y",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 0,TokSymbol "..",TokNumber 5,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "a",TokSymbol "..",TokIdent "b",TokSymbol "]"]
+Parser: Just (ESeq [ERange (EInt 1) (EInt 10),ERange (EVar "x") (EVar "y"),ERange (EInt 0) (EInt 5),ERange (EVar "a") (EVar "b")])
+
+-- list2 --
+-- Input: [1, 3 .. 10]; [10, 8 .. 0]; [x, y .. z]; [0, 0 .. 0]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 3,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 10,TokSymbol ",",TokNumber 8,TokSymbol "..",TokNumber 0,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol "..",TokIdent "z",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 0,TokSymbol ",",TokNumber 0,TokSymbol "..",TokNumber 0,TokSymbol "]"]
+Parser: Just (ESeq [ERangeStep (EInt 1) (EInt 3) (EInt 10),ERangeStep (EInt 10) (EInt 8) (EInt 0),ERangeStep (EVar "x") (EVar "y") (EVar "z"),ERangeStep (EInt 0) (EInt 0) (EInt 0)])
+
+-- list3 --
+-- Input: [1,2,3]; [x, y, z]; [1, 2, 3,]; []; [   ]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol ",",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokSymbol "]"]
+Parser: Just (ESeq [EList [EInt 1,EInt 2,EInt 3],EList [EVar "x",EVar "y",EVar "z"],EList [EInt 1,EInt 2,EInt 3],EList [],EList []])
+
+-- list4 --
+-- Input: [1, 2 .. 3]; [1 ,2 ..3]; [1 .. 2, 3]     -- should be normal list? or error?（仕様確認
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]"]
+XX Parser failed! Re-running with trace:
+<< expr: next token TokSymbol "["
+<< exprTerm: next token TokSymbol "["
+<< expr dispatch: TokSymbol "["
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ","
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ","
+<< exprCore next token: TokNumber 2
+<< atomCore: next token TokNumber 2
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 3
+<< atomCore: next token TokNumber 3
+<< atomCore: next token TokSymbol "]"
+<< infixOp: next token TokSymbol ";"
+<< expr: next token TokSymbol "["
+<< exprTerm: next token TokSymbol "["
+<< expr dispatch: TokSymbol "["
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ","
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ","
+<< exprCore next token: TokNumber 2
+<< atomCore: next token TokNumber 2
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 3
+<< atomCore: next token TokNumber 3
+<< atomCore: next token TokSymbol "]"
+<< infixOp: next token TokSymbol ";"
+<< expr: next token TokSymbol "["
+<< exprTerm: next token TokSymbol "["
+<< expr dispatch: TokSymbol "["
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 2
+<< atomCore: next token TokNumber 2
+<< atomCore: next token TokSymbol ","
+Parser: Nothing
+
+-- list error1 --
+-- Input: [1 ..]          -- エラーになるべき
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol "..",TokSymbol "]"]
+XX Parser failed! Re-running with trace:
+<< expr: next token TokSymbol "["
+<< exprTerm: next token TokSymbol "["
+<< expr dispatch: TokSymbol "["
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol "]"
+<< atomCore: next token TokSymbol "]"
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< expr: next token TokSymbol "["
+<< exprTerm: next token TokSymbol "["
+<< expr dispatch: TokSymbol "["
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol "]"
+<< atomCore: next token TokSymbol "]"
+<< exprCore next token: TokNumber 1
+<< atomCore: next token TokNumber 1
+<< atomCore: next token TokSymbol ".."
+Parser: Nothing
+
+-- list error2 --
+-- Input: [.. 10]         -- エラーになるべき
+Tokens: [TokSymbol "[",TokSymbol "..",TokNumber 10,TokSymbol "]"]
+XX Parser failed! Re-running with trace:
+<< expr: next token TokSymbol "["
+<< exprTerm: next token TokSymbol "["
+<< expr dispatch: TokSymbol "["
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+<< expr: next token TokSymbol "["
+<< exprTerm: next token TokSymbol "["
+<< expr dispatch: TokSymbol "["
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+<< exprCore next token: TokSymbol ".."
+<< atomCore: next token TokSymbol ".."
+Parser: Nothing
+
+-- func1 --
+-- Input: x + y where z = 3
+Tokens: [TokIdent "x",TokOperator "+",TokIdent "y",TokKeyword "where",TokIdent "z",TokSymbol "=",TokNumber 3]
+Parser: Just (EWhere (EApp (EApp (EVar "x") (EVar "+")) (EVar "y")) [(PApp (PVar "z") [],EInt 3)])
+
+-- func2 --
+-- Input: case x of Just n | n > 0 -> n   | n < 1 -> 2  where m = 10
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 1,TokArrow,TokNumber 2,TokKeyword "where",TokIdent "m",TokSymbol "=",TokNumber 10]
+Parser: Just (EWhere (ECase (EVar "x") [CaseAltGuard (PApp (PVar "Just") [PVar "n"]) [(EApp (EApp (EVar "n") (EVar ">")) (EInt 0),EVar "n"),(EApp (EApp (EVar "n") (EVar "<")) (EInt 1),EInt 2)]]) [(PApp (PVar "m") [],EInt 10)])
+
+-- func3 --
+-- Input: do { x <- foo;  y <- bar;  x + y} where foo = 1; bar = 2
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokIdent "foo",TokSymbol ";",TokIdent "y",TokSymbol "<-",TokIdent "bar",TokSymbol ";",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol "}",TokKeyword "where",TokIdent "foo",TokSymbol "=",TokNumber 1,TokSymbol ";",TokIdent "bar",TokSymbol "=",TokNumber 2]
+Parser: Just (EWhere (EDo [Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PVar "y") []) (EVar "bar"),ExprStmt (EApp (EApp (EVar "x") (EVar "+")) (EVar "y"))]) [(PApp (PVar "foo") [],EInt 1),(PApp (PVar "bar") [],EInt 2)])
+
+-- func4 --
+-- Input: [x | Just x <- xs] where xs = [1..10]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokKeyword "where",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]"]
+Parser: Just (EWhere (EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")]) [(PApp (PVar "xs") [],ERange (EInt 1) (EInt 10))])
+
+-- func5 --
+-- Input: let  f x = x + 1;  g y = f y * 2 in g 10
+Tokens: [TokKeyword "let",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "g",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "y",TokOperator "*",TokNumber 2,TokKeyword "in",TokIdent "g",TokNumber 10]
+Parser: Just (ELetBlock [(PApp (PVar "f") [PVar "x"],EApp (EApp (EVar "x") (EVar "+")) (EInt 1)),(PApp (PVar "g") [PVar "y"],EApp (EApp (EApp (EVar "f") (EVar "y")) (EVar "*")) (EInt 2))] (EApp (EVar "g") (EInt 10)))
+
+-- func6 --
+-- Input: x + y where  f x = x + 1;  y = f 10
+Tokens: [TokIdent "x",TokOperator "+",TokIdent "y",TokKeyword "where",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "y",TokSymbol "=",TokIdent "f",TokNumber 10]
+Parser: Just (EWhere (EApp (EApp (EVar "x") (EVar "+")) (EVar "y")) [(PApp (PVar "f") [PVar "x"],EApp (EApp (EVar "x") (EVar "+")) (EInt 1)),(PApp (PVar "y") [],EApp (EVar "f") (EInt 10))])
+
+-- func7 --
+-- Input: let f x = x + 1 in case f 3 of n | n > 3 -> n| otherwise -> 0 where otherwise = True
+Tokens: [TokKeyword "let",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokKeyword "in",TokKeyword "case",TokIdent "f",TokNumber 3,TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 3,TokArrow,TokIdent "n",TokSymbol "|",TokIdent "otherwise",TokArrow,TokNumber 0,TokKeyword "where",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "True"]
+Parser: Just (EWhere (ELetBlock [(PApp (PVar "f") [PVar "x"],EApp (EApp (EVar "x") (EVar "+")) (EInt 1))] (ECase (EApp (EVar "f") (EInt 3)) [CaseAltGuard (PApp (PVar "n") []) [(EApp (EApp (EVar "n") (EVar ">")) (EInt 3),EVar "n"),(EVar "otherwise",EInt 0)]])) [(PApp (PVar "otherwise") [],EVarType "True")])
+
+-- sql1 --
+-- Input: sql "SELECT * FROM users"
+Tokens: [TokKeyword "sql",TokString "SELECT * FROM users"]
+Parser: Just (ESQL "SELECT * FROM users" [])
+
+-- sql2 --
+-- Input: sql "SELECT * FROM users WHERE id = {x}"
+Tokens: [TokKeyword "sql",TokString "SELECT * FROM users WHERE id = {x}"]
+Parser: Just (ESQL "SELECT * FROM users WHERE id = ?" [EVar "x"])
+
+-- sql3 --
+-- Input: sql "INSERT INTO t(a,b) VALUES({a}, {b})"
+Tokens: [TokKeyword "sql",TokString "INSERT INTO t(a,b) VALUES({a}, {b})"]
+Parser: Just (ESQL "INSERT INTO t(a,b) VALUES(?, ?)" [EVar "a",EVar "b"])
+
+-- sql4 --
+-- Input: sql "UPDATE t SET a={a}, b={b}, c={c}"
+Tokens: [TokKeyword "sql",TokString "UPDATE t SET a={a}, b={b}, c={c}"]
+Parser: Just (ESQL "UPDATE t SET a=?, b=?, c=?" [EVar "a",EVar "b",EVar "c"])
+
+-- sqlx1 --
+-- Input: let x = sql "SELECT * FROM t" in x
+Tokens: [TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t",TokKeyword "in",TokIdent "x"]
+Parser: Just (ELetBlock [(PApp (PVar "x") [],ESQL "SELECT * FROM t" [])] (EVar "x"))
+
+-- sqlx2 --
+-- Input: f (sql "SELECT * FROM t WHERE id = {i}")
+Tokens: [TokIdent "f",TokSymbol "(",TokKeyword "sql",TokString "SELECT * FROM t WHERE id = {i}",TokSymbol ")"]
+Parser: Just (EApp (EVar "f") (ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"]))
+
+-- sqlx3 --
+-- Input: x where y = sql "SELECT * FROM t WHERE a = {a}"
+Tokens: [TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t WHERE a = {a}"]
+Parser: Just (EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT * FROM t WHERE a = ?" [EVar "a"])])
+
+-- sqlx4 --
+-- Input: do { x <- sql "SELECT * FROM t";  return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokKeyword "sql",TokString "SELECT * FROM t",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+Parser: Just (EDo [Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" []),ExprStmt (EReturn (EVar "x"))])
+
+-- sqlx5 --
+-- Input: (sql "SELECT {a}") + (sql "SELECT {b}")
+Tokens: [TokSymbol "(",TokKeyword "sql",TokString "SELECT {a}",TokSymbol ")",TokOperator "+",TokSymbol "(",TokKeyword "sql",TokString "SELECT {b}",TokSymbol ")"]
+Parser: Just (EApp (EApp (ESQL "SELECT ?" [EVar "a"]) (EVar "+")) (ESQL "SELECT ?" [EVar "b"]))
+
+-- sqlx6 --
+-- Input: let x = sql "SELECT {a}" in x where y = sql "SELECT {b}"
+Tokens: [TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT {a}",TokKeyword "in",TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT {b}"]
+Parser: Just (EWhere (ELetBlock [(PApp (PVar "x") [],ESQL "SELECT ?" [EVar "a"])] (EVar "x")) [(PApp (PVar "y") [],ESQL "SELECT ?" [EVar "b"])])
+
+-- let1 --
+-- Input: let (a, b) = (1, 2) in a + b
+Tokens: [TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokIdent "a",TokOperator "+",TokIdent "b"]
+Parser: Just (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (EApp (EApp (EVar "a") (EVar "+")) (EVar "b")))
+
+-- let1 --
+-- Input: do {let (a, b) = (1, 2) in let f = a + b in f}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokKeyword "let",TokIdent "f",TokSymbol "=",TokIdent "a",TokOperator "+",TokIdent "b",TokKeyword "in",TokIdent "f",TokSymbol "}"]
+Parser: Just (EDo [ExprStmt (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EApp (EApp (EVar "a") (EVar "+")) (EVar "b"))] (EVar "f")))])
+
+-- string --
+-- Input: "max' a b" ++ " | a > b = a | otherwise = b"
+Tokens: [TokString "max' a b",TokOperator "++",TokString " | a > b = a | otherwise = b"]
+Parser: Just (EApp (EApp (EString "max' a b") (EVar "++")) (EString " | a > b = a | otherwise = b"))
+
+-- list1 --
+-- Input: let x = [] in (1 : x)
+Tokens: [TokKeyword "let",TokIdent "x",TokSymbol "=",TokSymbol "[",TokSymbol "]",TokKeyword "in",TokSymbol "(",TokNumber 1,TokOperator ":",TokIdent "x",TokSymbol ")"]
+Parser: Just (ELetBlock [(PApp (PVar "x") [],EList [])] (EApp (EApp (EInt 1) (EVar ":")) (EVar "x")))

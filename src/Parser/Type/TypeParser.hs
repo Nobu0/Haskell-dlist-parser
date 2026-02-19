@@ -90,11 +90,17 @@ typeTerm = do
 typeAtom :: Parser Type
 typeAtom =
   (parens parseTypeCore) -- 括弧付き型
-    <|> (symbol "()" *> pure TUnit) -- 単位型
+    <|> tUnitType -- (symbol "()" *> pure TUnit) -- 単位型
     <|> (TCon <$> typeIdent)
     <|> (TVar <$> ident)
     <|> brackets (TList <$> parseTypeCore)
     <|> parensTuple
+
+tUnitType :: Parser Type
+tUnitType = do
+  symbol "("
+  symbol ")"
+  return (TUnit)
 
 constrainedType :: Parser Type
 constrainedType = do
@@ -112,11 +118,6 @@ parseForall = do
   token TokDot
   body <- parseTypeCore
   return $ TForall vars body
-
-typeIdent :: Parser String
-typeIdent = satisfyMap $ \case
-  TokTypeIdent s -> Just s
-  _ -> Nothing
 
 constraint :: Parser Constraint
 constraint = do

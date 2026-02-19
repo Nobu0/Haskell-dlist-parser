@@ -63,7 +63,7 @@ exprCore :: Parser Expr
 exprCore = do
   t <- lookAhead anyToken
   myTrace ("<< exprCore next token: " ++ show t)
-  -- guard (t /= TokKeyword "let")
+  -- guard (t /= TokSymbol ";")
   try lambdaExpr
     -- <|> void (token TokEllipsis >> return EPlaceholder)
     <|> try binOpExprCore
@@ -110,9 +110,17 @@ appExprCore = do
 -- ============================================
 
 atomCore :: Parser Expr
-atomCore =
-  parens parenExprCore
-    <|> atomBaseCore
+atomCore = do
+  t <- lookAhead anyToken
+  case t of
+    -- TokOperator "$" -> empty
+    TokSymbol "}" -> empty
+    TokSymbol ";" -> empty
+    _ -> do
+      t <- lookAhead anyToken
+      myTrace ("<< atomCore: next token "++ show t)
+      parens parenExprCore
+        <|> atomBaseCore
 
 parenExprCore :: Parser Expr
 parenExprCore = do
@@ -140,15 +148,10 @@ oPsectionCore = do
 
 atomBaseCore :: Parser Expr
 atomBaseCore = do
-  t <- lookAhead anyToken
-  myTrace ("<< atomBaseCore next token: " ++ show t)
-
-  --  case t of
-  --    TokKeyword "let" -> empty
-  --    _ ->
   lambdaExpr
     <|> EVar <$> ident
     <|> EInt <$> int
+    <|> tunitExpr
     <|> EVarType <$> typeIdent
     <|> (ellipsis >> return EPlaceholder)
     <|> elistExpr
@@ -157,6 +160,12 @@ atomBaseCore = do
     <|> pRecordExpr
     <|> operatorVar
     <|> emptyListExpr
+
+tunitExpr :: Parser Expr
+tunitExpr = do
+  symbol "("
+  symbol ")"
+  return (EUnit)
 
 elistExpr :: Parser Expr
 elistExpr = do

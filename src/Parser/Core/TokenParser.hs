@@ -11,7 +11,6 @@ module Parser.Core.TokenParser
     braces,
     bracesv,
     bracesV,
-    bracesV3,
     notFollowedBy,
     (<?>),
     anyToken,
@@ -28,11 +27,20 @@ module Parser.Core.TokenParser
     operatorVar,
     satisfyToken,
     symbolToken,
+    operatorI,
+    operatorA,
+    operatorIAsName,
+    identI,
+    typeIdent,
+    isSymbolName,
+    isEOF,
+    eof,
   )
 where
 
 import AST.Expr
-import Control.Applicative (empty, many, (<|>))
+import Control.Applicative (empty, many, optional, (<|>))
+import Data.Char (isAlpha)
 import Data.Functor (void)
 import qualified Data.Set as Set
 import Lexer.Token (Token (..))
@@ -44,22 +52,32 @@ import Utils.MyTrace (myTrace)
 (<?>) :: Parser a -> String -> Parser a
 p <?> _ = p
 
+identI :: Parser String
+identI = ident <|> typeIdent
+
 braces :: Parser a -> Parser a
 braces p = between (symbol "{") (symbol "}") p
 
 bracesv :: Parser a -> Parser a
-bracesv p = between (token TokVLBrace) (token TokVRBrace) p
+bracesv p = do
+  -- optional (symbol ";")
+  between (token TokVLBrace) (token TokVRBrace) p
 
 -- bracesV :: Parser a -> Parser a
 -- bracesV p = between (token TokVLBrace) (token TokVRBrace) p
 
 -- 仮想括弧
 bracesV :: Parser a -> Parser a
-bracesV p = try (bracesv p) <|> (braces p)
+bracesV p = do
+  t <- lookAhead anyToken
+  case t of
+    TokVLBrace -> bracesv p
+    TokSymbol "{" -> braces p
+    _ -> p
 
 -- 括弧無しでも扱う
-bracesV3 :: Parser a -> Parser a
-bracesV3 p = do try (bracesv p) <|> (braces p) <|> p
+-- bracesV3 :: Parser a -> Parser a
+-- bracesV3 p = do
 
 -- parens :: Parser a -> Parser a
 -- parens p = between (symbol "(") (symbol ")") p
@@ -107,6 +125,22 @@ symbol s = tokenIs $ \case
   TokOperator s' | s' == s -> Just ()
   _ -> Nothing
 
+{-}
+isSymbolName :: String -> Bool
+isSymbolName s = case s of
+  ('(' : c : _) -> not (isAlpha c) -- 例: "(++)", "(>>=)", "(<?>)"
+  _ -> False
+-}
+
+isSymbolName :: String -> Bool
+isSymbolName s =
+  case s of
+    ('(' : _) | last s == ')' -> True -- 括弧付き演算子 (<?>)
+    _ -> not (null s) && isSymbolStart (head s)
+
+isSymbolStart :: Char -> Bool
+isSymbolStart c = c `elem` "!#$%&*+./<=>?@\\^|-~:"
+
 tokenIs :: (Token -> Maybe a) -> Parser a
 tokenIs f = Parser $ \case
   (t : ts) -> case f t of
@@ -137,6 +171,11 @@ peekToken = Parser $ \tokens -> case tokens of
   [] -> Nothing
   (t : _) -> Just (t, tokens)
 
+typeIdent :: Parser String
+typeIdent = satisfyMap $ \case
+  TokTypeIdent s -> Just s
+  _ -> Nothing
+
 stringLiteralExpr :: Parser String
 stringLiteralExpr =
   satisfyToken f
@@ -163,6 +202,8 @@ skipSeparators = do
   _ <- many (tokenIs isSep)
   return ()
   where
+    -- isSep TokVLBrace = Just ()
+    -- isSep TokVRBrace = Just ()
     isSep TokNewline = Just ()
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
@@ -226,6 +267,37 @@ operatorVar = do
     isOp (TokOperator s) = Just s
     isOp _ = Nothing
 
+operatorI :: Parser String
+operatorI = satisfyToken f
+  where
+    f (TokOperator s) = Just s
+    f _ = Nothing
+
+operatorA :: Parser String
+operatorA = satisfyToken isOp
+  where
+    isOp (TokOperator s)
+      -- \| s `elem` ["$", "++", "<?>", ">>=", "<|>", "<$>"] = Just s
+      | s `elem` ["$", "<?>", ">>=", "<|>", "<$>"] = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
+
+operatorEdName :: Parser Name
+operatorEdName = do
+  op <- do
+    symbol "("
+    operatorI
+    symbol ")"
+  return $ "(" ++ show op ++ ")"
+
+operatorIAsName :: Parser Name
+operatorIAsName = do
+  op <-
+    try operatorEdName -- 括弧付き演算子（例: (<?>), (++)
+      <|> operatorI -- 括弧なし演算子（例: <?>, ++）
+  myTrace ("<< operatorIAsName: " ++ show op)
+  return op
+
 {-}
 operator :: Parser String
 operator = do
@@ -282,3 +354,15 @@ symbolToken tok = satisfyToken match
     match t
       | t == tok = Just t
       | otherwise = Nothing
+
+isEOF :: Parser Bool
+isEOF = Parser $ \ts ->
+  case ts of
+    [] -> Just (True, [])
+    _ -> Just (False, ts)
+
+eof :: Parser ()
+eof = Parser $ \ts ->
+  case ts of
+    [] -> Just ((), [])
+    _ -> Nothing

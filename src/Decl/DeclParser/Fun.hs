@@ -19,7 +19,7 @@ import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.ExprExtensions (expr, skipNewlines)
-import Parser.Expr.PatternParser (pattern, patternParser)
+import Parser.Expr.PatternParser (pPattern, pattern)
 import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
 import Utils.MyTrace
 
@@ -38,6 +38,7 @@ funDecl = do
   myTrace ("<< funDecl: next token=" ++ show t)
   (name, clause1) <- funClause -- funDecl
   rest <- many (try (funClauseWithName name))
+  -- optional (token TokVRBrace)
   return (DeclFunGroup name (clause1 : rest))
 
 funClause :: Parser (Name, FunClause)
@@ -45,7 +46,7 @@ funClause = do
   t0 <- lookAhead anyToken
   myTrace ("<< funClause: next token=" ++ show t0)
   name <- ident
-  args <- many patternParser
+  args <- many pPattern -- patternParser
   skipNewlines
   t <- lookAhead anyToken
   myTrace ("<< funClause: args=" ++ show args ++ " t = " ++ show t)
@@ -59,17 +60,16 @@ parseSimpleClause name args = do
   symbol "="
   t <- lookAhead anyToken
   myTrace ("<< parseSimpleClause:2 next token=" ++ show t)
-  bracesV3 $ do
-    skipSeparators
+  bracesV $ do
     e <- expr
-    w <- optional (bracesV3 (whereBlock))
+    w <- optional (bracesV (whereBlock))
     return (name, mkSimpleClause args e w)
 
 parseGuardedClause :: Name -> [Pattern] -> Parser (Name, FunClause)
 parseGuardedClause name args = do
   t <- lookAhead anyToken
   myTrace ("<< parseGuardedClause: next token=" ++ show t)
-  bracesV3 $ do
+  bracesV $ do
     skipSeparators
     guards <- guardedRhs
     w <- optional (whereBlock)
@@ -92,26 +92,26 @@ funClauseWithName name = try $ do
   myTrace ("<< funClauseWithName: next token=" ++ show t)
   name' <- ident
   guard (name == name')
-  args <- many patternParser
+  args <- many pattern -- patternParser
   -- skipSeparators
   t <- lookAhead anyToken
   case t of
     TokSymbol "=" -> do
       symbol "="
-      bracesV3 $ do
+      bracesV $ do
         skipSeparators
         e <- expr
-        -- w <- optional (bracesV3 (whereBlock))
+        -- w <- optional (bracesV (whereBlock))
         w <- optional whereBlock
         return (mkSimpleClause args e w)
     TokSymbol "|" -> do
       guards <- guardedRhs
       w <- optional whereBlock
       return (mkGuardedClause args guards w)
-    _ -> bracesV3 $ do
+    _ -> bracesV $ do
       skipSeparators
       e <- expr
-      -- w <- optional (bracesV3 (whereBlock))
+      -- w <- optional (bracesV (whereBlock))
       w <- optional whereBlock
       return (mkSimpleClause args e w)
 

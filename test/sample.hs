@@ -1,7 +1,7 @@
 
 module Test(main, max', Expr(..)) where
 
-import AST.Expr (Expr(..), BinOp)
+import AST.Expr (Expr(..), BinOp, (<|>))
 import Data.List
 import qualified Data.Map
 import qualified Data.Map as M

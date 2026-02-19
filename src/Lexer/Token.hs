@@ -43,5 +43,6 @@ data Token
   | TokVRBrace
   | TokVSemicolon
   | TokVNewline (Int, Int)
+  | TokLambdaCase
   | TokUnknown Char
   deriving (Show, Eq, Ord)

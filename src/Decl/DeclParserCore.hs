@@ -18,11 +18,13 @@ import Decl.DeclParser.Fun
 import Decl.DeclParser.Import
 import Decl.DeclParser.Module
 import Decl.DeclParser.Type
+import Decl.DeclParser.Util
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
+import Parser.Core.TokenParser (operator)
 import Parser.Expr.ExprExtensions (expr, skipNewlines)
-import Parser.Expr.PatternParser (pattern, patternParser)
+import Parser.Expr.PatternParser (pattern)
 import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
 import Utils.MyTrace
 
@@ -35,11 +37,6 @@ decl = do
   myTrace "<< decl parser called"
   declBody
 -}
-isEOF :: Parser Bool
-isEOF = Parser $ \ts ->
-  case ts of
-    [] -> Just (True, [])
-    _ -> Just (False, ts)
 
 decl :: Parser Decl
 decl = do
@@ -71,10 +68,12 @@ declDispatch = do
     TokKeyword "module" -> moduleDecl
     TokKeyword "class" -> classDecl
     TokKeyword "type" -> typeAliasDecl
+    TokLambdaCase -> empty
     -- _ -> try funDecl <|> valueDecl
     TokIdent _ -> try (funDecl) <|> try typeSigDecl <|> valueDecl
     -- TokSymbol "{" -> try (braces (funDecl decl)) <|> empty
     TokSymbol "(" -> try typeSigDecl <|> empty
+    TokVRBrace -> empty
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)
       empty
@@ -87,7 +86,13 @@ typeSigDecl :: Parser Decl
 typeSigDecl = do
   t <- lookAhead anyToken
   myTrace ("<< typeSigDecl: " ++ show t)
-  name <- ident <|> operator -- name
+  name <-
+    try ident
+      <|> do
+        op <- parens operatorI
+        return $ "(" ++ op ++ ")"
+  t <- lookAhead anyToken
+  myTrace ("<< typeSigDecl:2 " ++ show t)
   symbol "::"
   ty <- parseType
   myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
@@ -100,7 +105,7 @@ valueDecl :: Parser Decl
 valueDecl = do
   t <- lookAhead anyToken
   myTrace ("<< valueDecl: " ++ show t)
-  pat <- patternParser
+  pat <- pattern -- patternParser
   symbol "="
   body <- expr
   return (DeclValue pat body)

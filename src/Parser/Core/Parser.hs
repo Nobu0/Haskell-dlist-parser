@@ -3,13 +3,14 @@ module Parser.Core.Parser (parseExpr, toplevel) where
 
 import AST.Expr
 import Control.Applicative (many, (<|>))
-import Lexer.Token (Token (..))
 import Lexer.Lexer (runLexer)
+import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.ExprExtensions (expr, letExpr)
 import Parser.Expr.PatternParser
+
 -- import Parser.Type.TypeParser
 
 -- === 実行関数 ===
@@ -20,6 +21,7 @@ toplevel = do
   symbol "="
   body <- exprCore
   return (name, body)
+
 {-}
 parseExpr :: [Token] -> IO (Maybe Expr)
 parseExpr toks = case runParser expr toks of
@@ -72,6 +74,7 @@ runToplevelTest (input, expected) = do
 -}
 
 -- 共通の比較処理
+compareAST :: [Char] -> [Char] -> IO ()
 compareAST actualRaw expectedRaw = do
   let normalize = filter (not . (`elem` [' ', '\n', '\t']))
       actual = normalize actualRaw

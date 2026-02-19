@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Parser.Expr.CaseParserCore (caseExprCore) where
+module Parser.Expr.CaseParserCore (caseExprCore, lambdaCaseExpr) where
 
 import AST.Expr
 import AST.Pattern
@@ -18,10 +18,52 @@ caseExprCore expr = do
   keyword "case"
   scrut <- expr
   keyword "of"
-  alts <-
-    bracesV (sepBy1 (caseAlt expr) caseSep)
-      <|> sepBy1 (caseAlt expr) caseSep
-  return (ECase scrut alts)
+  bracesV $ do
+    -- skipSeparators
+    alts <-
+      (sepBy1 (caseAlt expr) caseSep)
+    --  <|> sepBy1 (caseAlt expr) caseSep
+    return (ECase scrut alts)
+
+lambdaCaseExpr :: Parser Expr -> Parser Expr
+lambdaCaseExpr expr = do
+  myTrace ("<< lambdaCaseExpr")
+  token TokLambdaCase
+  bracesV $ do
+    t <- lookAhead anyToken
+    myTrace ("<< lambdaCaseExpr: next token " ++ show t)
+    -- token $ TokKeyword "of"
+    -- branches <- sepBy1 (caseBranch expr) (symbol ";")
+    branches <- sepBy1 (caseAlt expr) (symbol ";")
+    return $ ELambdaCase branches
+
+caseBranch :: Parser Expr -> Parser (Pattern, Expr)
+caseBranch expr = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< caseBranch: next token " ++ show t)
+  pat <- pPattern
+  -- pat <- pattern
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< caseBranch:2 next token " ++ show t ++ " " ++ show pat)
+  token TokArrow
+  body <- expr -- NoInfix
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< caseBranch:2 next token " ++ show t ++ " " ++ show body)
+  return (pat, body)
+
+{-}
+caseExprCore :: Parser Expr -> Parser Expr
+caseExprCore expr = do
+  keyword "case"
+  scrut <- expr
+  keyword "of"
+  bracesV $ do
+    -- skipSeparators
+    alts <-
+      (sepBy1 (caseAlt expr) caseSep)
+    --  <|> sepBy1 (caseAlt expr) caseSep
+    return (ECase scrut alts)
+-}
 
 caseSep :: Parser ()
 caseSep =
@@ -34,9 +76,13 @@ newline = void (token TokNewline)
 
 caseAlt :: Parser Expr -> Parser CaseAlt
 caseAlt expr = do
-  skipNewlines
+  -- skipNewlines
   pat <- pattern
+  t <- lookAhead anyToken
+  myTrace ("<< caseAlt: next token " ++ show t ++ " " ++ show pat)
   guards <- many (guardExpr expr)
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< caseAlt:2 next token " ++ show t ++ " " ++ show guards)
   -- guards <- many (caseGuard expr)
   case guards of
     [] -> do
@@ -48,11 +94,18 @@ caseAlt expr = do
 
 guardExpr :: Parser Expr -> Parser (Expr, Expr)
 guardExpr expr = do
-  skipNewlines
+  t <- lookAhead anyToken
+  myTrace ("<< guardExpr next token: " ++ show t)
   symbol "|"
+  t <- lookAhead anyToken
+  myTrace ("<< guardExpr2 next token: " ++ show t)
   cond <- expr
   token TokArrow
+  t <- lookAhead anyToken
+  myTrace ("<< guardExpr3 next token: " ++ show t)
   body <- expr
+  myTrace ("<< guardExpr4 body: " ++ show body)
+  -- skipSeparators
   return (cond, body)
 
 caseGuard :: Parser Expr -> Parser (Expr, Expr)

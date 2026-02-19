@@ -6,6 +6,10 @@ module Decl.DeclParser.Util
     moduleName,
     tokdot,
     operatorI,
+    sepBy1Skip,
+    skipBlk,
+    typeExpr,
+    operatorIAsName,
   )
 where
 
@@ -23,12 +27,9 @@ import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.ExprExtensions (expr, skipNewlines)
-import Parser.Expr.PatternParser (pattern, patternParser)
+import Parser.Expr.PatternParser (pattern)
 import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
 import Utils.MyTrace
-
-identI :: Parser String
-identI = ident <|> typeIdent
 
 parensI :: Parser a -> Parser a
 parensI p = symbol "(" *> p <* symbol ")"
@@ -39,8 +40,42 @@ moduleName = intercalate "." <$> sepBy1 identI tokdot
 tokdot :: Parser String
 tokdot = token TokDot *> pure "."
 
-operatorI :: Parser Name
-operatorI = satisfyToken isOp
-  where
-    isOp (TokOperator s) = Just s
-    isOp _ = Nothing
+typeExpr :: Parser Type
+typeExpr = do
+  ts <- some typeAtom
+  return $ foldl1 TApp ts
+
+sepBy1Skip :: Parser a -> Parser sep -> Parser [a]
+sepBy1Skip p sep = do
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< sepBy1Skip: next token " ++ show t)
+  skipControlTokens
+  x <- p
+  xs <- many $ do
+    skipControlTokens
+    _ <- sep
+    skipControlTokens
+    p
+  skipControlTokens
+  optional sep
+  skipControlTokens
+  return (x : xs)
+
+isControlToken :: Token -> Bool
+isControlToken t = case t of
+  TokVLBrace -> True
+  TokVRBrace -> True
+  TokNewline -> True
+  TokSymbol ";" -> True
+  _ -> False
+
+skipControlTokens :: Parser ()
+skipControlTokens = skipMany $ satisfyToken (\t -> if isControlToken t then Just () else Nothing)
+
+skipBlk :: Parser ()
+skipBlk = do
+  optional (token TokVLBrace)
+  optional (token TokVRBrace)
+  optional (token TokNewline)
+  optional (token $ TokSymbol ";")
+  return ()

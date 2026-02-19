@@ -62,8 +62,19 @@ slexer = go
     ------------------------------------------------------------
     -- 識別子
     ------------------------------------------------------------
+    go ('\\' : rest) =
+      case rest of
+        'c' : 'a' : 's' : 'e' : r
+          | not (null r) && not (isIdentChar (head r)) ->
+              TokLambdaCase : go r
+        _ -> TokSymbol "\\" : go rest
+    -- go (c : rest)
+    --  | isLetter c =
+    --      let (letters, rest') = span isIdentChar rest
+    --          name = c : letters
+    --       in classifyIdent name : go rest'
     go (c : rest)
-      | isLetter c =
+      | isIdentStart c =
           let (letters, rest') = span isIdentChar rest
               name = c : letters
            in classifyIdent name : go rest'
@@ -81,14 +92,15 @@ slexer = go
     go ('>' : '>' : rest) = TokOperator ">>" : go rest
     go ('<' : '|' : '>' : rest) = TokOperator "<|>" : go rest
     go ('<' : '$' : '>' : rest) = TokOperator "<$>" : go rest
+    go ('<' : '?' : '>' : rest) = TokOperator "<?>" : go rest
     go ('>' : '>' : '=' : rest) = TokOperator ">>=" : go rest
     -- go ('+' : '+' : rest) = TokSymbol "++" : go rest
-    go ('=' : '=' : rest) = TokSymbol "==" : go rest
-    go ('(' : ')' : rest) = TokSymbol "()" : go rest
+    go ('=' : '=' : rest) = TokOperator "==" : go rest
+    -- go ('(' : ')' : rest) = TokSymbol "()" : go rest
     -- go ('[' : ']' : rest) = TokSymbol "[]" : go rest
-    go ('/' : '=' : rest) = TokSymbol "/=" : go rest
-    go ('<' : '=' : rest) = TokSymbol "<=" : go rest
-    go ('>' : '=' : rest) = TokSymbol ">=" : go rest
+    go ('/' : '=' : rest) = TokOperator "/=" : go rest
+    go ('<' : '=' : rest) = TokOperator "<=" : go rest
+    go ('>' : '=' : rest) = TokOperator ">=" : go rest
     go ('<' : '-' : rest) = TokSymbol "<-" : go rest
     go ('.' : '.' : '.' : rest) = TokEllipsis : go rest
     go ('.' : '.' : rest) = TokSymbol ".." : go rest
@@ -117,10 +129,12 @@ slexer = go
     ------------------------------------------------------------
 
     -- isIdentChar x = isAlphaNum x || x == '_' || x == '\''
-    isIdentChar c = isLetter c || isDigit c || c == '_' || c == '\'' || c == '`'
+    -- isIdentChar c = isLetter c || isDigit c || c == '_' || c == '\'' || c == '`'
+    isIdentStart c = isLetter c || c == '_' || c == '`'
+    isIdentChar c = isIdentStart c || isDigit c || c == '\''
 
     -- isSymbolChar x = x `elem` "=(){}[]:;,+-*/<>|&."
-    isSymbolChar x = x `elem` "=(){}[]:;,\\'_|@&"
+    isSymbolChar x = x `elem` "=(){}[]:;,\\'`_|@&"
 
     classifyIdent "sql" = TokKeyword "sql"
     classifyIdent "do" = TokKeyword "do"

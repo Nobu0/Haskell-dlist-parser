@@ -3,12 +3,12 @@
 module Parser.Expr.ExprParser
   ( exprCore,
     exprTop,
-    exprSeq,
-    exprSep,
+    -- exprSeq,
+    -- exprSep,
   )
 where
 
 import Parser.Expr.ExprCore (exprCore)
-import Parser.Expr.ExprExtensions (exprSep, exprSeq, exprTop)
+import Parser.Expr.ExprExtensions -- (exprSep, exprSeq, exprTop)
 
 -- import Parser.SQL.SQLParser

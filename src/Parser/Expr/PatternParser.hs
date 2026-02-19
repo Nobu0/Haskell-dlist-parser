@@ -2,7 +2,7 @@
 
 module Parser.Expr.PatternParser
   ( pattern,
-    patternParser,
+    -- patternParser,
     patternStart,
     pConstrOrVar,
     patternVar,
@@ -11,6 +11,7 @@ module Parser.Expr.PatternParser
     pList,
     pWildcard,
     pInt,
+    pPattern,
   )
 where
 
@@ -24,6 +25,7 @@ import Parser.Core.TokenParser
 import Parser.Type.TypeParser (typeIdent)
 import Utils.MyTrace (myTrace)
 
+{-}
 patternParser :: Parser Pattern
 patternParser = do
   p <- pAs <|> makeCons
@@ -32,11 +34,14 @@ patternParser = do
   -- t <- lookAhead anyToken
   -- myTrace ("<< patten2 next token: stopPattern" ++ show t)
   return p
+-}
+-- pattern :: Parser Pattern
+-- pattern = pPattern
 
 pattern :: Parser Pattern
 pattern = do
   p <- pAs <|> makeCons
-  myTrace ("<< pattern1: (pAs <|> makeCons)" ++ show p)
+  myTrace ("<< pattern: (pAs <|> makeCons)" ++ show p)
   -- stopPattern
   -- t <- lookAhead anyToken
   -- myTrace ("<< patten2 next token: stopPattern" ++ show t)
@@ -66,12 +71,6 @@ stopPattern =
       <|> keyword "if"
       <|> keyword "do"
       <|> eof
-
-eof :: Parser ()
-eof = Parser $ \ts ->
-  case ts of
-    [] -> Just ((), [])
-    _ -> Nothing
 
 makeCons :: Parser Pattern
 makeCons = do
@@ -107,6 +106,21 @@ pAtom = do
     <|> pString
     <|> (symbol "_" >> return PWildcard)
 
+pPattern :: Parser Pattern
+pPattern = do
+  t <- lookAhead anyToken
+  myTrace ("<< pPattern: next token " ++ show t)
+  pat <- pInfix
+  myTrace ("<< pPattern: prased " ++ show pat)
+  return pat
+
+pInfix :: Parser Pattern
+pInfix = chainl1 pAtom infixOp
+  where
+    infixOp = do
+      op <- operatorIAsName
+      return (\a b -> PInfix a op b)
+
 pAs :: Parser Pattern
 pAs = do
   name <- ident
@@ -114,11 +128,31 @@ pAs = do
   pat <- pAtom
   return (PAs name pat)
 
+{-}
 pConstrOrVar :: Parser Pattern
 pConstrOrVar =
   do
     patternVar
     <|> constraintP
+-}
+{-}
+pConstrOrVar :: Parser Pattern
+pConstrOrVar = do
+  name <- try identI <|> parens operatorIAsName
+  return $
+    if isUpper (head name) || isSymbolName name
+      then PConstr name []
+      else PVar name
+-}
+pConstrOrVar :: Parser Pattern
+pConstrOrVar = do
+  t <- lookAhead anyToken
+  myTrace ("<< pConstrOrVar: next token " ++ show t)
+  name <- try identI <|> try (parens operatorIAsName) <|> operatorI
+  return $
+    if isSymbolName name
+      then PConstr name []
+      else PVar name
 
 patternVar :: Parser Pattern
 patternVar = tokenIs $ \case

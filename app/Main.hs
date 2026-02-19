@@ -1,7 +1,7 @@
 module Main where
 
 -- import AST.Expr (Expr)
-import Control.Monad (forM_)
+import Control.Monad (forM_, when)
 import Data.Char (ord)
 import Debug.Trace (trace, traceShow)
 -- import qualified Lexer.
@@ -141,6 +141,7 @@ testCasesDo =
 
 -}
 
+
 runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)
 runParserWithTrace p tokens = do
   setTrace False -- 最初はトレースOFF
@@ -154,6 +155,30 @@ runParserWithTrace p tokens = do
         Just (result, []) -> return (Just result)
         _ -> return Nothing
 
+{-}
+runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)
+runParserWithTrace p tokens = do
+  -- setTrace False
+  setTrace True
+  case runParser p tokens of
+    Just (result, rest) -> do
+      when (not (null rest)) $
+        putStrLn $
+          "<W> Warning: Unconsumed tokens: " ++ show rest
+      return (Just result)
+    _ -> do return Nothing
+-}
+
+{-}
+      putStrLn "XX Parser failed! Re-running with trace:"
+      setTrace True
+      case runParser p tokens of
+        Just (result, r) -> do
+          putStrLn $ "parser: " ++ show r -- ++ " rest:" ++ show rest
+          return (Just result)
+        _ -> return Nothing
+-}
+
 main :: IO ()
 main = do
   putStrLn "=== Running Parser Test Suite ==="
@@ -166,7 +191,7 @@ main = do
 
     putStrLn $ "Tokens: " ++ show toks3
     result <- runParserWithTrace exprTop toks3
-    print result
+    putStrLn $ "Parser: " ++ show result
 
 {-}
 main :: IO ()
