@@ -121,6 +121,7 @@ funClauseWithName name = try $ do
 
 whereBlock :: Parser [Decl]
 whereBlock = do
+  skipSeparators
   t0 <- lookAhead anyToken
   myTrace ("<< whereBlock: next token" ++ show t0)
   keyword "where"
@@ -128,7 +129,6 @@ whereBlock = do
   myTrace ("<< whereBlock:2 next token" ++ show t)
   bracesV $ do
     decls <- many1 $ do
-      skipSeparators
       funDecl
     return decls
 

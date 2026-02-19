@@ -1,9 +1,9 @@
 Build profile: -w ghc-9.6.7 -O1
 In order, the following will be built (use -v for more details):
- - dlist-parser-0.1.0.0 (exe:dlist) (file src\Parser\Expr\CaseParserCore.hs changed)
+ - dlist-parser-0.1.0.0 (exe:dlist) (file src\Parser\Expr\ExprExtensions.hs changed)
 Preprocessing executable 'dlist' for dlist-parser-0.1.0.0...
 Building executable 'dlist' for dlist-parser-0.1.0.0...
-[21 of 32] Compiling Parser.Expr.CaseParserCore ( src\Parser\Expr\CaseParserCore.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Parser\Expr\CaseParserCore.o ) [Source file changed]
+[22 of 32] Compiling Parser.Expr.ExprExtensions ( src\Parser\Expr\ExprExtensions.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Parser\Expr\ExprExtensions.o ) [Source file changed]
 [33 of 33] Linking C:\\Users\\blue3\\haskell\\dlist-parser\\dist-newstyle\\build\\x86_64-windows\\ghc-9.6.7\\dlist-parser-0.1.0.0\\x\\dlist\\build\\dlist\\dlist.exe [Objects changed]
 === Running Parser Test Suite ===
 
@@ -80,29 +80,7 @@ Parser: Just (EDo [])
 -- Case with as-pattern --
 -- Input: case v of x@(Just y) -> return x _ -> return 0
 Tokens: [TokKeyword "case",TokIdent "v",TokKeyword "of",TokIdent "x",TokSymbol "@",TokSymbol "(",TokTypeIdent "Just",TokIdent "y",TokSymbol ")",TokArrow,TokKeyword "return",TokIdent "x",TokIdent "_",TokArrow,TokKeyword "return",TokNumber 0]
-XX Parser failed! Re-running with trace:
-<< expr: next token TokKeyword "case"
-<< exprTerm: next token TokKeyword "case"
-<< expr dispatch: TokKeyword "case"
-<< expr dispatch: TokIdent "v"
-<< exprCore next token: TokIdent "v"
-<< atomCore: next token TokIdent "v"
-<< atomCore: next token TokKeyword "of"
-<< pConstrOrVar: next token TokTypeIdent "Just"
-<< pConstrOrVar: next token TokIdent "y"
-<< pConstrOrVar: next token TokSymbol ")"
-<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "y"]
-<< pattern: (pAs <|> makeCons)PAs "x" (PApp (PVar "Just") [PVar "y"])
-<< caseAlt: next token TokArrow PAs "x" (PApp (PVar "Just") [PVar "y"])
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "return"
-<< expr dispatch: TokIdent "x"
-<< exprCore next token: TokIdent "x"
-<< atomCore: next token TokIdent "x"
-<< atomCore: next token TokIdent "_"
-<< atomCore: next token TokArrow
-<< infixOp: next token TokArrow
-Parser: Nothing
+Parser: Just (ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EReturn (EVar "x")),CaseAlt (PApp (PVar "_") []) (EReturn (EInt 0))])
 
 -- x; y; z statements --
 -- Input: x; y; z
