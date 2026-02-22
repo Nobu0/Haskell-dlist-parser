@@ -11,6 +11,7 @@ module Parser.Core.TokenParser
     braces,
     bracesv,
     bracesV,
+    newline,
     notFollowedBy,
     (<?>),
     anyToken,
@@ -24,11 +25,13 @@ module Parser.Core.TokenParser
     bracedBlock,
     anyToken,
     binOp,
-    operatorVar,
+    parseBinOp,
+    -- operatorVar,
     satisfyToken,
     symbolToken,
     operatorI,
     operatorA,
+    operatorB,
     operatorIAsName,
     identI,
     typeIdent,
@@ -69,11 +72,21 @@ bracesv p = do
 -- 仮想括弧
 bracesV :: Parser a -> Parser a
 bracesV p = do
+  mtok <- optional (lookAhead anyToken)
+  case mtok of
+    Just TokVLBrace -> bracesv p
+    Just (TokSymbol "{") -> braces p
+    _ -> p
+
+{-}
+bracesV :: Parser a -> Parser a
+bracesV p = do
   t <- lookAhead anyToken
   case t of
     TokVLBrace -> bracesv p
     TokSymbol "{" -> braces p
     _ -> p
+-}
 
 -- 括弧無しでも扱う
 -- bracesV3 :: Parser a -> Parser a
@@ -216,6 +229,7 @@ skipNewlines = do
   _ <- many (tokenIs (\t -> if t == TokNewline then Just () else Nothing))
   return ()
 
+{-}
 binOp :: [String] -> Parser (Expr -> Expr -> Expr)
 binOp ops = tokenIs $ \case
   TokOperator op | op `elem` ops ->
@@ -223,23 +237,47 @@ binOp ops = tokenIs $ \case
       Just bop -> Just (EBinOp bop)
       Nothing -> Nothing
   _ -> Nothing
+-}
+
+binOp :: [String] -> Parser (Expr -> Expr -> Expr)
+binOp ops = tokenIs $ \tok -> case tok of
+  TokOperator s | s `elem` ops ->
+    case parseBinOp s of
+      Just bop -> Just (\a b -> EBinOp bop a b)
+      Nothing -> Nothing
+  _ -> Nothing
 
 parseBinOp :: String -> Maybe BinOp
 parseBinOp s = case s of
-  "+" -> Just Add
-  "-" -> Just Sub
-  "*" -> Just Mul
-  "/" -> Just Div
-  "==" -> Just Eq
-  "!=" -> Just Neq
-  "<" -> Just Lt
-  ">" -> Just Gt
-  "<=" -> Just Le
-  ">=" -> Just Ge
-  "&&" -> Just And
-  "||" -> Just Or
-  "++" -> Just Concat
-  ":" -> Just Cons
+  -- 算術演算
+  "+" -> Just BinOpAdd
+  "-" -> Just BinOpSub
+  "*" -> Just BinOpMul
+  "/" -> Just BinOpDiv
+  -- 比較演算
+  "==" -> Just BinOpEq
+  "!=" -> Just BinOpNeq
+  "<" -> Just BinOpLt
+  ">" -> Just BinOpGt
+  "<=" -> Just BinOpLe
+  ">=" -> Just BinOpGe
+  -- 論理演算
+  "&&" -> Just BinOpAnd
+  "||" -> Just BinOpOr
+  -- リスト・文字列操作
+  "++" -> Just BinOpConcat
+  ":" -> Just BinOpCons
+  -- 関数合成
+  "." -> Just BinOpCompose
+  -- モナディック操作など（必要に応じて）
+  ">>" -> Just BinOpThen
+  ">>=" -> Just BinOpBind
+  "<|>" -> Just BinOpAlt
+  "<$>" -> Just BinOpFmap
+  -- その他（必要に応じて追加）
+  -- "$" は構文的に扱うならここには入れない
+  -- "<?>" -> Just TryAlt
+
   _ -> Nothing
 
 operator :: Parser String
@@ -259,6 +297,7 @@ operator = choice (map (\s -> symbol s >> return s) allOps)
         ":"
       ]
 
+{-}
 operatorVar :: Parser Expr
 operatorVar = do
   op <- satisfyToken isOp
@@ -266,6 +305,7 @@ operatorVar = do
   where
     isOp (TokOperator s) = Just s
     isOp _ = Nothing
+-}
 
 operatorI :: Parser String
 operatorI = satisfyToken f
@@ -273,12 +313,22 @@ operatorI = satisfyToken f
     f (TokOperator s) = Just s
     f _ = Nothing
 
+-- postfixで参照
 operatorA :: Parser String
 operatorA = satisfyToken isOp
   where
     isOp (TokOperator s)
-      -- \| s `elem` ["$", "++", "<?>", ">>=", "<|>", "<$>"] = Just s
-      | s `elem` ["$", "<?>", ">>=", "<|>", "<$>"] = Just s
+      | s `elem` ["$", "<$>", "..", ":"] = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
+
+-- infixで参照
+operatorB :: Parser String
+operatorB = satisfyToken isOp
+  where
+    isOp (TokOperator s)
+      | s `elem` [".", ">>", "++", "<?>", ">>=", "<|>"] = Just s
+      -- \| s `elem` ["$", "<?>", ">>=", "<|>", "<$>"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 

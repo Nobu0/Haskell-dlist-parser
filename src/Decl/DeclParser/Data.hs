@@ -28,7 +28,7 @@ dataDecl = do
   typeVars <- many identI
   bracesV $ do
     symbol "="
-    constrs <- sepBy1 dataConstr (symbol "|")
+    constrs <- sepBy1 (skipBlk >> dataConstr) (symbol "|")
     derivs <- option [] derivingClause
     skipSeparators
     return $ DeclData typeName typeVars constrs derivs

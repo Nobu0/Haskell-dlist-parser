@@ -1,5 +1,15 @@
-module AST.Expr where
+module AST.Expr
+  ( BinOp (..),
+    Name,
+    Binding,
+    Expr (..),
+    Stmt (..),
+    Qualifier (..),
+    CaseAlt (..),
+  )
+where
 
+import AST.BinOp (BinOp (..))
 import AST.Pattern (Pattern)
 import AST.Type (Type)
 
@@ -61,21 +71,4 @@ data Expr
   | EWhere Expr [Binding]
   | ELambdaCase [CaseAlt] -- [(Pattern, Expr)]
   | ESQL String [Expr]
-  deriving (Eq, Show)
-
-data BinOp
-  = Add
-  | Sub
-  | Mul
-  | Div
-  | And
-  | Or
-  | Eq
-  | Neq
-  | Lt
-  | Gt
-  | Le
-  | Ge
-  | Concat
-  | Cons
   deriving (Eq, Show)

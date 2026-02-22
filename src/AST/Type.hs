@@ -1,6 +1,6 @@
 module AST.Type where
 
--- import AST.Expr (Name)
+import AST.BinOp
 
 data Type
   = TVar String
@@ -13,6 +13,7 @@ data Type
   | TTuple [Type]
   | TUnit
   | TFun Type Type
+  | TBinOp BinOp Type Type
   deriving (Eq, Show)
 
 data Constraint
@@ -20,7 +21,8 @@ data Constraint
   | ConstraintRecord String [Field] -- レコード構文のコンストラクタ
   deriving (Show, Eq)
 
-data Field = Field String Type
+data Field
+  = Field String Type
   deriving (Show, Eq)
 
 -- data Constraint = Constraint String [Type]

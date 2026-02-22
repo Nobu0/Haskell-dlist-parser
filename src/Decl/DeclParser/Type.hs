@@ -1,6 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Decl.DeclParser.Type (typeAliasDecl, newtypeDecl, constr) where
+module Decl.DeclParser.Type
+  ( typeDecl,
+    newtypeDecl,
+    constr,
+    -- classDecl,
+    -- instanceDecl,
+  )
+where
 
 import AST.Decl
 import AST.Expr
@@ -14,6 +21,7 @@ import Control.Applicative (empty, many, optional, some, (<|>))
 
 import Data.Char (isUpper)
 import Data.List (intercalate)
+import Data.Map (keys)
 import Decl.DeclParser.Util
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
@@ -37,15 +45,50 @@ constr :: Parser Constraint
 constr = do
   myTrace "<< constr parser called"
   cname <- typeIdent
-  tys <- many parseType
+  tys <- many typeExpr
   return (Constraint cname tys)
 
-typeAliasDecl :: Parser Decl
-typeAliasDecl = do
-  myTrace "<< typeAliasDecl parser called"
+-- type Foo a b = (a, b)
+typeDecl :: Parser Decl
+typeDecl = do
   keyword "type"
-  name <- typeIdent
-  vars <- many ident
+  name <- identI
+  vars <- many identI
   symbol "="
-  body <- parseType
-  return $ DeclTypeAlias name vars body
+  typ <- typeExpr
+  return $ DeclTypeAlias name vars typ
+
+{-}
+-- class Eq a where ...
+classDecl :: Parser Decl
+classDecl = do
+  keyword "class"
+  clsName <- identI
+  vars <- many identI
+  optional (TokKeyword "where")
+  decls <- braces (many decl)
+  return $ DeclClass clsName vars decls
+
+-- instance (Show a) => Eq (Maybe a) where ...
+instanceDecl :: Parser Decl
+instanceDecl = do
+  keyword "instance"
+  ctx <- optional contextListParser -- Maybe [Constraint]
+  clsName <- identI
+  types <- many typeParser
+  optional (keyword "where")
+  decls <- braces (many decl)
+  return $ DeclInstance ctx clsName types decls
+-}
+
+-- ident :: Parser String
+-- ident = typeIdent <$> identI
+
+contextListParser :: Parser [Constraint]
+contextListParser = parens (sepBy1 constraintParser (symbol ","))
+
+constraintParser :: Parser Constraint
+constraintParser = do
+  cls <- identI
+  ty <- typeExpr
+  return $ Constraint cls [ty]

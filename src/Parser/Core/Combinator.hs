@@ -14,6 +14,7 @@ module Parser.Core.Combinator
     sepEndBy1,
     try,
     chainl1,
+    chainr1,
     many1,
     manyTill,
     choice,
@@ -126,7 +127,7 @@ sepEndBy p sep = sepEndBy1 p sep <|> pure []
 
 try :: Parser a -> Parser a
 try p = Parser $ \tokens -> runParser p tokens
-
+{-}
 chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
 chainl1 p op = do
   x <- p
@@ -139,6 +140,32 @@ chainl1 p op = do
           rest (f x y)
       )
         <|> return x
+-}
+
+chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
+chainl1 p op = do
+  x <- p
+  rest x
+  where
+    rest x = (do
+        f <- op
+        y <- p
+        rest (f x y))
+      <|> return x
+
+-- chainr1: 右結合のパーサーコンビネータ
+chainr1 :: Parser a -> Parser (a -> a -> a) -> Parser a
+chainr1 p op = scan
+  where
+    scan = do
+      x <- p
+      rest x
+
+    rest x = (do
+        f <- op
+        y <- scan
+        rest (f x y))
+      <|> return x
 
 many1 :: Parser a -> Parser [a]
 many1 p = (:) <$> p <*> many p

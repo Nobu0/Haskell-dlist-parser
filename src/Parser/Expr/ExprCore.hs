@@ -2,9 +2,9 @@
 
 module Parser.Expr.ExprCore
   ( exprCore,
-    exprLevel1Core,
-    exprLevel2Core,
-    exprLevel3Core,
+    -- exprLevel1Core,
+    -- exprLevel2Core,
+    -- exprLevel3Core,
     appExprCore,
     atomCore,
     atomBaseCore,
@@ -52,8 +52,9 @@ lambdaExpr = do
   symbol "\\"
   arg <- pattern
   tokenIs (\case TokArrow -> Just (); _ -> Nothing)
-  body <- exprCore
-  return (ELam arg body)
+  bracesV $ do
+    body <- exprCore
+    return (ELam arg body)
 
 -- ============================================
 --  exprCore（純粋な式パーサー）
@@ -61,18 +62,50 @@ lambdaExpr = do
 
 exprCore :: Parser Expr
 exprCore = do
-  t <- lookAhead anyToken
-  myTrace ("<< exprCore next token: " ++ show t)
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< exprCore next token: " ++ show t)
   -- guard (t /= TokSymbol ";")
-  try lambdaExpr
-    -- <|> void (token TokEllipsis >> return EPlaceholder)
-    <|> try binOpExprCore
-    <|> try parseSQL
+  rt <-
+    try lambdaExpr
+      -- <|> void (token TokEllipsis >> return EPlaceholder)
+      <|> try binOpExprCore
+      <|> parseSQL
+  myTrace ("<< exprCore: rt " ++ show rt)
+  return rt
 
 -- <|> exprLevel1Core
 
 -- ===== 演算子階層 =====
 
+binOpExprCore :: Parser Expr
+binOpExprCore = exprCmpCore
+
+-- 比較演算子（左結合）
+exprCmpCore :: Parser Expr
+exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
+
+-- 加算・連結・Cons（+, -, ++, :）
+-- ここは結合性に応じて分けるのがベスト！
+exprLevel1Core :: Parser Expr
+exprLevel1Core = do
+  e <- chainl1 exprAddSubCore (binOp ["+", "-"])
+  -- chainr1 (return e) (binOp ["++", ":"])
+  return e
+
+-- 乗算・除算・関数合成（* / .）
+exprAddSubCore :: Parser Expr
+exprAddSubCore = do
+  e <- chainl1 exprLevel3Core (binOp ["*", "/"])
+  -- chainr1 (return e) (binOp ["."])
+  return e
+
+-- 最下層：関数適用やリテラル、変数など
+exprLevel3Core :: Parser Expr
+exprLevel3Core =
+  try lambdaExpr
+    <|> appExprCore
+
+{-}
 binOpExprCore :: Parser Expr
 binOpExprCore = exprCmpCore
 
@@ -86,7 +119,7 @@ exprLevel1Core = do
   chainl1 exprLevel2Core (binOp ["+", "-", "++", ":"])
 
 exprLevel2Core :: Parser Expr
-exprLevel2Core = chainl1 exprLevel3Core (binOp ["*", "/"])
+exprLevel2Core = chainl1 exprLevel3Core (binOp ["*", "/", "."])
 
 exprLevel3Core :: Parser Expr
 exprLevel3Core = do
@@ -94,6 +127,7 @@ exprLevel3Core = do
   -- myTrace ("<< exprLevel3Core next token: " ++ show t)
   try lambdaExpr
     <|> appExprCore
+-}
 
 -- ============================================
 --  関数適用
@@ -103,6 +137,7 @@ appExprCore :: Parser Expr
 appExprCore = do
   f <- atomCore
   args <- many atomCore
+  myTrace ("<< appExprCore: f= " ++ show f ++ " args= " ++ show args)
   return (foldl EApp f args)
 
 -- ============================================
@@ -110,17 +145,20 @@ appExprCore = do
 -- ============================================
 
 atomCore :: Parser Expr
+-- atomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
 atomCore = do
-  t <- lookAhead anyToken
-  case t of
-    -- TokOperator "$" -> empty
-    TokSymbol "}" -> empty
-    TokSymbol ";" -> empty
-    _ -> do
-      t <- lookAhead anyToken
-      myTrace ("<< atomCore: next token "++ show t)
-      parens parenExprCore
-        <|> atomBaseCore
+  try (parens parenExprCore)
+    <|> atomBaseCore
+
+badToken :: Parser ()
+badToken =
+  choice
+    [ symbol "}",
+      symbol ";",
+      symbol "$",
+      tokenIs (\t -> case t of TokLambdaCase -> Just (); _ -> Nothing),
+      tokenIs (\t -> case t of TokVRBrace -> Just (); _ -> Nothing)
+    ]
 
 parenExprCore :: Parser Expr
 parenExprCore = do
@@ -160,6 +198,16 @@ atomBaseCore = do
     <|> pRecordExpr
     <|> operatorVar
     <|> emptyListExpr
+
+operatorVar :: Parser Expr
+operatorVar = do
+  op <- satisfyToken isOp
+  return (EVar op)
+  where
+    isOp (TokOperator s)
+      | s `elem` [":"] = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
 
 tunitExpr :: Parser Expr
 tunitExpr = do

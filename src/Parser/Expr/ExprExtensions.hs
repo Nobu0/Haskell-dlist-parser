@@ -32,7 +32,7 @@ import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.CaseParserCore (caseExprCore, lambdaCaseExpr)
 import Parser.Expr.DoParserCore (doExprCore)
-import Parser.Expr.ExprCore (exprCore, atomCore)
+import Parser.Expr.ExprCore (atomCore, exprCore)
 import Parser.Expr.ListParserCore (listExprCore)
 import Parser.Expr.PatternParser (pPattern, pattern)
 import Parser.SQL.SQLParser
@@ -42,44 +42,54 @@ import Utils.MyTrace
 --  exprTop / exprSeq
 -- ============================================
 
+-- exprTop :: Parser Expr
+-- exprTop = try exprSeq <|> expr
 exprTop :: Parser Expr
-exprTop = try exprSeq <|> expr
+exprTop = do
+  es <- sepEndBy1 expr exprSep
+  return $ if length es == 1 then head es else ESeq es
 
+{-}
 exprSeq :: Parser Expr
 exprSeq = do
   es <- sepEndBy1 expr exprSep
   return $ if length es == 1 then head es else ESeq es
+-}
 
 exprSep :: Parser ()
-exprSep = skipMany1 (symbol ";" <|> newline)
+exprSep = skipMany (symbol ";" <|> newline)
 
 expr :: Parser Expr
 expr = do
-  t <- lookAhead anyToken
-  myTrace ("<< expr: next token " ++ show t)
-  rt <- infixExpr
-  return rt
+  e <- infixExpr
+  myTrace ("<< expr: e " ++ show e)
+  return e
 
 infixExpr :: Parser Expr
-infixExpr = chainl1 exprTerm infixOp
+infixExpr = chainr1 exprTerm infixOp
 
 exprTerm :: Parser Expr
 exprTerm = do
-  t <- lookAhead anyToken
-  myTrace ("<< exprTerm: next token " ++ show t)
   e <- exprNoLoop
   postfix e
 
 exprNoLoop :: Parser Expr
-exprNoLoop = exprDispatch
+exprNoLoop = do
+  e <- exprDispatch
+  myTrace ("<< exprNoLoop: e " ++ show e)
+  return e
 
 infixOp :: Parser (Expr -> Expr -> Expr)
 infixOp = do
-  t <- lookAhead anyToken
-  myTrace ("<< infixOp: next token " ++ show t)
-  op <- operatorA
+  op <- operatorB
   myTrace ("<< infixOp: " ++ show op)
-  return (\a b -> EApp (EApp (EVar op) a) b)
+  case parseBinOp op of
+    Just bop -> do
+      myTrace ("<< infixOp: parsed as " ++ show bop)
+      return (\a b -> EBinOp bop a b)
+    Nothing -> do
+      myTrace ("<< infixOp: parseBinOp failed for " ++ show op)
+      empty
 
 -- すべての構文の入口
 exprDispatch :: Parser Expr
@@ -108,47 +118,34 @@ letBlock = do
 
 postfix :: Expr -> Parser Expr
 postfix e = do
-  mtok <- optional (lookAhead anyToken)
-  case mtok of
-    Just (TokOperator _) -> do
-      op <- operatorI
+  mop <- optional operatorA
+  myTrace ("<< postfix: operator = " ++ show mop)
+  case mop of
+    Just op -> do
       myTrace ("<< postfix: infix operator = " ++ show op)
       rhs <- exprNoLoop
       postfix (EApp (EApp (EVar op) e) rhs)
-    Just (TokKeyword "where") -> do
+    Nothing -> do
       mbBinds <- whereClause
       case mbBinds of
         Just binds -> postfix (EWhere e binds)
         Nothing -> return e
-    _ -> return e
-{-}
-whereClause :: Parser (Maybe [Binding])
-whereClause = do
-  skipSeparators
-  t <- lookAhead anyToken
-  myTrace ("<< whereClause: next token " ++ show t)
-  try (keyword "where" >> bindings >>= \bs -> return (Just bs))
-    <|> return Nothing
--}
 
 whereClause :: Parser (Maybe [Binding])
 whereClause = do
   skipSeparators
-  t <- lookAhead anyToken
-  myTrace ("<< whereClause: next token " ++ show t)
   mWhere <- optional (try (keyword "where"))
   case mWhere of
-    Just _  -> Just <$> bindings
+    Just _ -> Just <$> bracesV bindings
     Nothing -> return Nothing
 
 bindings :: Parser [Binding]
 bindings = do
-  bracesV $ do
-    b <- binding
-    bs <- many (skipSeparators >> binding)
-    -- bs <- many (binding)
-    -- bs <- sepEndBy binding (symbol ";") --exprSep
-    return (b : bs)
+  b <- binding
+  bs <- many (skipSeparators >> binding)
+  -- bs <- many (binding)
+  -- bs <- sepEndBy binding (symbol ";") --exprSep
+  return (b : bs)
 
 binding :: Parser Binding
 binding = try valueBinding <|> funBinding
@@ -177,7 +174,7 @@ returnExpr :: Parser Expr
 returnExpr = do
   keyword "return"
   e <- atomCore -- exprNoLoop
-  myTrace("<< return: e "++ show e)
+  myTrace ("<< return: e " ++ show e)
   return (EReturn e)
 
 forExpr :: Parser Expr
@@ -235,7 +232,7 @@ letExpr = do
   myTrace ("<< letExpr: next token: " ++ show t)
   binds <- bindingsBlock
   t2 <- lookAhead anyToken
-  myTrace ("<< letExpr:2 next token: " ++ show t2++ " binds "++ show binds)
+  myTrace ("<< letExpr:2 next token: " ++ show t2 ++ " binds " ++ show binds)
   bracesV $ do
     mIn <- optional (keyword "in")
     myTrace ("<< letExpr:3 mIn " ++ show mIn)

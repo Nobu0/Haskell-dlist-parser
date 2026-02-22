@@ -13,7 +13,7 @@ import Parser.Core.Combinator (Parser (..), runParser)
 import Parser.Core.Parser (parseExpr, toplevel)
 import Parser.Expr.ExprParser (exprTop)
 import System.IO (hFlush, stdout)
-import Text.Megaparsec.Error (errorBundlePretty)
+-- import Text.Megaparsec.Error (errorBundlePretty)
 import Utils.MyTrace (setTrace)
 
 testCasesDo :: [(String, String)]
@@ -134,13 +134,14 @@ testCasesDo =
     ("let1", "let (a, b) = (1, 2) in a + b"),
     ("let1", "do {let (a, b) = (1, 2) in let f = a + b in f}"),
     ("string", "\"max' a b\" ++ \" | a > b = a | otherwise = b\""),
-    ("list1", "let x = [] in (1 : x)")
+    ("list1", "let x = [] in (1 : x)"),
+    ("infixOp", "x . y"),
+    ("infixOp", "x $ y1 y2 y3")
   ]
 
 {-}
 
 -}
-
 
 runParserWithTrace :: Parser a -> [Token] -> IO (Maybe a)
 runParserWithTrace p tokens = do

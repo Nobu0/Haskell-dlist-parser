@@ -30,16 +30,6 @@
   (major1) == 0 && (major2) <  6 || \
   (major1) == 0 && (major2) == 6 && (minor) <= 7)
 #endif /* MIN_VERSION_containers */
-/* package megaparsec-9.7.0 */
-#ifndef VERSION_megaparsec
-#define VERSION_megaparsec "9.7.0"
-#endif /* VERSION_megaparsec */
-#ifndef MIN_VERSION_megaparsec
-#define MIN_VERSION_megaparsec(major1,major2,minor) (\
-  (major1) <  9 || \
-  (major1) == 9 && (major2) <  7 || \
-  (major1) == 9 && (major2) == 7 && (minor) <= 0)
-#endif /* MIN_VERSION_megaparsec */
 /* package parser-combinators-1.3.1 */
 #ifndef VERSION_parser_combinators
 #define VERSION_parser_combinators "1.3.1"

@@ -26,11 +26,7 @@ data Decl
   deriving (Show, Eq)
 
 data FunClause
-  = FunClause
-      [Pattern]
-      (Maybe [(Expr, Expr)])
-      (Maybe Expr)
-      (Maybe [Decl])
+  = FunClause [Pattern] (Maybe [(Expr, Expr)]) (Maybe Expr) (Maybe [Decl])
   deriving (Show, Eq)
 
 data ImportItem

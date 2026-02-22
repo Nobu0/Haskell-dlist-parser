@@ -115,7 +115,7 @@ parseForall :: Parser Type
 parseForall = do
   token TokForall
   vars <- some ident
-  token TokDot
+  token (TokOperator ".")
   body <- parseTypeCore
   return $ TForall vars body
 
@@ -143,6 +143,6 @@ forallType :: Parser Type
 forallType = do
   token TokForall
   vars <- some ident
-  token TokDot
+  token (TokOperator ".")
   t <- constrainedType
   return (TForall vars t)

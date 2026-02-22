@@ -38,7 +38,7 @@ moduleName :: Parser String
 moduleName = intercalate "." <$> sepBy1 identI tokdot
 
 tokdot :: Parser String
-tokdot = token TokDot *> pure "."
+tokdot = token (TokOperator ".") *> pure "."
 
 typeExpr :: Parser Type
 typeExpr = do

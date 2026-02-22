@@ -30,7 +30,6 @@ data Token
   | TokOperator String
   | TokChar Char
   | TokForall
-  | TokDot
   | TokEllipsis
   | TokArrow
   | TokLParen

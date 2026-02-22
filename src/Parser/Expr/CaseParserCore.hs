@@ -5,6 +5,7 @@ module Parser.Expr.CaseParserCore (caseExprCore, lambdaCaseExpr) where
 import AST.Expr
 import AST.Pattern
 import Control.Applicative (empty, many, optional, some, (<|>))
+import Control.Monad (when)
 import Data.Functor (void)
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
@@ -12,7 +13,6 @@ import Parser.Core.TokenParser
 import Parser.Expr.ExprCore (exprCore)
 import Parser.Expr.PatternParser
 import Utils.MyTrace
-import Control.Monad (when)
 
 caseExprCore :: Parser Expr -> Parser Expr
 caseExprCore expr = do
@@ -20,12 +20,14 @@ caseExprCore expr = do
   scrut <- expr
   keyword "of"
   bracesV $ do
-    -- skipSeparators
     alts <- caseAltBlock expr -- sepBy1 (try(caseAlt expr)) caseSep
+    -- t <- lookAhead anyToken
+    myTrace ("<< caseExprCore: alts " ++ show alts)
     return (ECase scrut alts)
 
 caseAltBlock :: Parser Expr -> Parser [CaseAlt]
 caseAltBlock expr = sepBy1 (caseAlt expr) caseSep
+
 -- caseAltBlock expr = do
 --  first <- caseAlt expr
 --  rest <- many (try (caseSep >> lookAhead patternStart >> caseAlt expr))
@@ -41,21 +43,22 @@ guardedExpr expr = do
     Just _ -> empty  -- 次がパターンなら失敗して次の caseAlt に進ませる
     Nothing -> return e
 -}
-
+{-}
 guardedExpr :: Parser Expr -> Parser Expr
 guardedExpr expr = do
   t <- lookAhead anyToken
-  myTrace("<< guardedExpr: next token "++ show t)
+  myTrace ("<< guardedExpr: next token " ++ show t)
   when (isPatternStart t) empty
   expr -- Core
 
 isPatternStart :: Token -> Bool
 isPatternStart (TokIdent "_") = True
-isPatternStart (TokIdent _)   = True
+isPatternStart (TokIdent _) = True
 isPatternStart (TokTypeIdent _) = True
-isPatternStart (TokNumber _)  = True
+isPatternStart (TokNumber _) = True
 isPatternStart (TokSymbol "(") = True
 isPatternStart _ = False
+-}
 
 {-}
 caseAltBlock :: Parser Expr -> Parser [CaseAlt]
@@ -75,8 +78,20 @@ lambdaCaseExpr expr = do
     myTrace ("<< lambdaCaseExpr: next token " ++ show t)
     -- token $ TokKeyword "of"
     -- branches <- sepBy1 (caseBranch expr) (symbol ";")
-    branches <- sepBy1 (caseAlt expr) (symbol ";")
+    branches <- caseLambdaBlock expr -- sepBy1 (caseAlt expr) (symbol ";")
     return $ ELambdaCase branches
+
+{-}
+caseLambdaBlock :: Parser Expr -> Parser [(Pattern, Expr)]
+caseLambdaBlock expr = do
+  try $
+    sepBy1 (caseBranch expr) (symbol ";")
+      <|> caseLambdaBlock2
+-}
+
+caseLambdaBlock :: Parser Expr -> Parser [CaseAlt]
+caseLambdaBlock expr = do
+  sepBy (caseAlt expr) (symbol ";")
 
 caseBranch :: Parser Expr -> Parser (Pattern, Expr)
 caseBranch expr = do
@@ -92,42 +107,26 @@ caseBranch expr = do
   -- myTrace ("<< caseBranch:2 next token " ++ show t ++ " " ++ show body)
   return (pat, body)
 
-{-}
-caseExprCore :: Parser Expr -> Parser Expr
-caseExprCore expr = do
-  keyword "case"
-  scrut <- expr
-  keyword "of"
-  bracesV $ do
-    -- skipSeparators
-    alts <-
-      (sepBy1 (caseAlt expr) caseSep)
-    --  <|> sepBy1 (caseAlt expr) caseSep
-    return (ECase scrut alts)
--}
-
 caseSep :: Parser ()
 caseSep =
   symbol ";"
     <|> void (token TokNewline) -- newline
     <|> lookAhead patternStart
 
-newline :: Parser ()
-newline = void (token TokNewline)
-
 caseAlt :: Parser Expr -> Parser CaseAlt
 caseAlt expr = do
   -- skipNewlines
   pat <- pattern
-  t <- lookAhead anyToken
-  myTrace ("<< caseAlt: next token " ++ show t ++ " " ++ show pat)
+  -- t <- lookAhead anyToken
+  -- myTrace ("<< caseAlt: next token " ++ show t ++ " " ++ show pat)
   guards <- many (guardExpr expr)
   case guards of
     [] -> do
       token TokArrow
-      body <- expr -- guardedExpr expr
-      myTrace ("<< caseAlt: " ++ show pat ++ " "++ show body)
-      return (CaseAlt pat body)
+      bracesV $ do
+        body <- expr -- guardedExpr expr
+        myTrace ("<< caseAlt: " ++ show pat ++ " " ++ show body)
+        return (CaseAlt pat body)
     _ -> do
       myTrace ("<< caseAlt: g " ++ show pat ++ " " ++ show guards)
       return (CaseAltGuard pat guards)

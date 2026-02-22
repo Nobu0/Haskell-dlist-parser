@@ -40,7 +40,7 @@ decl = do
 
 decl :: Parser Decl
 decl = do
-  skipNewlines
+  -- optional (newline)
   t <- lookAhead anyToken
   myTrace ("<< decl next token: " ++ show t)
   eof <- isEOF
@@ -52,12 +52,15 @@ decl = do
 
 declBody :: Parser Decl
 declBody = do
+  -- optional (newline)
   d <- declDispatch
+  optional (newline)
   myTrace ("<< declBody: return " ++ show d)
   return d
 
 declDispatch :: Parser Decl
 declDispatch = do
+  skipNewlines
   t <- lookAhead anyToken
   myTrace ("<< decl dispatch: " ++ show t)
   case t of
@@ -67,13 +70,13 @@ declDispatch = do
     TokKeyword "instance" -> instanceDecl
     TokKeyword "module" -> moduleDecl
     TokKeyword "class" -> classDecl
-    TokKeyword "type" -> typeAliasDecl
+    TokKeyword "type" -> typeDecl
     TokLambdaCase -> empty
     -- _ -> try funDecl <|> valueDecl
     TokIdent _ -> try (funDecl) <|> try typeSigDecl <|> valueDecl
     -- TokSymbol "{" -> try (braces (funDecl decl)) <|> empty
     TokSymbol "(" -> try typeSigDecl <|> empty
-    TokVRBrace -> empty
+    -- TokVRBrace -> empty
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)
       empty

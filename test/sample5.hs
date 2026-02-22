@@ -39,7 +39,6 @@ import qualified Data.Set as Set
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Utils.MyTrace (myTrace)
--}
 -- import Text.Megaparsec (token, (<?>))
 (<?>) :: Parser a -> String -> Parser a
 p <?> _ = p
@@ -50,9 +49,6 @@ braces p = between (symbol "{") (symbol "}") p
 bracesv :: Parser a -> Parser a
 bracesv p = between (token TokVLBrace) (token TokVRBrace) p
 
--- bracesV :: Parser a -> Parser a
--- bracesV p = between (token TokVLBrace) (token TokVRBrace) p
-
 -- 仮想括弧
 bracesV :: Parser a -> Parser a
 bracesV p = try (bracesv p) <|> (braces p)
@@ -61,8 +57,6 @@ bracesV p = try (bracesv p) <|> (braces p)
 bracesV3 :: Parser a -> Parser a
 bracesV3 p = do try (bracesv p) <|> (braces p) <|> p
 
--- parens :: Parser a -> Parser a
--- parens p = between (symbol "(") (symbol ")") p
 parens :: Parser a -> Parser a
 parens p = do
   symbol "("
@@ -77,7 +71,7 @@ ident :: Parser String
 ident = tokenIs $ \case
   TokIdent s -> Just s
   _ -> Nothing
-
+-}
 int :: Parser Int
 int = do
   t <- satisfy isNumber
@@ -88,6 +82,7 @@ int = do
     isNumber (TokNumber _) = True
     isNumber _ = False
 
+{-}
 keyword :: String -> Parser ()
 keyword kw = do
   t <- satisfy isKeyword
@@ -223,14 +218,12 @@ operatorVar = do
     isOp (TokOperator s) = Just s
     isOp _ = Nothing
 
-{-}
 operator :: Parser String
 operator = do
   symbol "("
   op <- operatorTok
   symbol ")"
   return (op)
--}
 
 -- 関数名や演算子名をパースする共通パーサー
 -- 例: "f" や "==" や "(==)"
@@ -279,3 +272,4 @@ symbolToken tok = satisfyToken match
     match t
       | t == tok = Just t
       | otherwise = Nothing
+-}

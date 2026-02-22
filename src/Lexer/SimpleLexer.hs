@@ -104,7 +104,7 @@ slexer = go
     go ('<' : '-' : rest) = TokSymbol "<-" : go rest
     go ('.' : '.' : '.' : rest) = TokEllipsis : go rest
     go ('.' : '.' : rest) = TokSymbol ".." : go rest
-    go ('.' : rest) = TokDot : go rest
+    go ('.' : rest) = TokOperator "." : go rest
     go ('+' : rest) = TokOperator "+" : go rest
     go ('-' : rest) = TokOperator "-" : go rest
     go ('*' : rest) = TokOperator "*" : go rest
@@ -163,7 +163,7 @@ slexer = go
     classifyIdent "=>" = TokKeyword "=>"
     classifyIdent "->" = TokArrow
     -- classifyIdent "..." = TokEllipsis
-    classifyIdent "." = TokDot
+    -- classifyIdent "." = TokDot
     classifyIdent "::" = TokSymbol "::"
     classifyIdent "<-" = TokSymbol "<-"
     classifyIdent "==" = TokOperator "=="
@@ -200,61 +200,3 @@ slexer = go
     readString (c : rest) =
       let (s, rest') = readString rest
        in (c : s, rest')
-
-{-}
-module Lexer.SimpleLexer (runLexer) where
-
-import Data.Char
-import Lexer.Token (Token (..))
-
-runLexer :: String -> [Token]
-runLexer = go
-  where
-    go [] = []
-    go ('\n' : rest) =
-      TokNewline : go rest
-    go (' ' : rest) =
-      let (spaces, rest') = span (== ' ') rest
-       in TokSpace (1 + length spaces) : go rest'
-    go (c : rest)
-      | isDigit c =
-          let (digits, rest') = span isDigit rest
-           in TokNumber (read (c : digits)) : go rest'
-      | isAlpha c =
-          let (letters, rest') = span isIdentChar rest
-              name = c : letters
-           in classifyIdent name : go rest'
-      | isSymbolChar c =
-          TokSymbol [c] : go rest
-      | otherwise =
-          TokUnknown c : go rest
-
-    isIdentChar x = isAlphaNum x || x == '_' || x == '\''
-    isSymbolChar x = x `elem` "=(){}[]:;,+-*/<>|&"
-
-    classifyIdent "do" = TokKeyword "do"
-    classifyIdent "let" = TokKeyword "let"
-    classifyIdent "in" = TokKeyword "in"
-    classifyIdent "case" = TokKeyword "case"
-    classifyIdent "of" = TokKeyword "of"
-    classifyIdent "where" = TokKeyword "where"
-    classifyIdent "forall" = TokForall
-    classifyIdent "if" = TokKeyword "if"
-    classifyIdent "then" = TokKeyword "then"
-    classifyIdent "else" = TokKeyword "else"
-    classifyIdent "data" = TokKeyword "data"
-    classifyIdent "where" = TokKeyword "where"
-    classifyIdent "module" = TokKeyword "module"
-    classifyIdent "->" = TokArrow
-    classifyIdent "..." = TokEllipsis
-    classifyIdent "." = TokDot
-    classifyIdent "::" = TokSymbol "::"
-    classifyIdent "<-" = TokSymbol "<-"
-    classifyIdent "==" = TokOperator "=="
-    classifyIdent "<=" = TokOperator "<="
-    classifyIdent ">=" = TokOperator ">="
-    classifyIdent "/=" = TokOperator "/="
-    classifyIdent name
-      | isUpper (head name) = TokTypeIdent name
-      | otherwise = TokIdent name
--}
