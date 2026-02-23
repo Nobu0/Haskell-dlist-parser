@@ -20,4 +20,5 @@ data BinOp
   | BinOpBind
   | BinOpAlt
   | BinOpFmap
+  | BinOpApp
   deriving (Show, Eq)

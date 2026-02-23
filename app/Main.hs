@@ -136,7 +136,10 @@ testCasesDo =
     ("string", "\"max' a b\" ++ \" | a > b = a | otherwise = b\""),
     ("list1", "let x = [] in (1 : x)"),
     ("infixOp", "x . y"),
-    ("infixOp", "x $ y1 y2 y3")
+    ("$1", "print $ y1 y2 y3"),
+    ("$2", "do { print $ \"test\" }"),
+    ("$3", "do { print \"test\"; return 0 }"),
+    ("confirm", "[1,2]; [3,4];")
   ]
 
 {-}

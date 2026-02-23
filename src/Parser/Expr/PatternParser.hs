@@ -43,8 +43,6 @@ pattern = do
   p <- pAs <|> makeCons
   myTrace ("<< pattern: (pAs <|> makeCons)" ++ show p)
   -- stopPattern
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< patten2 next token: stopPattern" ++ show t)
   return p
 
 patternStart :: Parser ()
@@ -108,8 +106,6 @@ pAtom = do
 
 pPattern :: Parser Pattern
 pPattern = do
-  t <- lookAhead anyToken
-  myTrace ("<< pPattern: next token " ++ show t)
   pat <- pInfix
   myTrace ("<< pPattern: prased " ++ show pat)
   return pat
@@ -128,27 +124,10 @@ pAs = do
   pat <- pAtom
   return (PAs name pat)
 
-{-}
-pConstrOrVar :: Parser Pattern
-pConstrOrVar =
-  do
-    patternVar
-    <|> constraintP
--}
-{-}
 pConstrOrVar :: Parser Pattern
 pConstrOrVar = do
-  name <- try identI <|> parens operatorIAsName
-  return $
-    if isUpper (head name) || isSymbolName name
-      then PConstr name []
-      else PVar name
--}
-pConstrOrVar :: Parser Pattern
-pConstrOrVar = do
-  t <- lookAhead anyToken
-  myTrace ("<< pConstrOrVar: next token " ++ show t)
   name <- try identI <|> try (parens operatorIAsName) <|> operatorI
+  myTrace ("<< pConstrOrVar: next token " ++ show name)
   return $
     if isSymbolName name
       then PConstr name []

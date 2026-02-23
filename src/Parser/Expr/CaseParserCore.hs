@@ -91,7 +91,10 @@ caseLambdaBlock expr = do
 
 caseLambdaBlock :: Parser Expr -> Parser [CaseAlt]
 caseLambdaBlock expr = do
-  sepBy (caseAlt expr) (symbol ";")
+  -- sepBy (caseAlt expr) (symbol ";")
+  f <- caseAlt expr
+  xs <- many (caseAlt expr)
+  return (f : xs)
 
 caseBranch :: Parser Expr -> Parser (Pattern, Expr)
 caseBranch expr = do

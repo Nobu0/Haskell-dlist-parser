@@ -145,8 +145,9 @@ appExprCore = do
 -- ============================================
 
 atomCore :: Parser Expr
--- atomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
-atomCore = do
+atomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
+
+xatomCore = do
   try (parens parenExprCore)
     <|> atomBaseCore
 

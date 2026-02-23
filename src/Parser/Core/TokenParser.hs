@@ -30,9 +30,10 @@ module Parser.Core.TokenParser
     satisfyToken,
     symbolToken,
     operatorI,
-    operatorA,
-    operatorB,
+    -- operatorA,
+    -- operatorB,
     operatorIAsName,
+    operatorEdName,
     identI,
     typeIdent,
     isSymbolName,
@@ -67,9 +68,10 @@ bracesv p = do
   between (token TokVLBrace) (token TokVRBrace) p
 
 -- bracesV :: Parser a -> Parser a
--- bracesV p = between (token TokVLBrace) (token TokVRBrace) p
+-- bracesV p = try (bracesv p) <|> try (braces p) <|> p
 
 -- 仮想括弧
+
 bracesV :: Parser a -> Parser a
 bracesV p = do
   mtok <- optional (lookAhead anyToken)
@@ -77,16 +79,6 @@ bracesV p = do
     Just TokVLBrace -> bracesv p
     Just (TokSymbol "{") -> braces p
     _ -> p
-
-{-}
-bracesV :: Parser a -> Parser a
-bracesV p = do
-  t <- lookAhead anyToken
-  case t of
-    TokVLBrace -> bracesv p
-    TokSymbol "{" -> braces p
-    _ -> p
--}
 
 -- 括弧無しでも扱う
 -- bracesV3 :: Parser a -> Parser a
@@ -256,6 +248,7 @@ parseBinOp s = case s of
   "/" -> Just BinOpDiv
   -- 比較演算
   "==" -> Just BinOpEq
+  "/=" -> Just BinOpNeq
   "!=" -> Just BinOpNeq
   "<" -> Just BinOpLt
   ">" -> Just BinOpGt
@@ -274,6 +267,7 @@ parseBinOp s = case s of
   ">>=" -> Just BinOpBind
   "<|>" -> Just BinOpAlt
   "<$>" -> Just BinOpFmap
+  "$" -> Just BinOpApp
   -- その他（必要に応じて追加）
   -- "$" は構文的に扱うならここには入れない
   -- "<?>" -> Just TryAlt
@@ -306,13 +300,20 @@ operatorVar = do
     isOp (TokOperator s) = Just s
     isOp _ = Nothing
 -}
+{-}
 
+-}
 operatorI :: Parser String
-operatorI = satisfyToken f
+operatorI = satisfyToken isOp
   where
-    f (TokOperator s) = Just s
-    f _ = Nothing
+    isOp (TokOperator s)
+      | s `elem` allowed = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
 
+    allowed = ["::", ":", "++", "<$>", "$"] -- "$" を含めない！
+
+{-}
 -- postfixで参照
 operatorA :: Parser String
 operatorA = satisfyToken isOp
@@ -328,15 +329,20 @@ operatorB = satisfyToken isOp
   where
     isOp (TokOperator s)
       | s `elem` [".", ">>", "++", "<?>", ">>=", "<|>"] = Just s
-      -- \| s `elem` ["$", "<?>", ">>=", "<|>", "<$>"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
+-}
+operatorAll :: Parser String
+operatorAll = satisfyToken f
+  where
+    f (TokOperator s) = Just s
+    f _ = Nothing
 
 operatorEdName :: Parser Name
 operatorEdName = do
   op <- do
     symbol "("
-    operatorI
+    operatorAll
     symbol ")"
   return $ "(" ++ show op ++ ")"
 

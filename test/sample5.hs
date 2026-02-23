@@ -82,7 +82,6 @@ int = do
     isNumber (TokNumber _) = True
     isNumber _ = False
 
-{-}
 keyword :: String -> Parser ()
 keyword kw = do
   t <- satisfy isKeyword
@@ -106,6 +105,7 @@ tokenIs f = Parser $ \case
     Nothing -> Nothing
   [] -> Nothing
 
+{-}
 notFollowedBy :: Parser a -> Parser ()
 notFollowedBy p = Parser $ \input ->
   case runParser p input of
@@ -117,6 +117,7 @@ anyToken = Parser $ \input ->
   case input of
     (t : ts) -> Just (t, ts)
     [] -> Nothing
+-}
 
 debugPeek :: Parser ()
 debugPeek = do
@@ -124,11 +125,12 @@ debugPeek = do
   Parser $ \tokens ->
     Just ((), tokens)
 
+{-}
 peekToken :: Parser Token
 peekToken = Parser $ \tokens -> case tokens of
   [] -> Nothing
   (t : _) -> Just (t, tokens)
-
+-}
 stringLiteralExpr :: Parser String
 stringLiteralExpr =
   satisfyToken f
@@ -143,12 +145,16 @@ charLiteralExpr =
     f (TokChar s) = Just s
     f _ = Nothing
 
+{-}
 satisfyToken :: (Token -> Maybe a) -> Parser a
-satisfyToken f = Parser $ \ts -> case ts of
-  [] -> Nothing
-  (t : ts') -> case f t of
-    Just x -> Just (x, ts')
-    Nothing -> Nothing
+satisfyToken f = do
+  Parser $ \ts ->
+    case ts of
+      [] -> Nothing
+      (t : ts') -> case f t of
+        Just x -> Just (x, ts')
+        Nothing -> Nothing
+-}
 
 skipSeparators :: Parser ()
 skipSeparators = do
@@ -272,4 +278,3 @@ symbolToken tok = satisfyToken match
     match t
       | t == tok = Just t
       | otherwise = Nothing
--}

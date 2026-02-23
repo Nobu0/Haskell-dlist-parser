@@ -6,7 +6,7 @@ import AST.Decl
 import AST.Expr
 -- import AST.Module (Name)
 import AST.Pattern (Pattern (..))
-import AST.Type (Constraint (Constraint), Type (..))
+import AST.Type (Constraint (..), Type (..))
 import Control.Applicative (empty, many, optional, some, (<|>))
 import Data.List (intercalate)
 -- ★ ここが正しい
@@ -40,7 +40,12 @@ importList :: Parser [ImportItem]
 importList =
   parens $
     pure ImportAllItems <$ symbol ".."
-      <|> sepBy1 importIdent (symbol ",")
+      <|> list -- sepBy1 importIdent (symbol ",")
+  where
+    list = do
+      f <- importIdent
+      xs <- many importIdent
+      return (f : xs)
 
 {-}
 importIdent :: Parser ImportItem
@@ -60,27 +65,39 @@ importIdent = do
   t <- lookAhead anyToken
   myTrace ("<< importIdent: next token " ++ show t)
   name <-
-    try identI <|> operatorIAsName
-  --  <|> do
-  --    op <- parens operatorI
-  --    return $ "(" ++ op ++ ")"
+    try identI
+      <|> operatorEdName
+      <|> operatorIAsName
+  myTrace ("<< importIdent: name " ++ show name)
   m <-
     optional $
       parensI $
         (ImportTypeAll name <$ symbol "..")
           <|> ImportTypeSome name
-            <$> sepBy1 getNameList (symbol ",")
+            <$> getNameList
+  -- <$> sepBy1 getNameList (symbol ",")
   -- <|> (ImportTypeSome name <$> sepBy1 identI (symbol ","))
+  optional (symbol ",")
+  myTrace ("<< importIdent: m " ++ show m)
   return $ case m of
     Just x -> x
     Nothing -> ImportVar name
 
+getNameList :: Parser [String]
 getNameList = do
-  t <- lookAhead anyToken
-  myTrace ("<< getNameList: next token " ++ show t)
-  nm <- try identI <|> parens operatorIAsName
-  myTrace ("<< getNameList:2 next token " ++ show t ++ " " ++ show nm)
-  return nm
+  list
+  where
+    name = do
+      t <- lookAhead anyToken
+      myTrace ("<< getNameList: next token " ++ show t)
+      nm <- try identI <|> parens operatorIAsName <|> operatorEdName
+      myTrace ("<< getNameList:2 next token " ++ show t ++ " " ++ show nm)
+      optional (symbol ",")
+      return nm
+    list = do
+      f <- name
+      xs <- many1 name
+      return (f : xs)
 
 {-}  myTrace ("<< getNameList: next token " ++ show t ++ " " ++ show nm)
 
