@@ -10,7 +10,11 @@ module Parser.Core.TokenParser
     brackets,
     braces,
     bracesv,
+    bracesVO,
     bracesV,
+    bracesB,
+    bracesN,
+    skipVB,
     newline,
     notFollowedBy,
     (<?>),
@@ -20,6 +24,7 @@ module Parser.Core.TokenParser
     skipNewlines,
     newline,
     skipSeparators,
+    -- skipVLBrace,
     name,
     operator,
     bracedBlock,
@@ -67,10 +72,30 @@ bracesv p = do
   -- optional (symbol ";")
   between (token TokVLBrace) (token TokVRBrace) p
 
--- bracesV :: Parser a -> Parser a
--- bracesV p = try (bracesv p) <|> try (braces p) <|> p
+bracesVO :: Parser a -> Parser a
+bracesVO p = try (bracesv p) <|> p
+
+bracesB :: Parser a -> Parser a
+bracesB p = try (braces p) <|> p
+
+bracesN :: Parser a -> Parser a
+bracesN p = p
 
 -- 仮想括弧
+{-}
+skipVB :: Parser Token
+skipVB = do
+  mtok <- optional (lookAhead anyToken)
+  case mtok of
+    Just TokVLBrace -> empty
+    Just TokVRBrace -> empty
+    Nothing -> empty
+    _ -> mtok
+-}
+
+-- optional (token TokVLBrace)
+-- optional (token TokVRBrace)
+-- return ()
 
 bracesV :: Parser a -> Parser a
 bracesV p = do
@@ -211,6 +236,15 @@ skipSeparators = do
     -- isSep TokVRBrace = Just ()
     isSep TokNewline = Just ()
     isSep (TokSymbol ";") = Just ()
+    isSep _ = Nothing
+
+skipVB :: Parser ()
+skipVB = do
+  _ <- many (tokenIs isSep)
+  return ()
+  where
+    isSep TokVLBrace = Just ()
+    isSep TokVRBrace = Just ()
     isSep _ = Nothing
 
 newline :: Parser ()
