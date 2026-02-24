@@ -66,7 +66,7 @@ expr = do
   return e
 
 infixExpr :: Parser Expr
-infixExpr = chainr1 exprTerm infixOp
+infixExpr = chainr1 (try exprTerm) infixOp
 
 exprTerm :: Parser Expr
 exprTerm = do
@@ -162,46 +162,50 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
-    -- TokSymbol "{" -> bracesV expr
+    -- TokSymbol "(" -> exprCore
     -- TokSymbol "\\" -> lambdaExpr
     -- TokSymbol ";" -> empty
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
     _ -> exprCore
 
-letBlock :: Parser Expr
-letBlock = do
-  t <- lookAhead anyToken
-  myTrace ("<< letBlock next token: " ++ show t)
-  try letExpr <|> pLetExpr
-
 whereClause :: Parser (Maybe [Binding])
 whereClause = do
   skipSeparators
-  mWhere <- optional (try (keyword "where"))
-  case mWhere of
-    Just _ -> Just <$> bracesV bindings
-    Nothing -> return Nothing
+  bracesV $ do
+    mWhere <- optional (try (keyword "where"))
+    case mWhere of
+      Just _ -> Just <$> bindings
+      Nothing -> return Nothing
+  where
+    bindings :: Parser [Binding]
+    bindings = do
+      bracesV $ do
+        b <- binding
+        -- bs <- many (skipSeparators >> binding)
+        bs <- many binding
+        -- bs <- sepEndBy binding (symbol ";") --exprSep
+        myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
+        return (b : bs)
 
-bindings :: Parser [Binding]
-bindings = do
-  b <- binding
-  bs <- many (skipSeparators >> binding)
-  -- bs <- many (binding)
-  -- bs <- sepEndBy binding (symbol ";") --exprSep
-  return (b : bs)
-
+{-}
 binding :: Parser Binding
-binding = try valueBinding <|> funBinding
-
+binding = do
+  rt <- try valueBinding <|> funBinding
+  skipNewlines
+  return rt
+-}
 -- ============================================
 --  let / if / return / for
 -- ============================================
+{-}
 def :: Parser (Pattern, Expr)
 def = do
   p <- pattern
   symbol "="
-  e <- expr -- NoLoop
-  return (p, e)
+  bracesV $ do
+    e <- expr -- NoLoop
+    return (p, e)
+-}
 
 ifExpr :: Parser Expr
 ifExpr = do
@@ -217,7 +221,7 @@ returnExpr :: Parser Expr
 returnExpr = do
   keyword "return"
   e <- atomCore -- exprNoLoop
-  myTrace ("<< return: e " ++ show e)
+  myTrace (">>*return: e " ++ show e)
   return (EReturn e)
 
 forExpr :: Parser Expr
@@ -236,6 +240,7 @@ qualifier =
 genQualifier :: Parser Qualifier
 genQualifier = do
   pat <- pattern
+  -- bracesV $ do
   keyword "in"
   src <- expr -- NoLoop
   return (QGenerator pat src)
@@ -245,62 +250,76 @@ guardQualifier = QGuard <$> exprNoLoop
 
 funBinding :: Parser Binding
 funBinding = do
-  -- optional newline
-  t <- lookAhead anyToken
-  myTrace ("<< funBinding next token: " ++ show t)
   name <- ident
   -- 次のトークンが "=" なら funBinding ではない
   next <- lookAhead anyToken
-  if next == TokOperator "="
-    then empty -- ← guard の代わりに empty を使う
-    else return ()
-  args <- many pattern
-  symbol "="
-  body <- expr -- NoLoop
-  return (PApp (PVar name) args, body)
+  myTrace ("<< funBinding: name " ++ show name ++ " next " ++ show next)
+  case next of
+    TokOperator "=" -> empty -- ← guard の代わりに empty を使う
+    _ -> do
+      args <- many pattern
+      myTrace ("<< funBinding: args " ++ show args)
+      symbol "="
+      bracesV $ do
+        body <- expr -- NoLoop
+        myTrace (">>*funBinding: body " ++ show body)
+        return (PApp (PVar name) args, body)
 
 valueBinding :: Parser Binding
 valueBinding = do
-  t <- lookAhead anyToken
-  myTrace ("<< valueBinding: next token: " ++ show t)
   pat <- pattern
+  myTrace ("<< valueBinding: pat " ++ show pat)
   symbol "="
+  -- bracesV $ do -- これがあると他の括弧と相互に関係する
   body <- expr -- NoLoop
+  myTrace (">>*valueBinding: body " ++ show body)
   return (pat, body)
 
 letExpr :: Parser Expr
 letExpr = do
   keyword "let"
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< letExpr: next token: " ++ show t)
   binds <- bindingsBlock
-  -- t2 <- lookAhead anyToken
-  -- myTrace ("<< letExpr:2 next token: " ++ show t2 ++ " binds " ++ show binds)
-  bracesV $ do
-    mIn <- optional (keyword "in")
-    myTrace ("<< letExpr:3 mIn " ++ show mIn)
-    -- optional newline
-    case mIn of
-      Just _ -> do
-        body <- expr -- NoLoop
-        return (ELetBlock binds body)
-      Nothing ->
-        if null binds
-          then empty -- ← これが正しい
-          else return (ELetBlock binds (EVar "__unit__"))
+  -- bracesV $ do
+  mIn <- optional (keyword "in")
+  myTrace ("<< letExpr: mIn " ++ show mIn ++ " binds " ++ show binds)
+  case mIn of
+    Just _ -> do
+      body <- expr -- NoLoop
+      myTrace (">>*letExpr: in body " ++ show body)
+      return (ELetBlock binds body)
+    Nothing ->
+      if null binds
+        then empty -- ← これが正しい
+        else return (ELetBlock binds (EVar "__unit__"))
 
 pLetExpr :: Parser Expr
 pLetExpr = do
   keyword "let"
-  t <- lookAhead anyToken
-  myTrace ("<< pLetExpr next token: " ++ show t)
+  -- t <- lookAhead anyToken
   pat <- pattern
+  myTrace ("<< pLetExpr: pat " ++ show pat)
   symbol "="
+  -- bracesV $ do
   e1 <- expr -- NoLoop
   bracesV $ do
     keyword "in"
     e2 <- expr -- NoLoop
+    myTrace (">>*pLetExpr: e1 " ++ show e1 ++ " e2 " ++ show e2)
     return (ELet pat e1 e2)
+
+letBlock :: Parser Expr
+letBlock = do
+  -- t <- lookAhead anyToken
+  rt <- try letExpr <|> pLetExpr
+  myTrace (">>*letBlock: rt " ++ show rt)
+  return rt
+
+binding :: Parser Binding
+binding = do
+  rt <- try valueBinding <|> funBinding
+  myTrace (">>*binding: rt " ++ show rt)
+  skipNewlines
+  return rt
 
 bindingsBlock :: Parser [Binding]
 bindingsBlock = do

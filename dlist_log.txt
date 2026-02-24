@@ -1,0 +1,3495 @@
+Build profile: -w ghc-9.6.7 -O1
+In order, the following will be built (use -v for more details):
+ - dlist-parser-0.1.0.0 (exe:dlist) (file src\Parser\Expr\ExprExtensions.hs changed)
+Preprocessing executable 'dlist' for dlist-parser-0.1.0.0...
+Building executable 'dlist' for dlist-parser-0.1.0.0...
+[23 of 33] Compiling Parser.Expr.ExprExtensions ( src\Parser\Expr\ExprExtensions.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Parser\Expr\ExprExtensions.o ) [Source file changed]
+[34 of 34] Linking C:\\Users\\blue3\\haskell\\dlist-parser\\dist-newstyle\\build\\x86_64-windows\\ghc-9.6.7\\dlist-parser-0.1.0.0\\x\\dlist\\build\\dlist\\dlist.exe [Objects changed]
+=== Running Parser Test Suite ===
+
+-- Simple let-return --
+-- Input: do { let x = 1; return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< letStmt: binds [(PApp (PVar "x") [],EInt 1)]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],EInt 1)]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< exprStmt EReturn (EVar "x")
+<< doStmt: rt ExprStmt (EReturn (EVar "x"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))])
+
+-- Multiple lets --
+-- Input: do { let x = 1; let y = 2; return (x + y) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "let",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol ")",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< letStmt: binds [(PApp (PVar "x") [],EInt 1)]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],EInt 1)]
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokNumber 2
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< exprNoLoop: e EInt 2
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 2
+<< letStmt: binds [(PApp (PVar "y") [],EInt 2)]
+<< doStmt: rt LetStmt [(PApp (PVar "y") [],EInt 2)]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< return: e EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< exprNoLoop: e EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y"))
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y"))
+<< exprStmt EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y"))
+<< doStmt: rt ExprStmt (EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y")))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],EInt 1)],LetStmt [(PApp (PVar "y") [],EInt 2)],ExprStmt (EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y")))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],EInt 1)],LetStmt [(PApp (PVar "y") [],EInt 2)],ExprStmt (EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y")))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],LetStmt [(PApp (PVar "y") [],EInt 2)],ExprStmt (EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y")))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],LetStmt [(PApp (PVar "y") [],EInt 2)],ExprStmt (EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y")))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],LetStmt [(PApp (PVar "y") [],EInt 2)],ExprStmt (EReturn (EBinOp BinOpAdd (EVar "x") (EVar "y")))])
+
+-- If in do --
+-- Input: do { let x = 10; if x > 5 then return x else return 0 }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 10,TokSymbol ";",TokKeyword "if",TokIdent "x",TokOperator ">",TokNumber 5,TokKeyword "then",TokKeyword "return",TokIdent "x",TokKeyword "else",TokKeyword "return",TokNumber 0,TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 10
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< exprNoLoop: e EInt 10
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 10
+<< letStmt: binds [(PApp (PVar "x") [],EInt 10)]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],EInt 10)]
+<< bindStmt
+<< expr dispatch: TokKeyword "if"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 5 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "x") (EInt 5)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "x") (EInt 5)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "x") (EInt 5)
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< expr dispatch: TokKeyword "return"
+<< return: e EInt 0
+<< exprNoLoop: e EReturn (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EInt 0)
+<< exprNoLoop: e EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0))
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0))
+<< exprStmt EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0))
+<< doStmt: rt ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0)))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],EInt 10)],ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0)))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],EInt 10)],ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0)))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],EInt 10)],ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0)))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],EInt 10)],ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0)))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 10)],ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 5)) (EReturn (EVar "x")) (EReturn (EInt 0)))])
+
+-- Nested do --
+-- Input: do { let x = 1; do { let y = x + 1; return y } }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< letStmt: binds [(PApp (PVar "x") [],EInt 1)]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],EInt 1)]
+<< bindStmt
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< letStmt: binds [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))]
+<< doStmt: rt LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "y"
+<< exprNoLoop: e EReturn (EVar "y")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "y")
+<< exprStmt EReturn (EVar "y")
+<< doStmt: rt ExprStmt (EReturn (EVar "y"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< exprStmt EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< doStmt: rt ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])])
+
+-- Do in if --
+-- Input: if cond then do { let x = 1; return x } else return 0
+Tokens: [TokKeyword "if",TokIdent "cond",TokKeyword "then",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokKeyword "else",TokKeyword "return",TokNumber 0]
+<< expr dispatch: TokKeyword "if"
+<< expr dispatch: TokIdent "cond"
+<< appExprCore: f= EVar "cond" args= []
+<< exprCore: rt EVar "cond"
+<< exprNoLoop: e EVar "cond"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "cond"
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< letStmt: binds [(PApp (PVar "x") [],EInt 1)]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],EInt 1)]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< exprStmt EReturn (EVar "x")
+<< doStmt: rt ExprStmt (EReturn (EVar "x"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< expr dispatch: TokKeyword "return"
+<< return: e EInt 0
+<< exprNoLoop: e EReturn (EInt 0)
+<< postfix: operator = Nothing
+<< expr: e EReturn (EInt 0)
+<< exprNoLoop: e EIf (EVar "cond") (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]) (EReturn (EInt 0))
+<< postfix: operator = Nothing
+<< expr: e EIf (EVar "cond") (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]) (EReturn (EInt 0))
+Parser: Just (EIf (EVar "cond") (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]) (EReturn (EInt 0)))
+
+-- Let with lambda --
+-- Input: do { let f = \x -> x + 1 * 2; return (f 10) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokSymbol "\\",TokIdent "x",TokArrow,TokIdent "x",TokOperator "+",TokNumber 1,TokOperator "*",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "f"
+<< pattern: (pAs <|> makeCons)PApp (PVar "f") []
+<< expr dispatch: TokSymbol "\\"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))
+<< exprCore: rt ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2)))
+<< exprNoLoop: e ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2)))
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2)))
+<< letStmt: binds [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))))]
+<< doStmt: rt LetStmt [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))))]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< appExprCore: f= EVar "f" args= [EInt 10]
+<< exprCore: rt EApp (EVar "f") (EInt 10)
+<< appExprCore: f= EVar "f" args= [EInt 10]
+<< exprCore: rt EApp (EVar "f") (EInt 10)
+<< appExprCore: f= EVar "f" args= [EInt 10]
+<< exprCore: rt EApp (EVar "f") (EInt 10)
+<< return: e EApp (EVar "f") (EInt 10)
+<< exprNoLoop: e EReturn (EApp (EVar "f") (EInt 10))
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EApp (EVar "f") (EInt 10))
+<< exprStmt EReturn (EApp (EVar "f") (EInt 10))
+<< doStmt: rt ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "f") [],ELam (PApp (PVar "x") []) (EBinOp BinOpAdd (EVar "x") (EBinOp BinOpMul (EInt 1) (EInt 2))))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))])
+
+-- Let without semicolon error case --
+-- Input: do { let x = 1 return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokKeyword "return",TokIdent "x",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< letStmt: binds [(PApp (PVar "x") [],EInt 1)]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],EInt 1)]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< exprStmt EReturn (EVar "x")
+<< doStmt: rt ExprStmt (EReturn (EVar "x"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EReturn (EVar "x"))])
+
+-- Do in case --
+-- Input: case v of Just x -> do { let y = x + 1; return y }; Nothing -> return 0
+Tokens: [TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "x",TokArrow,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokNumber 0]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "v"
+<< appExprCore: f= EVar "v" args= []
+<< exprCore: rt EVar "v"
+<< exprNoLoop: e EVar "v"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "v"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "x"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< letStmt: binds [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))]
+<< doStmt: rt LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "y"
+<< exprNoLoop: e EReturn (EVar "y")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "y")
+<< exprStmt EReturn (EVar "y")
+<< doStmt: rt ExprStmt (EReturn (EVar "y"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< caseAlt: PApp (PVar "Just") [PVar "x"] EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< pConstrOrVar: next token "Nothing"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Nothing") []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokKeyword "return"
+<< return: e EInt 0
+<< exprNoLoop: e EReturn (EInt 0)
+<< postfix: operator = Nothing
+<< expr: e EReturn (EInt 0)
+<< caseAlt: PApp (PVar "Nothing") [] EReturn (EInt 0)
+<< caseExprCore: alts [CaseAlt (PApp (PVar "Just") [PVar "x"]) (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EInt 0))]
+<< exprNoLoop: e ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "x"]) (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EInt 0))]
+<< postfix: operator = Nothing
+<< expr: e ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "x"]) (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EInt 0))]
+Parser: Just (ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "x"]) (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EInt 0))])
+
+-- Empty do --
+-- Input: do { }
+Tokens: [TokKeyword "do",TokSymbol "{",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< doExprCore: stmts []
+<< exprNoLoop: e EDo []
+<< postfix: operator = Nothing
+<< expr: e EDo []
+Parser: Just (EDo [])
+
+-- Case with as-pattern --
+-- Input: case v of x@(Just y) -> return x _ -> return 0
+Tokens: [TokKeyword "case",TokIdent "v",TokKeyword "of",TokIdent "x",TokSymbol "@",TokSymbol "(",TokTypeIdent "Just",TokIdent "y",TokSymbol ")",TokArrow,TokKeyword "return",TokIdent "x",TokIdent "_",TokArrow,TokKeyword "return",TokNumber 0]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "v"
+<< appExprCore: f= EVar "v" args= []
+<< exprCore: rt EVar "v"
+<< exprNoLoop: e EVar "v"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "v"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "y"]
+<< pattern: (pAs <|> makeCons)PAs "x" (PApp (PVar "Just") [PVar "y"])
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< caseAlt: PAs "x" (PApp (PVar "Just") [PVar "y"]) EReturn (EVar "x")
+<< pConstrOrVar: next token "_"
+<< pattern: (pAs <|> makeCons)PApp (PVar "_") []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokKeyword "return"
+<< return: e EInt 0
+<< exprNoLoop: e EReturn (EInt 0)
+<< postfix: operator = Nothing
+<< expr: e EReturn (EInt 0)
+<< caseAlt: PApp (PVar "_") [] EReturn (EInt 0)
+<< caseExprCore: alts [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EReturn (EVar "x")),CaseAlt (PApp (PVar "_") []) (EReturn (EInt 0))]
+<< exprNoLoop: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EReturn (EVar "x")),CaseAlt (PApp (PVar "_") []) (EReturn (EInt 0))]
+<< postfix: operator = Nothing
+<< expr: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EReturn (EVar "x")),CaseAlt (PApp (PVar "_") []) (EReturn (EInt 0))]
+Parser: Just (ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EReturn (EVar "x")),CaseAlt (PApp (PVar "_") []) (EReturn (EInt 0))])
+
+-- x; y; z statements --
+-- Input: x; y; z
+Tokens: [TokIdent "x",TokSymbol ";",TokIdent "y",TokSymbol ";",TokIdent "z"]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< exprNoLoop: e EVar "y"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "y"
+<< expr dispatch: TokIdent "z"
+<< appExprCore: f= EVar "z" args= []
+<< exprCore: rt EVar "z"
+<< exprNoLoop: e EVar "z"
+<< postfix: operator = Nothing
+<< expr: e EVar "z"
+Parser: Just (ESeq [EVar "x",EVar "y",EVar "z"])
+
+-- Let with case --
+-- Input: do { let x = case v of Just n -> n; Nothing -> 0; return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokArrow,TokIdent "n",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokNumber 0,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "v"
+<< appExprCore: f= EVar "v" args= []
+<< exprCore: rt EVar "v"
+<< exprNoLoop: e EVar "v"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "v"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "n"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "n"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< exprCore: rt EVar "n"
+<< exprNoLoop: e EVar "n"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "n"
+<< caseAlt: PApp (PVar "Just") [PVar "n"] EVar "n"
+<< pConstrOrVar: next token "Nothing"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Nothing") []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokNumber 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< exprNoLoop: e EInt 0
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 0
+<< caseAlt: PApp (PVar "Nothing") [] EInt 0
+<< caseExprCore: alts [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)]
+<< exprNoLoop: e ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)]
+<< letStmt: binds [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< exprStmt EReturn (EVar "x")
+<< doStmt: rt ExprStmt (EReturn (EVar "x"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))])
+
+-- simple --
+-- Input: { x = 1 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= ERecord [("x",EInt 1)] args= []
+<< exprCore: rt ERecord [("x",EInt 1)]
+<< exprNoLoop: e ERecord [("x",EInt 1)]
+<< postfix: operator = Nothing
+<< expr: e ERecord [("x",EInt 1)]
+Parser: Just (ERecord [("x",EInt 1)])
+
+-- 2 --
+-- Input: { x = 1, y = 2 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= ERecord [("x",EInt 1),("y",EInt 2)] args= []
+<< exprCore: rt ERecord [("x",EInt 1),("y",EInt 2)]
+<< exprNoLoop: e ERecord [("x",EInt 1),("y",EInt 2)]
+<< postfix: operator = Nothing
+<< expr: e ERecord [("x",EInt 1),("y",EInt 2)]
+Parser: Just (ERecord [("x",EInt 1),("y",EInt 2)])
+
+-- tag --
+-- Input: r { x = 3 }
+Tokens: [TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol "}"]
+<< expr dispatch: TokIdent "r"
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EVar "r" args= [ERecord [("x",EInt 3)]]
+<< exprCore: rt EApp (EVar "r") (ERecord [("x",EInt 3)])
+<< exprNoLoop: e EApp (EVar "r") (ERecord [("x",EInt 3)])
+<< postfix: operator = Nothing
+<< expr: e EApp (EVar "r") (ERecord [("x",EInt 3)])
+Parser: Just (EApp (EVar "r") (ERecord [("x",EInt 3)]))
+
+-- nest --
+-- Input: { a = { b = 3 } }
+Tokens: [TokSymbol "{",TokIdent "a",TokSymbol "=",TokSymbol "{",TokIdent "b",TokSymbol "=",TokNumber 3,TokSymbol "}",TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= ERecord [("b",EInt 3)] args= []
+<< exprCore: rt ERecord [("b",EInt 3)]
+<< appExprCore: f= ERecord [("a",ERecord [("b",EInt 3)])] args= []
+<< exprCore: rt ERecord [("a",ERecord [("b",EInt 3)])]
+<< exprNoLoop: e ERecord [("a",ERecord [("b",EInt 3)])]
+<< postfix: operator = Nothing
+<< expr: e ERecord [("a",ERecord [("b",EInt 3)])]
+Parser: Just (ERecord [("a",ERecord [("b",EInt 3)])])
+
+-- 2 equation --
+-- Input: { x = 1 + 2, y = f 3 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokOperator "+",TokNumber 2,TokSymbol ",",TokIdent "y",TokSymbol "=",TokIdent "f",TokNumber 3,TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpAdd (EInt 1) (EInt 2)
+<< appExprCore: f= EVar "f" args= [EInt 3]
+<< exprCore: rt EApp (EVar "f") (EInt 3)
+<< appExprCore: f= ERecord [("x",EBinOp BinOpAdd (EInt 1) (EInt 2)),("y",EApp (EVar "f") (EInt 3))] args= []
+<< exprCore: rt ERecord [("x",EBinOp BinOpAdd (EInt 1) (EInt 2)),("y",EApp (EVar "f") (EInt 3))]
+<< exprNoLoop: e ERecord [("x",EBinOp BinOpAdd (EInt 1) (EInt 2)),("y",EApp (EVar "f") (EInt 3))]
+<< postfix: operator = Nothing
+<< expr: e ERecord [("x",EBinOp BinOpAdd (EInt 1) (EInt 2)),("y",EApp (EVar "f") (EInt 3))]
+Parser: Just (ERecord [("x",EBinOp BinOpAdd (EInt 1) (EInt 2)),("y",EApp (EVar "f") (EInt 3))])
+
+-- space --
+-- Input: {  x=1 , y =2}
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= ERecord [("x",EInt 1),("y",EInt 2)] args= []
+<< exprCore: rt ERecord [("x",EInt 1),("y",EInt 2)]
+<< exprNoLoop: e ERecord [("x",EInt 1),("y",EInt 2)]
+<< postfix: operator = Nothing
+<< expr: e ERecord [("x",EInt 1),("y",EInt 2)]
+Parser: Just (ERecord [("x",EInt 1),("y",EInt 2)])
+
+--  --
+-- Input: r { x = 3, y = 4 }
+Tokens: [TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 4,TokSymbol "}"]
+<< expr dispatch: TokIdent "r"
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EInt 4 args= []
+<< exprCore: rt EInt 4
+<< appExprCore: f= EVar "r" args= [ERecord [("x",EInt 3),("y",EInt 4)]]
+<< exprCore: rt EApp (EVar "r") (ERecord [("x",EInt 3),("y",EInt 4)])
+<< exprNoLoop: e EApp (EVar "r") (ERecord [("x",EInt 3),("y",EInt 4)])
+<< postfix: operator = Nothing
+<< expr: e EApp (EVar "r") (ERecord [("x",EInt 3),("y",EInt 4)])
+Parser: Just (EApp (EVar "r") (ERecord [("x",EInt 3),("y",EInt 4)]))
+
+--  --
+-- Input: (f x) { y = 10 }
+Tokens: [TokSymbol "(",TokIdent "f",TokIdent "x",TokSymbol ")",TokSymbol "{",TokIdent "y",TokSymbol "=",TokNumber 10,TokSymbol "}"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< appExprCore: f= EApp (EVar "f") (EVar "x") args= [ERecord [("y",EInt 10)]]
+<< exprCore: rt EApp (EApp (EVar "f") (EVar "x")) (ERecord [("y",EInt 10)])
+<< exprNoLoop: e EApp (EApp (EVar "f") (EVar "x")) (ERecord [("y",EInt 10)])
+<< postfix: operator = Nothing
+<< expr: e EApp (EApp (EVar "f") (EVar "x")) (ERecord [("y",EInt 10)])
+Parser: Just (EApp (EApp (EVar "f") (EVar "x")) (ERecord [("y",EInt 10)]))
+
+--  --
+-- Input: { x = 1, y = 2 } { x = 9 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 9,TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 9 args= []
+<< exprCore: rt EInt 9
+<< appExprCore: f= ERecord [("x",EInt 1),("y",EInt 2)] args= [ERecord [("x",EInt 9)]]
+<< exprCore: rt EApp (ERecord [("x",EInt 1),("y",EInt 2)]) (ERecord [("x",EInt 9)])
+<< exprNoLoop: e EApp (ERecord [("x",EInt 1),("y",EInt 2)]) (ERecord [("x",EInt 9)])
+<< postfix: operator = Nothing
+<< expr: e EApp (ERecord [("x",EInt 1),("y",EInt 2)]) (ERecord [("x",EInt 9)])
+Parser: Just (EApp (ERecord [("x",EInt 1),("y",EInt 2)]) (ERecord [("x",EInt 9)]))
+
+--  --
+-- Input: (+ 1)
+Tokens: [TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionL "+" (EInt 1) args= []
+<< exprCore: rt EOpSectionL "+" (EInt 1)
+<< exprNoLoop: e EOpSectionL "+" (EInt 1)
+<< postfix: operator = Nothing
+<< expr: e EOpSectionL "+" (EInt 1)
+Parser: Just (EOpSectionL "+" (EInt 1))
+
+--  --
+-- Input: (1 +)
+Tokens: [TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionR (EInt 1) "+" args= []
+<< exprCore: rt EOpSectionR (EInt 1) "+"
+<< exprNoLoop: e EOpSectionR (EInt 1) "+"
+<< postfix: operator = Nothing
+<< expr: e EOpSectionR (EInt 1) "+"
+Parser: Just (EOpSectionR (EInt 1) "+")
+
+--  --
+-- Input: (* 2) (2 *) (> 3) (3 >)
+Tokens: [TokSymbol "(",TokOperator "*",TokNumber 2,TokSymbol ")",TokSymbol "(",TokNumber 2,TokOperator "*",TokSymbol ")",TokSymbol "(",TokOperator ">",TokNumber 3,TokSymbol ")",TokSymbol "(",TokNumber 3,TokOperator ">",TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EOpSectionL "*" (EInt 2) args= [EOpSectionR (EInt 2) "*",EOpSectionL ">" (EInt 3),EOpSectionR (EInt 3) ">"]
+<< exprCore: rt EApp (EApp (EApp (EOpSectionL "*" (EInt 2)) (EOpSectionR (EInt 2) "*")) (EOpSectionL ">" (EInt 3))) (EOpSectionR (EInt 3) ">")
+<< exprNoLoop: e EApp (EApp (EApp (EOpSectionL "*" (EInt 2)) (EOpSectionR (EInt 2) "*")) (EOpSectionL ">" (EInt 3))) (EOpSectionR (EInt 3) ">")
+<< postfix: operator = Nothing
+<< expr: e EApp (EApp (EApp (EOpSectionL "*" (EInt 2)) (EOpSectionR (EInt 2) "*")) (EOpSectionL ">" (EInt 3))) (EOpSectionR (EInt 3) ">")
+Parser: Just (EApp (EApp (EApp (EOpSectionL "*" (EInt 2)) (EOpSectionR (EInt 2) "*")) (EOpSectionL ">" (EInt 3))) (EOpSectionR (EInt 3) ">"))
+
+--  --
+-- Input: ((+ 1))
+Tokens: [TokSymbol "(",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionL "+" (EInt 1) args= []
+<< exprCore: rt EOpSectionL "+" (EInt 1)
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionL "+" (EInt 1) args= []
+<< exprCore: rt EOpSectionL "+" (EInt 1)
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionL "+" (EInt 1) args= []
+<< exprCore: rt EOpSectionL "+" (EInt 1)
+<< appExprCore: f= EOpSectionL "+" (EInt 1) args= []
+<< exprCore: rt EOpSectionL "+" (EInt 1)
+<< exprNoLoop: e EOpSectionL "+" (EInt 1)
+<< postfix: operator = Nothing
+<< expr: e EOpSectionL "+" (EInt 1)
+Parser: Just (EOpSectionL "+" (EInt 1))
+
+--  --
+-- Input: { f = (+ 1) }
+Tokens: [TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionL "+" (EInt 1) args= []
+<< exprCore: rt EOpSectionL "+" (EInt 1)
+<< appExprCore: f= ERecord [("f",EOpSectionL "+" (EInt 1))] args= []
+<< exprCore: rt ERecord [("f",EOpSectionL "+" (EInt 1))]
+<< exprNoLoop: e ERecord [("f",EOpSectionL "+" (EInt 1))]
+<< postfix: operator = Nothing
+<< expr: e ERecord [("f",EOpSectionL "+" (EInt 1))]
+Parser: Just (ERecord [("f",EOpSectionL "+" (EInt 1))])
+
+--  --
+-- Input: r { f = (1 +) }
+Tokens: [TokIdent "r",TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")",TokSymbol "}"]
+<< expr dispatch: TokIdent "r"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionR (EInt 1) "+" args= []
+<< exprCore: rt EOpSectionR (EInt 1) "+"
+<< appExprCore: f= EVar "r" args= [ERecord [("f",EOpSectionR (EInt 1) "+")]]
+<< exprCore: rt EApp (EVar "r") (ERecord [("f",EOpSectionR (EInt 1) "+")])
+<< exprNoLoop: e EApp (EVar "r") (ERecord [("f",EOpSectionR (EInt 1) "+")])
+<< postfix: operator = Nothing
+<< expr: e EApp (EVar "r") (ERecord [("f",EOpSectionR (EInt 1) "+")])
+Parser: Just (EApp (EVar "r") (ERecord [("f",EOpSectionR (EInt 1) "+")]))
+
+--  --
+-- Input: ({ x = 1 } +)
+Tokens: [TokSymbol "(",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokOperator "+",TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= ERecord [("x",EInt 1)] args= []
+<< exprCore: rt ERecord [("x",EInt 1)]
+<< appExprCore: f= EOpSectionR (ERecord [("x",EInt 1)]) "+" args= []
+<< exprCore: rt EOpSectionR (ERecord [("x",EInt 1)]) "+"
+<< exprNoLoop: e EOpSectionR (ERecord [("x",EInt 1)]) "+"
+<< postfix: operator = Nothing
+<< expr: e EOpSectionR (ERecord [("x",EInt 1)]) "+"
+Parser: Just (EOpSectionR (ERecord [("x",EInt 1)]) "+")
+
+-- do1 --
+-- Input: do { let r = { x = 1 }; return r }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokIdent "r",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "r"
+<< pattern: (pAs <|> makeCons)PApp (PVar "r") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "r"
+<< pattern: (pAs <|> makeCons)PApp (PVar "r") []
+<< valueBinding: pat PApp (PVar "r") []
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= ERecord [("x",EInt 1)] args= []
+<< exprCore: rt ERecord [("x",EInt 1)]
+<< exprNoLoop: e ERecord [("x",EInt 1)]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERecord [("x",EInt 1)]
+<< valueBinding: body ERecord [("x",EInt 1)]
+<< letExpr:3 mIn Nothing binds [(PApp (PVar "r") [],ERecord [("x",EInt 1)])]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< exprStmt ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< doStmt: rt ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__"))
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "r"
+<< exprNoLoop: e EReturn (EVar "r")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "r")
+<< exprStmt EReturn (EVar "r")
+<< doStmt: rt ExprStmt (EReturn (EVar "r"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r"))]
+<< doExprCore: stmts [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r"))]
+<< exprNoLoop: e EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r"))]
+Parser: Just (EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r"))])
+
+-- do2 --
+-- Input: do { let r = { x = 1 }; return (r { x = 2 }) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 2,TokSymbol "}",TokSymbol ")",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "r"
+<< pattern: (pAs <|> makeCons)PApp (PVar "r") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "r"
+<< pattern: (pAs <|> makeCons)PApp (PVar "r") []
+<< valueBinding: pat PApp (PVar "r") []
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= ERecord [("x",EInt 1)] args= []
+<< exprCore: rt ERecord [("x",EInt 1)]
+<< exprNoLoop: e ERecord [("x",EInt 1)]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERecord [("x",EInt 1)]
+<< valueBinding: body ERecord [("x",EInt 1)]
+<< letExpr:3 mIn Nothing binds [(PApp (PVar "r") [],ERecord [("x",EInt 1)])]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< exprStmt ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< doStmt: rt ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__"))
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EVar "r" args= [ERecord [("x",EInt 2)]]
+<< exprCore: rt EApp (EVar "r") (ERecord [("x",EInt 2)])
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EVar "r" args= [ERecord [("x",EInt 2)]]
+<< exprCore: rt EApp (EVar "r") (ERecord [("x",EInt 2)])
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EVar "r" args= [ERecord [("x",EInt 2)]]
+<< exprCore: rt EApp (EVar "r") (ERecord [("x",EInt 2)])
+<< return: e EApp (EVar "r") (ERecord [("x",EInt 2)])
+<< exprNoLoop: e EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)]))
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)]))
+<< exprStmt EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)]))
+<< doStmt: rt ExprStmt (EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)])))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)])))]
+<< doExprCore: stmts [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)])))]
+<< exprNoLoop: e EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)])))]
+<< postfix: operator = Nothing
+<< expr: e EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)])))]
+Parser: Just (EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EApp (EVar "r") (ERecord [("x",EInt 2)])))])
+
+-- do3 --
+-- Input: do { let f = (+ 1); return (f 10) }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "f"
+<< pattern: (pAs <|> makeCons)PApp (PVar "f") []
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EOpSectionL "+" (EInt 1) args= []
+<< exprCore: rt EOpSectionL "+" (EInt 1)
+<< exprNoLoop: e EOpSectionL "+" (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EOpSectionL "+" (EInt 1)
+<< letStmt: binds [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))]
+<< doStmt: rt LetStmt [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< appExprCore: f= EVar "f" args= [EInt 10]
+<< exprCore: rt EApp (EVar "f") (EInt 10)
+<< appExprCore: f= EVar "f" args= [EInt 10]
+<< exprCore: rt EApp (EVar "f") (EInt 10)
+<< appExprCore: f= EVar "f" args= [EInt 10]
+<< exprCore: rt EApp (EVar "f") (EInt 10)
+<< return: e EApp (EVar "f") (EInt 10)
+<< exprNoLoop: e EReturn (EApp (EVar "f") (EInt 10))
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EApp (EVar "f") (EInt 10))
+<< exprStmt EReturn (EApp (EVar "f") (EInt 10))
+<< doStmt: rt ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "f") [],EOpSectionL "+" (EInt 1))],ExprStmt (EReturn (EApp (EVar "f") (EInt 10)))])
+
+-- error1 --
+-- Input: { = 1 }
+Tokens: [TokSymbol "{",TokSymbol "=",TokNumber 1,TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+XX Parser failed! Re-running with trace:
+<< expr dispatch: TokSymbol "{"
+Parser: Nothing
+
+-- error2 --
+-- Input: { x = 1,, y = 2 }
+Tokens: [TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol "}"]
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+XX Parser failed! Re-running with trace:
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+Parser: Nothing
+
+-- error3 --
+-- Input: ()
+Tokens: [TokSymbol "(",TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EUnit args= []
+<< exprCore: rt EUnit
+<< exprNoLoop: e EUnit
+<< postfix: operator = Nothing
+<< expr: e EUnit
+Parser: Just EUnit
+
+-- error4 Ok --
+-- Input: (1 + 2)
+Tokens: [TokSymbol "(",TokNumber 1,TokOperator "+",TokNumber 2,TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpAdd (EInt 1) (EInt 2)
+<< appExprCore: f= EInt 1 args= []
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpAdd (EInt 1) (EInt 2)
+<< appExprCore: f= EInt 1 args= []
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpAdd (EInt 1) (EInt 2)
+<< appExprCore: f= EBinOp BinOpAdd (EInt 1) (EInt 2) args= []
+<< exprCore: rt EBinOp BinOpAdd (EInt 1) (EInt 2)
+<< exprNoLoop: e EBinOp BinOpAdd (EInt 1) (EInt 2)
+<< postfix: operator = Nothing
+<< expr: e EBinOp BinOpAdd (EInt 1) (EInt 2)
+Parser: Just (EBinOp BinOpAdd (EInt 1) (EInt 2))
+
+-- case guard1 --
+-- Input: case x of { p | cond1 -> e1; p2 | cond2 -> e2; p3 -> e3 }
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokSymbol "{",TokIdent "p",TokSymbol "|",TokIdent "cond1",TokArrow,TokIdent "e1",TokSymbol ";",TokIdent "p2",TokSymbol "|",TokIdent "cond2",TokArrow,TokIdent "e2",TokSymbol ";",TokIdent "p3",TokArrow,TokIdent "e3",TokSymbol "}"]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< pConstrOrVar: next token "p"
+<< pattern: (pAs <|> makeCons)PApp (PVar "p") []
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "cond1"
+<< appExprCore: f= EVar "cond1" args= []
+<< exprCore: rt EVar "cond1"
+<< exprNoLoop: e EVar "cond1"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "cond1"
+<< expr dispatch: TokIdent "e1"
+<< appExprCore: f= EVar "e1" args= []
+<< exprCore: rt EVar "e1"
+<< exprNoLoop: e EVar "e1"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "e1"
+<< guardExpr body: EVar "e1"
+<< guardExpr next token: TokIdent "p2"
+<< caseAlt: g PApp (PVar "p") [] [(EVar "cond1",EVar "e1")]
+<< pConstrOrVar: next token "p2"
+<< pattern: (pAs <|> makeCons)PApp (PVar "p2") []
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "cond2"
+<< appExprCore: f= EVar "cond2" args= []
+<< exprCore: rt EVar "cond2"
+<< exprNoLoop: e EVar "cond2"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "cond2"
+<< expr dispatch: TokIdent "e2"
+<< appExprCore: f= EVar "e2" args= []
+<< exprCore: rt EVar "e2"
+<< exprNoLoop: e EVar "e2"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "e2"
+<< guardExpr body: EVar "e2"
+<< guardExpr next token: TokIdent "p3"
+<< caseAlt: g PApp (PVar "p2") [] [(EVar "cond2",EVar "e2")]
+<< pConstrOrVar: next token "p3"
+<< pattern: (pAs <|> makeCons)PApp (PVar "p3") []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "e3"
+<< appExprCore: f= EVar "e3" args= []
+<< exprCore: rt EVar "e3"
+<< exprNoLoop: e EVar "e3"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "e3"
+<< caseAlt: PApp (PVar "p3") [] EVar "e3"
+<< caseExprCore: alts [CaseAltGuard (PApp (PVar "p") []) [(EVar "cond1",EVar "e1")],CaseAltGuard (PApp (PVar "p2") []) [(EVar "cond2",EVar "e2")],CaseAlt (PApp (PVar "p3") []) (EVar "e3")]
+<< exprNoLoop: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "p") []) [(EVar "cond1",EVar "e1")],CaseAltGuard (PApp (PVar "p2") []) [(EVar "cond2",EVar "e2")],CaseAlt (PApp (PVar "p3") []) (EVar "e3")]
+<< postfix: operator = Nothing
+<< expr: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "p") []) [(EVar "cond1",EVar "e1")],CaseAltGuard (PApp (PVar "p2") []) [(EVar "cond2",EVar "e2")],CaseAlt (PApp (PVar "p3") []) (EVar "e3")]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "p") []) [(EVar "cond1",EVar "e1")],CaseAltGuard (PApp (PVar "p2") []) [(EVar "cond2",EVar "e2")],CaseAlt (PApp (PVar "p3") []) (EVar "e3")])
+
+-- case guard2 --
+-- Input: case x of n | n < 0 -> 1 
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< pConstrOrVar: next token "n"
+<< pattern: (pAs <|> makeCons)PApp (PVar "n") []
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpLt (EVar "n") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpLt (EVar "n") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpLt (EVar "n") (EInt 0)
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< expr: e EInt 1
+<< guardExpr body: EInt 1
+<< caseAlt: g PApp (PVar "n") [] [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)]
+<< caseExprCore: alts [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)]]
+<< exprNoLoop: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)]]
+<< postfix: operator = Nothing
+<< expr: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)]]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)]])
+
+-- case guard3 --
+-- Input: case x of n | n < 0 -> -1 | n > 0 -> 1
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1,TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< pConstrOrVar: next token "n"
+<< pattern: (pAs <|> makeCons)PApp (PVar "n") []
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpLt (EVar "n") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpLt (EVar "n") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpLt (EVar "n") (EInt 0)
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< guardExpr body: EInt 1
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "n") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "n") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "n") (EInt 0)
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< expr: e EInt 1
+<< guardExpr body: EInt 1
+<< caseAlt: g PApp (PVar "n") [] [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1),(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]
+<< caseExprCore: alts [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1),(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]]
+<< exprNoLoop: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1),(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]]
+<< postfix: operator = Nothing
+<< expr: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1),(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1),(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]])
+
+-- case guard4 --
+-- Input: case x of n | n < 0 -> -1;  0 -> 0;  n | n > 0 -> 1
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1,TokSymbol ";",TokNumber 0,TokArrow,TokNumber 0,TokSymbol ";",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< pConstrOrVar: next token "n"
+<< pattern: (pAs <|> makeCons)PApp (PVar "n") []
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpLt (EVar "n") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpLt (EVar "n") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpLt (EVar "n") (EInt 0)
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< guardExpr body: EInt 1
+<< guardExpr next token: TokNumber 0
+<< caseAlt: g PApp (PVar "n") [] [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)]
+<< pattern: (pAs <|> makeCons)PApp (PInt 0) []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokNumber 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< exprNoLoop: e EInt 0
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 0
+<< caseAlt: PApp (PInt 0) [] EInt 0
+<< pConstrOrVar: next token "n"
+<< pattern: (pAs <|> makeCons)PApp (PVar "n") []
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "n") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "n") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "n") (EInt 0)
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< expr: e EInt 1
+<< guardExpr body: EInt 1
+<< caseAlt: g PApp (PVar "n") [] [(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]
+<< caseExprCore: alts [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)],CaseAlt (PApp (PInt 0) []) (EInt 0),CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]]
+<< exprNoLoop: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)],CaseAlt (PApp (PInt 0) []) (EInt 0),CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]]
+<< postfix: operator = Nothing
+<< expr: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)],CaseAlt (PApp (PInt 0) []) (EInt 0),CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpLt (EVar "n") (EInt 0),EInt 1)],CaseAlt (PApp (PInt 0) []) (EInt 0),CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 0),EInt 1)]])
+
+-- list1 --
+-- Input: [1, 2, 3]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+Parser: Just (EList [EInt 1,EInt 2,EInt 3])
+
+-- list2 --
+-- Input: [x * 2 | x <- xs]
+Tokens: [TokSymbol "[",TokIdent "x",TokOperator "*",TokNumber 2,TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpMul (EVar "x") (EInt 2)
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< exprNoLoop: e EListComp (EBinOp BinOpMul (EVar "x") (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EBinOp BinOpMul (EVar "x") (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")]
+Parser: Just (EListComp (EBinOp BinOpMul (EVar "x") (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")])
+
+-- list3 --
+-- Input: [x | x <- xs, x > 0]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "x") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "x") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "x") (EInt 0)
+<< exprNoLoop: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 0))]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 0))]
+Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 0))])
+
+-- list4 --
+-- Input: [(x, y) | x <- xs, y <- ys]
+Tokens: [TokSymbol "[",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "y",TokSymbol "<-",TokIdent "ys",TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< appExprCore: f= ETuple [EVar "x",EVar "y"] args= []
+<< exprCore: rt ETuple [EVar "x",EVar "y"]
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "ys"
+<< appExprCore: f= EVar "ys" args= []
+<< exprCore: rt EVar "ys"
+<< exprNoLoop: e EVar "ys"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "ys"
+<< exprNoLoop: e EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")]
+<< postfix: operator = Nothing
+<< expr: e EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")]
+Parser: Just (EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")])
+
+-- list5 --
+-- Input: [x | let y = f x, y > 0]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 0,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< exprNoLoop: e EApp (EVar "f") (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "x")
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "y") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "y") (EInt 0)
+<< exprNoLoop: e EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EBinOp BinOpGt (EVar "y") (EInt 0))]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EBinOp BinOpGt (EVar "y") (EInt 0))]
+Parser: Just (EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EBinOp BinOpGt (EVar "y") (EInt 0))])
+
+-- list6 --
+-- Input: [x | Just x <- xs]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "x"]
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< exprNoLoop: e EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")]
+Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")])
+
+-- list7 --
+-- Input: do { let xs = [x | x <- ys]; return xs }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "ys",TokSymbol "]",TokSymbol ";",TokKeyword "return",TokIdent "xs",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "ys"
+<< appExprCore: f= EVar "ys" args= []
+<< exprCore: rt EVar "ys"
+<< exprNoLoop: e EVar "ys"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "ys"
+<< exprNoLoop: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")]
+<< letStmt: binds [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])]
+<< doStmt: rt LetStmt [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "xs"
+<< exprNoLoop: e EReturn (EVar "xs")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "xs")
+<< exprStmt EReturn (EVar "xs")
+<< doStmt: rt ExprStmt (EReturn (EVar "xs"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])],ExprStmt (EReturn (EVar "xs"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])],ExprStmt (EReturn (EVar "xs"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])],ExprStmt (EReturn (EVar "xs"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])],ExprStmt (EReturn (EVar "xs"))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "ys")])],ExprStmt (EReturn (EVar "xs"))])
+
+-- list8 --
+-- Input: [x | let y = f x, y > 0]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 0,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< exprNoLoop: e EApp (EVar "f") (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "x")
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "y") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "y") (EInt 0)
+<< exprNoLoop: e EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EBinOp BinOpGt (EVar "y") (EInt 0))]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EBinOp BinOpGt (EVar "y") (EInt 0))]
+Parser: Just (EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],QGuard (EBinOp BinOpGt (EVar "y") (EInt 0))])
+
+-- for1 --
+-- Input: for x in xs -> x * 2
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokArrow,TokIdent "x",TokOperator "*",TokNumber 2]
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpMul (EVar "x") (EInt 2)
+<< exprNoLoop: e EBinOp BinOpMul (EVar "x") (EInt 2)
+<< postfix: operator = Nothing
+<< expr: e EBinOp BinOpMul (EVar "x") (EInt 2)
+<< exprNoLoop: e EListComp (EBinOp BinOpMul (EVar "x") (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EBinOp BinOpMul (EVar "x") (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")]
+Parser: Just (EListComp (EBinOp BinOpMul (EVar "x") (EInt 2)) [QGenerator (PApp (PVar "x") []) (EVar "xs")])
+
+-- for2 --
+-- Input: for x in xs, y in ys -> (x, y)
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")"]
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "ys"
+<< appExprCore: f= EVar "ys" args= []
+<< exprCore: rt EVar "ys"
+<< exprNoLoop: e EVar "ys"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "ys"
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< appExprCore: f= ETuple [EVar "x",EVar "y"] args= []
+<< exprCore: rt ETuple [EVar "x",EVar "y"]
+<< exprNoLoop: e ETuple [EVar "x",EVar "y"]
+<< postfix: operator = Nothing
+<< expr: e ETuple [EVar "x",EVar "y"]
+<< exprNoLoop: e EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")]
+<< postfix: operator = Nothing
+<< expr: e EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")]
+Parser: Just (EListComp (ETuple [EVar "x",EVar "y"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys")])
+
+-- for3 --
+-- Input: for x in xs, y in ys, z in zs -> (x,y,z)
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol ")"]
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "ys"
+<< appExprCore: f= EVar "ys" args= []
+<< exprCore: rt EVar "ys"
+<< exprNoLoop: e EVar "ys"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "ys"
+<< pConstrOrVar: next token "z"
+<< pattern: (pAs <|> makeCons)PApp (PVar "z") []
+<< expr dispatch: TokIdent "zs"
+<< appExprCore: f= EVar "zs" args= []
+<< exprCore: rt EVar "zs"
+<< exprNoLoop: e EVar "zs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "zs"
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< appExprCore: f= EVar "z" args= []
+<< exprCore: rt EVar "z"
+<< appExprCore: f= ETuple [EVar "x",EVar "y",EVar "z"] args= []
+<< exprCore: rt ETuple [EVar "x",EVar "y",EVar "z"]
+<< exprNoLoop: e ETuple [EVar "x",EVar "y",EVar "z"]
+<< postfix: operator = Nothing
+<< expr: e ETuple [EVar "x",EVar "y",EVar "z"]
+<< exprNoLoop: e EListComp (ETuple [EVar "x",EVar "y",EVar "z"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")]
+<< postfix: operator = Nothing
+<< expr: e EListComp (ETuple [EVar "x",EVar "y",EVar "z"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")]
+Parser: Just (EListComp (ETuple [EVar "x",EVar "y",EVar "z"]) [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")])
+
+-- for3 --
+-- Input: for x in xs, y in ys, z in zs -> ...
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokEllipsis]
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "ys"
+<< appExprCore: f= EVar "ys" args= []
+<< exprCore: rt EVar "ys"
+<< exprNoLoop: e EVar "ys"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "ys"
+<< pConstrOrVar: next token "z"
+<< pattern: (pAs <|> makeCons)PApp (PVar "z") []
+<< expr dispatch: TokIdent "zs"
+<< appExprCore: f= EVar "zs" args= []
+<< exprCore: rt EVar "zs"
+<< exprNoLoop: e EVar "zs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "zs"
+<< expr dispatch: TokEllipsis
+<< appExprCore: f= EPlaceholder args= []
+<< exprCore: rt EPlaceholder
+<< exprNoLoop: e EPlaceholder
+<< postfix: operator = Nothing
+<< expr: e EPlaceholder
+<< exprNoLoop: e EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")]
+<< postfix: operator = Nothing
+<< expr: e EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")]
+Parser: Just (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGenerator (PApp (PVar "y") []) (EVar "ys"),QGenerator (PApp (PVar "z") []) (EVar "zs")])
+
+-- for4 --
+-- Input: for x in xs, x > 0 -> x
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokArrow,TokIdent "x"]
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "x") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "x") (EInt 0)
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< expr: e EVar "x"
+<< exprNoLoop: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 0))]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 0))]
+Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 0))])
+
+-- for5 --
+-- Input: for x in xs, let y = f x -> y
+Tokens: [TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokArrow,TokIdent "y"]
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< valueBinding: pat PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< exprNoLoop: e EApp (EVar "f") (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "x")
+<< valueBinding: body EApp (EVar "f") (EVar "x")
+<< letExpr:3 mIn Nothing binds [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< exprNoLoop: e EVar "y"
+<< postfix: operator = Nothing
+<< expr: e EVar "y"
+<< exprNoLoop: e EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))]
+<< postfix: operator = Nothing
+<< expr: e EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))]
+Parser: Just (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])
+
+-- do1 --
+-- Input: do {  (x, y) <- f z;  return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "<-",TokIdent "f",TokIdent "z",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "z"]
+<< exprCore: rt EApp (EVar "f") (EVar "z")
+<< exprNoLoop: e EApp (EVar "f") (EVar "z")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "z")
+<< bindStmt pat= PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) [] e= EApp (EVar "f") (EVar "z")
+<< doStmt: rt Bind (PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []) (EApp (EVar "f") (EVar "z"))
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< exprStmt EReturn (EVar "x")
+<< doStmt: rt ExprStmt (EReturn (EVar "x"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[Bind (PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []) (EApp (EVar "f") (EVar "z")),ExprStmt (EReturn (EVar "x"))]
+<< doExprCore: stmts [Bind (PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []) (EApp (EVar "f") (EVar "z")),ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [Bind (PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []) (EApp (EVar "f") (EVar "z")),ExprStmt (EReturn (EVar "x"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [Bind (PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []) (EApp (EVar "f") (EVar "z")),ExprStmt (EReturn (EVar "x"))]
+Parser: Just (EDo [Bind (PApp (PTuple [PApp (PVar "x") [],PApp (PVar "y") []]) []) (EApp (EVar "f") (EVar "z")),ExprStmt (EReturn (EVar "x"))])
+
+-- do2 --
+-- Input: do {      let y = f x;      z <- g y;      print z }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ";",TokIdent "z",TokSymbol "<-",TokIdent "g",TokIdent "y",TokSymbol ";",TokIdent "print",TokIdent "z",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< exprNoLoop: e EApp (EVar "f") (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "x")
+<< pConstrOrVar: next token "z"
+<< pattern: (pAs <|> makeCons)PApp (PVar "z") []
+<< letStmt: binds [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))]
+<< doStmt: rt LetStmt [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))]
+<< bindStmt
+<< pConstrOrVar: next token "z"
+<< pattern: (pAs <|> makeCons)PApp (PVar "z") []
+<< expr dispatch: TokIdent "g"
+<< appExprCore: f= EVar "g" args= [EVar "y"]
+<< exprCore: rt EApp (EVar "g") (EVar "y")
+<< exprNoLoop: e EApp (EVar "g") (EVar "y")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "g") (EVar "y")
+<< bindStmt pat= PApp (PVar "z") [] e= EApp (EVar "g") (EVar "y")
+<< doStmt: rt Bind (PApp (PVar "z") []) (EApp (EVar "g") (EVar "y"))
+<< bindStmt
+<< pConstrOrVar: next token "print"
+<< pConstrOrVar: next token "z"
+<< pattern: (pAs <|> makeCons)PApp (PVar "print") [PVar "z"]
+<< expr dispatch: TokIdent "print"
+<< appExprCore: f= EVar "print" args= [EVar "z"]
+<< exprCore: rt EApp (EVar "print") (EVar "z")
+<< exprNoLoop: e EApp (EVar "print") (EVar "z")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "print") (EVar "z")
+<< exprStmt EApp (EVar "print") (EVar "z")
+<< doStmt: rt ExprStmt (EApp (EVar "print") (EVar "z"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],Bind (PApp (PVar "z") []) (EApp (EVar "g") (EVar "y")),ExprStmt (EApp (EVar "print") (EVar "z"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],Bind (PApp (PVar "z") []) (EApp (EVar "g") (EVar "y")),ExprStmt (EApp (EVar "print") (EVar "z"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],Bind (PApp (PVar "z") []) (EApp (EVar "g") (EVar "y")),ExprStmt (EApp (EVar "print") (EVar "z"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],Bind (PApp (PVar "z") []) (EApp (EVar "g") (EVar "y")),ExprStmt (EApp (EVar "print") (EVar "z"))]
+Parser: Just (EDo [LetStmt [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))],Bind (PApp (PVar "z") []) (EApp (EVar "g") (EVar "y")),ExprStmt (EApp (EVar "print") (EVar "z"))])
+
+-- do3 --
+-- Input: do {      x <- xs;      if x > 0 then return x else fail }  
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ";",TokKeyword "if",TokIdent "x",TokOperator ">",TokNumber 0,TokKeyword "then",TokKeyword "return",TokIdent "x",TokKeyword "else",TokIdent "fail",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< bindStmt pat= PApp (PVar "x") [] e= EVar "xs"
+<< doStmt: rt Bind (PApp (PVar "x") []) (EVar "xs")
+<< bindStmt
+<< expr dispatch: TokKeyword "if"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "x") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "x") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "x") (EInt 0)
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< expr dispatch: TokIdent "fail"
+<< appExprCore: f= EVar "fail" args= []
+<< exprCore: rt EVar "fail"
+<< exprNoLoop: e EVar "fail"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "fail"
+<< exprNoLoop: e EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail")
+<< exprStmt EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail")
+<< doStmt: rt ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[Bind (PApp (PVar "x") []) (EVar "xs"),ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail"))]
+<< doExprCore: stmts [Bind (PApp (PVar "x") []) (EVar "xs"),ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "x") []) (EVar "xs"),ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [Bind (PApp (PVar "x") []) (EVar "xs"),ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail"))]
+Parser: Just (EDo [Bind (PApp (PVar "x") []) (EVar "xs"),ExprStmt (EIf (EBinOp BinOpGt (EVar "x") (EInt 0)) (EReturn (EVar "x")) (EVar "fail"))])
+
+-- do2 --
+-- Input: do {  let xs = [1,2,3];  for x in xs, x > 1 -> x}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 1,TokArrow,TokIdent "x",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+<< letStmt: binds [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< doStmt: rt LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< bindStmt
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "x") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "x") (EInt 1)
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< exprNoLoop: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))]
+<< exprStmt EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))]
+<< doStmt: rt ExprStmt (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))])
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))])]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))])]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))])]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))])]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "x") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (EBinOp BinOpGt (EVar "x") (EInt 1))])])
+
+-- do3 --
+-- Input: do {  let xs = [1,2,3];  for x in xs, let y = f x -> y}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokArrow,TokIdent "y",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+<< letStmt: binds [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< doStmt: rt LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< bindStmt
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< valueBinding: pat PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< exprNoLoop: e EApp (EVar "f") (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "x")
+<< valueBinding: body EApp (EVar "f") (EVar "x")
+<< letExpr:3 mIn Nothing binds [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< exprNoLoop: e EVar "y"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "y"
+<< exprNoLoop: e EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))]
+<< exprStmt EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))]
+<< doStmt: rt ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__"))])])
+
+-- do4 --
+-- Input: do {  let xs = [1,2,3];  for x in xs -> ...}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokArrow,TokEllipsis,TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+<< letStmt: binds [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< doStmt: rt LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< bindStmt
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< expr dispatch: TokEllipsis
+<< appExprCore: f= EPlaceholder args= []
+<< exprCore: rt EPlaceholder
+<< exprNoLoop: e EPlaceholder
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EPlaceholder
+<< exprNoLoop: e EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")]
+<< exprStmt EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")]
+<< doStmt: rt ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")])
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")])]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")])]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")])]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")])]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs")])])
+
+-- nested do --
+-- Input: do {  let x = 1;  do {    let y = x + 1;    return y  }}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< letStmt: binds [(PApp (PVar "x") [],EInt 1)]
+<< doStmt: rt LetStmt [(PApp (PVar "x") [],EInt 1)]
+<< bindStmt
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< letStmt: binds [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))]
+<< doStmt: rt LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))]
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "y"
+<< exprNoLoop: e EReturn (EVar "y")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "y")
+<< exprStmt EReturn (EVar "y")
+<< doStmt: rt ExprStmt (EReturn (EVar "y"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< exprStmt EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]
+<< doStmt: rt ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])]
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EInt 1)],ExprStmt (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))])])
+
+-- complex --
+-- Input: do {  let xs = [1,2,3];  for x in xs, let y = f x, y > 1 -> y}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 1,TokArrow,TokIdent "y",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+<< letStmt: binds [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< doStmt: rt LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< bindStmt
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< valueBinding: pat PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< exprNoLoop: e EApp (EVar "f") (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "x")
+<< valueBinding: body EApp (EVar "f") (EVar "x")
+<< letExpr:3 mIn Nothing binds [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "y") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EInt 1)
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< exprNoLoop: e EVar "y"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "y"
+<< exprNoLoop: e EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))]
+<< exprStmt EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))]
+<< doStmt: rt ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp (EVar "y") [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])])
+
+-- complex2 --
+-- Input: do {  let xs = [1,2,3];  for x in xs, let y = f x, y > 1 -> ...}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokOperator ">",TokNumber 1,TokArrow,TokEllipsis,TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+<< letStmt: binds [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< doStmt: rt LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])]
+<< bindStmt
+<< expr dispatch: TokKeyword "for"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< valueBinding: pat PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "x"]
+<< exprCore: rt EApp (EVar "f") (EVar "x")
+<< exprNoLoop: e EApp (EVar "f") (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EVar "x")
+<< valueBinding: body EApp (EVar "f") (EVar "x")
+<< letExpr:3 mIn Nothing binds [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "y") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EInt 1)
+<< expr dispatch: TokEllipsis
+<< appExprCore: f= EPlaceholder args= []
+<< exprCore: rt EPlaceholder
+<< exprNoLoop: e EPlaceholder
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EPlaceholder
+<< exprNoLoop: e EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))]
+<< exprStmt EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))]
+<< doStmt: rt ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+<< doExprCore: stmts [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+<< exprNoLoop: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+<< postfix: operator = Nothing
+<< expr: e EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])]
+Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],ExprStmt (EListComp EPlaceholder [QGenerator (PApp (PVar "x") []) (EVar "xs"),QGuard (ELetBlock [(PApp (PVar "y") [],EApp (EVar "f") (EVar "x"))] (EVar "__unit__")),QGuard (EBinOp BinOpGt (EVar "y") (EInt 1))])])
+
+-- list1 --
+-- Input: [1 .. 10];    [x .. y];    [0 .. -5];    [a .. b]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol "..",TokIdent "y",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 0,TokSymbol "..",TokNumber 5,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "a",TokSymbol "..",TokIdent "b",TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< exprNoLoop: e ERange (EInt 1) (EInt 10)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERange (EInt 1) (EInt 10)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< exprNoLoop: e ERange (EVar "x") (EVar "y")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERange (EVar "x") (EVar "y")
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< appExprCore: f= EInt 5 args= []
+<< exprCore: rt EInt 5
+<< exprNoLoop: e ERange (EInt 0) (EInt 5)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERange (EInt 0) (EInt 5)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "a" args= []
+<< exprCore: rt EVar "a"
+<< appExprCore: f= EVar "a" args= []
+<< exprCore: rt EVar "a"
+<< appExprCore: f= EVar "a" args= []
+<< exprCore: rt EVar "a"
+<< appExprCore: f= EVar "b" args= []
+<< exprCore: rt EVar "b"
+<< exprNoLoop: e ERange (EVar "a") (EVar "b")
+<< postfix: operator = Nothing
+<< expr: e ERange (EVar "a") (EVar "b")
+Parser: Just (ESeq [ERange (EInt 1) (EInt 10),ERange (EVar "x") (EVar "y"),ERange (EInt 0) (EInt 5),ERange (EVar "a") (EVar "b")])
+
+-- list2 --
+-- Input: [1, 3 .. 10]; [10, 8 .. 0]; [x, y .. z]; [0, 0 .. 0]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 3,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 10,TokSymbol ",",TokNumber 8,TokSymbol "..",TokNumber 0,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol "..",TokIdent "z",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 0,TokSymbol ",",TokNumber 0,TokSymbol "..",TokNumber 0,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 3) (EInt 10)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERangeStep (EInt 1) (EInt 3) (EInt 10)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< appExprCore: f= EInt 8 args= []
+<< exprCore: rt EInt 8
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< exprNoLoop: e ERangeStep (EInt 10) (EInt 8) (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERangeStep (EInt 10) (EInt 8) (EInt 0)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< appExprCore: f= EVar "z" args= []
+<< exprCore: rt EVar "z"
+<< exprNoLoop: e ERangeStep (EVar "x") (EVar "y") (EVar "z")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERangeStep (EVar "x") (EVar "y") (EVar "z")
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< exprNoLoop: e ERangeStep (EInt 0) (EInt 0) (EInt 0)
+<< postfix: operator = Nothing
+<< expr: e ERangeStep (EInt 0) (EInt 0) (EInt 0)
+Parser: Just (ESeq [ERangeStep (EInt 1) (EInt 3) (EInt 10),ERangeStep (EInt 10) (EInt 8) (EInt 0),ERangeStep (EVar "x") (EVar "y") (EVar "z"),ERangeStep (EInt 0) (EInt 0) (EInt 0)])
+
+-- list3 --
+-- Input: [1,2,3]; [x, y, z]; [1, 2, 3,]; []; [   ]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol ",",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< appExprCore: f= EVar "z" args= []
+<< exprCore: rt EVar "z"
+<< exprNoLoop: e EList [EVar "x",EVar "y",EVar "z"]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EVar "x",EVar "y",EVar "z"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EList [EInt 1,EInt 2,EInt 3]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2,EInt 3]
+<< expr dispatch: TokSymbol "["
+<< exprNoLoop: e EList []
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList []
+<< expr dispatch: TokSymbol "["
+<< exprNoLoop: e EList []
+<< postfix: operator = Nothing
+<< expr: e EList []
+Parser: Just (ESeq [EList [EInt 1,EInt 2,EInt 3],EList [EVar "x",EVar "y",EVar "z"],EList [EInt 1,EInt 2,EInt 3],EList [],EList []])
+
+-- list4 --
+-- Input: [1, 2 .. 3]; [1 ,2 ..3]; [1 .. 2, 3]     -- should be normal list? or error?（仕様確認
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+XX Parser failed! Re-running with trace:
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+Parser: Nothing
+
+-- list error1 --
+-- Input: [1 ..]          -- エラーになるべき
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol "..",TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+XX Parser failed! Re-running with trace:
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+Parser: Nothing
+
+-- list error2 --
+-- Input: [.. 10]         -- エラーになるべき
+Tokens: [TokSymbol "[",TokSymbol "..",TokNumber 10,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+XX Parser failed! Re-running with trace:
+<< expr dispatch: TokSymbol "["
+Parser: Nothing
+
+-- func1 --
+-- Input: x + y where z = 3
+Tokens: [TokIdent "x",TokOperator "+",TokIdent "y",TokKeyword "where",TokIdent "z",TokSymbol "=",TokNumber 3]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "z"
+<< pattern: (pAs <|> makeCons)PApp (PVar "z") []
+<< valueBinding: pat PApp (PVar "z") []
+<< expr dispatch: TokNumber 3
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< exprNoLoop: e EInt 3
+<< postfix: operator = Nothing
+<< expr: e EInt 3
+<< valueBinding: body EInt 3
+<< postfix: operator = Nothing
+<< expr: e EWhere (EBinOp BinOpAdd (EVar "x") (EVar "y")) [(PApp (PVar "z") [],EInt 3)]
+Parser: Just (EWhere (EBinOp BinOpAdd (EVar "x") (EVar "y")) [(PApp (PVar "z") [],EInt 3)])
+
+-- func2 --
+-- Input: case x of Just n | n > 0 -> n   | n < 1 -> 2  where m = 10
+Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 1,TokArrow,TokNumber 2,TokKeyword "where",TokIdent "m",TokSymbol "=",TokNumber 10]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "n"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "n"]
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "n") (EInt 0)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "n") (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "n") (EInt 0)
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< exprCore: rt EVar "n"
+<< exprNoLoop: e EVar "n"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "n"
+<< guardExpr body: EVar "n"
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpLt (EVar "n") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpLt (EVar "n") (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpLt (EVar "n") (EInt 1)
+<< expr dispatch: TokNumber 2
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< exprNoLoop: e EInt 2
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "m"
+<< pattern: (pAs <|> makeCons)PApp (PVar "m") []
+<< valueBinding: pat PApp (PVar "m") []
+<< expr dispatch: TokNumber 10
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< exprNoLoop: e EInt 10
+<< postfix: operator = Nothing
+<< expr: e EInt 10
+<< valueBinding: body EInt 10
+<< postfix: operator = Nothing
+<< expr: e EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)]
+<< guardExpr body: EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)]
+<< caseAlt: g PApp (PVar "Just") [PVar "n"] [(EBinOp BinOpGt (EVar "n") (EInt 0),EVar "n"),(EBinOp BinOpLt (EVar "n") (EInt 1),EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)])]
+<< caseExprCore: alts [CaseAltGuard (PApp (PVar "Just") [PVar "n"]) [(EBinOp BinOpGt (EVar "n") (EInt 0),EVar "n"),(EBinOp BinOpLt (EVar "n") (EInt 1),EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)])]]
+<< exprNoLoop: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "Just") [PVar "n"]) [(EBinOp BinOpGt (EVar "n") (EInt 0),EVar "n"),(EBinOp BinOpLt (EVar "n") (EInt 1),EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)])]]
+<< postfix: operator = Nothing
+<< expr: e ECase (EVar "x") [CaseAltGuard (PApp (PVar "Just") [PVar "n"]) [(EBinOp BinOpGt (EVar "n") (EInt 0),EVar "n"),(EBinOp BinOpLt (EVar "n") (EInt 1),EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)])]]
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "Just") [PVar "n"]) [(EBinOp BinOpGt (EVar "n") (EInt 0),EVar "n"),(EBinOp BinOpLt (EVar "n") (EInt 1),EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)])]])
+
+-- func3 --
+-- Input: do { x <- foo;  y <- bar;  x + y} where foo = 1; bar = 2
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokIdent "foo",TokSymbol ";",TokIdent "y",TokSymbol "<-",TokIdent "bar",TokSymbol ";",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol "}",TokKeyword "where",TokIdent "foo",TokSymbol "=",TokNumber 1,TokSymbol ";",TokIdent "bar",TokSymbol "=",TokNumber 2]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "foo"
+<< appExprCore: f= EVar "foo" args= []
+<< exprCore: rt EVar "foo"
+<< exprNoLoop: e EVar "foo"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "foo"
+<< bindStmt pat= PApp (PVar "x") [] e= EVar "foo"
+<< doStmt: rt Bind (PApp (PVar "x") []) (EVar "foo")
+<< bindStmt
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< expr dispatch: TokIdent "bar"
+<< appExprCore: f= EVar "bar" args= []
+<< exprCore: rt EVar "bar"
+<< exprNoLoop: e EVar "bar"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "bar"
+<< bindStmt pat= PApp (PVar "y") [] e= EVar "bar"
+<< doStmt: rt Bind (PApp (PVar "y") []) (EVar "bar")
+<< bindStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< exprStmt EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< doStmt: rt ExprStmt (EBinOp BinOpAdd (EVar "x") (EVar "y"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PVar "y") []) (EVar "bar"),ExprStmt (EBinOp BinOpAdd (EVar "x") (EVar "y"))]
+<< doExprCore: stmts [Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PVar "y") []) (EVar "bar"),ExprStmt (EBinOp BinOpAdd (EVar "x") (EVar "y"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PVar "y") []) (EVar "bar"),ExprStmt (EBinOp BinOpAdd (EVar "x") (EVar "y"))]
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "foo"
+<< pattern: (pAs <|> makeCons)PApp (PVar "foo") []
+<< valueBinding: pat PApp (PVar "foo") []
+<< expr dispatch: TokNumber 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< exprNoLoop: e EInt 1
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EInt 1
+<< valueBinding: body EInt 1
+<< pConstrOrVar: next token "bar"
+<< pattern: (pAs <|> makeCons)PApp (PVar "bar") []
+<< valueBinding: pat PApp (PVar "bar") []
+<< expr dispatch: TokNumber 2
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< exprNoLoop: e EInt 2
+<< postfix: operator = Nothing
+<< expr: e EInt 2
+<< valueBinding: body EInt 2
+<< postfix: operator = Nothing
+<< expr: e EWhere (EDo [Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PVar "y") []) (EVar "bar"),ExprStmt (EBinOp BinOpAdd (EVar "x") (EVar "y"))]) [(PApp (PVar "foo") [],EInt 1),(PApp (PVar "bar") [],EInt 2)]
+Parser: Just (EWhere (EDo [Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PVar "y") []) (EVar "bar"),ExprStmt (EBinOp BinOpAdd (EVar "x") (EVar "y"))]) [(PApp (PVar "foo") [],EInt 1),(PApp (PVar "bar") [],EInt 2)])
+
+-- func4 --
+-- Input: [x | Just x <- xs] where xs = [1..10]
+Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokKeyword "where",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "x"]
+<< expr dispatch: TokIdent "xs"
+<< appExprCore: f= EVar "xs" args= []
+<< exprCore: rt EVar "xs"
+<< exprNoLoop: e EVar "xs"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "xs"
+<< exprNoLoop: e EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")]
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< valueBinding: pat PApp (PVar "xs") []
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 10 args= []
+<< exprCore: rt EInt 10
+<< exprNoLoop: e ERange (EInt 1) (EInt 10)
+<< postfix: operator = Nothing
+<< expr: e ERange (EInt 1) (EInt 10)
+<< valueBinding: body ERange (EInt 1) (EInt 10)
+<< postfix: operator = Nothing
+<< expr: e EWhere (EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")]) [(PApp (PVar "xs") [],ERange (EInt 1) (EInt 10))]
+Parser: Just (EWhere (EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")]) [(PApp (PVar "xs") [],ERange (EInt 1) (EInt 10))])
+
+-- func5 --
+-- Input: let  f x = x + 1;  g y = f y * 2 in g 10
+Tokens: [TokKeyword "let",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "g",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "y",TokOperator "*",TokNumber 2,TokKeyword "in",TokIdent "g",TokNumber 10]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "f"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "f") [PVar "x"]
+<< valueBinding: pat PApp (PVar "f") [PVar "x"]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< valueBinding: body EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< pConstrOrVar: next token "g"
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "g") [PVar "y"]
+<< valueBinding: pat PApp (PVar "g") [PVar "y"]
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EVar "y"]
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2)
+<< exprNoLoop: e EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2)
+<< valueBinding: body EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2)
+<< letExpr:3 mIn Just () binds [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1)),(PApp (PVar "g") [PVar "y"],EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2))]
+<< expr dispatch: TokIdent "g"
+<< appExprCore: f= EVar "g" args= [EInt 10]
+<< exprCore: rt EApp (EVar "g") (EInt 10)
+<< exprNoLoop: e EApp (EVar "g") (EInt 10)
+<< postfix: operator = Nothing
+<< expr: e EApp (EVar "g") (EInt 10)
+<< letExpr:3 body EApp (EVar "g") (EInt 10)
+<< exprNoLoop: e ELetBlock [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1)),(PApp (PVar "g") [PVar "y"],EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2))] (EApp (EVar "g") (EInt 10))
+<< postfix: operator = Nothing
+<< expr: e ELetBlock [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1)),(PApp (PVar "g") [PVar "y"],EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2))] (EApp (EVar "g") (EInt 10))
+Parser: Just (ELetBlock [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1)),(PApp (PVar "g") [PVar "y"],EBinOp BinOpMul (EApp (EVar "f") (EVar "y")) (EInt 2))] (EApp (EVar "g") (EInt 10)))
+
+-- func6 --
+-- Input: x + y where  f x = x + 1;  y = f 10
+Tokens: [TokIdent "x",TokOperator "+",TokIdent "y",TokKeyword "where",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "y",TokSymbol "=",TokIdent "f",TokNumber 10]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EVar "y")
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "f"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "f") [PVar "x"]
+<< valueBinding: pat PApp (PVar "f") [PVar "x"]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< valueBinding: body EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< valueBinding: pat PApp (PVar "y") []
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EInt 10]
+<< exprCore: rt EApp (EVar "f") (EInt 10)
+<< exprNoLoop: e EApp (EVar "f") (EInt 10)
+<< postfix: operator = Nothing
+<< expr: e EApp (EVar "f") (EInt 10)
+<< valueBinding: body EApp (EVar "f") (EInt 10)
+<< postfix: operator = Nothing
+<< expr: e EWhere (EBinOp BinOpAdd (EVar "x") (EVar "y")) [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1)),(PApp (PVar "y") [],EApp (EVar "f") (EInt 10))]
+Parser: Just (EWhere (EBinOp BinOpAdd (EVar "x") (EVar "y")) [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1)),(PApp (PVar "y") [],EApp (EVar "f") (EInt 10))])
+
+-- func7 --
+-- Input: let f x = x + 1 in case f 3 of n | n > 3 -> n| otherwise -> 0 where otherwise = True
+Tokens: [TokKeyword "let",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokKeyword "in",TokKeyword "case",TokIdent "f",TokNumber 3,TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 3,TokArrow,TokIdent "n",TokSymbol "|",TokIdent "otherwise",TokArrow,TokNumber 0,TokKeyword "where",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "True"]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "f"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "f") [PVar "x"]
+<< valueBinding: pat PApp (PVar "f") [PVar "x"]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< valueBinding: body EBinOp BinOpAdd (EVar "x") (EInt 1)
+<< letExpr:3 mIn Just () binds [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1))]
+<< expr dispatch: TokKeyword "case"
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= [EInt 3]
+<< exprCore: rt EApp (EVar "f") (EInt 3)
+<< exprNoLoop: e EApp (EVar "f") (EInt 3)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "f") (EInt 3)
+<< pConstrOrVar: next token "n"
+<< pattern: (pAs <|> makeCons)PApp (PVar "n") []
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EBinOp BinOpGt (EVar "n") (EInt 3)
+<< exprNoLoop: e EBinOp BinOpGt (EVar "n") (EInt 3)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpGt (EVar "n") (EInt 3)
+<< expr dispatch: TokIdent "n"
+<< appExprCore: f= EVar "n" args= []
+<< exprCore: rt EVar "n"
+<< exprNoLoop: e EVar "n"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "n"
+<< guardExpr body: EVar "n"
+<< guardExpr next token: TokSymbol "|"
+<< expr dispatch: TokIdent "otherwise"
+<< appExprCore: f= EVar "otherwise" args= []
+<< exprCore: rt EVar "otherwise"
+<< exprNoLoop: e EVar "otherwise"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "otherwise"
+<< expr dispatch: TokNumber 0
+<< appExprCore: f= EInt 0 args= []
+<< exprCore: rt EInt 0
+<< exprNoLoop: e EInt 0
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "otherwise"
+<< pattern: (pAs <|> makeCons)PApp (PVar "otherwise") []
+<< valueBinding: pat PApp (PVar "otherwise") []
+<< expr dispatch: TokTypeIdent "True"
+<< appExprCore: f= EVarType "True" args= []
+<< exprCore: rt EVarType "True"
+<< exprNoLoop: e EVarType "True"
+<< postfix: operator = Nothing
+<< expr: e EVarType "True"
+<< valueBinding: body EVarType "True"
+<< postfix: operator = Nothing
+<< expr: e EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")]
+<< guardExpr body: EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")]
+<< caseAlt: g PApp (PVar "n") [] [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]
+<< caseExprCore: alts [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]]
+<< exprNoLoop: e ECase (EApp (EVar "f") (EInt 3)) [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]]
+<< postfix: operator = Nothing
+<< expr: e ECase (EApp (EVar "f") (EInt 3)) [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]]
+<< letExpr:3 body ECase (EApp (EVar "f") (EInt 3)) [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1))] (ECase (EApp (EVar "f") (EInt 3)) [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]])
+<< postfix: operator = Nothing
+<< expr: e ELetBlock [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1))] (ECase (EApp (EVar "f") (EInt 3)) [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]])
+Parser: Just (ELetBlock [(PApp (PVar "f") [PVar "x"],EBinOp BinOpAdd (EVar "x") (EInt 1))] (ECase (EApp (EVar "f") (EInt 3)) [CaseAltGuard (PApp (PVar "n") []) [(EBinOp BinOpGt (EVar "n") (EInt 3),EVar "n"),(EVar "otherwise",EWhere (EInt 0) [(PApp (PVar "otherwise") [],EVarType "True")])]]))
+
+-- sql1 --
+-- Input: sql "SELECT * FROM users"
+Tokens: [TokKeyword "sql",TokString "SELECT * FROM users"]
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "SELECT * FROM users" []
+<< postfix: operator = Nothing
+<< expr: e ESQL "SELECT * FROM users" []
+Parser: Just (ESQL "SELECT * FROM users" [])
+
+-- sql2 --
+-- Input: sql "SELECT * FROM users WHERE id = {x}"
+Tokens: [TokKeyword "sql",TokString "SELECT * FROM users WHERE id = {x}"]
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "SELECT * FROM users WHERE id = ?" [EVar "x"]
+<< postfix: operator = Nothing
+<< expr: e ESQL "SELECT * FROM users WHERE id = ?" [EVar "x"]
+Parser: Just (ESQL "SELECT * FROM users WHERE id = ?" [EVar "x"])
+
+-- sql3 --
+-- Input: sql "INSERT INTO t(a,b) VALUES({a}, {b})"
+Tokens: [TokKeyword "sql",TokString "INSERT INTO t(a,b) VALUES({a}, {b})"]
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "INSERT INTO t(a,b) VALUES(?, ?)" [EVar "a",EVar "b"]
+<< postfix: operator = Nothing
+<< expr: e ESQL "INSERT INTO t(a,b) VALUES(?, ?)" [EVar "a",EVar "b"]
+Parser: Just (ESQL "INSERT INTO t(a,b) VALUES(?, ?)" [EVar "a",EVar "b"])
+
+-- sql4 --
+-- Input: sql "UPDATE t SET a={a}, b={b}, c={c}"
+Tokens: [TokKeyword "sql",TokString "UPDATE t SET a={a}, b={b}, c={c}"]
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "UPDATE t SET a=?, b=?, c=?" [EVar "a",EVar "b",EVar "c"]
+<< postfix: operator = Nothing
+<< expr: e ESQL "UPDATE t SET a=?, b=?, c=?" [EVar "a",EVar "b",EVar "c"]
+Parser: Just (ESQL "UPDATE t SET a=?, b=?, c=?" [EVar "a",EVar "b",EVar "c"])
+
+-- sqlx1 --
+-- Input: let x = sql "SELECT * FROM t" in x
+Tokens: [TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t",TokKeyword "in",TokIdent "x"]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< valueBinding: pat PApp (PVar "x") []
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "SELECT * FROM t" []
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ESQL "SELECT * FROM t" []
+<< valueBinding: body ESQL "SELECT * FROM t" []
+<< letExpr:3 mIn Just () binds [(PApp (PVar "x") [],ESQL "SELECT * FROM t" [])]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< expr: e EVar "x"
+<< letExpr:3 body EVar "x"
+<< exprNoLoop: e ELetBlock [(PApp (PVar "x") [],ESQL "SELECT * FROM t" [])] (EVar "x")
+<< postfix: operator = Nothing
+<< expr: e ELetBlock [(PApp (PVar "x") [],ESQL "SELECT * FROM t" [])] (EVar "x")
+Parser: Just (ELetBlock [(PApp (PVar "x") [],ESQL "SELECT * FROM t" [])] (EVar "x"))
+
+-- sqlx2 --
+-- Input: f (sql "SELECT * FROM t WHERE id = {i}")
+Tokens: [TokIdent "f",TokSymbol "(",TokKeyword "sql",TokString "SELECT * FROM t WHERE id = {i}",TokSymbol ")"]
+<< expr dispatch: TokIdent "f"
+<< exprCore: rt ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"]
+<< exprCore: rt ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"]
+<< exprCore: rt ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"]
+<< appExprCore: f= EVar "f" args= [ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"]]
+<< exprCore: rt EApp (EVar "f") (ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"])
+<< exprNoLoop: e EApp (EVar "f") (ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"])
+<< postfix: operator = Nothing
+<< expr: e EApp (EVar "f") (ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"])
+Parser: Just (EApp (EVar "f") (ESQL "SELECT * FROM t WHERE id = ?" [EVar "i"]))
+
+-- sqlx3 --
+-- Input: x where y = sql "SELECT * FROM t WHERE a = {a}"
+Tokens: [TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t WHERE a = {a}"]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< valueBinding: pat PApp (PVar "y") []
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "SELECT * FROM t WHERE a = ?" [EVar "a"]
+<< postfix: operator = Nothing
+<< expr: e ESQL "SELECT * FROM t WHERE a = ?" [EVar "a"]
+<< valueBinding: body ESQL "SELECT * FROM t WHERE a = ?" [EVar "a"]
+<< postfix: operator = Nothing
+<< expr: e EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT * FROM t WHERE a = ?" [EVar "a"])]
+Parser: Just (EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT * FROM t WHERE a = ?" [EVar "a"])])
+
+-- sqlx4 --
+-- Input: do { x <- sql "SELECT * FROM t";  return x }
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokKeyword "sql",TokString "SELECT * FROM t",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "SELECT * FROM t" []
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ESQL "SELECT * FROM t" []
+<< bindStmt pat= PApp (PVar "x") [] e= ESQL "SELECT * FROM t" []
+<< doStmt: rt Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" [])
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "x")
+<< exprStmt EReturn (EVar "x")
+<< doStmt: rt ExprStmt (EReturn (EVar "x"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" []),ExprStmt (EReturn (EVar "x"))]
+<< doExprCore: stmts [Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" []),ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" []),ExprStmt (EReturn (EVar "x"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" []),ExprStmt (EReturn (EVar "x"))]
+Parser: Just (EDo [Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" []),ExprStmt (EReturn (EVar "x"))])
+
+-- sqlx5 --
+-- Input: (sql "SELECT {a}") + (sql "SELECT {b}")
+Tokens: [TokSymbol "(",TokKeyword "sql",TokString "SELECT {a}",TokSymbol ")",TokOperator "+",TokSymbol "(",TokKeyword "sql",TokString "SELECT {b}",TokSymbol ")"]
+<< expr dispatch: TokSymbol "("
+<< exprCore: rt ESQL "SELECT ?" [EVar "a"]
+<< exprCore: rt ESQL "SELECT ?" [EVar "a"]
+<< exprCore: rt ESQL "SELECT ?" [EVar "a"]
+<< appExprCore: f= ESQL "SELECT ?" [EVar "a"] args= []
+<< exprCore: rt ESQL "SELECT ?" [EVar "b"]
+<< exprCore: rt ESQL "SELECT ?" [EVar "b"]
+<< exprCore: rt ESQL "SELECT ?" [EVar "b"]
+<< appExprCore: f= ESQL "SELECT ?" [EVar "b"] args= []
+<< exprCore: rt EBinOp BinOpAdd (ESQL "SELECT ?" [EVar "a"]) (ESQL "SELECT ?" [EVar "b"])
+<< exprNoLoop: e EBinOp BinOpAdd (ESQL "SELECT ?" [EVar "a"]) (ESQL "SELECT ?" [EVar "b"])
+<< postfix: operator = Nothing
+<< expr: e EBinOp BinOpAdd (ESQL "SELECT ?" [EVar "a"]) (ESQL "SELECT ?" [EVar "b"])
+Parser: Just (EBinOp BinOpAdd (ESQL "SELECT ?" [EVar "a"]) (ESQL "SELECT ?" [EVar "b"]))
+
+-- sqlx6 --
+-- Input: let x = sql "SELECT {a}" in x where y = sql "SELECT {b}"
+Tokens: [TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT {a}",TokKeyword "in",TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT {b}"]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< valueBinding: pat PApp (PVar "x") []
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "SELECT ?" [EVar "a"]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ESQL "SELECT ?" [EVar "a"]
+<< valueBinding: body ESQL "SELECT ?" [EVar "a"]
+<< letExpr:3 mIn Just () binds [(PApp (PVar "x") [],ESQL "SELECT ?" [EVar "a"])]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "y"
+<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< valueBinding: pat PApp (PVar "y") []
+<< expr dispatch: TokKeyword "sql"
+<< exprNoLoop: e ESQL "SELECT ?" [EVar "b"]
+<< postfix: operator = Nothing
+<< expr: e ESQL "SELECT ?" [EVar "b"]
+<< valueBinding: body ESQL "SELECT ?" [EVar "b"]
+<< postfix: operator = Nothing
+<< expr: e EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT ?" [EVar "b"])]
+<< letExpr:3 body EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT ?" [EVar "b"])]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "x") [],ESQL "SELECT ?" [EVar "a"])] (EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT ?" [EVar "b"])])
+<< postfix: operator = Nothing
+<< expr: e ELetBlock [(PApp (PVar "x") [],ESQL "SELECT ?" [EVar "a"])] (EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT ?" [EVar "b"])])
+Parser: Just (ELetBlock [(PApp (PVar "x") [],ESQL "SELECT ?" [EVar "a"])] (EWhere (EVar "x") [(PApp (PVar "y") [],ESQL "SELECT ?" [EVar "b"])]))
+
+-- let1 --
+-- Input: let (a, b) = (1, 2) in a + b
+Tokens: [TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokIdent "a",TokOperator "+",TokIdent "b"]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "a"
+<< pattern: (pAs <|> makeCons)PApp (PVar "a") []
+<< pConstrOrVar: next token "b"
+<< pattern: (pAs <|> makeCons)PApp (PVar "b") []
+<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) []
+<< valueBinding: pat PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) []
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= ETuple [EInt 1,EInt 2] args= []
+<< exprCore: rt ETuple [EInt 1,EInt 2]
+<< exprNoLoop: e ETuple [EInt 1,EInt 2]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ETuple [EInt 1,EInt 2]
+<< valueBinding: body ETuple [EInt 1,EInt 2]
+<< letExpr:3 mIn Just () binds [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])]
+<< expr dispatch: TokIdent "a"
+<< appExprCore: f= EVar "a" args= []
+<< appExprCore: f= EVar "b" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< postfix: operator = Nothing
+<< expr: e EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< letExpr:3 body EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< exprNoLoop: e ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (EBinOp BinOpAdd (EVar "a") (EVar "b"))
+<< postfix: operator = Nothing
+<< expr: e ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (EBinOp BinOpAdd (EVar "a") (EVar "b"))
+Parser: Just (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (EBinOp BinOpAdd (EVar "a") (EVar "b")))
+
+-- let1 --
+-- Input: do {let (a, b) = (1, 2) in let f = a + b in f}
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokKeyword "let",TokIdent "f",TokSymbol "=",TokIdent "a",TokOperator "+",TokIdent "b",TokKeyword "in",TokIdent "f",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "a"
+<< pattern: (pAs <|> makeCons)PApp (PVar "a") []
+<< pConstrOrVar: next token "b"
+<< pattern: (pAs <|> makeCons)PApp (PVar "b") []
+<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) []
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= ETuple [EInt 1,EInt 2] args= []
+<< exprCore: rt ETuple [EInt 1,EInt 2]
+<< exprNoLoop: e ETuple [EInt 1,EInt 2]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ETuple [EInt 1,EInt 2]
+<< letStmt: binds [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "a"
+<< pattern: (pAs <|> makeCons)PApp (PVar "a") []
+<< pConstrOrVar: next token "b"
+<< pattern: (pAs <|> makeCons)PApp (PVar "b") []
+<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) []
+<< valueBinding: pat PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) []
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= ETuple [EInt 1,EInt 2] args= []
+<< exprCore: rt ETuple [EInt 1,EInt 2]
+<< exprNoLoop: e ETuple [EInt 1,EInt 2]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ETuple [EInt 1,EInt 2]
+<< valueBinding: body ETuple [EInt 1,EInt 2]
+<< letExpr:3 mIn Just () binds [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "f"
+<< pattern: (pAs <|> makeCons)PApp (PVar "f") []
+<< valueBinding: pat PApp (PVar "f") []
+<< expr dispatch: TokIdent "a"
+<< appExprCore: f= EVar "a" args= []
+<< appExprCore: f= EVar "b" args= []
+<< exprCore: rt EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< exprNoLoop: e EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< valueBinding: body EBinOp BinOpAdd (EVar "a") (EVar "b")
+<< letExpr:3 mIn Just () binds [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))]
+<< expr dispatch: TokIdent "f"
+<< appExprCore: f= EVar "f" args= []
+<< exprCore: rt EVar "f"
+<< exprNoLoop: e EVar "f"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "f"
+<< letExpr:3 body EVar "f"
+<< exprNoLoop: e ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")
+<< letExpr:3 body ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")
+<< exprNoLoop: e ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f"))
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f"))
+<< exprStmt ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f"))
+<< doStmt: rt ExprStmt (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[ExprStmt (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")))]
+<< doExprCore: stmts [ExprStmt (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")))]
+<< exprNoLoop: e EDo [ExprStmt (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")))]
+<< postfix: operator = Nothing
+<< expr: e EDo [ExprStmt (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")))]
+Parser: Just (EDo [ExprStmt (ELetBlock [(PApp (PTuple [PApp (PVar "a") [],PApp (PVar "b") []]) [],ETuple [EInt 1,EInt 2])] (ELetBlock [(PApp (PVar "f") [],EBinOp BinOpAdd (EVar "a") (EVar "b"))] (EVar "f")))])
+
+-- string --
+-- Input: "max' a b" ++ " | a > b = a | otherwise = b"
+Tokens: [TokString "max' a b",TokOperator "++",TokString " | a > b = a | otherwise = b"]
+<< expr dispatch: TokString "max' a b"
+<< appExprCore: f= EString "max' a b" args= []
+<< exprCore: rt EString "max' a b"
+<< exprNoLoop: e EString "max' a b"
+<< postfix: operator = Nothing
+<< infixOp: Just "++"
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokString " | a > b = a | otherwise = b"
+<< appExprCore: f= EString " | a > b = a | otherwise = b" args= []
+<< exprCore: rt EString " | a > b = a | otherwise = b"
+<< exprNoLoop: e EString " | a > b = a | otherwise = b"
+<< postfix: operator = Nothing
+<< expr: e EBinOp BinOpConcat (EString "max' a b") (EString " | a > b = a | otherwise = b")
+Parser: Just (EBinOp BinOpConcat (EString "max' a b") (EString " | a > b = a | otherwise = b"))
+
+-- list1 --
+-- Input: let x = [] in (1 : x)
+Tokens: [TokKeyword "let",TokIdent "x",TokSymbol "=",TokSymbol "[",TokSymbol "]",TokKeyword "in",TokSymbol "(",TokNumber 1,TokOperator ":",TokIdent "x",TokSymbol ")"]
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "x"
+<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< valueBinding: pat PApp (PVar "x") []
+<< expr dispatch: TokSymbol "["
+<< exprNoLoop: e EList []
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList []
+<< valueBinding: body EList []
+<< letExpr:3 mIn Just () binds [(PApp (PVar "x") [],EList [])]
+<< expr dispatch: TokSymbol "("
+<< appExprCore: f= EInt 1 args= [EVar ":",EVar "x"]
+<< exprCore: rt EApp (EApp (EInt 1) (EVar ":")) (EVar "x")
+<< appExprCore: f= EInt 1 args= [EVar ":",EVar "x"]
+<< exprCore: rt EApp (EApp (EInt 1) (EVar ":")) (EVar "x")
+<< appExprCore: f= EInt 1 args= [EVar ":",EVar "x"]
+<< exprCore: rt EApp (EApp (EInt 1) (EVar ":")) (EVar "x")
+<< appExprCore: f= EApp (EApp (EInt 1) (EVar ":")) (EVar "x") args= []
+<< exprCore: rt EApp (EApp (EInt 1) (EVar ":")) (EVar "x")
+<< exprNoLoop: e EApp (EApp (EInt 1) (EVar ":")) (EVar "x")
+<< postfix: operator = Nothing
+<< expr: e EApp (EApp (EInt 1) (EVar ":")) (EVar "x")
+<< letExpr:3 body EApp (EApp (EInt 1) (EVar ":")) (EVar "x")
+<< exprNoLoop: e ELetBlock [(PApp (PVar "x") [],EList [])] (EApp (EApp (EInt 1) (EVar ":")) (EVar "x"))
+<< postfix: operator = Nothing
+<< expr: e ELetBlock [(PApp (PVar "x") [],EList [])] (EApp (EApp (EInt 1) (EVar ":")) (EVar "x"))
+Parser: Just (ELetBlock [(PApp (PVar "x") [],EList [])] (EApp (EApp (EInt 1) (EVar ":")) (EVar "x")))
+
+-- infixOp --
+-- Input: x . y
+Tokens: [TokIdent "x",TokOperator ".",TokIdent "y"]
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Just "."
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "y"
+<< appExprCore: f= EVar "y" args= []
+<< exprCore: rt EVar "y"
+<< exprNoLoop: e EVar "y"
+<< postfix: operator = Nothing
+<< expr: e EBinOp BinOpCompose (EVar "x") (EVar "y")
+Parser: Just (EBinOp BinOpCompose (EVar "x") (EVar "y"))
+
+-- $1 --
+-- Input: print $ y1 y2 y3
+Tokens: [TokIdent "print",TokOperator "$",TokIdent "y1",TokIdent "y2",TokIdent "y3"]
+<< expr dispatch: TokIdent "print"
+<< appExprCore: f= EVar "print" args= []
+<< exprCore: rt EVar "print"
+<< exprNoLoop: e EVar "print"
+<< postfix: operator = Just "$"
+<< postfix: infix operator = "$"
+<< expr dispatch: TokIdent "y1"
+<< appExprCore: f= EVar "y1" args= [EVar "y2",EVar "y3"]
+<< exprCore: rt EApp (EApp (EVar "y1") (EVar "y2")) (EVar "y3")
+<< exprNoLoop: e EApp (EApp (EVar "y1") (EVar "y2")) (EVar "y3")
+<< postfix: operator = Nothing
+<< expr: e EApp (EApp (EVar "$") (EVar "print")) (EApp (EApp (EVar "y1") (EVar "y2")) (EVar "y3"))
+Parser: Just (EApp (EApp (EVar "$") (EVar "print")) (EApp (EApp (EVar "y1") (EVar "y2")) (EVar "y3")))
+
+-- $2 --
+-- Input: do { print $ "test" }
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "print",TokOperator "$",TokString "test",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "print"
+<< pConstrOrVar: next token "$"
+<< pattern: (pAs <|> makeCons)PApp (PVar "print") [PConstr "$" [],PString "test"]
+<< expr dispatch: TokIdent "print"
+<< appExprCore: f= EVar "print" args= []
+<< exprCore: rt EVar "print"
+<< exprNoLoop: e EVar "print"
+<< postfix: operator = Just "$"
+<< postfix: infix operator = "$"
+<< expr dispatch: TokString "test"
+<< appExprCore: f= EString "test" args= []
+<< exprCore: rt EString "test"
+<< exprNoLoop: e EString "test"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EApp (EVar "$") (EVar "print")) (EString "test")
+<< exprStmt EApp (EApp (EVar "$") (EVar "print")) (EString "test")
+<< doStmt: rt ExprStmt (EApp (EApp (EVar "$") (EVar "print")) (EString "test"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[ExprStmt (EApp (EApp (EVar "$") (EVar "print")) (EString "test"))]
+<< doExprCore: stmts [ExprStmt (EApp (EApp (EVar "$") (EVar "print")) (EString "test"))]
+<< exprNoLoop: e EDo [ExprStmt (EApp (EApp (EVar "$") (EVar "print")) (EString "test"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [ExprStmt (EApp (EApp (EVar "$") (EVar "print")) (EString "test"))]
+Parser: Just (EDo [ExprStmt (EApp (EApp (EVar "$") (EVar "print")) (EString "test"))])
+
+-- $3 --
+-- Input: do { print "test"; return 0 }
+Tokens: [TokKeyword "do",TokSymbol "{",TokIdent "print",TokString "test",TokSymbol ";",TokKeyword "return",TokNumber 0,TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "print"
+<< pattern: (pAs <|> makeCons)PApp (PVar "print") [PString "test"]
+<< expr dispatch: TokIdent "print"
+<< appExprCore: f= EVar "print" args= [EString "test"]
+<< exprCore: rt EApp (EVar "print") (EString "test")
+<< exprNoLoop: e EApp (EVar "print") (EString "test")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EVar "print") (EString "test")
+<< exprStmt EApp (EVar "print") (EString "test")
+<< doStmt: rt ExprStmt (EApp (EVar "print") (EString "test"))
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EInt 0
+<< exprNoLoop: e EReturn (EInt 0)
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EInt 0)
+<< exprStmt EReturn (EInt 0)
+<< doStmt: rt ExprStmt (EReturn (EInt 0))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[ExprStmt (EApp (EVar "print") (EString "test")),ExprStmt (EReturn (EInt 0))]
+<< doExprCore: stmts [ExprStmt (EApp (EVar "print") (EString "test")),ExprStmt (EReturn (EInt 0))]
+<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "print") (EString "test")),ExprStmt (EReturn (EInt 0))]
+<< postfix: operator = Nothing
+<< expr: e EDo [ExprStmt (EApp (EVar "print") (EString "test")),ExprStmt (EReturn (EInt 0))]
+Parser: Just (EDo [ExprStmt (EApp (EVar "print") (EString "test")),ExprStmt (EReturn (EInt 0))])
+
+-- confirm --
+-- Input: [1,2]; [3,4];
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 3,TokSymbol ",",TokNumber 4,TokSymbol "]",TokSymbol ";"]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= EInt 2 args= []
+<< exprCore: rt EInt 2
+<< exprNoLoop: e EList [EInt 1,EInt 2]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EList [EInt 1,EInt 2]
+<< expr dispatch: TokSymbol "["
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EInt 4 args= []
+<< exprCore: rt EInt 4
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EInt 3 args= []
+<< exprCore: rt EInt 3
+<< appExprCore: f= EInt 4 args= []
+<< exprCore: rt EInt 4
+<< exprNoLoop: e EList [EInt 3,EInt 4]
+<< postfix: operator = Nothing
+<< expr: e EList [EInt 3,EInt 4]
+Parser: Just (ESeq [EList [EInt 1,EInt 2],EList [EInt 3,EInt 4]])
+
+-- do1 --
+-- Input: do { let r = { x = 1 }; return r2 }
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokIdent "r2",TokSymbol "}"]
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< letStmt
+<< pConstrOrVar: next token "r"
+<< pattern: (pAs <|> makeCons)PApp (PVar "r") []
+<< expr dispatch: TokIdent "x"
+<< appExprCore: f= EVar "x" args= []
+<< exprCore: rt EVar "x"
+<< exprNoLoop: e EVar "x"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "x"
+<< expr dispatch: TokKeyword "let"
+<< letBlock next token: TokKeyword "let"
+<< pConstrOrVar: next token "r"
+<< pattern: (pAs <|> makeCons)PApp (PVar "r") []
+<< valueBinding: pat PApp (PVar "r") []
+<< expr dispatch: TokSymbol "{"
+<< appExprCore: f= EInt 1 args= []
+<< exprCore: rt EInt 1
+<< appExprCore: f= ERecord [("x",EInt 1)] args= []
+<< exprCore: rt ERecord [("x",EInt 1)]
+<< exprNoLoop: e ERecord [("x",EInt 1)]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ERecord [("x",EInt 1)]
+<< valueBinding: body ERecord [("x",EInt 1)]
+<< letExpr:3 mIn Nothing binds [(PApp (PVar "r") [],ERecord [("x",EInt 1)])]
+<< exprNoLoop: e ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< exprStmt ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")
+<< doStmt: rt ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__"))
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+<< return: e EVar "r2"
+<< exprNoLoop: e EReturn (EVar "r2")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EReturn (EVar "r2")
+<< exprStmt EReturn (EVar "r2")
+<< doStmt: rt ExprStmt (EReturn (EVar "r2"))
+<< bindStmt
+<< expr dispatch: TokSymbol "}"
+<< doBlock: (f:m)[ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r2"))]
+<< doExprCore: stmts [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r2"))]
+<< exprNoLoop: e EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r2"))]
+<< postfix: operator = Nothing
+<< expr: e EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r2"))]
+Parser: Just (EDo [ExprStmt (ELetBlock [(PApp (PVar "r") [],ERecord [("x",EInt 1)])] (EVar "__unit__")),ExprStmt (EReturn (EVar "r2"))])

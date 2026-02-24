@@ -139,7 +139,8 @@ testCasesDo =
     ("$1", "print $ y1 y2 y3"),
     ("$2", "do { print $ \"test\" }"),
     ("$3", "do { print \"test\"; return 0 }"),
-    ("confirm", "[1,2]; [3,4];")
+    ("confirm", "[1,2]; [3,4];"),
+    ("do1", "do { let r = { x = 1 }; return r2 }")
   ]
 
 {-}

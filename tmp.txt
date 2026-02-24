@@ -1,0 +1,230 @@
+Build profile: -w ghc-9.6.7 -O1
+In order, the following will be built (use -v for more details):
+ - dlist-parser-0.1.0.0 (exe:myapp) (file src\Parser\Expr\ExprExtensions.hs changed)
+Preprocessing executable 'myapp' for dlist-parser-0.1.0.0...
+Building executable 'myapp' for dlist-parser-0.1.0.0...
+[23 of 33] Compiling Parser.Expr.ExprExtensions ( src\Parser\Expr\ExprExtensions.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\myapp\build\myapp\myapp-tmp\Parser\Expr\ExprExtensions.o ) [Source file changed]
+[24 of 33] Compiling Parser.Expr.ExprParser ( src\Parser\Expr\ExprParser.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\myapp\build\myapp\myapp-tmp\Parser\Expr\ExprParser.o ) [Parser.Expr.ExprExtensions changed]
+[29 of 33] Compiling Decl.DeclParser.Fun ( src\Decl\DeclParser\Fun.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\myapp\build\myapp\myapp-tmp\Decl\DeclParser\Fun.o ) [Parser.Expr.ExprExtensions changed]
+[31 of 33] Compiling Decl.DeclParserCore ( src\Decl\DeclParserCore.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\myapp\build\myapp\myapp-tmp\Decl\DeclParserCore.o ) [Parser.Expr.ExprExtensions changed]
+[33 of 33] Compiling Parser.Core.Parser ( src\Parser\Core\Parser.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\myapp\build\myapp\myapp-tmp\Parser\Core\Parser.o ) [Parser.Expr.ExprExtensions changed]
+[34 of 34] Linking C:\\Users\\blue3\\haskell\\dlist-parser\\dist-newstyle\\build\\x86_64-windows\\ghc-9.6.7\\dlist-parser-0.1.0.0\\x\\myapp\\build\\myapp\\myapp.exe [Objects changed]
+-- Raw Source --
+{-}
+module Utils.SQLUtils (extractSQLVars) where
+
+extractSQLVars :: String -> (String, [String])
+-}
+extractSQLVars = go "" [] ""
+  where
+    go acc vars current [] =
+      (acc, reverse vars)
+    go acc vars current ('{' : xs) =
+      let (var, rest) = span (/= '}') xs in go (acc ++ "?") (var : vars) "" (drop 1 rest)
+    go acc vars current (x : xs) =
+      go (acc ++ [x]) vars current xs
+
+
+-- Tokens from Lexer --
+[TokNewline,TokIdent "extractSQLVars",TokSymbol "=",TokIdent "go",TokString "",TokSymbol "[",TokSymbol "]",TokString "",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokVLBrace,TokSymbol "(",TokIdent "acc",TokSymbol ",",TokIdent "reverse",TokIdent "vars",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "(",TokChar '{',TokOperator ":",TokIdent "xs",TokSymbol ")",TokSymbol "=",TokVLBrace,TokKeyword "let",TokSymbol "(",TokIdent "var",TokSymbol ",",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokIdent "span",TokSymbol "(",TokOperator "/=",TokChar '}',TokSymbol ")",TokIdent "xs",TokKeyword "in",TokIdent "go",TokSymbol "(",TokIdent "acc",TokOperator "++",TokString "?",TokSymbol ")",TokSymbol "(",TokIdent "var",TokOperator ":",TokIdent "vars",TokSymbol ")",TokString "",TokSymbol "(",TokIdent "drop",TokNumber 1,TokIdent "rest",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "(",TokIdent "x",TokOperator ":",TokIdent "xs",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "go",TokSymbol "(",TokIdent "acc",TokOperator "++",TokSymbol "[",TokIdent "x",TokSymbol "]",TokSymbol ")",TokIdent "vars",TokIdent "current",TokIdent "xs",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline]
+
+-- Parsing --
+
+-- Parsed AST --
+<< decl next token: TokNewline
+<< decl parser called
+<< decl dispatch: TokIdent "extractSQLVars"
+<< funDecl: next token=TokIdent "extractSQLVars"
+<< funClause: next token=TokIdent "extractSQLVars"
+<< funClause: args=[] t = TokSymbol "="
+<< parseSimpleClause:2 next token=TokIdent "go"
+<< expr dispatch: TokIdent "go"
+>>*appExprCore: f= EVar "go" args= [EString "",EList [],EString ""]
+<< exprCore: rt EApp (EApp (EApp (EVar "go") (EString "")) (EList [])) (EString "")
+<< exprNoLoop: e EApp (EApp (EApp (EVar "go") (EString "")) (EList [])) (EString "")
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "go"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pattern: (pAs <|> makeCons)PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PList []]
+<< valueBinding: pat PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PList []]
+<< expr dispatch: TokVLBrace
+<< funBinding: name "go" next TokIdent "acc"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pattern: (pAs <|> makeCons)PApp (PVar "acc") [PVar "vars",PVar "current",PList []]
+<< funBinding: args [PApp (PVar "acc") [PVar "vars",PVar "current",PList []]]
+<< expr dispatch: TokSymbol "("
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "reverse" args= [EVar "vars"]
+<< exprCore: rt EApp (EVar "reverse") (EVar "vars")
+>>*appExprCore: f= ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")] args= []
+<< exprCore: rt ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+<< exprNoLoop: e ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+>>*funBinding: body ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+>>*binding: rt (PApp (PVar "go") [PApp (PVar "acc") [PVar "vars",PVar "current",PList []]],ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")])
+<< pConstrOrVar: next token "go"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PChar '{') [PConstr ":" [],PVar "xs"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]
+<< valueBinding: pat PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]
+<< expr dispatch: TokVLBrace
+<< funBinding: name "go" next TokIdent "acc"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PChar '{') [PConstr ":" [],PVar "xs"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "acc") [PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]
+<< funBinding: args [PApp (PVar "acc") [PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]]
+<< expr dispatch: TokKeyword "let"
+<< pConstrOrVar: next token "var"
+<< pattern: (pAs <|> makeCons)PApp (PVar "var") []
+<< pConstrOrVar: next token "rest"
+<< pattern: (pAs <|> makeCons)PApp (PVar "rest") []
+<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) []
+<< valueBinding: pat PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) []
+<< expr dispatch: TokIdent "span"
+>>*appExprCore: f= EChar '}' args= []
+<< exprCore: rt EChar '}'
+>>*appExprCore: f= EVar "span" args= [EOpSectionL "/=" (EChar '}'),EVar "xs"]
+<< exprCore: rt EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+<< exprNoLoop: e EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+>>*valueBinding: body EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+>>*binding: rt (PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))
+<< letExpr: mIn Just () binds [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))]
+<< expr dispatch: TokIdent "go"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "go" args= []
+<< exprCore: rt EVar "go"
+<< exprNoLoop: e EVar "go"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "go"
+>>*letExpr: in body EVar "go"
+>>*letBlock: rt ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+<< exprNoLoop: e ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+>>*funBinding: body ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+>>*whereClause (b:bs) [(PApp (PVar "go") [PApp (PVar "acc") [PVar "vars",PVar "current",PList []]],ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")])]
+<< typeSigDecl: TokIdent "extractSQLVars"
+<< typeSigDecl:2 TokSymbol "="
+<< valueDecl: TokIdent "extractSQLVars"
+<< pConstrOrVar: next token "extractSQLVars"
+<< pattern: (pAs <|> makeCons)PApp (PVar "extractSQLVars") []
+<< expr dispatch: TokIdent "go"
+>>*appExprCore: f= EVar "go" args= [EString "",EList [],EString ""]
+<< exprCore: rt EApp (EApp (EApp (EVar "go") (EString "")) (EList [])) (EString "")
+<< exprNoLoop: e EApp (EApp (EApp (EVar "go") (EString "")) (EList [])) (EString "")
+<< postfix: operator = Nothing
+<< pConstrOrVar: next token "go"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pattern: (pAs <|> makeCons)PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PList []]
+<< valueBinding: pat PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PList []]
+<< expr dispatch: TokVLBrace
+<< funBinding: name "go" next TokIdent "acc"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pattern: (pAs <|> makeCons)PApp (PVar "acc") [PVar "vars",PVar "current",PList []]
+<< funBinding: args [PApp (PVar "acc") [PVar "vars",PVar "current",PList []]]
+<< expr dispatch: TokSymbol "("
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "reverse" args= [EVar "vars"]
+<< exprCore: rt EApp (EVar "reverse") (EVar "vars")
+>>*appExprCore: f= ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")] args= []
+<< exprCore: rt ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+<< exprNoLoop: e ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+>>*funBinding: body ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]
+>>*binding: rt (PApp (PVar "go") [PApp (PVar "acc") [PVar "vars",PVar "current",PList []]],ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")])
+<< pConstrOrVar: next token "go"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PChar '{') [PConstr ":" [],PVar "xs"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]
+<< valueBinding: pat PApp (PVar "go") [PVar "acc",PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]
+<< expr dispatch: TokVLBrace
+<< funBinding: name "go" next TokIdent "acc"
+<< pConstrOrVar: next token "acc"
+<< pConstrOrVar: next token "vars"
+<< pConstrOrVar: next token "current"
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "xs"
+<< pattern: (pAs <|> makeCons)PApp (PChar '{') [PConstr ":" [],PVar "xs"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "acc") [PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]
+<< funBinding: args [PApp (PVar "acc") [PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]]
+<< expr dispatch: TokKeyword "let"
+<< pConstrOrVar: next token "var"
+<< pattern: (pAs <|> makeCons)PApp (PVar "var") []
+<< pConstrOrVar: next token "rest"
+<< pattern: (pAs <|> makeCons)PApp (PVar "rest") []
+<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) []
+<< valueBinding: pat PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) []
+<< expr dispatch: TokIdent "span"
+>>*appExprCore: f= EChar '}' args= []
+<< exprCore: rt EChar '}'
+>>*appExprCore: f= EVar "span" args= [EOpSectionL "/=" (EChar '}'),EVar "xs"]
+<< exprCore: rt EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+<< exprNoLoop: e EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+>>*valueBinding: body EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")
+>>*binding: rt (PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))
+<< letExpr: mIn Just () binds [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))]
+<< expr dispatch: TokIdent "go"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "acc" args= []
+<< exprCore: rt EVar "acc"
+>>*appExprCore: f= EVar "go" args= []
+<< exprCore: rt EVar "go"
+<< exprNoLoop: e EVar "go"
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e EVar "go"
+>>*letExpr: in body EVar "go"
+>>*letBlock: rt ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+<< exprNoLoop: e ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+<< postfix: operator = Nothing
+<< infixOp: Nothing
+<< expr: e ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+>>*funBinding: body ELetBlock [(PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) [],EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs"))] (EVar "go")
+>>*whereClause (b:bs) [(PApp (PVar "go") [PApp (PVar "acc") [PVar "vars",PVar "current",PList []]],ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")])]
+Just ([],[TokNewline,TokIdent "extractSQLVars",TokSymbol "=",TokIdent "go",TokString "",TokSymbol "[",TokSymbol "]",TokString "",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokVLBrace,TokSymbol "(",TokIdent "acc",TokSymbol ",",TokIdent "reverse",TokIdent "vars",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "(",TokChar '{',TokOperator ":",TokIdent "xs",TokSymbol ")",TokSymbol "=",TokVLBrace,TokKeyword "let",TokSymbol "(",TokIdent "var",TokSymbol ",",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokIdent "span",TokSymbol "(",TokOperator "/=",TokChar '}',TokSymbol ")",TokIdent "xs",TokKeyword "in",TokIdent "go",TokSymbol "(",TokIdent "acc",TokOperator "++",TokString "?",TokSymbol ")",TokSymbol "(",TokIdent "var",TokOperator ":",TokIdent "vars",TokSymbol ")",TokString "",TokSymbol "(",TokIdent "drop",TokNumber 1,TokIdent "rest",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "(",TokIdent "x",TokOperator ":",TokIdent "xs",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "go",TokSymbol "(",TokIdent "acc",TokOperator "++",TokSymbol "[",TokIdent "x",TokSymbol "]",TokSymbol ")",TokIdent "vars",TokIdent "current",TokIdent "xs",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline])

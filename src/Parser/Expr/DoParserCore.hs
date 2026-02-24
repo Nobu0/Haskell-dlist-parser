@@ -17,18 +17,18 @@ doExprCore expr = do
   bracesV $ do
     -- stmts <- sepBy (doStmt expr) doSemi
     stmts <- doBlock expr
-    myTrace ("<< doExprCore: " ++ show stmts)
+    myTrace (">>*doExprCore: stmts " ++ show stmts)
     return (EDo stmts)
 
 doBlock :: Parser Expr -> Parser [Stmt]
 doBlock expr = do
-  t <- lookAhead anyToken
-  myTrace ("<< doBlock: " ++ show t)
+  t <- optional (lookAhead anyToken)
   case t of
-    TokSymbol "}" -> pure []
+    Just (TokSymbol "}") -> pure [] -- 空の{}
     _ -> do
       f <- doStmt expr
       m <- many (doStmt expr)
+      myTrace (">>*doBlock: (f:m)" ++ show (f : m))
       return (f : m)
 
 doStmt :: Parser Expr -> Parser Stmt
@@ -37,14 +37,13 @@ doStmt expr = do
     try (bindStmt expr)
       <|> try (letStmt expr)
       <|> exprStmt expr
-  t <- lookAhead anyToken
-  myTrace ("<< doStmt: next token " ++ show t ++ " rt " ++ show rt)
+  myTrace (">>*doStmt: rt " ++ show rt)
   return rt
 
 exprStmt :: Parser Expr -> Parser Stmt
 exprStmt expr = do
   e <- expr
-  myTrace ("<< exprStmt " ++ show e)
+  myTrace (">>*exprStmt " ++ show e)
   return (ExprStmt e)
 
 {-}
@@ -68,7 +67,7 @@ bindStmt expr = try $ do
   pat <- pattern
   symbol "<-"
   e <- expr
-  myTrace ("<< bindStmt pat= " ++ show pat ++ " e= " ++ show e)
+  myTrace (">>*bindStmt pat= " ++ show pat ++ " e= " ++ show e)
   return (Bind pat e)
 
 letStmt :: Parser Expr -> Parser Stmt
@@ -76,6 +75,8 @@ letStmt expr = do
   keyword "let"
   myTrace ("<< letStmt")
   binds <- bindings -- sepBy1 binding (symbol ";")
+  myTrace (">>*letStmt: binds " ++ show binds)
+  -- bracesV $ do ここはオプションだから改行の判断はできない。
   mIn <- optional (try (keyword "in"))
   case mIn of
     Just _ -> empty
@@ -88,8 +89,9 @@ letStmt expr = do
     binding = do
       pat <- pattern
       symbol "="
-      e <- expr
-      return (pat, e)
+      bracesV $ do
+        e <- expr
+        return (pat, e)
 
 doSemi :: Parser ()
 doSemi =

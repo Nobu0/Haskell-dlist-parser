@@ -17,7 +17,7 @@ import AST.Decl
 import AST.Expr
 -- import AST.Module (Name)
 import AST.Pattern (Pattern (..))
-import AST.Type (Constraint (Constraint), Type (..))
+import AST.Type (Constraint (..), Type (..))
 import Control.Applicative (empty, many, optional, some, (<|>))
 import Data.List (intercalate)
 -- ★ ここが正しい

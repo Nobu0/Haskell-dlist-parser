@@ -91,5 +91,6 @@ letQualifier expr = do
     binding = do
       pat <- pattern
       symbol "="
-      e <- expr
-      return (pat, e)
+      bracesV $ do
+        e <- expr
+        return (pat, e)

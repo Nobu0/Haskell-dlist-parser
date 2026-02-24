@@ -61,6 +61,7 @@ parseSimpleClause name args = do
   t <- lookAhead anyToken
   myTrace ("<< parseSimpleClause:2 next token=" ++ show t)
   bracesV $ do
+    skipSeparators
     e <- expr
     w <- optional (bracesV (whereBlock))
     return (name, mkSimpleClause args e w)
@@ -87,7 +88,6 @@ funDeclGroup = do
 funClauseWithName :: Name -> Parser FunClause
 funClauseWithName name = try $ do
   skipSeparators
-  -- skipNewlines
   t <- lookAhead anyToken
   myTrace ("<< funClauseWithName: next token=" ++ show t)
   name' <- ident
@@ -115,22 +115,15 @@ funClauseWithName name = try $ do
       w <- optional whereBlock
       return (mkSimpleClause args e w)
 
---  guards <- guardedRhs
---  w <- optional whereBlock
--- return (mkGuardedClause args guards w)
-
 whereBlock :: Parser [Decl]
 whereBlock = do
-  skipSeparators
-  t0 <- lookAhead anyToken
-  myTrace ("<< whereBlock: next token" ++ show t0)
-  keyword "where"
-  t <- lookAhead anyToken
-  myTrace ("<< whereBlock:2 next token" ++ show t)
   bracesV $ do
-    decls <- many1 $ do
-      funDecl
-    return decls
+    keyword "where"
+    skipSeparators
+    bracesV $ do
+      decls <- many1 $ do
+        funDecl
+      return decls
 
 guardedRhsM :: Parser [(Expr, Expr)]
 guardedRhsM = many1 parseGuardLine
@@ -153,8 +146,6 @@ guardedRhs = do
     myTrace ("<< guardedRhs: next token = " ++ show t)
     parseGuardLine
 
--- sepBy1 parseGuardLine (symbol ";")
-
 funHead :: Parser (Name, [Pattern])
 funHead = do
   p <- pattern
@@ -169,79 +160,3 @@ funHead = do
     _ -> do
       myTrace "Function definition must start with a variable name"
       empty
-
-{-}
-parseGuardedClauseV :: Name -> [Pattern] -> Parser (Name, FunClause)
-parseGuardedClauseV name args = do
-  t <- lookAhead anyToken
-  myTrace ("<< parseGuardedClauseV: next token=" ++ show t)
-  guards <- guardedRhs
-  w <- optional (whereBlockV)
-  return (name, mkGuardedClause args guards w)
--}
-
-{-}
-whereBlockV :: Parser [Decl]
-whereBlockV = do
-  t0 <- lookAhead anyToken
-  myTrace ("<< whereBlockV: next token" ++ show t0)
-  keyword "where"
-  t <- lookAhead anyToken
-  myTrace ("<< whereBlockV:2 next token" ++ show t)
-  decls <- many funDecl
-  return decls
--}
-
-{-}
-funDecl :: Parser Decl -> Parser Decl
-funDecl decl = do
-  t0 <- lookAhead anyToken
-  myTrace ("<< funDecl: next token=" ++ show t0)
-  name <- ident
-  args <- many patternParser
-  skipNewlines
-  t <- lookAhead anyToken
-  myTrace ("<< funDecl: args=" ++ show args ++ " t = " ++ show t)
-  case t of
-    TokSymbol "=" -> parseSimple decl name args
-    TokSymbol "|" -> parseGuarded decl name args
-    TokVLBrace -> bracesV (parseGuardedV decl name args)
-    _ -> empty
-
-parseSimple :: Parser Decl -> Name -> [Pattern] -> Parser Decl
-parseSimple decl name args = do
-  t0 <- lookAhead anyToken
-  myTrace ("<< parseSimple: next token" ++ show t0)
-  symbol "="
-  t <- lookAhead anyToken
-  myTrace ("<< parseSimple: next token" ++ show t)
-  case t of
-    TokVLBrace -> do
-      token TokVLBrace
-      e <- expr
-      w <- optional (bracesV (whereBlock decl))
-      token TokVRBrace
-      return (DeclFun name args Nothing (Just e) w)
-    _ -> do
-      e <- expr
-      w <- optional (bracesV (whereBlock decl))
-      return (DeclFun name args Nothing (Just e) w)
-
-parseGuardedV :: Parser Decl -> Name -> [Pattern] -> Parser Decl
-parseGuardedV decl name args = do
-  t <- lookAhead anyToken
-  myTrace ("<< parseGuardedV: next token" ++ show t)
-  -- guards <- bracesV
-  guards <- guardedRhs
-  w <- optional (whereBlockV decl)
-  return (DeclFun name args (Just guards) Nothing w)
-
-parseGuarded :: Parser Decl -> Name -> [Pattern] -> Parser Decl
-parseGuarded decl name args = do
-  t <- lookAhead anyToken
-  myTrace ("<< parseGuarded: next token" ++ show t)
-  guards <- guardedRhsM
-  w <- optional (whereBlock decl)
-  return (DeclFun name args (Just guards) Nothing w)
-
--}

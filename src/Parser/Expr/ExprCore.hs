@@ -88,7 +88,7 @@ exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
 -- ここは結合性に応じて分けるのがベスト！
 exprLevel1Core :: Parser Expr
 exprLevel1Core = do
-  e <- chainl1 exprAddSubCore (binOp ["+", "-"])
+  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":"])
   -- chainr1 (return e) (binOp ["++", ":"])
   return e
 
@@ -137,7 +137,7 @@ appExprCore :: Parser Expr
 appExprCore = do
   f <- atomCore
   args <- many atomCore
-  myTrace ("<< appExprCore: f= " ++ show f ++ " args= " ++ show args)
+  myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
   return (foldl EApp f args)
 
 -- ============================================
@@ -163,8 +163,6 @@ badToken =
 
 parenExprCore :: Parser Expr
 parenExprCore = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< parenExprCore next token: " ++ show t)
   try oPsectionCore
     <|> try tupleExprCore
     <|> exprCore
