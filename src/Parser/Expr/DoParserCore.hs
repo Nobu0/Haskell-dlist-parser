@@ -38,6 +38,7 @@ doStmt expr = do
       <|> try (letStmt expr)
       <|> exprStmt expr
   myTrace (">>*doStmt: rt " ++ show rt)
+  skipSeparators
   return rt
 
 exprStmt :: Parser Expr -> Parser Stmt
@@ -84,12 +85,12 @@ letStmt expr = do
   where
     bindings = do
       b <- binding
-      bs <- many (skipSeparators >> binding)
+      bs <- many binding
       return (b : bs)
     binding = do
-      pat <- pattern
-      symbol "="
       bracesV $ do
+        pat <- pattern
+        symbol "="
         e <- expr
         return (pat, e)
 

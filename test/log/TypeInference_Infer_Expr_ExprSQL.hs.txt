@@ -1,0 +1,43 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 163 / 163
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "TypeInference.Infer.Expr.ExprSQL" (Just [ExportVar "inferSQL"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "inferSQL" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TList (TCon "Expr")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))))),DeclFunGroup "inferSQL" [FunClause [PVar "inferExprFn",PVar "env",PVar "params"] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "_") []]) []) (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "emptySubst",EVar "env"])) (EVar "params")),ExprStmt (EWhere (EReturn (ETuple [EVar "s",EVarType "TUnit"])) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "envAcc") []],PVar "param"],EDo [Bind (PApp (PTuple [PApp (PVar "sParam") [],PApp (PVar "_") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "envAcc")) (EVar "param")),LetStmt [(PApp (PVar "sNew") [],EApp (EApp (EVar "sParam") (EVar "`composeSubst`")) (EVar "sAcc"))],LetStmt [(PApp (PVar "envNew") [],EApp (EApp (EVar "applyEnv") (EVar "sNew")) (EVar "envAcc"))],ExprStmt (EReturn (ETuple [EVar "sNew",EVar "envNew"]))])])])) Nothing]]
+
+-- remainig-----------------------------
+[]
+module TypeInference.Infer.Expr.ExprSQL (inferSQL) where
+
+import AST.Expr
+import AST.Type
+import Control.Monad (foldM)
+import TypeInference.Error
+import TypeInference.Infer.Core
+import TypeInference.Subst
+import TypeInference.TypeEnv
+
+inferSQL ::
+  (TypeEnv -> Expr -> Either InferError (Subst, Type)) ->
+  TypeEnv ->
+  [Expr] ->
+  Either InferError (Subst, Type)
+inferSQL inferExprFn env params = do
+  (s, _) <- foldM step (emptySubst, env) params
+  return (s, TUnit)
+  where
+    step (sAcc, envAcc) param = do
+      (sParam, _) <- inferExprFn envAcc param
+      let sNew = sParam `composeSubst` sAcc
+      let envNew = applyEnv sNew envAcc
+      return (sNew, envNew)
+
+[TokKeyword "module",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprSQL",TokSymbol "(",TokIdent "inferSQL",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Monad",TokSymbol "(",TokIdent "foldM",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Error",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Core",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Subst",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "TypeEnv",TokNewline,TokIdent "inferSQL",TokSymbol "::",TokVLBrace,TokSymbol "(",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "Expr",TokArrow,TokTypeIdent "Either",TokTypeIdent "InferError",TokSymbol "(",TokTypeIdent "Subst",TokSymbol ",",TokTypeIdent "Type",TokSymbol ")",TokSymbol ")",TokArrow,TokSymbol ";",TokTypeIdent "TypeEnv",TokArrow,TokSymbol ";",TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokArrow,TokSymbol ";",TokTypeIdent "Either",TokTypeIdent "InferError",TokSymbol "(",TokTypeIdent "Subst",TokSymbol ",",TokTypeIdent "Type",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "inferSQL",TokIdent "inferExprFn",TokIdent "env",TokIdent "params",TokSymbol "=",TokKeyword "do",TokVLBrace,TokSymbol "(",TokIdent "s",TokSymbol ",",TokIdent "_",TokSymbol ")",TokSymbol "<-",TokIdent "foldM",TokIdent "step",TokSymbol "(",TokIdent "emptySubst",TokSymbol ",",TokIdent "env",TokSymbol ")",TokIdent "params",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "s",TokSymbol ",",TokTypeIdent "TUnit",TokSymbol ")",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "step",TokSymbol "(",TokIdent "sAcc",TokSymbol ",",TokIdent "envAcc",TokSymbol ")",TokIdent "param",TokSymbol "=",TokKeyword "do",TokVLBrace,TokSymbol "(",TokIdent "sParam",TokSymbol ",",TokIdent "_",TokSymbol ")",TokSymbol "<-",TokIdent "inferExprFn",TokIdent "envAcc",TokIdent "param",TokSymbol ";",TokKeyword "let",TokIdent "sNew",TokSymbol "=",TokIdent "sParam",TokIdent "`composeSubst`",TokIdent "sAcc",TokSymbol ";",TokKeyword "let",TokIdent "envNew",TokSymbol "=",TokIdent "applyEnv",TokIdent "sNew",TokIdent "envAcc",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "sNew",TokSymbol ",",TokIdent "envNew",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline]

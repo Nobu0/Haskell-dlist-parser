@@ -49,9 +49,9 @@ exportItem = do
   name <-
     try typeIdent
       <|> try ident
-      <|> do
-        op <- parens operatorI
-        return $ "(" ++ op ++ ")"
+      <|> operatorEdName
+      <|> operatorIAsName
+  myTrace ("<< exportItem: name " ++ show name)
   hasAll <- optional (parens (symbol ".."))
   return $ case hasAll of
     Just _ -> ExportType name True

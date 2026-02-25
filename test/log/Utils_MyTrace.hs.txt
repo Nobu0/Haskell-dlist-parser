@@ -1,0 +1,46 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 165 / 165
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "Utils.MyTrace" (Just [ExportVar "myTrace",ExportVar "myTraceIO",ExportVar "myTraceShowId",ExportVar "traceEnabled",ExportVar "setTrace"]),DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "when"]},DeclImport {importQualified = False, importModule = "Data.IORef", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Debug.Trace", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "trace",ImportVar "traceIO",ImportVar "traceShowId"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Parser"]},DeclImport {importQualified = False, importModule = "System.IO.Unsafe", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unsafePerformIO"]},DeclTypeSig "traceEnabled" (TApp (TCon "IORef") (TCon "Bool")),DeclFunGroup "traceEnabled" [FunClause [] Nothing (Just (EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True")))) Nothing],DeclTypeSig "setTrace" (TFun (TCon "Bool") (TApp (TCon "IO") TUnit)),DeclFunGroup "setTrace" [FunClause [PVar "b"] Nothing (Just (EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b"))) Nothing],DeclTypeSig "myTrace" (TFun (TCon "String") (TApp (TCon "Parser") TUnit)),DeclFunGroup "myTrace" [FunClause [PVar "msg"] Nothing (Just (EApp (EApp (EVar "$") (EVarType "Parser")) (EApp (EApp (EVar "$") (ELam (PApp (PVar "input") []) (EVar "unsafePerformIO"))) (EDo [Bind (PApp (PVar "enabled") []) (EApp (EVar "readIORef") (EVar "traceEnabled")),ExprStmt (EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))),ExprStmt (EReturn (EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])))])))) Nothing],DeclTypeSig "myTraceIO" (TFun (TCon "String") (TApp (TCon "IO") TUnit)),DeclFunGroup "myTraceIO" [FunClause [] Nothing (Just (EVar "traceIO")) Nothing],DeclTypeSig "myTraceShowId" (TConstraint [Constraint "Show" [TVar "a"]] (TFun (TVar "a") (TVar "a"))),DeclFunGroup "myTraceShowId" [FunClause [] Nothing (Just (EVar "traceShowId")) Nothing]]
+
+-- remainig-----------------------------
+[]
+{- NOINLINE traceEnabled -}
+
+module Utils.MyTrace (myTrace, myTraceIO, myTraceShowId, traceEnabled, setTrace) where
+
+import Control.Monad (when)
+import Data.IORef
+import Debug.Trace (trace, traceIO, traceShowId)
+import Parser.Core.Combinator (Parser (..))
+import System.IO.Unsafe (unsafePerformIO)
+
+traceEnabled :: IORef Bool
+traceEnabled = unsafePerformIO (newIORef True)
+
+setTrace :: Bool -> IO ()
+setTrace b = writeIORef traceEnabled b
+
+myTrace :: String -> Parser ()
+myTrace msg = Parser $ \input -> unsafePerformIO $ do
+  enabled <- readIORef traceEnabled
+  when enabled (putStrLn msg)
+  return (Just ((), input))
+
+myTraceIO :: String -> IO ()
+myTraceIO = traceIO
+
+myTraceShowId :: (Show a) => a -> a
+myTraceShowId = traceShowId
+
+[TokNewline,TokKeyword "module",TokTypeIdent "Utils",TokOperator ".",TokTypeIdent "MyTrace",TokSymbol "(",TokIdent "myTrace",TokSymbol ",",TokIdent "myTraceIO",TokSymbol ",",TokIdent "myTraceShowId",TokSymbol ",",TokIdent "traceEnabled",TokSymbol ",",TokIdent "setTrace",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Monad",TokSymbol "(",TokIdent "when",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "IORef",TokNewline,TokKeyword "import",TokTypeIdent "Debug",TokOperator ".",TokTypeIdent "Trace",TokSymbol "(",TokIdent "trace",TokSymbol ",",TokIdent "traceIO",TokSymbol ",",TokIdent "traceShowId",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "Combinator",TokSymbol "(",TokTypeIdent "Parser",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "System",TokOperator ".",TokTypeIdent "IO",TokOperator ".",TokTypeIdent "Unsafe",TokSymbol "(",TokIdent "unsafePerformIO",TokSymbol ")",TokNewline,TokIdent "traceEnabled",TokSymbol "::",TokTypeIdent "IORef",TokTypeIdent "Bool",TokNewline,TokIdent "traceEnabled",TokSymbol "=",TokIdent "unsafePerformIO",TokSymbol "(",TokIdent "newIORef",TokTypeIdent "True",TokSymbol ")",TokNewline,TokIdent "setTrace",TokSymbol "::",TokTypeIdent "Bool",TokArrow,TokTypeIdent "IO",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "setTrace",TokIdent "b",TokSymbol "=",TokIdent "writeIORef",TokIdent "traceEnabled",TokIdent "b",TokNewline,TokIdent "myTrace",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Parser",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "myTrace",TokIdent "msg",TokSymbol "=",TokTypeIdent "Parser",TokOperator "$",TokSymbol "\\",TokIdent "input",TokArrow,TokIdent "unsafePerformIO",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "enabled",TokSymbol "<-",TokIdent "readIORef",TokIdent "traceEnabled",TokSymbol ";",TokIdent "when",TokIdent "enabled",TokSymbol "(",TokIdent "putStrLn",TokIdent "msg",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Just",TokSymbol "(",TokSymbol "(",TokSymbol ")",TokSymbol ",",TokIdent "input",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "myTraceIO",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "IO",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "myTraceIO",TokSymbol "=",TokIdent "traceIO",TokNewline,TokIdent "myTraceShowId",TokSymbol "::",TokSymbol "(",TokTypeIdent "Show",TokIdent "a",TokSymbol ")",TokKeyword "=>",TokIdent "a",TokArrow,TokIdent "a",TokNewline,TokIdent "myTraceShowId",TokSymbol "=",TokIdent "traceShowId",TokNewline]

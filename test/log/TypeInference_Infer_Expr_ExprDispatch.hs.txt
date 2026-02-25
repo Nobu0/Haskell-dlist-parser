@@ -1,0 +1,79 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 348 / 348
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "TypeInference.Infer.Expr.ExprDispatch" (Just [ExportVar "inferExpr"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprApp", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferApp"]},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprBinOp", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferBinOp"]},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprCase", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferCase"]},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprDo", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferDo"]},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprIf", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferIf"]},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprLet", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferLet",ImportVar "inferLetBlock",ImportVar "inferWhere"]},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprLiteral", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferBool",ImportVar "inferInt",ImportVar "inferList",ImportVar "inferString",ImportVar "inferTuple"]},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprSQL", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "inferSQL"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "inferExpr" (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))),DeclFunGroup "inferExpr" [FunClause [PVar "env",PApp (PVar "EVar") [PVar "name"]] Nothing (Just (ECase (EApp (EApp (EVar "lookupEnv") (EVar "env")) (EVar "name")) [CaseAlt (PApp (PVar "Nothing") []) (EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))),CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])])) Nothing,FunClause [PApp (PVar "env") [PVar "expr"]] Nothing (Just (ECase (EVar "expr") [CaseAlt (PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))])) Nothing]]
+
+-- remainig-----------------------------
+[]
+module TypeInference.Infer.Expr.ExprDispatch (inferExpr) where
+
+import AST.Expr
+import AST.Type
+import AST.Type (Type (..)) -- これで TFun などのコンストラクタが使えるようになる
+import TypeInference.Error
+import TypeInference.Infer.Expr.ExprApp (inferApp)
+import TypeInference.Infer.Expr.ExprBinOp (inferBinOp)
+import TypeInference.Infer.Expr.ExprCase (inferCase)
+import TypeInference.Infer.Expr.ExprDo (inferDo)
+import TypeInference.Infer.Expr.ExprIf (inferIf)
+import TypeInference.Infer.Expr.ExprLet (inferLet, inferLetBlock, inferWhere)
+import TypeInference.Infer.Expr.ExprLiteral (inferBool, inferInt, inferList, inferString, inferTuple)
+import TypeInference.Infer.Expr.ExprSQL (inferSQL)
+import TypeInference.Subst
+import TypeInference.TypeEnv
+
+-- 他の構文モジュールもここに import
+inferExpr :: TypeEnv -> Expr -> Either InferError (Subst, Type)
+inferExpr env (EVar name) =
+  case lookupEnv env name of
+    Nothing -> Left (InferUnboundVariable name)
+    Just sigma -> do
+      t <- instantiate sigma
+      Right (emptySubst, t)
+-- AST で定義された型で分岐 ここが欠損すると型推論ができなくなる
+inferExpr env expr = case expr of
+  ELet pat e1 e2 -> inferLet inferExpr env pat e1 e2
+  ELetBlock binds body -> inferLetBlock inferExpr env binds body
+  EWhere e binds -> inferWhere inferExpr env e binds
+  EIf c t f -> inferIf inferExpr env c t f
+  EDo stmts -> inferDo inferExpr env stmts
+  ECase scrut alts -> inferCase inferExpr env scrut alts
+  EApp e1 e2 -> inferApp inferExpr env e1 e2
+  EBinOp op e1 e2 -> inferBinOp inferExpr env op e1 e2
+  -- リテラル
+  EInt _ -> inferInt
+  EBool _ -> inferBool
+  EString _ -> inferString
+  ETuple es -> inferTuple inferExpr env es
+  EList es -> inferList inferExpr env es
+  -- 拡張タイプ SQL
+  ESQL _ params -> inferSQL inferExpr env params
+
+{-}
+  ELetBlock binds body -> inferLetBlock env binds body
+  ELet pat e1 e2 -> inferLet env pat e1 e2
+  EWhere e binds -> inferWhere env e binds
+  ECase scrut alts -> inferCase env scrut alts
+  EApp e1 e2 -> inferApp env e1 e2
+  ELam pat body -> inferLam env pat body
+  EDo stmts -> inferDo env stmts
+  EBinOp op e1 e2 -> inferBinOp env op e1 e2
+  EInt _ -> inferInt
+  EBool _ -> inferBool
+  EString _ -> inferString
+  ETuple es -> inferTuple env es
+  EList es -> inferList env es
+  ESQL _ params -> inferSQL env params
+-}
+
+[TokKeyword "module",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprDispatch",TokSymbol "(",TokIdent "inferExpr",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Type",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Error",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprApp",TokSymbol "(",TokIdent "inferApp",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprBinOp",TokSymbol "(",TokIdent "inferBinOp",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprCase",TokSymbol "(",TokIdent "inferCase",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprDo",TokSymbol "(",TokIdent "inferDo",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprIf",TokSymbol "(",TokIdent "inferIf",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprLet",TokSymbol "(",TokIdent "inferLet",TokSymbol ",",TokIdent "inferLetBlock",TokSymbol ",",TokIdent "inferWhere",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprLiteral",TokSymbol "(",TokIdent "inferBool",TokSymbol ",",TokIdent "inferInt",TokSymbol ",",TokIdent "inferList",TokSymbol ",",TokIdent "inferString",TokSymbol ",",TokIdent "inferTuple",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprSQL",TokSymbol "(",TokIdent "inferSQL",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Subst",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "TypeEnv",TokNewline,TokIdent "inferExpr",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "Expr",TokArrow,TokTypeIdent "Either",TokTypeIdent "InferError",TokSymbol "(",TokTypeIdent "Subst",TokSymbol ",",TokTypeIdent "Type",TokSymbol ")",TokNewline,TokIdent "inferExpr",TokIdent "env",TokSymbol "(",TokTypeIdent "EVar",TokIdent "name",TokSymbol ")",TokSymbol "=",TokVLBrace,TokKeyword "case",TokIdent "lookupEnv",TokIdent "env",TokIdent "name",TokKeyword "of",TokVLBrace,TokTypeIdent "Nothing",TokArrow,TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "InferUnboundVariable",TokIdent "name",TokSymbol ")",TokSymbol ";",TokTypeIdent "Just",TokIdent "sigma",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "instantiate",TokIdent "sigma",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "emptySubst",TokSymbol ",",TokIdent "t",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "inferExpr",TokIdent "env",TokIdent "expr",TokSymbol "=",TokKeyword "case",TokIdent "expr",TokKeyword "of",TokVLBrace,TokTypeIdent "ELet",TokIdent "pat",TokIdent "e1",TokIdent "e2",TokArrow,TokIdent "inferLet",TokIdent "inferExpr",TokIdent "env",TokIdent "pat",TokIdent "e1",TokIdent "e2",TokSymbol ";",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokArrow,TokIdent "inferLetBlock",TokIdent "inferExpr",TokIdent "env",TokIdent "binds",TokIdent "body",TokSymbol ";",TokTypeIdent "EWhere",TokIdent "e",TokIdent "binds",TokArrow,TokIdent "inferWhere",TokIdent "inferExpr",TokIdent "env",TokIdent "e",TokIdent "binds",TokSymbol ";",TokTypeIdent "EIf",TokIdent "c",TokIdent "t",TokIdent "f",TokArrow,TokIdent "inferIf",TokIdent "inferExpr",TokIdent "env",TokIdent "c",TokIdent "t",TokIdent "f",TokSymbol ";",TokTypeIdent "EDo",TokIdent "stmts",TokArrow,TokIdent "inferDo",TokIdent "inferExpr",TokIdent "env",TokIdent "stmts",TokSymbol ";",TokTypeIdent "ECase",TokIdent "scrut",TokIdent "alts",TokArrow,TokIdent "inferCase",TokIdent "inferExpr",TokIdent "env",TokIdent "scrut",TokIdent "alts",TokSymbol ";",TokTypeIdent "EApp",TokIdent "e1",TokIdent "e2",TokArrow,TokIdent "inferApp",TokIdent "inferExpr",TokIdent "env",TokIdent "e1",TokIdent "e2",TokSymbol ";",TokTypeIdent "EBinOp",TokIdent "op",TokIdent "e1",TokIdent "e2",TokArrow,TokIdent "inferBinOp",TokIdent "inferExpr",TokIdent "env",TokIdent "op",TokIdent "e1",TokIdent "e2",TokSymbol ";",TokSymbol ";",TokTypeIdent "EInt",TokIdent "_",TokArrow,TokIdent "inferInt",TokSymbol ";",TokTypeIdent "EBool",TokIdent "_",TokArrow,TokIdent "inferBool",TokSymbol ";",TokTypeIdent "EString",TokIdent "_",TokArrow,TokIdent "inferString",TokSymbol ";",TokTypeIdent "ETuple",TokIdent "es",TokArrow,TokIdent "inferTuple",TokIdent "inferExpr",TokIdent "env",TokIdent "es",TokSymbol ";",TokTypeIdent "EList",TokIdent "es",TokArrow,TokIdent "inferList",TokIdent "inferExpr",TokIdent "env",TokIdent "es",TokSymbol ";",TokSymbol ";",TokTypeIdent "ESQL",TokIdent "_",TokIdent "params",TokArrow,TokIdent "inferSQL",TokIdent "inferExpr",TokIdent "env",TokIdent "params",TokVRBrace,TokNewline]

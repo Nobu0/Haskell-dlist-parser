@@ -1,0 +1,35 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 75 / 75
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "Parser.SQL.SQLParser" (Just [ExportVar "parseSQL"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.SQLUtils", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseSQL" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]]
+
+-- remainig-----------------------------
+[]
+module Parser.SQL.SQLParser (parseSQL) where
+
+import AST.Expr -- (Expr (..))
+
+-- {var} 抽出用（後で作る）
+import Parser.Core.Combinator
+import Parser.Core.TokenParser
+-- import Parser.Expr.ExprCore
+import Utils.SQLUtils
+
+parseSQL :: Parser Expr
+parseSQL = do
+  _ <- keyword "sql"
+  sqlText <- stringLiteralExpr
+  let (sqlBody, vars) = extractSQLVars sqlText
+  return (ESQL sqlBody (map EVar vars))
+
+[TokKeyword "module",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "SQL",TokOperator ".",TokTypeIdent "SQLParser",TokSymbol "(",TokIdent "parseSQL",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "Combinator",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "TokenParser",TokNewline,TokKeyword "import",TokTypeIdent "Utils",TokOperator ".",TokTypeIdent "SQLUtils",TokNewline,TokIdent "parseSQL",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "parseSQL",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "_",TokSymbol "<-",TokIdent "keyword",TokString "sql",TokSymbol ";",TokIdent "sqlText",TokSymbol "<-",TokIdent "stringLiteralExpr",TokSymbol ";",TokKeyword "let",TokSymbol "(",TokIdent "sqlBody",TokSymbol ",",TokIdent "vars",TokSymbol ")",TokSymbol "=",TokIdent "extractSQLVars",TokIdent "sqlText",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ESQL",TokIdent "sqlBody",TokSymbol "(",TokIdent "map",TokTypeIdent "EVar",TokIdent "vars",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline]

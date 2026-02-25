@@ -1,0 +1,106 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 208 / 276
+Coverage: 75.36231884057972%
+
+-- AST----------------------------------
+[DeclModule "Parser.Core.Parser" (Just [ExportVar "parseExpr",ExportVar "toplevel"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "many",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Lexer.Lexer", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "runLexer"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.ExprCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "exprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.ExprExtensions", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "expr",ImportVar "letExpr"]},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "toplevel" (TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"])),DeclFunGroup "toplevel" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "body") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "body"]))])) Nothing],DeclTypeSig "parseExpr" (TFun (TList (TCon "Token")) (TApp (TCon "Maybe") (TTuple [TCon "Expr",TList (TCon "Token")]))),DeclFunGroup "parseExpr" [FunClause [PVar "toks"] Nothing (Just (EApp (EApp (EVar "runParser") (EVar "expr")) (EVar "toks"))) Nothing],DeclTypeSig "parseToplevel" (TFun (TList (TCon "Token")) (TApp (TCon "IO") (TApp (TCon "Maybe") (TTuple [TCon "String",TCon "Expr"])))),DeclFunGroup "parseToplevel" [FunClause [PVar "toks"] Nothing (Just (ECase (EApp (EApp (EVar "runParser") (EVar "toplevel")) (EVar "toks")) [CaseAltGuard (PApp (PVar "Just") [PTuple [PApp (PVar "result") [],PApp (PVar "rest") []]]) [(EApp (EVar "null") (EVar "rest"),EReturn (EApp (EVarType "Just") (EVar "result")))],CaseAlt (PApp (PVar "_") []) (EReturn (EVarType "Nothing"))])) Nothing],DeclTypeSig "compareAST" (TFun (TList (TCon "Char")) (TFun (TList (TCon "Char")) (TApp (TCon "IO") TUnit)))]
+
+-- remainig-----------------------------
+[TokIdent "compareAST",TokIdent "actualRaw",TokIdent "expectedRaw",TokSymbol "=",TokKeyword "do",TokVLBrace,TokKeyword "let",TokIdent "normalize",TokSymbol "=",TokIdent "filter",TokSymbol "(",TokIdent "not",TokOperator ".",TokSymbol "(",TokIdent "`elem`",TokSymbol "[",TokChar ' ',TokSymbol ",",TokChar '\n',TokSymbol ",",TokChar '\t',TokSymbol "]",TokSymbol ")",TokSymbol ")",TokVLBrace,TokIdent "actual",TokSymbol "=",TokIdent "normalize",TokIdent "actualRaw",TokSymbol ";",TokIdent "expected",TokSymbol "=",TokIdent "normalize",TokIdent "expectedRaw",TokVRBrace,TokNewline,TokKeyword "if",TokIdent "actual",TokOperator "==",TokIdent "expected",TokVLBrace,TokKeyword "then",TokIdent "putStrLn",TokString "  O Passed\n",TokSymbol ";",TokKeyword "else",TokKeyword "do",TokVLBrace,TokIdent "putStrLn",TokString "  X Failed!",TokSymbol ";",TokIdent "putStrLn",TokOperator "$",TokString "     Expected: ",TokOperator "++",TokIdent "expectedRaw",TokSymbol ";",TokIdent "putStrLn",TokOperator "$",TokString "     Got:      ",TokOperator "++",TokIdent "actualRaw",TokOperator "++",TokString "\n",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline]
+-- module Parser.Core.Parser (parseExpr, runToplevelTest, runExprTest, toplevel) where
+module Parser.Core.Parser (parseExpr, toplevel) where
+
+import AST.Expr
+import Control.Applicative (many, (<|>))
+import Lexer.Lexer (runLexer)
+import Lexer.Token (Token (..))
+import Parser.Core.Combinator
+import Parser.Core.TokenParser
+import Parser.Expr.ExprCore (exprCore)
+import Parser.Expr.ExprExtensions (expr, letExpr)
+import Parser.Expr.PatternParser
+
+-- import Parser.Type.TypeParser
+
+-- === 実行関数 ===
+
+toplevel :: Parser (String, Expr)
+toplevel = do
+  name <- ident
+  symbol "="
+  body <- exprCore
+  return (name, body)
+
+{-}
+parseExpr :: [Token] -> IO (Maybe Expr)
+parseExpr toks = case runParser expr toks of
+  Just (result, rest) | null rest -> return (Just result)
+  _ -> return Nothing
+-}
+parseExpr :: [Token] -> Maybe (Expr, [Token])
+parseExpr toks = runParser expr toks
+
+{-}
+parseExpr :: [Token] -> Maybe Expr
+parseExpr toks = case runParser expr toks of
+  Just (result, rest) | null rest -> Just result
+  _ -> Nothing
+-}
+
+parseToplevel :: [Token] -> IO (Maybe (String, Expr))
+parseToplevel toks = case runParser toplevel toks of
+  Just (result, rest) | null rest -> return (Just result)
+  _ -> return Nothing
+
+{-}
+-- 式のテスト
+runExprTest :: ([Char], [Char]) -> IO ()
+runExprTest (input, expected) = do
+  putStrLn $ "Input: " ++ input
+  case runLexer input of
+    Left err -> putStrLn $ "  Lexer error: " ++ show err
+    Right tokens -> do
+      putStrLn $ " Tokens: " ++ show tokens
+      result <- parseExpr tokens
+      case result of
+        Nothing -> putStrLn "  Parser error!"
+        Just ast ->
+          compareAST (show ast) expected
+
+-- トップレベル定義のテスト
+runToplevelTest :: ([Char], [Char]) -> IO ()
+runToplevelTest (input, expected) = do
+  putStrLn $ "Input: " ++ input
+  case runLexer input of
+    Left err -> putStrLn $ "  Lexer error: " ++ show err
+    Right tokens -> do
+      putStrLn $ " Tokens: " ++ show tokens
+      result <- parseToplevel tokens
+      case result of
+        Nothing -> putStrLn "  Parser error!\n"
+        Just (_, ast) ->
+          compareAST (show ast) expected
+-}
+
+-- 共通の比較処理
+compareAST :: [Char] -> [Char] -> IO ()
+compareAST actualRaw expectedRaw = do
+  let normalize = filter (not . (`elem` [' ', '\n', '\t']))
+      actual = normalize actualRaw
+      expected = normalize expectedRaw
+  if actual == expected
+    then putStrLn "  O Passed\n"
+    else do
+      putStrLn "  X Failed!"
+      putStrLn $ "     Expected: " ++ expectedRaw
+      putStrLn $ "     Got:      " ++ actualRaw ++ "\n"
+
+[TokNewline,TokKeyword "module",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "Parser",TokSymbol "(",TokIdent "parseExpr",TokSymbol ",",TokIdent "toplevel",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Applicative",TokSymbol "(",TokIdent "many",TokSymbol ",",TokSymbol "(",TokOperator "<|>",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Lexer",TokOperator ".",TokTypeIdent "Lexer",TokSymbol "(",TokIdent "runLexer",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Lexer",TokOperator ".",TokTypeIdent "Token",TokSymbol "(",TokTypeIdent "Token",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "Combinator",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "TokenParser",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprCore",TokSymbol "(",TokIdent "exprCore",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprExtensions",TokSymbol "(",TokIdent "expr",TokSymbol ",",TokIdent "letExpr",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "PatternParser",TokNewline,TokIdent "toplevel",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "String",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokNewline,TokIdent "toplevel",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "parseExpr",TokSymbol "::",TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokTypeIdent "Maybe",TokSymbol "(",TokTypeIdent "Expr",TokSymbol ",",TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "parseExpr",TokIdent "toks",TokSymbol "=",TokIdent "runParser",TokIdent "expr",TokIdent "toks",TokNewline,TokIdent "parseToplevel",TokSymbol "::",TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokTypeIdent "IO",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "(",TokTypeIdent "String",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "parseToplevel",TokIdent "toks",TokSymbol "=",TokKeyword "case",TokIdent "runParser",TokIdent "toplevel",TokIdent "toks",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokSymbol "(",TokIdent "result",TokSymbol ",",TokIdent "rest",TokSymbol ")",TokSymbol "|",TokIdent "null",TokIdent "rest",TokArrow,TokKeyword "return",TokSymbol "(",TokTypeIdent "Just",TokIdent "result",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokKeyword "return",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "compareAST",TokSymbol "::",TokSymbol "[",TokTypeIdent "Char",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Char",TokSymbol "]",TokArrow,TokTypeIdent "IO",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "compareAST",TokIdent "actualRaw",TokIdent "expectedRaw",TokSymbol "=",TokKeyword "do",TokVLBrace,TokKeyword "let",TokIdent "normalize",TokSymbol "=",TokIdent "filter",TokSymbol "(",TokIdent "not",TokOperator ".",TokSymbol "(",TokIdent "`elem`",TokSymbol "[",TokChar ' ',TokSymbol ",",TokChar '\n',TokSymbol ",",TokChar '\t',TokSymbol "]",TokSymbol ")",TokSymbol ")",TokVLBrace,TokIdent "actual",TokSymbol "=",TokIdent "normalize",TokIdent "actualRaw",TokSymbol ";",TokIdent "expected",TokSymbol "=",TokIdent "normalize",TokIdent "expectedRaw",TokVRBrace,TokNewline,TokKeyword "if",TokIdent "actual",TokOperator "==",TokIdent "expected",TokVLBrace,TokKeyword "then",TokIdent "putStrLn",TokString "  O Passed\n",TokSymbol ";",TokKeyword "else",TokKeyword "do",TokVLBrace,TokIdent "putStrLn",TokString "  X Failed!",TokSymbol ";",TokIdent "putStrLn",TokOperator "$",TokString "     Expected: ",TokOperator "++",TokIdent "expectedRaw",TokSymbol ";",TokIdent "putStrLn",TokOperator "$",TokString "     Got:      ",TokOperator "++",TokIdent "actualRaw",TokOperator "++",TokString "\n",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline]

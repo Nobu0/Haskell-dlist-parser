@@ -1,0 +1,93 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 357 / 357
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "AST.Expr" (Just [ExportType "BinOp" True,ExportType "Name" False,ExportType "Binding" False,ExportType "Expr" True,ExportType "Stmt" True,ExportType "Qualifier" True,ExportType "CaseAlt" True]),DeclImport {importQualified = False, importModule = "AST.BinOp", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "BinOp"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Type"]},DeclTypeAlias "Name" [] (TCon "String"),DeclTypeAlias "Binding" [] (TTuple [TCon "Pattern",TCon "Expr"]),DeclData "CaseAlt" [] [Constraint "CaseAlt" [TCon "Pattern",TCon "Expr"],Constraint "CaseAltGuard" [TCon "Pattern",TList (TTuple [TCon "Expr",TCon "Expr"])]] ["Eq","Show"],DeclData "Stmt" [] [Constraint "Bind" [TCon "Pattern",TCon "Expr"],Constraint "ExprStmt" [TCon "Expr"],Constraint "LetStmt" [TList (TTuple [TCon "Pattern",TCon "Expr"])]] ["Eq","Show"],DeclData "Qualifier" [] [Constraint "QGenerator" [TCon "Pattern",TCon "Expr"],Constraint "QLet" [TList (TTuple [TCon "Pattern",TCon "Expr"])],Constraint "QGuard" [TCon "Expr"]] ["Eq","Show"],DeclData "Expr" [] [Constraint "EVar" [TCon "String"],Constraint "EVarType" [TCon "String"],Constraint "EInt" [TCon "Int"],Constraint "EString" [TCon "String"],Constraint "EChar" [TCon "Char"],Constraint "EBinOp" [TCon "BinOp",TCon "Expr",TCon "Expr"],Constraint "EBool" [TCon "Bool"],Constraint "ELet" [TCon "Pattern",TCon "Expr",TCon "Expr"],Constraint "ELetBlock" [TList (TTuple [TCon "Pattern",TCon "Expr"]),TCon "Expr"],Constraint "EIf" [TCon "Expr",TCon "Expr",TCon "Expr"],Constraint "ELam" [TCon "Pattern",TCon "Expr"],Constraint "EApp" [TCon "Expr",TCon "Expr"],Constraint "ECase" [TCon "Expr",TList (TCon "CaseAlt")],Constraint "EList" [TList (TCon "Expr")],Constraint "ETuple" [TList (TCon "Expr")],Constraint "ERange" [TCon "Expr",TCon "Expr"],Constraint "ERangeStep" [TCon "Expr",TCon "Expr",TCon "Expr"],Constraint "EListComp" [TCon "Expr",TList (TCon "Qualifier")],Constraint "EAnn" [TCon "Expr",TCon "Type"],Constraint "EDo" [TList (TCon "Stmt")],Constraint "ESeq" [TList (TCon "Expr")],Constraint "EReturn" [TCon "Expr"],Constraint "EUnit" [],Constraint "ERecord" [TList (TTuple [TCon "String",TCon "Expr"])],Constraint "ERecordUpdate" [TCon "Expr",TList (TTuple [TCon "String",TCon "Expr"])],Constraint "EOpSectionL" [TCon "String",TCon "Expr"],Constraint "EOpSectionR" [TCon "Expr",TCon "String"],Constraint "EPlaceholder" [],Constraint "EWhere" [TCon "Expr",TList (TCon "Binding")],Constraint "ELambdaCase" [TList (TCon "CaseAlt")],Constraint "ESQL" [TCon "String",TList (TCon "Expr")]] ["Eq","Show"]]
+
+-- remainig-----------------------------
+[]
+module AST.Expr
+  ( BinOp (..),
+    Name,
+    Binding,
+    Expr (..),
+    Stmt (..),
+    Qualifier (..),
+    CaseAlt (..),
+  )
+where
+
+import AST.BinOp (BinOp (..))
+import AST.Pattern (Pattern)
+import AST.Type (Type)
+
+type Name = String
+
+-- Binding
+type Binding = (Pattern, Expr)
+
+-- CaseAlt
+data CaseAlt
+  = CaseAlt Pattern Expr
+  | CaseAltGuard Pattern [(Expr, Expr)]
+  deriving (Eq, Show)
+
+-- Stmt
+data Stmt
+  = Bind Pattern Expr
+  | ExprStmt Expr
+  | LetStmt [(Pattern, Expr)]
+  deriving (Eq, Show)
+
+-- Qualifier
+data Qualifier
+  = QGenerator Pattern Expr
+  | QLet [(Pattern, Expr)]
+  | QGuard Expr
+  deriving (Eq, Show)
+
+-- Expr –{‘Ì
+data Expr
+  = EVar String
+  | EVarType String
+  | EInt Int
+  | EString String
+  | EChar Char
+  | EBinOp BinOp Expr Expr
+  | EBool Bool
+  | ELet Pattern Expr Expr
+  | ELetBlock [(Pattern, Expr)] Expr
+  | EIf Expr Expr Expr
+  | ELam Pattern Expr
+  | EApp Expr Expr
+  | ECase Expr [CaseAlt]
+  | EList [Expr]
+  | ETuple [Expr]
+  | ERange Expr Expr
+  | ERangeStep Expr Expr Expr
+  | EListComp Expr [Qualifier]
+  | EAnn Expr Type
+  | EDo [Stmt]
+  | ESeq [Expr]
+  | EReturn Expr
+  | EUnit
+  | ERecord [(String, Expr)]
+  | ERecordUpdate Expr [(String, Expr)]
+  | EOpSectionL String Expr
+  | EOpSectionR Expr String
+  | EPlaceholder
+  | EWhere Expr [Binding]
+  | ELambdaCase [CaseAlt] -- [(Pattern, Expr)]
+  | ESQL String [Expr]
+  deriving (Eq, Show)
+
+[TokKeyword "module",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokVLBrace,TokSymbol "(",TokTypeIdent "BinOp",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Name",TokSymbol ",",TokTypeIdent "Binding",TokSymbol ",",TokTypeIdent "Expr",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Stmt",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Qualifier",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "CaseAlt",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "BinOp",TokSymbol "(",TokTypeIdent "BinOp",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Pattern",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Type",TokSymbol ")",TokNewline,TokKeyword "type",TokTypeIdent "Name",TokSymbol "=",TokTypeIdent "String",TokNewline,TokKeyword "type",TokTypeIdent "Binding",TokSymbol "=",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokNewline,TokKeyword "data",TokTypeIdent "CaseAlt",TokVLBrace,TokSymbol "=",TokTypeIdent "CaseAlt",TokTypeIdent "Pattern",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "CaseAltGuard",TokTypeIdent "Pattern",TokSymbol "[",TokSymbol "(",TokTypeIdent "Expr",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Eq",TokSymbol ",",TokTypeIdent "Show",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "data",TokTypeIdent "Stmt",TokVLBrace,TokSymbol "=",TokTypeIdent "Bind",TokTypeIdent "Pattern",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "ExprStmt",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "LetStmt",TokSymbol "[",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Eq",TokSymbol ",",TokTypeIdent "Show",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "data",TokTypeIdent "Qualifier",TokVLBrace,TokSymbol "=",TokTypeIdent "QGenerator",TokTypeIdent "Pattern",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "QLet",TokSymbol "[",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "QGuard",TokTypeIdent "Expr",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Eq",TokSymbol ",",TokTypeIdent "Show",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "data",TokTypeIdent "Expr",TokVLBrace,TokSymbol "=",TokTypeIdent "EVar",TokTypeIdent "String",TokSymbol ";",TokSymbol "|",TokTypeIdent "EVarType",TokTypeIdent "String",TokSymbol ";",TokSymbol "|",TokTypeIdent "EInt",TokTypeIdent "Int",TokSymbol ";",TokSymbol "|",TokTypeIdent "EString",TokTypeIdent "String",TokSymbol ";",TokSymbol "|",TokTypeIdent "EChar",TokTypeIdent "Char",TokSymbol ";",TokSymbol "|",TokTypeIdent "EBinOp",TokTypeIdent "BinOp",TokTypeIdent "Expr",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "EBool",TokTypeIdent "Bool",TokSymbol ";",TokSymbol "|",TokTypeIdent "ELet",TokTypeIdent "Pattern",TokTypeIdent "Expr",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "ELetBlock",TokSymbol "[",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "EIf",TokTypeIdent "Expr",TokTypeIdent "Expr",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "ELam",TokTypeIdent "Pattern",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "EApp",TokTypeIdent "Expr",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "ECase",TokTypeIdent "Expr",TokSymbol "[",TokTypeIdent "CaseAlt",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "EList",TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "ETuple",TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "ERange",TokTypeIdent "Expr",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "ERangeStep",TokTypeIdent "Expr",TokTypeIdent "Expr",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "EListComp",TokTypeIdent "Expr",TokSymbol "[",TokTypeIdent "Qualifier",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "EAnn",TokTypeIdent "Expr",TokTypeIdent "Type",TokSymbol ";",TokSymbol "|",TokTypeIdent "EDo",TokSymbol "[",TokTypeIdent "Stmt",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "ESeq",TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "EReturn",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "EUnit",TokSymbol ";",TokSymbol "|",TokTypeIdent "ERecord",TokSymbol "[",TokSymbol "(",TokTypeIdent "String",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "ERecordUpdate",TokTypeIdent "Expr",TokSymbol "[",TokSymbol "(",TokTypeIdent "String",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "EOpSectionL",TokTypeIdent "String",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "EOpSectionR",TokTypeIdent "Expr",TokTypeIdent "String",TokSymbol ";",TokSymbol "|",TokTypeIdent "EPlaceholder",TokSymbol ";",TokSymbol "|",TokTypeIdent "EWhere",TokTypeIdent "Expr",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "ELambdaCase",TokSymbol "[",TokTypeIdent "CaseAlt",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "ESQL",TokTypeIdent "String",TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Eq",TokSymbol ",",TokTypeIdent "Show",TokSymbol ")",TokVRBrace,TokNewline]

@@ -1,0 +1,42 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 47 / 175
+Coverage: 26.857142857142858%
+
+-- AST----------------------------------
+[DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing],DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "go" [FunClause [PList []] Nothing (Just (EList [])) Nothing]]
+
+-- remainig-----------------------------
+[TokIdent "go",TokSymbol "(",TokTypeIdent "TokVNewline",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator "==",TokNumber 0,TokSymbol "&",TokSymbol "&",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "<",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVLBrace",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "go",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "closeBlocks",TokSymbol "::",TokSymbol "(",TokTypeIdent "Int",TokSymbol ",",TokTypeIdent "Int",TokSymbol ")",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVLBrace,TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVRBrace",TokOperator ":",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokOperator "-",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline]
+module Layout.LayoutTransform (layoutTransform) where
+
+import Lexer.Token
+
+layoutTransform :: [Token] -> [Token]
+layoutTransform toks = go toks
+
+go :: [Token] -> [Token]
+go [] = []
+go (TokVNewline (x, y) : rest)
+  | x == 0 && x == y = TokNewline : go rest
+  | x == y = TokSymbol ";" : go rest
+  -- \| x < y = TokSymbol "{" : go rest
+  | x < y = TokVLBrace : go rest
+  | x > y = closeBlocks (x, y) rest
+go (t : rest) =
+  t : go rest
+
+closeBlocks :: (Int, Int) -> [Token] -> [Token]
+closeBlocks (x, y) rest
+  -- \| x > y = TokSymbol "}" : closeBlocks (x - 1, y) rest
+  | x > y = TokVRBrace : closeBlocks (x - 1, y) rest
+  | otherwise = TokNewline : go rest
+
+[TokKeyword "module",TokTypeIdent "Layout",TokOperator ".",TokTypeIdent "LayoutTransform",TokSymbol "(",TokIdent "layoutTransform",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "Lexer",TokOperator ".",TokTypeIdent "Token",TokNewline,TokIdent "layoutTransform",TokSymbol "::",TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "layoutTransform",TokIdent "toks",TokSymbol "=",TokIdent "go",TokIdent "toks",TokNewline,TokIdent "go",TokSymbol "::",TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "go",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokSymbol "[",TokSymbol "]",TokNewline,TokIdent "go",TokSymbol "(",TokTypeIdent "TokVNewline",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator "==",TokNumber 0,TokSymbol "&",TokSymbol "&",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "<",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVLBrace",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "go",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "closeBlocks",TokSymbol "::",TokSymbol "(",TokTypeIdent "Int",TokSymbol ",",TokTypeIdent "Int",TokSymbol ")",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVLBrace,TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVRBrace",TokOperator ":",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokOperator "-",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline]

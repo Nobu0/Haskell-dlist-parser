@@ -1,0 +1,113 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 217 / 293
+Coverage: 74.06143344709898%
+
+-- AST----------------------------------
+[DeclModule "Decl.DeclParser.Type" (Just [ExportVar "typeDecl",ExportVar "newtypeDecl",ExportVar "constr"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Data.Map", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "keys"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "newtypeDecl" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "newtypeDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "myTrace") (EString "<< newtypeDecl parser called")),ExprStmt (EApp (EVar "keyword") (EString "newtype")),Bind (PApp (PVar "name") []) (EVar "typeIdent"),Bind (PApp (PVar "vars") []) (EApp (EVar "many") (EVar "typeIdent")),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "c") []) (EVar "constr"),ExprStmt (EReturn (EApp (EApp (EApp (EVarType "DeclNewtype") (EVar "name")) (EVar "vars")) (EVar "c")))])) Nothing],DeclTypeSig "constr" (TApp (TCon "Parser") (TCon "Constraint")),DeclFunGroup "constr" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "myTrace") (EString "<< constr parser called")),Bind (PApp (PVar "cname") []) (EVar "typeIdent"),Bind (PApp (PVar "tys") []) (EApp (EVar "many") (EVar "typeExpr")),ExprStmt (EReturn (EApp (EApp (EVarType "Constraint") (EVar "cname")) (EVar "tys")))])) Nothing],DeclTypeSig "typeDecl" (TApp (TCon "Parser") (TCon "Decl"))]
+
+-- remainig-----------------------------
+[TokIdent "typeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "type",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "typ",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "DeclTypeAlias",TokIdent "name",TokIdent "vars",TokIdent "typ",TokVRBrace,TokNewline,TokIdent "contextListParser",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "contextListParser",TokSymbol "=",TokIdent "parens",TokSymbol "(",TokIdent "sepBy1",TokIdent "constraintParser",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "constraintParser",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintParser",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokVRBrace,TokNewline]
+{-# LANGUAGE LambdaCase #-}
+
+module Decl.DeclParser.Type
+  ( typeDecl,
+    newtypeDecl,
+    constr,
+    -- classDecl,
+    -- instanceDecl,
+  )
+where
+
+import AST.Decl
+import AST.Expr
+-- import AST.Module (Name)
+import AST.Pattern (Pattern (..))
+import AST.Type (Constraint (..), Type (..))
+import Control.Applicative (empty, many, optional, some, (<|>))
+-- ★ ここが正しい
+
+-- (keyword) -- , whereClause)
+
+import Data.Char (isUpper)
+import Data.List (intercalate)
+import Data.Map (keys)
+import Decl.DeclParser.Util
+import Lexer.Token (Token (..))
+import Parser.Core.Combinator
+import Parser.Core.TokenParser
+import Parser.Type.TypeParser
+import Utils.MyTrace
+
+-- newtype 宣言
+newtypeDecl :: Parser Decl
+newtypeDecl = do
+  myTrace "<< newtypeDecl parser called"
+  keyword "newtype"
+  name <- typeIdent
+  vars <- many typeIdent
+  symbol "="
+  c <- constr
+  return (DeclNewtype name vars c)
+
+-- コンストラクタ
+constr :: Parser Constraint
+constr = do
+  myTrace "<< constr parser called"
+  cname <- typeIdent
+  tys <- many typeExpr
+  return (Constraint cname tys)
+
+-- type Foo a b = (a, b)
+typeDecl :: Parser Decl
+typeDecl = do
+  keyword "type"
+  name <- identI
+  vars <- many identI
+  symbol "="
+  typ <- typeExpr
+  return $ DeclTypeAlias name vars typ
+
+{-}
+-- class Eq a where ...
+classDecl :: Parser Decl
+classDecl = do
+  keyword "class"
+  clsName <- identI
+  vars <- many identI
+  optional (TokKeyword "where")
+  decls <- braces (many decl)
+  return $ DeclClass clsName vars decls
+
+-- instance (Show a) => Eq (Maybe a) where ...
+instanceDecl :: Parser Decl
+instanceDecl = do
+  keyword "instance"
+  ctx <- optional contextListParser -- Maybe [Constraint]
+  clsName <- identI
+  types <- many typeParser
+  optional (keyword "where")
+  decls <- braces (many decl)
+  return $ DeclInstance ctx clsName types decls
+-}
+
+-- ident :: Parser String
+-- ident = typeIdent <$> identI
+
+contextListParser :: Parser [Constraint]
+contextListParser = parens (sepBy1 constraintParser (symbol ","))
+
+constraintParser :: Parser Constraint
+constraintParser = do
+  cls <- identI
+  ty <- typeExpr
+  return $ Constraint cls [ty]
+
+[TokNewline,TokKeyword "module",TokTypeIdent "Decl",TokOperator ".",TokTypeIdent "DeclParser",TokOperator ".",TokTypeIdent "Type",TokVLBrace,TokSymbol "(",TokIdent "typeDecl",TokSymbol ",",TokIdent "newtypeDecl",TokSymbol ",",TokIdent "constr",TokSymbol ",",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Decl",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Pattern",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Constraint",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Type",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Applicative",TokSymbol "(",TokIdent "empty",TokSymbol ",",TokIdent "many",TokSymbol ",",TokIdent "optional",TokSymbol ",",TokIdent "some",TokSymbol ",",TokSymbol "(",TokOperator "<|>",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "Char",TokSymbol "(",TokIdent "isUpper",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "List",TokSymbol "(",TokIdent "intercalate",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "Map",TokSymbol "(",TokIdent "keys",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Decl",TokOperator ".",TokTypeIdent "DeclParser",TokOperator ".",TokTypeIdent "Util",TokNewline,TokKeyword "import",TokTypeIdent "Lexer",TokOperator ".",TokTypeIdent "Token",TokSymbol "(",TokTypeIdent "Token",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "Combinator",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "TokenParser",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Type",TokOperator ".",TokTypeIdent "TypeParser",TokNewline,TokKeyword "import",TokTypeIdent "Utils",TokOperator ".",TokTypeIdent "MyTrace",TokNewline,TokIdent "newtypeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "newtypeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< newtypeDecl parser called",TokSymbol ";",TokIdent "keyword",TokString "newtype",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "typeIdent",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "c",TokSymbol "<-",TokIdent "constr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "DeclNewtype",TokIdent "name",TokIdent "vars",TokIdent "c",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< constr parser called",TokSymbol ";",TokIdent "cname",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "tys",TokSymbol "<-",TokIdent "many",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cname",TokIdent "tys",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "typeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "type",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "typ",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "DeclTypeAlias",TokIdent "name",TokIdent "vars",TokIdent "typ",TokVRBrace,TokNewline,TokIdent "contextListParser",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "contextListParser",TokSymbol "=",TokIdent "parens",TokSymbol "(",TokIdent "sepBy1",TokIdent "constraintParser",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "constraintParser",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintParser",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokVRBrace,TokNewline]

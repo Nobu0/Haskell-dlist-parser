@@ -1,0 +1,130 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 249 / 617
+Coverage: 40.356564019448946%
+
+-- AST----------------------------------
+[DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"],DeclTypeSig "unify" (TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unify" [FunClause [PApp (PVar "TVar") [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing,FunClause [PApp (PVar "t") [PApp (PVar "TVar") [PVar "a"]]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing,FunClause [PApp (PVar "TUnit") [PVar "TUnit"]] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PVar "TCon") [PVar "a"],PApp (PVar "TCon") [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing,FunClause [PApp (PApp (PVar "TArrow") [PVar "a1",PVar "b1"]) [PApp (PVar "TArrow") [PVar "a2",PVar "b2"]]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PVar "TTuple") [PVar "xs"],PApp (PVar "TTuple") [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing,FunClause [PApp (PApp (PVar "TList") [PVar "a"]) [PApp (PVar "TList") [PVar "b"]]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing,FunClause [PApp (PVar "t1") [PVar "t2"]] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing],DeclTypeSig "varBind" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))]
+
+-- remainig-----------------------------
+[TokIdent "varBind",TokIdent "a",TokIdent "t",TokVLBrace,TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "a",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "occursCheck",TokIdent "a",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "a",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Right",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "singleton",TokIdent "a",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursCheck",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TVar",TokIdent "b",TokSymbol ")",TokSymbol "=",TokIdent "a",TokOperator "==",TokIdent "b",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TCon",TokIdent "_",TokSymbol ")",TokSymbol "=",TokTypeIdent "False",TokNewline,TokIdent "occursCheck",TokIdent "a",TokTypeIdent "TUnit",TokSymbol "=",TokTypeIdent "False",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TList",TokIdent "t",TokSymbol ")",TokSymbol "=",TokIdent "occursCheck",TokIdent "a",TokIdent "t",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokIdent "any",TokSymbol "(",TokIdent "occursCheck",TokIdent "a",TokSymbol ")",TokIdent "ts",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokSymbol ")",TokSymbol "=",TokIdent "occursCheck",TokIdent "a",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursCheck",TokIdent "a",TokIdent "t2",TokNewline,TokIdent "unifyMany",TokSymbol "::",TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unifyMany",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unifyMany",TokSymbol "(",TokIdent "t1",TokOperator ":",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "t2",TokOperator ":",TokIdent "ts2",TokSymbol ")",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unifyMany",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokIdent "`composeSubst`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unifyMany",TokIdent "ts1",TokIdent "ts2",TokSymbol "=",TokVLBrace,TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts2",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "bindVar",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "bindVar",TokIdent "v",TokIdent "t",TokVLBrace,TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "v",TokSymbol "=",TokKeyword "return",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "v",TokIdent "`occursIn`",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "v",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokKeyword "return",TokSymbol "(",TokIdent "singletonSubst",TokIdent "v",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursIn",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursIn",TokIdent "v",TokIdent "t",TokSymbol "=",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TVar",TokIdent "x",TokArrow,TokIdent "x",TokOperator "==",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "_",TokArrow,TokTypeIdent "False",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursInConstraint",TokIdent "v",TokSymbol ")",TokIdent "cs",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t1",TokArrow,TokKeyword "if",TokIdent "v",TokIdent "`elem`",TokIdent "vs",TokKeyword "then",TokTypeIdent "False",TokKeyword "else",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokVRBrace,TokNewline,TokIdent "occursInConstraint",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursInConstraint",TokIdent "v",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "_",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokIdent "ts",TokVRBrace,TokNewline]
+module TypeInference.Unify (Subst, unify, UnifyError) where
+
+import AST.Type
+import Control.Monad (unless)
+import qualified Data.Map as M
+import TypeInference.Subst
+
+-- å^ÇÃàÍívÇ…é∏îsÇµÇΩÇ∆Ç´ÇÃÉGÉâÅ[
+data UnifyError
+  = UnifyMismatch Type Type
+  | UnifyOccursCheckFailed String Type
+  deriving (Show, Eq)
+
+-- å^ÇÃàÍívÇééÇ›ÅAê¨å˜Ç∑ÇÍÇŒë„ì¸Çï‘Ç∑
+{-}
+unify :: Type -> Type -> Either UnifyError Subst
+unify TUnit TUnit = Right emptySubst
+unify (TArrow l1 r1) (TArrow l2 r2) = do
+  s1 <- unify l1 l2
+  s2 <- unify (apply s1 r1) (apply s1 r2)
+  return (composeSubst s2 s1)
+unify (TApp f1 a1) (TApp f2 a2) = do
+  s1 <- unify f1 f2
+  s2 <- unify (apply s1 a1) (apply s1 a2)
+  return (composeSubst s2 s1)
+unify (TList t1) (TList t2) =
+  unify t1 t2
+unify (TCon c1) (TCon c2)
+  | c1 == c2 = return emptySubst
+  | otherwise = Left (UnifyMismatch (TCon c1) (TCon c2))
+unify (TVar v) t = bindVar v t
+unify t (TVar v) = bindVar v t
+-- ÇªÇÃëºÇÃå^ç\ê¨éqÇÕñ¢ëŒâûÅiTConstraint, TForall Ç»Ç«Åj
+unify t1 t2 = Left (UnifyMismatch t1 t2)
+-}
+unify :: Type -> Type -> Either UnifyError Subst
+
+-- å^ïœêî
+unify (TVar a) t = varBind a t
+unify t (TVar a) = varBind a t
+
+-- Unit
+unify TUnit TUnit = Right emptySubst
+
+-- å^ÉRÉìÉXÉgÉâÉNÉ^
+unify (TCon a) (TCon b)
+  | a == b    = Right emptySubst
+  | otherwise = Left (UnifyMismatch (TCon a) (TCon b))
+
+-- ä÷êîå^
+unify (TArrow a1 b1) (TArrow a2 b2) = do
+  s1 <- unify a1 a2
+  s2 <- unify (apply s1 b1) (apply s1 b2)
+  Right (s2 `composeSubst` s1)
+
+-- É^ÉvÉã
+unify (TTuple xs) (TTuple ys)
+  | length xs == length ys = unifyMany xs ys
+  | otherwise = Left (UnifyMismatch (TTuple xs) (TTuple ys))
+
+-- ÉäÉXÉg
+unify (TList a) (TList b) = unify a b
+
+-- ÉfÉtÉHÉãÉg
+unify t1 t2 = Left (UnifyMismatch t1 t2)
+
+varBind :: String -> Type -> Either UnifyError Subst
+varBind a t
+  | t == TVar a = Right emptySubst
+  | occursCheck a t = Left (UnifyOccursCheckFailed a t)
+  | otherwise = Right (M.singleton a t)
+
+
+occursCheck :: String -> Type -> Bool
+occursCheck a (TVar b)       = a == b
+occursCheck a (TCon _)       = False
+occursCheck a TUnit          = False
+occursCheck a (TList t)      = occursCheck a t
+occursCheck a (TTuple ts)    = any (occursCheck a) ts
+occursCheck a (TArrow t1 t2) = occursCheck a t1 || occursCheck a t2
+
+unifyMany :: [Type] -> [Type] -> Either UnifyError Subst
+unifyMany [] [] = Right emptySubst
+unifyMany (t1:ts1) (t2:ts2) = do
+  s1 <- unify t1 t2
+  s2 <- unifyMany (map (apply s1) ts1) (map (apply s1) ts2)
+  Right (s2 `composeSubst` s1)
+unifyMany ts1 ts2 =
+  Left (UnifyMismatch (TTuple ts1) (TTuple ts2))
+
+-- å^ïœêîÇ∆å^ÇåãÇ—Ç¬ÇØÇÈÅioccurs check Ç†ÇËÅj
+bindVar :: String -> Type -> Either UnifyError Subst
+bindVar v t
+  | t == TVar v = return emptySubst
+  | v `occursIn` t = Left (UnifyOccursCheckFailed v t)
+  | otherwise = return (singletonSubst v t)
+
+-- å^ïœêî v Ç™å^ t ÇÃíÜÇ…åªÇÍÇÈÇ©Åiñ≥å¿å^ÇñhÇÆÅj
+occursIn :: String -> Type -> Bool
+occursIn v t = case t of
+  TVar x -> x == v
+  TCon _ -> False
+  TArrow t1 t2 -> occursIn v t1 || occursIn v t2
+  TList t1 -> occursIn v t1
+  TApp t1 t2 -> occursIn v t1 || occursIn v t2
+  TConstraint cs t1 -> any (occursInConstraint v) cs || occursIn v t1
+  TForall vs t1 -> if v `elem` vs then False else occursIn v t1
+
+occursInConstraint :: String -> Constraint -> Bool
+occursInConstraint v (Constraint _ ts) =
+  any (occursIn v) ts
+
+[TokKeyword "module",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Unify",TokSymbol "(",TokTypeIdent "Subst",TokSymbol ",",TokIdent "unify",TokSymbol ",",TokTypeIdent "UnifyError",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Monad",TokSymbol "(",TokIdent "unless",TokSymbol ")",TokNewline,TokKeyword "import",TokKeyword "qualified",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "Map",TokKeyword "as",TokTypeIdent "M",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Subst",TokNewline,TokKeyword "data",TokTypeIdent "UnifyError",TokVLBrace,TokSymbol "=",TokTypeIdent "UnifyMismatch",TokTypeIdent "Type",TokTypeIdent "Type",TokSymbol ";",TokSymbol "|",TokTypeIdent "UnifyOccursCheckFailed",TokTypeIdent "String",TokTypeIdent "Type",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unify",TokSymbol "::",TokTypeIdent "Type",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TVar",TokIdent "a",TokSymbol ")",TokIdent "t",TokSymbol "=",TokIdent "varBind",TokIdent "a",TokIdent "t",TokNewline,TokIdent "unify",TokIdent "t",TokSymbol "(",TokTypeIdent "TVar",TokIdent "a",TokSymbol ")",TokSymbol "=",TokIdent "varBind",TokIdent "a",TokIdent "t",TokNewline,TokIdent "unify",TokTypeIdent "TUnit",TokTypeIdent "TUnit",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TCon",TokIdent "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokIdent "b",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "a",TokOperator "==",TokIdent "b",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TCon",TokIdent "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokIdent "b",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TArrow",TokIdent "a1",TokIdent "b1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokIdent "a2",TokIdent "b2",TokSymbol ")",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unify",TokIdent "a1",TokIdent "a2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unify",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokIdent "b1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokIdent "b2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokIdent "`composeSubst`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "xs",TokSymbol ")",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ys",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "length",TokIdent "xs",TokOperator "==",TokIdent "length",TokIdent "ys",TokSymbol "=",TokIdent "unifyMany",TokIdent "xs",TokIdent "ys",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "xs",TokSymbol ")",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ys",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TList",TokIdent "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TList",TokIdent "b",TokSymbol ")",TokSymbol "=",TokIdent "unify",TokIdent "a",TokIdent "b",TokNewline,TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokIdent "t1",TokIdent "t2",TokSymbol ")",TokNewline,TokIdent "varBind",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "varBind",TokIdent "a",TokIdent "t",TokVLBrace,TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "a",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "occursCheck",TokIdent "a",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "a",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Right",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "singleton",TokIdent "a",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursCheck",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TVar",TokIdent "b",TokSymbol ")",TokSymbol "=",TokIdent "a",TokOperator "==",TokIdent "b",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TCon",TokIdent "_",TokSymbol ")",TokSymbol "=",TokTypeIdent "False",TokNewline,TokIdent "occursCheck",TokIdent "a",TokTypeIdent "TUnit",TokSymbol "=",TokTypeIdent "False",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TList",TokIdent "t",TokSymbol ")",TokSymbol "=",TokIdent "occursCheck",TokIdent "a",TokIdent "t",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokIdent "any",TokSymbol "(",TokIdent "occursCheck",TokIdent "a",TokSymbol ")",TokIdent "ts",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokSymbol ")",TokSymbol "=",TokIdent "occursCheck",TokIdent "a",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursCheck",TokIdent "a",TokIdent "t2",TokNewline,TokIdent "unifyMany",TokSymbol "::",TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unifyMany",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unifyMany",TokSymbol "(",TokIdent "t1",TokOperator ":",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "t2",TokOperator ":",TokIdent "ts2",TokSymbol ")",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unifyMany",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokIdent "`composeSubst`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unifyMany",TokIdent "ts1",TokIdent "ts2",TokSymbol "=",TokVLBrace,TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts2",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "bindVar",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "bindVar",TokIdent "v",TokIdent "t",TokVLBrace,TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "v",TokSymbol "=",TokKeyword "return",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "v",TokIdent "`occursIn`",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "v",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokKeyword "return",TokSymbol "(",TokIdent "singletonSubst",TokIdent "v",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursIn",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursIn",TokIdent "v",TokIdent "t",TokSymbol "=",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TVar",TokIdent "x",TokArrow,TokIdent "x",TokOperator "==",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "_",TokArrow,TokTypeIdent "False",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursInConstraint",TokIdent "v",TokSymbol ")",TokIdent "cs",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t1",TokArrow,TokKeyword "if",TokIdent "v",TokIdent "`elem`",TokIdent "vs",TokKeyword "then",TokTypeIdent "False",TokKeyword "else",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokVRBrace,TokNewline,TokIdent "occursInConstraint",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursInConstraint",TokIdent "v",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "_",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokIdent "ts",TokVRBrace,TokNewline]

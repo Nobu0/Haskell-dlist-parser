@@ -1,0 +1,71 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 115 / 163
+Coverage: 70.5521472392638%
+
+-- AST----------------------------------
+[DeclModule "TypeInference.SQLInfer" Nothing,DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl"]},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "SQLInfo" [] [ConstraintRecord "SQLInfo" [Field "sqlExprs" (TList (TCon "Expr")),Field "sqlVars" (TList (TCon "String")),Field "sqlText" (TCon "String")]] [],DeclTypeSig "inferSQL" (TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo")))]
+
+-- remainig-----------------------------
+[TokIdent "inferSQL",TokKeyword "sql",TokIdent "args",TokSymbol "=",TokVLBrace,TokTypeIdent "SQLInfo",TokVLBrace,TokSymbol "{",TokIdent "sqlText",TokSymbol "=",TokKeyword "sql",TokSymbol ";",TokSymbol ",",TokIdent "sqlVars",TokSymbol "=",TokIdent "map",TokIdent "getVarName",TokIdent "args",TokSymbol ";",TokSymbol ",",TokIdent "sqlExprs",TokSymbol "=",TokIdent "args",TokSymbol ";",TokSymbol "}",TokVRBrace,TokVRBrace,TokNewline,TokIdent "getVarName",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "String",TokNewline,TokIdent "getVarName",TokSymbol "(",TokTypeIdent "EVar",TokIdent "name",TokSymbol ")",TokSymbol "=",TokIdent "name",TokNewline,TokIdent "getVarName",TokIdent "_",TokSymbol "=",TokIdent "error",TokString "SQL arguments must be variables",TokNewline]
+module TypeInference.SQLInfer where
+
+import AST.Decl (Decl (..))
+import AST.Expr (CaseAlt (..), Expr (..), Name)
+import AST.Pattern (Pattern (..))
+import AST.Type (Type (..))
+import TypeInference.Error (InferError (..))
+import TypeInference.Subst
+import TypeInference.TypeEnv
+
+data SQLInfo = SQLInfo
+  { sqlText  :: String
+  , sqlVars  :: [String]
+  , sqlExprs :: [Expr]
+  }
+
+inferSQL :: String -> [Expr] -> SQLInfo
+inferSQL sql args =
+  SQLInfo
+    { sqlText  = sql
+    , sqlVars  = map getVarName args
+    , sqlExprs = args
+    }
+
+getVarName :: Expr -> String
+getVarName (EVar name) = name
+getVarName _ = error "SQL arguments must be variables"
+
+{-}
+inferSQL ::
+  (TypeEnv -> Expr -> Either InferError (Subst, Type)) ->
+  TypeEnv ->
+  String ->
+  [Expr] ->
+  Either InferError (Subst, Type)
+inferSQL inferExprFn env sql args = do
+  inferred <- mapM (inferExprFn env) args
+  return (emptySubst, TUnit)
+-}
+
+{-}
+inferSQL :: TypeEnv -> String -> [Expr] -> Either InferError (Subst, Type)
+inferSQL env sql args = do
+  -- args の型を推論
+  argTypes <- mapM (inferExpr env) args
+
+  -- SQLParam 型クラスに属するかチェック（任意）
+  mapM_ ensureSQLParam (map snd argTypes)
+
+  -- SQL 文自体の型は Unit でよい
+  return (emptySubst, TUnit)
+-}
+
+[TokKeyword "module",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "SQLInfer",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Decl",TokSymbol "(",TokTypeIdent "Decl",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokSymbol "(",TokTypeIdent "CaseAlt",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Expr",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Name",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Pattern",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Type",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Error",TokSymbol "(",TokTypeIdent "InferError",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Subst",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "TypeEnv",TokNewline,TokKeyword "data",TokTypeIdent "SQLInfo",TokSymbol "=",TokTypeIdent "SQLInfo",TokVLBrace,TokSymbol "{",TokIdent "sqlText",TokSymbol "::",TokTypeIdent "String",TokSymbol ";",TokSymbol ",",TokIdent "sqlVars",TokSymbol "::",TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokSymbol ";",TokSymbol ",",TokIdent "sqlExprs",TokSymbol "::",TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokSymbol ";",TokSymbol "}",TokVRBrace,TokNewline,TokIdent "inferSQL",TokSymbol "::",TokTypeIdent "String",TokArrow,TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokArrow,TokTypeIdent "SQLInfo",TokNewline,TokIdent "inferSQL",TokKeyword "sql",TokIdent "args",TokSymbol "=",TokVLBrace,TokTypeIdent "SQLInfo",TokVLBrace,TokSymbol "{",TokIdent "sqlText",TokSymbol "=",TokKeyword "sql",TokSymbol ";",TokSymbol ",",TokIdent "sqlVars",TokSymbol "=",TokIdent "map",TokIdent "getVarName",TokIdent "args",TokSymbol ";",TokSymbol ",",TokIdent "sqlExprs",TokSymbol "=",TokIdent "args",TokSymbol ";",TokSymbol "}",TokVRBrace,TokVRBrace,TokNewline,TokIdent "getVarName",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "String",TokNewline,TokIdent "getVarName",TokSymbol "(",TokTypeIdent "EVar",TokIdent "name",TokSymbol ")",TokSymbol "=",TokIdent "name",TokNewline,TokIdent "getVarName",TokIdent "_",TokSymbol "=",TokIdent "error",TokString "SQL arguments must be variables",TokNewline]

@@ -1,0 +1,44 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 31 / 186
+Coverage: 16.666666666666664%
+
+-- AST----------------------------------
+[DeclModule "TypeInference.Pretty" (Just [ExportVar "prettyType"]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = True, importModule = "AST.Type", importAlias = Just "TI", importHiding = False, importItems = Nothing},DeclTypeSig "prettyType" (TCon "TI")]
+
+-- remainig-----------------------------
+[TokOperator ".",TokTypeIdent "Type",TokArrow,TokTypeIdent "String",TokNewline,TokIdent "prettyType",TokIdent "ty",TokSymbol "=",TokKeyword "case",TokIdent "ty",TokKeyword "of",TokVLBrace,TokTypeIdent "TVar",TokIdent "v",TokArrow,TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokArrow,TokIdent "c",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokString "Unit",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "a",TokIdent "b",TokArrow,TokString "(",TokOperator "++",TokIdent "prettyType",TokIdent "a",TokOperator "++",TokString " -> ",TokOperator "++",TokIdent "prettyType",TokIdent "b",TokOperator "++",TokString ")",TokSymbol ";",TokTypeIdent "TList",TokIdent "t",TokArrow,TokString "[",TokOperator "++",TokIdent "prettyType",TokIdent "t",TokOperator "++",TokString "]",TokSymbol ";",TokTypeIdent "TApp",TokIdent "a",TokIdent "b",TokArrow,TokIdent "prettyType",TokIdent "a",TokOperator "++",TokString " ",TokOperator "++",TokIdent "prettyType",TokIdent "b",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t",TokArrow,TokString "forall ",TokOperator "++",TokIdent "unwords",TokIdent "vs",TokOperator "++",TokString ". ",TokOperator "++",TokIdent "prettyType",TokIdent "t",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokString "(",TokOperator "++",TokIdent "commaList",TokSymbol "(",TokIdent "map",TokIdent "prettyType",TokIdent "ts",TokSymbol ")",TokOperator "++",TokString ")",TokSymbol ";",TokTypeIdent "TBinOp",TokIdent "op",TokIdent "t1",TokIdent "t2",TokArrow,TokVLBrace,TokString "(",TokOperator "++",TokIdent "prettyType",TokIdent "t1",TokOperator "++",TokString " ",TokOperator "++",TokIdent "prettyPrintBinOp",TokIdent "op",TokOperator "++",TokString " ",TokOperator "++",TokIdent "prettyType",TokIdent "t2",TokOperator "++",TokString ")",TokVRBrace,TokNewline,TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t",TokArrow,TokVLBrace,TokString "(",TokOperator "++",TokIdent "commaList",TokSymbol "(",TokIdent "map",TokIdent "show",TokIdent "cs",TokSymbol ")",TokOperator "++",TokString ") => ",TokOperator "++",TokIdent "prettyType",TokIdent "t",TokVRBrace,TokNewline,TokKeyword "where",TokVLBrace,TokIdent "commaList",TokSymbol "=",TokIdent "foldr1",TokSymbol "(",TokSymbol "\\",TokIdent "a",TokIdent "b",TokArrow,TokIdent "a",TokOperator "++",TokString ", ",TokOperator "++",TokIdent "b",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline]
+module TypeInference.Pretty (prettyType) where
+
+-- import TypeInference.Subst
+-- import TypeInference.Type (Type(..))
+-- import qualified TypeInference.Type as TI
+
+import AST.Type (Type (..))
+import qualified AST.Type as TI
+
+prettyType :: TI.Type -> String
+prettyType ty = case ty of
+  TVar v -> v
+  TCon c -> c
+  TUnit -> "Unit"
+  TArrow a b -> "(" ++ prettyType a ++ " -> " ++ prettyType b ++ ")"
+  TList t -> "[" ++ prettyType t ++ "]"
+  TApp a b -> prettyType a ++ " " ++ prettyType b
+  TForall vs t -> "forall " ++ unwords vs ++ ". " ++ prettyType t
+  TTuple ts -> "(" ++ commaList (map prettyType ts) ++ ")"
+  TBinOp op t1 t2 ->
+    "(" ++ prettyType t1 ++ " " ++ prettyPrintBinOp op ++ " " ++ prettyType t2 ++ ")"
+  TConstraint cs t ->
+    "(" ++ commaList (map show cs) ++ ") => " ++ prettyType t
+  where
+    commaList = foldr1 (\a b -> a ++ ", " ++ b)
+
+[TokKeyword "module",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Pretty",TokSymbol "(",TokIdent "prettyType",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Type",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokKeyword "qualified",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokKeyword "as",TokTypeIdent "TI",TokNewline,TokIdent "prettyType",TokSymbol "::",TokTypeIdent "TI",TokOperator ".",TokTypeIdent "Type",TokArrow,TokTypeIdent "String",TokNewline,TokIdent "prettyType",TokIdent "ty",TokSymbol "=",TokKeyword "case",TokIdent "ty",TokKeyword "of",TokVLBrace,TokTypeIdent "TVar",TokIdent "v",TokArrow,TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokArrow,TokIdent "c",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokString "Unit",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "a",TokIdent "b",TokArrow,TokString "(",TokOperator "++",TokIdent "prettyType",TokIdent "a",TokOperator "++",TokString " -> ",TokOperator "++",TokIdent "prettyType",TokIdent "b",TokOperator "++",TokString ")",TokSymbol ";",TokTypeIdent "TList",TokIdent "t",TokArrow,TokString "[",TokOperator "++",TokIdent "prettyType",TokIdent "t",TokOperator "++",TokString "]",TokSymbol ";",TokTypeIdent "TApp",TokIdent "a",TokIdent "b",TokArrow,TokIdent "prettyType",TokIdent "a",TokOperator "++",TokString " ",TokOperator "++",TokIdent "prettyType",TokIdent "b",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t",TokArrow,TokString "forall ",TokOperator "++",TokIdent "unwords",TokIdent "vs",TokOperator "++",TokString ". ",TokOperator "++",TokIdent "prettyType",TokIdent "t",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokString "(",TokOperator "++",TokIdent "commaList",TokSymbol "(",TokIdent "map",TokIdent "prettyType",TokIdent "ts",TokSymbol ")",TokOperator "++",TokString ")",TokSymbol ";",TokTypeIdent "TBinOp",TokIdent "op",TokIdent "t1",TokIdent "t2",TokArrow,TokVLBrace,TokString "(",TokOperator "++",TokIdent "prettyType",TokIdent "t1",TokOperator "++",TokString " ",TokOperator "++",TokIdent "prettyPrintBinOp",TokIdent "op",TokOperator "++",TokString " ",TokOperator "++",TokIdent "prettyType",TokIdent "t2",TokOperator "++",TokString ")",TokVRBrace,TokNewline,TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t",TokArrow,TokVLBrace,TokString "(",TokOperator "++",TokIdent "commaList",TokSymbol "(",TokIdent "map",TokIdent "show",TokIdent "cs",TokSymbol ")",TokOperator "++",TokString ") => ",TokOperator "++",TokIdent "prettyType",TokIdent "t",TokVRBrace,TokNewline,TokKeyword "where",TokVLBrace,TokIdent "commaList",TokSymbol "=",TokIdent "foldr1",TokSymbol "(",TokSymbol "\\",TokIdent "a",TokIdent "b",TokArrow,TokIdent "a",TokOperator "++",TokString ", ",TokOperator "++",TokIdent "b",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline]

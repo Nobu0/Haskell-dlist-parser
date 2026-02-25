@@ -1,0 +1,181 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 917 / 917
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "Decl.DeclParser.Fun" (Just [ExportVar "funDecl"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "guard"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.ExprExtensions", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "expr",ImportVar "skipNewlines"]},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pPattern",ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "constraintList",ImportVar "parseType",ImportVar "typeAtom",ImportVar "typeIdent",ImportVar "typeP"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "mkSimpleClause" (TFun (TList (TCon "Pattern")) (TFun (TCon "Expr") (TFun (TApp (TCon "Maybe") (TList (TCon "Decl"))) (TCon "FunClause")))),DeclFunGroup "mkSimpleClause" [FunClause [PVar "pats",PVar "body",PVar "whereDecls"] Nothing (Just (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "pats")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVar "whereDecls"))) Nothing],DeclTypeSig "mkGuardedClause" (TFun (TList (TCon "Pattern")) (TFun (TList (TTuple [TCon "Expr",TCon "Expr"])) (TFun (TApp (TCon "Maybe") (TList (TCon "Decl"))) (TCon "FunClause")))),DeclFunGroup "mkGuardedClause" [FunClause [PVar "pats",PVar "guards",PVar "whereDecls"] Nothing (Just (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "pats")) (EApp (EVarType "Just") (EVar "guards"))) (EVarType "Nothing")) (EVar "whereDecls"))) Nothing],DeclTypeSig "funDecl" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "funDecl" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< funDecl: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PTuple [PApp (PVar "name") [],PApp (PVar "clause1") []]) []) (EVar "funClause"),Bind (PApp (PVar "rest") []) (EApp (EVar "many") (EApp (EVar "try") (EApp (EVar "funClauseWithName") (EVar "name")))),ExprStmt (EReturn (EApp (EApp (EVarType "DeclFunGroup") (EVar "name")) (EApp (EApp (EVar "clause1") (EVar ":")) (EVar "rest"))))])) Nothing],DeclTypeSig "funClause" (TApp (TCon "Parser") (TTuple [TCon "Name",TCon "FunClause"])),DeclFunGroup "funClause" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t0") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< funClause: next token=") (EApp (EVar "show") (EVar "t0")))),Bind (PApp (PVar "name") []) (EVar "ident"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "pPattern")),ExprStmt (EVar "skipNewlines"),Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< funClause: args=") (EApp (EVar "show") (EVar "args"))) (EString " t = ")) (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokSymbol") [PString "="]) (EApp (EApp (EVar "parseSimpleClause") (EVar "name")) (EVar "args")),CaseAlt (PApp (PVar "TokSymbol") [PString "|"]) (EApp (EApp (EVar "parseGuardedClause") (EVar "name")) (EVar "args")),CaseAlt (PApp (PVar "_") []) (EApp (EApp (EVar "parseGuardedClause") (EVar "name")) (EVar "args"))])])) Nothing],DeclTypeSig "parseSimpleClause" (TFun (TCon "Name") (TFun (TList (TCon "Pattern")) (TApp (TCon "Parser") (TTuple [TCon "Name",TCon "FunClause"])))),DeclFunGroup "parseSimpleClause" [FunClause [PVar "name",PVar "args"] Nothing (Just (EDo [ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseSimpleClause:2 next token=") (EApp (EVar "show") (EVar "t")))),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "skipSeparators"),Bind (PApp (PVar "e") []) (EVar "expr"),Bind (PApp (PVar "w") []) (EApp (EVar "optional") (EApp (EVar "bracesV") (EVar "whereBlock"))),ExprStmt (EReturn (ETuple [EVar "name",EApp (EApp (EApp (EVar "mkSimpleClause") (EVar "args")) (EVar "e")) (EVar "w")]))]))])) Nothing],DeclTypeSig "parseGuardedClause" (TFun (TCon "Name") (TFun (TList (TCon "Pattern")) (TApp (TCon "Parser") (TTuple [TCon "Name",TCon "FunClause"])))),DeclFunGroup "parseGuardedClause" [FunClause [PVar "name",PVar "args"] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseGuardedClause: next token=") (EApp (EVar "show") (EVar "t")))),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "skipSeparators"),Bind (PApp (PVar "guards") []) (EVar "guardedRhs"),Bind (PApp (PVar "w") []) (EApp (EVar "optional") (EVar "whereBlock")),ExprStmt (EReturn (ETuple [EVar "name",EApp (EApp (EApp (EVar "mkGuardedClause") (EVar "args")) (EVar "guards")) (EVar "w")]))]))])) Nothing],DeclTypeSig "funDeclGroup" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "funDeclGroup" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< funDeclGroup: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PTuple [PApp (PVar "name1") [],PApp (PVar "clause1") []]) []) (EVar "funClause"),Bind (PApp (PVar "rest") []) (EApp (EVar "many") (EApp (EVar "try") (EApp (EVar "funClauseWithName") (EVar "name1")))),ExprStmt (EReturn (EApp (EApp (EVarType "DeclFunGroup") (EVar "name1")) (EApp (EApp (EVar "clause1") (EVar ":")) (EVar "rest"))))])) Nothing],DeclTypeSig "funClauseWithName" (TFun (TCon "Name") (TApp (TCon "Parser") (TCon "FunClause"))),DeclFunGroup "funClauseWithName" [FunClause [PVar "name"] Nothing (Just (EApp (EApp (EVar "$") (EVar "try")) (EDo [ExprStmt (EVar "skipSeparators"),Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< funClauseWithName: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name'") []) (EVar "ident"),ExprStmt (EApp (EVar "guard") (EBinOp BinOpEq (EVar "name") (EVar "name'"))),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "pattern")),Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokSymbol") [PString "="]) (EDo [ExprStmt (EApp (EVar "symbol") (EString "=")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "skipSeparators"),Bind (PApp (PVar "e") []) (EVar "expr"),Bind (PApp (PVar "w") []) (EApp (EVar "optional") (EVar "whereBlock")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "mkSimpleClause") (EVar "args")) (EVar "e")) (EVar "w")))]))]),CaseAlt (PApp (PVar "TokSymbol") [PString "|"]) (EDo [Bind (PApp (PVar "guards") []) (EVar "guardedRhs"),Bind (PApp (PVar "w") []) (EApp (EVar "optional") (EVar "whereBlock")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "mkGuardedClause") (EVar "args")) (EVar "guards")) (EVar "w")))]),CaseAlt (PApp (PVar "_") []) (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "skipSeparators"),Bind (PApp (PVar "e") []) (EVar "expr"),Bind (PApp (PVar "w") []) (EApp (EVar "optional") (EVar "whereBlock")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "mkSimpleClause") (EVar "args")) (EVar "e")) (EVar "w")))]))])]))) Nothing],DeclTypeSig "whereBlock" (TApp (TCon "Parser") (TList (TCon "Decl"))),DeclFunGroup "whereBlock" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EVar "skipSeparators"),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [Bind (PApp (PVar "decls") []) (EApp (EApp (EVar "$") (EVar "many1")) (EDo [ExprStmt (EVar "funDecl")])),ExprStmt (EReturn (EVar "decls"))]))]))])) Nothing],DeclTypeSig "guardedRhsM" (TApp (TCon "Parser") (TList (TTuple [TCon "Expr",TCon "Expr"]))),DeclFunGroup "guardedRhsM" [FunClause [] Nothing (Just (EApp (EVar "many1") (EVar "parseGuardLine"))) Nothing],DeclTypeSig "parseGuardLine" (TApp (TCon "Parser") (TTuple [TCon "Expr",TCon "Expr"])),DeclFunGroup "parseGuardLine" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseGuardLine: next token=") (EApp (EVar "show") (EVar "t")))),ExprStmt (EApp (EVar "symbol") (EString "|")),Bind (PApp (PVar "cond") []) (EVar "expr"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "body") []) (EVar "expr"),ExprStmt (EReturn (ETuple [EVar "cond",EVar "body"]))])) Nothing],DeclTypeSig "guardedRhs" (TApp (TCon "Parser") (TList (TTuple [TCon "Expr",TCon "Expr"]))),DeclFunGroup "guardedRhs" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EApp (EVar "$") (EVar "many1")) (EDo [ExprStmt (EVar "skipSeparators"),Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< guardedRhs: next token = ") (EApp (EVar "show") (EVar "t")))),ExprStmt (EVar "parseGuardLine")]))])) Nothing],DeclTypeSig "funHead" (TApp (TCon "Parser") (TTuple [TCon "Name",TList (TCon "Pattern")])),DeclFunGroup "funHead" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "p") []) (EVar "pattern"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< funHead pattern: ") (EApp (EVar "show") (EVar "p")))),ExprStmt (ECase (EVar "p") [CaseAlt (PApp (PVar "PVar") [PVar "name"]) (EDo [Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "pattern")),ExprStmt (EReturn (ETuple [EVar "name",EVar "args"]))]),CaseAlt (PApp (PVar "PApp") [PApp (PVar "PVar") [PVar "name"],PVar "args"]) (EDo [Bind (PApp (PVar "moreArgs") []) (EApp (EVar "many") (EVar "pattern")),ExprStmt (EReturn (ETuple [EVar "name",EBinOp BinOpConcat (EVar "args") (EVar "moreArgs")]))]),CaseAlt (PApp (PVar "_") []) (EDo [ExprStmt (EApp (EVar "myTrace") (EString "Function definition must start with a variable name")),ExprStmt (EVar "empty")])])])) Nothing]]
+
+-- remainig-----------------------------
+[]
+{-# LANGUAGE LambdaCase #-}
+
+module Decl.DeclParser.Fun (funDecl) where
+
+import AST.Decl
+import AST.Expr
+-- import AST.Module (Name)
+import AST.Pattern (Pattern (..))
+import AST.Type (Constraint (..), Type (..))
+import Control.Applicative (empty, many, optional, some, (<|>))
+-- ★ ここが正しい
+
+-- (keyword) -- , whereClause)
+
+import Control.Monad (guard)
+import Data.List (intercalate)
+import Decl.DeclParser.Util
+import Lexer.Token (Token (..))
+import Parser.Core.Combinator
+import Parser.Core.TokenParser
+import Parser.Expr.ExprExtensions (expr, skipNewlines)
+import Parser.Expr.PatternParser (pPattern, pattern)
+import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
+import Utils.MyTrace
+
+mkSimpleClause :: [Pattern] -> Expr -> Maybe [Decl] -> FunClause
+mkSimpleClause pats body whereDecls =
+  FunClause pats Nothing (Just body) whereDecls
+
+mkGuardedClause :: [Pattern] -> [(Expr, Expr)] -> Maybe [Decl] -> FunClause
+mkGuardedClause pats guards whereDecls =
+  FunClause pats (Just guards) Nothing whereDecls
+
+-- 関数宣言
+funDecl :: Parser Decl
+funDecl = do
+  t <- lookAhead anyToken
+  myTrace ("<< funDecl: next token=" ++ show t)
+  (name, clause1) <- funClause -- funDecl
+  rest <- many (try (funClauseWithName name))
+  -- optional (token TokVRBrace)
+  return (DeclFunGroup name (clause1 : rest))
+
+funClause :: Parser (Name, FunClause)
+funClause = do
+  t0 <- lookAhead anyToken
+  myTrace ("<< funClause: next token=" ++ show t0)
+  name <- ident
+  args <- many pPattern -- patternParser
+  skipNewlines
+  t <- lookAhead anyToken
+  myTrace ("<< funClause: args=" ++ show args ++ " t = " ++ show t)
+  case t of
+    TokSymbol "=" -> parseSimpleClause name args
+    TokSymbol "|" -> parseGuardedClause name args
+    _ -> parseGuardedClause name args
+
+parseSimpleClause :: Name -> [Pattern] -> Parser (Name, FunClause)
+parseSimpleClause name args = do
+  symbol "="
+  t <- lookAhead anyToken
+  myTrace ("<< parseSimpleClause:2 next token=" ++ show t)
+  bracesV $ do
+    skipSeparators
+    e <- expr
+    w <- optional (bracesV (whereBlock))
+    return (name, mkSimpleClause args e w)
+
+parseGuardedClause :: Name -> [Pattern] -> Parser (Name, FunClause)
+parseGuardedClause name args = do
+  t <- lookAhead anyToken
+  myTrace ("<< parseGuardedClause: next token=" ++ show t)
+  bracesV $ do
+    skipSeparators
+    guards <- guardedRhs
+    w <- optional (whereBlock)
+    return (name, mkGuardedClause args guards w)
+
+funDeclGroup :: Parser Decl
+funDeclGroup = do
+  t <- lookAhead anyToken
+  myTrace ("<< funDeclGroup: next token=" ++ show t)
+  (name1, clause1) <- funClause
+  rest <- many (try (funClauseWithName name1))
+  return (DeclFunGroup name1 (clause1 : rest))
+
+-- 同じ名前の関数をグループ化する
+funClauseWithName :: Name -> Parser FunClause
+funClauseWithName name = try $ do
+  skipSeparators
+  t <- lookAhead anyToken
+  myTrace ("<< funClauseWithName: next token=" ++ show t)
+  name' <- ident
+  guard (name == name')
+  args <- many pattern -- patternParser
+  -- skipSeparators
+  t <- lookAhead anyToken
+  case t of
+    TokSymbol "=" -> do
+      symbol "="
+      bracesV $ do
+        skipSeparators
+        e <- expr
+        -- w <- optional (bracesV (whereBlock))
+        w <- optional whereBlock
+        return (mkSimpleClause args e w)
+    TokSymbol "|" -> do
+      guards <- guardedRhs
+      w <- optional whereBlock
+      return (mkGuardedClause args guards w)
+    _ -> bracesV $ do
+      skipSeparators
+      e <- expr
+      -- w <- optional (bracesV (whereBlock))
+      w <- optional whereBlock
+      return (mkSimpleClause args e w)
+
+whereBlock :: Parser [Decl]
+whereBlock = do
+  bracesV $ do
+    keyword "where"
+    skipSeparators
+    bracesV $ do
+      decls <- many1 $ do
+        funDecl
+      return decls
+
+guardedRhsM :: Parser [(Expr, Expr)]
+guardedRhsM = many1 parseGuardLine
+
+parseGuardLine :: Parser (Expr, Expr)
+parseGuardLine = do
+  t <- lookAhead anyToken
+  myTrace ("<< parseGuardLine: next token=" ++ show t)
+  symbol "|"
+  cond <- expr
+  symbol "="
+  body <- expr
+  return (cond, body)
+
+guardedRhs :: Parser [(Expr, Expr)]
+guardedRhs = do
+  many1 $ do
+    skipSeparators
+    t <- lookAhead anyToken
+    myTrace ("<< guardedRhs: next token = " ++ show t)
+    parseGuardLine
+
+funHead :: Parser (Name, [Pattern])
+funHead = do
+  p <- pattern
+  myTrace ("<< funHead pattern: " ++ show p)
+  case p of
+    PVar name -> do
+      args <- many pattern
+      return (name, args)
+    PApp (PVar name) args -> do
+      moreArgs <- many pattern
+      return (name, args ++ moreArgs)
+    _ -> do
+      myTrace "Function definition must start with a variable name"
+      empty
+
+[TokNewline,TokKeyword "module",TokTypeIdent "Decl",TokOperator ".",TokTypeIdent "DeclParser",TokOperator ".",TokTypeIdent "Fun",TokSymbol "(",TokIdent "funDecl",TokSymbol ")",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Decl",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Pattern",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Constraint",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Type",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Applicative",TokSymbol "(",TokIdent "empty",TokSymbol ",",TokIdent "many",TokSymbol ",",TokIdent "optional",TokSymbol ",",TokIdent "some",TokSymbol ",",TokSymbol "(",TokOperator "<|>",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Monad",TokSymbol "(",TokIdent "guard",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "List",TokSymbol "(",TokIdent "intercalate",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Decl",TokOperator ".",TokTypeIdent "DeclParser",TokOperator ".",TokTypeIdent "Util",TokNewline,TokKeyword "import",TokTypeIdent "Lexer",TokOperator ".",TokTypeIdent "Token",TokSymbol "(",TokTypeIdent "Token",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "Combinator",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "TokenParser",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprExtensions",TokSymbol "(",TokIdent "expr",TokSymbol ",",TokIdent "skipNewlines",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "PatternParser",TokSymbol "(",TokIdent "pPattern",TokSymbol ",",TokIdent "pattern",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Type",TokOperator ".",TokTypeIdent "TypeParser",TokSymbol "(",TokIdent "constraintList",TokSymbol ",",TokIdent "parseType",TokSymbol ",",TokIdent "typeAtom",TokSymbol ",",TokIdent "typeIdent",TokSymbol ",",TokIdent "typeP",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Utils",TokOperator ".",TokTypeIdent "MyTrace",TokNewline,TokIdent "mkSimpleClause",TokSymbol "::",TokSymbol "[",TokTypeIdent "Pattern",TokSymbol "]",TokArrow,TokTypeIdent "Expr",TokArrow,TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Decl",TokSymbol "]",TokArrow,TokTypeIdent "FunClause",TokNewline,TokIdent "mkSimpleClause",TokIdent "pats",TokIdent "body",TokIdent "whereDecls",TokSymbol "=",TokVLBrace,TokTypeIdent "FunClause",TokIdent "pats",TokTypeIdent "Nothing",TokSymbol "(",TokTypeIdent "Just",TokIdent "body",TokSymbol ")",TokIdent "whereDecls",TokVRBrace,TokNewline,TokIdent "mkGuardedClause",TokSymbol "::",TokSymbol "[",TokTypeIdent "Pattern",TokSymbol "]",TokArrow,TokSymbol "[",TokSymbol "(",TokTypeIdent "Expr",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokArrow,TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Decl",TokSymbol "]",TokArrow,TokTypeIdent "FunClause",TokNewline,TokIdent "mkGuardedClause",TokIdent "pats",TokIdent "guards",TokIdent "whereDecls",TokSymbol "=",TokVLBrace,TokTypeIdent "FunClause",TokIdent "pats",TokSymbol "(",TokTypeIdent "Just",TokIdent "guards",TokSymbol ")",TokTypeIdent "Nothing",TokIdent "whereDecls",TokVRBrace,TokNewline,TokIdent "funDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "funDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funDecl: next token=",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "clause1",TokSymbol ")",TokSymbol "<-",TokIdent "funClause",TokSymbol ";",TokIdent "rest",TokSymbol "<-",TokIdent "many",TokSymbol "(",TokIdent "try",TokSymbol "(",TokIdent "funClauseWithName",TokIdent "name",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "DeclFunGroup",TokIdent "name",TokSymbol "(",TokIdent "clause1",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "funClause",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Name",TokSymbol ",",TokTypeIdent "FunClause",TokSymbol ")",TokNewline,TokIdent "funClause",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t0",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funClause: next token=",TokOperator "++",TokIdent "show",TokIdent "t0",TokSymbol ")",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "pPattern",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funClause: args=",TokOperator "++",TokIdent "show",TokIdent "args",TokOperator "++",TokString " t = ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokSymbol",TokString "=",TokArrow,TokIdent "parseSimpleClause",TokIdent "name",TokIdent "args",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "|",TokArrow,TokIdent "parseGuardedClause",TokIdent "name",TokIdent "args",TokSymbol ";",TokIdent "_",TokArrow,TokIdent "parseGuardedClause",TokIdent "name",TokIdent "args",TokVRBrace,TokVRBrace,TokNewline,TokIdent "parseSimpleClause",TokSymbol "::",TokTypeIdent "Name",TokArrow,TokSymbol "[",TokTypeIdent "Pattern",TokSymbol "]",TokArrow,TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Name",TokSymbol ",",TokTypeIdent "FunClause",TokSymbol ")",TokNewline,TokIdent "parseSimpleClause",TokIdent "name",TokIdent "args",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< parseSimpleClause:2 next token=",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "w",TokSymbol "<-",TokIdent "optional",TokSymbol "(",TokIdent "bracesV",TokSymbol "(",TokIdent "whereBlock",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "mkSimpleClause",TokIdent "args",TokIdent "e",TokIdent "w",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "parseGuardedClause",TokSymbol "::",TokTypeIdent "Name",TokArrow,TokSymbol "[",TokTypeIdent "Pattern",TokSymbol "]",TokArrow,TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Name",TokSymbol ",",TokTypeIdent "FunClause",TokSymbol ")",TokNewline,TokIdent "parseGuardedClause",TokIdent "name",TokIdent "args",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< parseGuardedClause: next token=",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "guards",TokSymbol "<-",TokIdent "guardedRhs",TokSymbol ";",TokIdent "w",TokSymbol "<-",TokIdent "optional",TokSymbol "(",TokIdent "whereBlock",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "mkGuardedClause",TokIdent "args",TokIdent "guards",TokIdent "w",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "funDeclGroup",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "funDeclGroup",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funDeclGroup: next token=",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "(",TokIdent "name1",TokSymbol ",",TokIdent "clause1",TokSymbol ")",TokSymbol "<-",TokIdent "funClause",TokSymbol ";",TokIdent "rest",TokSymbol "<-",TokIdent "many",TokSymbol "(",TokIdent "try",TokSymbol "(",TokIdent "funClauseWithName",TokIdent "name1",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "DeclFunGroup",TokIdent "name1",TokSymbol "(",TokIdent "clause1",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "funClauseWithName",TokSymbol "::",TokTypeIdent "Name",TokArrow,TokTypeIdent "Parser",TokTypeIdent "FunClause",TokNewline,TokIdent "funClauseWithName",TokIdent "name",TokSymbol "=",TokIdent "try",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funClauseWithName: next token=",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "name'",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "guard",TokSymbol "(",TokIdent "name",TokOperator "==",TokIdent "name'",TokSymbol ")",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "pattern",TokSymbol ";",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokSymbol",TokString "=",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokIdent "w",TokSymbol "<-",TokIdent "optional",TokIdent "whereBlock",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "mkSimpleClause",TokIdent "args",TokIdent "e",TokIdent "w",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokTypeIdent "TokSymbol",TokString "|",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "guards",TokSymbol "<-",TokIdent "guardedRhs",TokSymbol ";",TokIdent "w",TokSymbol "<-",TokIdent "optional",TokIdent "whereBlock",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "mkGuardedClause",TokIdent "args",TokIdent "guards",TokIdent "w",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokIdent "w",TokSymbol "<-",TokIdent "optional",TokIdent "whereBlock",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "mkSimpleClause",TokIdent "args",TokIdent "e",TokIdent "w",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "whereBlock",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Decl",TokSymbol "]",TokNewline,TokIdent "whereBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "where",TokSymbol ";",TokIdent "skipSeparators",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "decls",TokSymbol "<-",TokIdent "many1",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "funDecl",TokVRBrace,TokNewline,TokKeyword "return",TokIdent "decls",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "guardedRhsM",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokSymbol "(",TokTypeIdent "Expr",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokNewline,TokIdent "guardedRhsM",TokSymbol "=",TokIdent "many1",TokIdent "parseGuardLine",TokNewline,TokIdent "parseGuardLine",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Expr",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokNewline,TokIdent "parseGuardLine",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< parseGuardLine: next token=",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "|",TokSymbol ";",TokIdent "cond",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "cond",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "guardedRhs",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokSymbol "(",TokTypeIdent "Expr",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokNewline,TokIdent "guardedRhs",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "many1",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< guardedRhs: next token = ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "parseGuardLine",TokVRBrace,TokVRBrace,TokNewline,TokIdent "funHead",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Name",TokSymbol ",",TokSymbol "[",TokTypeIdent "Pattern",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "funHead",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "p",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funHead pattern: ",TokOperator "++",TokIdent "show",TokIdent "p",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "p",TokKeyword "of",TokVLBrace,TokTypeIdent "PVar",TokIdent "name",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "pattern",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "args",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "PApp",TokSymbol "(",TokTypeIdent "PVar",TokIdent "name",TokSymbol ")",TokIdent "args",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "moreArgs",TokSymbol "<-",TokIdent "many",TokIdent "pattern",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "args",TokOperator "++",TokIdent "moreArgs",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "Function definition must start with a variable name",TokSymbol ";",TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline]

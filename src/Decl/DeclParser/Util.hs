@@ -7,6 +7,8 @@ module Decl.DeclParser.Util
     tokdot,
     operatorI,
     sepBy1Skip,
+    skipControlTokens,
+    isControlToken,
     skipBlk,
     typeExpr,
     operatorIAsName,

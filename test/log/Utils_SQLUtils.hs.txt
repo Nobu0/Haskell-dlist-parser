@@ -1,0 +1,49 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 119 / 119
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "Utils.SQLUtils" (Just [ExportVar "extractSQLVars"]),DeclTypeSig "extractSQLVars" (TFun (TCon "String") (TTuple [TCon "String",TList (TCon "String")])),DeclFunGroup "extractSQLVars" [FunClause [] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "go") (EString "")) (EList [])) (EString "")) [(PApp (PVar "go") [PApp (PVar "acc") [PVar "vars",PVar "current",PList []]],ETuple [EVar "acc",EApp (EVar "reverse") (EVar "vars")]),(PApp (PVar "go") [PApp (PVar "acc") [PVar "vars",PVar "current",PApp (PChar '{') [PConstr ":" [],PVar "xs"]]],ELet (PApp (PTuple [PApp (PVar "var") [],PApp (PVar "rest") []]) []) (EApp (EApp (EVar "span") (EOpSectionL "/=" (EChar '}'))) (EVar "xs")) (EApp (EApp (EApp (EApp (EVar "go") (EBinOp BinOpConcat (EVar "acc") (EString "?"))) (EApp (EApp (EVar "var") (EVar ":")) (EVar "vars"))) (EString "")) (EApp (EApp (EVar "drop") (EInt 1)) (EVar "rest")))),(PApp (PVar "go") [PApp (PVar "acc") [PVar "vars",PVar "current",PApp (PVar "x") [PConstr ":" [],PVar "xs"]]],EApp (EApp (EApp (EApp (EVar "go") (EBinOp BinOpConcat (EVar "acc") (EList [EVar "x"]))) (EVar "vars")) (EVar "current")) (EVar "xs"))])) Nothing]]
+
+-- remainig-----------------------------
+[]
+module Utils.SQLUtils (extractSQLVars) where
+
+-- | Extracts SQL variables from a parameter string and replaces them with placeholders.
+--
+-- This function processes a string containing variable references in the format @{varName}@
+-- and returns a tuple containing:
+--
+-- * The modified string with all @{varName}@ patterns replaced by @?@ placeholders
+-- * A list of extracted variable names in reverse order of appearance
+--
+-- Examples:
+--
+-- >>> extractSQLVars "SELECT * FROM users WHERE id = {userId} AND name = {userName}"
+-- ("SELECT * FROM users WHERE id = ? AND name = ?",["userName","userId"])
+--
+-- >>> extractSQLVars "SELECT * FROM products"
+-- ("SELECT * FROM products",[])
+--
+-- >>> extractSQLVars "INSERT INTO logs VALUES ({timestamp}, {message})"
+-- ("INSERT INTO logs VALUES (?, ?)",["message","timestamp"])
+extractSQLVars :: String -> (String, [String])
+extractSQLVars = go "" [] ""
+  where
+    go acc vars current [] =
+      (acc, reverse vars)
+    go acc vars current ('{' : xs) =
+      let (var, rest) = span (/= '}') xs
+       in go (acc ++ "?") (var : vars) "" (drop 1 rest)
+    go acc vars current (x : xs) =
+      go (acc ++ [x]) vars current xs
+
+[TokKeyword "module",TokTypeIdent "Utils",TokOperator ".",TokTypeIdent "SQLUtils",TokSymbol "(",TokIdent "extractSQLVars",TokSymbol ")",TokKeyword "where",TokNewline,TokIdent "extractSQLVars",TokSymbol "::",TokTypeIdent "String",TokArrow,TokSymbol "(",TokTypeIdent "String",TokSymbol ",",TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "extractSQLVars",TokSymbol "=",TokIdent "go",TokString "",TokSymbol "[",TokSymbol "]",TokString "",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokVLBrace,TokSymbol "(",TokIdent "acc",TokSymbol ",",TokIdent "reverse",TokIdent "vars",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "(",TokChar '{',TokOperator ":",TokIdent "xs",TokSymbol ")",TokSymbol "=",TokVLBrace,TokKeyword "let",TokSymbol "(",TokIdent "var",TokSymbol ",",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokIdent "span",TokSymbol "(",TokOperator "/=",TokChar '}',TokSymbol ")",TokIdent "xs",TokVLBrace,TokKeyword "in",TokIdent "go",TokSymbol "(",TokIdent "acc",TokOperator "++",TokString "?",TokSymbol ")",TokSymbol "(",TokIdent "var",TokOperator ":",TokIdent "vars",TokSymbol ")",TokString "",TokSymbol "(",TokIdent "drop",TokNumber 1,TokIdent "rest",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "go",TokIdent "acc",TokIdent "vars",TokIdent "current",TokSymbol "(",TokIdent "x",TokOperator ":",TokIdent "xs",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "go",TokSymbol "(",TokIdent "acc",TokOperator "++",TokSymbol "[",TokIdent "x",TokSymbol "]",TokSymbol ")",TokIdent "vars",TokIdent "current",TokIdent "xs",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline]

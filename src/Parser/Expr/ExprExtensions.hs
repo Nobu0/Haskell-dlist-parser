@@ -81,10 +81,8 @@ exprNoLoop = do
 
 infixOp :: Parser (Expr -> Expr -> Expr)
 infixOp = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< infixOp: next token " ++ show t)
   op <- optional operatorB
-  myTrace ("<< infixOp: " ++ show op)
+  myTrace (">> infixOp: out ")
   case op of
     Just mop ->
       case parseBinOp mop of
@@ -94,7 +92,8 @@ infixOp = do
         Nothing -> do
           myTrace ("<< infixOp: parseBinOp failed for " ++ show mop)
           empty
-    Nothing -> empty
+    Nothing -> do
+      empty
 
 postfix :: Expr -> Parser Expr
 postfix e = do
@@ -105,7 +104,7 @@ postfix e = do
   case mop of
     Just op -> do
       myTrace ("<< postfix: infix operator = " ++ show op)
-      rhs <- exprNoLoop
+      rhs <- expr -- NoLoop
       postfix (EApp (EApp (EVar op) e) rhs)
     Nothing -> do
       mbBinds <- whereClause
@@ -166,7 +165,7 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
-    -- TokSymbol "(" -> exprCore
+    TokVLBrace -> empty -- bracesv expr
     -- TokSymbol "\\" -> lambdaExpr
     -- TokSymbol ";" -> empty
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
@@ -178,7 +177,7 @@ whereClause = do
   bracesV $ do
     mWhere <- optional (try (keyword "where"))
     case mWhere of
-      Just _ -> Just <$> (skipVB >> bindings) -- Block
+      Just _ -> Just <$> bindings -- Block
       Nothing -> return Nothing
   where
     bindings :: Parser [Binding]
@@ -224,9 +223,16 @@ ifExpr = do
 returnExpr :: Parser Expr
 returnExpr = do
   keyword "return"
-  e <- atomCore -- exprNoLoop
-  myTrace (">>*return: e " ++ show e)
-  return (EReturn e)
+  t <- lookAhead anyToken
+  case t of
+    TokOperator "$" -> do
+      e <- expr
+      myTrace (">>*return: e " ++ show e)
+      return (EReturn e)
+    _ -> do
+      e <- atomCore -- exprNoLoop
+      myTrace (">>*return: e " ++ show e)
+      return (EReturn e)
 
 forExpr :: Parser Expr
 forExpr = do
@@ -274,29 +280,38 @@ valueBinding = do
   pat <- pattern
   myTrace ("<< valueBinding: pat " ++ show pat)
   symbol "="
-  -- bracesN $ do
+  -- bracesV $ do
   -- これがあると他の括弧と相互に関係する
   body <- expr -- NoLoop
-  myTrace (">>*valueBinding: body " ++ show body)
+  t <- lookAhead anyToken
+  myTrace (">>*valueBinding: next token " ++ show t ++ " body " ++ show body)
   return (pat, body)
 
 letExpr :: Parser Expr
-letExpr = do
+letExpr = try $ do
   t <- lookAhead anyToken
   myTrace ("<< letExpr: next token " ++ show t)
   keyword "let"
   binds <- bindingsBlock
   -- skipNewlines
-  -- binds <- manyTill binding (lookAhead (keyword "in"))
+  -- binds <- manyTill binding (lookAhead (token TokVLBrace))
   t <- lookAhead anyToken
   myTrace ("<< letExpr: next token " ++ show t)
   case t of
+    TokVRBrace -> do
+      token TokVLBrace
+      keyword "in"
+      body <- expr -- NoLoop
+      token TokVRBrace
+      myTrace (">>*letExpr: in body " ++ show body)
+      -- skipNewlines
+      return (ELetBlock binds body)
     (TokKeyword "in") -> do
       keyword "in"
       body <- expr -- NoLoop
       myTrace (">>*letExpr: in body " ++ show body)
       -- optional (token TokVRBrace)
-      -- skipNewlines
+      skipNewlines
       return (ELetBlock binds body)
     _ -> do
       return (ELetBlock binds (EVar "__unit__"))
@@ -310,13 +325,13 @@ pLetExpr = do
   pat <- pattern
   myTrace ("<< pLetExpr: pat " ++ show pat)
   symbol "="
-  -- bracesV $ do
-  e1 <- expr -- NoLoop
   bracesV $ do
-    keyword "in"
-    e2 <- expr -- NoLoop
-    myTrace (">>*pLetExpr: e1 " ++ show e1 ++ " e2 " ++ show e2)
-    return (ELet pat e1 e2)
+    e1 <- exprNoLoop -- ここがNoLoopでないと脱出できない
+    bracesV $ do
+      keyword "in"
+      e2 <- expr -- NoLoop
+      myTrace (">>*pLetExpr: e1 " ++ show e1 ++ " e2 " ++ show e2)
+      return (ELet pat e1 e2)
 
 letBlock :: Parser Expr
 letBlock = do
@@ -341,7 +356,8 @@ bindingsBlock = do
   t <- lookAhead anyToken
   myTrace ("<< bindingBlock: next token " ++ show t)
   rt <- braces bindings <|> bindings
-  myTrace (">>*bindingBlock rt " ++ show rt)
+  t <- lookAhead anyToken
+  myTrace (">>*bindingBlock next token " ++ show t ++ " rt " ++ show rt)
   return rt
   where
     bindings = do

@@ -1,0 +1,64 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 244 / 244
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "AST.Decl" Nothing,DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Constraint",ImportVar "Type"]},DeclData "Decl" [] [Constraint "DeclFunGroup" [TCon "Name",TList (TCon "FunClause")],Constraint "DeclValue" [TCon "Pattern",TCon "Expr"],Constraint "DeclTypeSig" [TCon "Name",TCon "Type"],Constraint "DeclData" [TCon "Name",TList (TCon "Name"),TList (TCon "Constraint"),TList (TCon "Name")],Constraint "DeclNewtype" [TCon "Name",TList (TCon "Name"),TCon "Constraint"],Constraint "DeclModule" [TCon "String",TApp (TCon "Maybe") (TList (TCon "Export"))],Constraint "DeclClass" [TCon "String",TList (TCon "String"),TList (TCon "Decl")],Constraint "DeclInstance" [TApp (TCon "Maybe") (TList (TCon "Constraint")),TCon "String",TList (TCon "Type"),TList (TCon "Decl")],Constraint "DeclTypeAlias" [TCon "String",TList (TCon "String"),TCon "Type"],ConstraintRecord "DeclImport" [Field "importItems" (TApp (TCon "Maybe") (TList (TCon "ImportItem"))),Field "importHiding" (TCon "Bool"),Field "importAlias" (TApp (TCon "Maybe") (TCon "Name")),Field "importModule" (TCon "Name"),Field "importQualified" (TCon "Bool")]] ["Show","Eq"],DeclData "FunClause" [] [Constraint "FunClause" [TList (TCon "Pattern"),TApp (TCon "Maybe") (TList (TTuple [TCon "Expr",TCon "Expr"])),TApp (TCon "Maybe") (TCon "Expr"),TApp (TCon "Maybe") (TList (TCon "Decl"))]] ["Show","Eq"],DeclData "ImportItem" [] [Constraint "ImportVar" [TCon "Name"],Constraint "ImportTypeAll" [TCon "Name"],Constraint "ImportTypeSome" [TCon "Name",TList (TCon "Name")],Constraint "ImportAllItems" []] ["Show","Eq"],DeclData "Export" [] [Constraint "ExportVar" [TCon "String"],Constraint "ExportType" [TCon "String",TCon "Bool"]] ["Show","Eq"]]
+
+-- remainig-----------------------------
+[]
+module AST.Decl where
+
+import AST.Expr
+import AST.Pattern (Pattern)
+import AST.Type (Constraint, Type)
+
+-- DeclFun Name [Pattern] (Maybe [(Expr, Expr)]) (Maybe Expr) (Maybe [Decl])
+
+data Decl
+  = DeclFunGroup Name [FunClause]
+  | DeclValue Pattern Expr
+  | DeclTypeSig Name Type
+  | DeclData Name [Name] [Constraint] [Name]
+  | DeclNewtype Name [Name] Constraint
+  | DeclModule String (Maybe [Export])
+  | DeclClass String [String] [Decl]
+  | DeclInstance (Maybe [Constraint]) String [Type] [Decl]
+  | DeclTypeAlias String [String] Type
+  | DeclImport
+      { importQualified :: Bool,
+        importModule :: Name,
+        importAlias :: Maybe Name,
+        importHiding :: Bool,
+        importItems :: Maybe [ImportItem]
+      }
+  deriving (Show, Eq)
+
+data FunClause
+  = FunClause [Pattern] (Maybe [(Expr, Expr)]) (Maybe Expr) (Maybe [Decl])
+  deriving (Show, Eq)
+
+data ImportItem
+  = ImportVar Name
+  | ImportTypeAll Name
+  | ImportTypeSome Name [Name]
+  | ImportAllItems -- Å© í«â¡ÅI
+  deriving (Show, Eq)
+
+data Export
+  = ExportVar String -- foo
+  | ExportType String Bool -- Bar or Bar(..)
+  deriving (Show, Eq)
+
+-- data Constr = Constr Name [Type]
+--  deriving (Show, Eq)
+
+[TokKeyword "module",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Decl",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Pattern",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Constraint",TokSymbol ",",TokTypeIdent "Type",TokSymbol ")",TokNewline,TokKeyword "data",TokTypeIdent "Decl",TokVLBrace,TokSymbol "=",TokTypeIdent "DeclFunGroup",TokTypeIdent "Name",TokSymbol "[",TokTypeIdent "FunClause",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclValue",TokTypeIdent "Pattern",TokTypeIdent "Expr",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclTypeSig",TokTypeIdent "Name",TokTypeIdent "Type",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclData",TokTypeIdent "Name",TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclNewtype",TokTypeIdent "Name",TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokTypeIdent "Constraint",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclModule",TokTypeIdent "String",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Export",TokSymbol "]",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclClass",TokTypeIdent "String",TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokSymbol "[",TokTypeIdent "Decl",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclInstance",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokSymbol ")",TokTypeIdent "String",TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokSymbol "[",TokTypeIdent "Decl",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclTypeAlias",TokTypeIdent "String",TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokTypeIdent "Type",TokSymbol ";",TokSymbol "|",TokTypeIdent "DeclImport",TokVLBrace,TokSymbol "{",TokIdent "importQualified",TokSymbol "::",TokTypeIdent "Bool",TokSymbol ",",TokVLBrace,TokIdent "importModule",TokSymbol "::",TokTypeIdent "Name",TokSymbol ",",TokSymbol ";",TokIdent "importAlias",TokSymbol "::",TokTypeIdent "Maybe",TokTypeIdent "Name",TokSymbol ",",TokSymbol ";",TokIdent "importHiding",TokSymbol "::",TokTypeIdent "Bool",TokSymbol ",",TokSymbol ";",TokIdent "importItems",TokSymbol "::",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "ImportItem",TokSymbol "]",TokVRBrace,TokNewline,TokSymbol "}",TokVRBrace,TokNewline,TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "data",TokTypeIdent "FunClause",TokVLBrace,TokSymbol "=",TokTypeIdent "FunClause",TokSymbol "[",TokTypeIdent "Pattern",TokSymbol "]",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokSymbol "(",TokTypeIdent "Expr",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "]",TokSymbol ")",TokSymbol "(",TokTypeIdent "Maybe",TokTypeIdent "Expr",TokSymbol ")",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Decl",TokSymbol "]",TokSymbol ")",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "data",TokTypeIdent "ImportItem",TokVLBrace,TokSymbol "=",TokTypeIdent "ImportVar",TokTypeIdent "Name",TokSymbol ";",TokSymbol "|",TokTypeIdent "ImportTypeAll",TokTypeIdent "Name",TokSymbol ";",TokSymbol "|",TokTypeIdent "ImportTypeSome",TokTypeIdent "Name",TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokSymbol ";",TokSymbol "|",TokTypeIdent "ImportAllItems",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "data",TokTypeIdent "Export",TokVLBrace,TokSymbol "=",TokTypeIdent "ExportVar",TokTypeIdent "String",TokSymbol ";",TokSymbol "|",TokTypeIdent "ExportType",TokTypeIdent "String",TokTypeIdent "Bool",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline]

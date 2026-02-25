@@ -1,0 +1,72 @@
+-- Raw Source --
+
+-- Tokens from Lexer --
+
+-- Parsing --
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 246 / 246
+Coverage: 100.0%
+
+-- AST----------------------------------
+[DeclModule "TypeInference.Infer.Expr.ExprIf" (Just [ExportVar "inferIf"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]},DeclTypeSig "inferIf" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TFun (TCon "Expr") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))))))),DeclFunGroup "inferIf" [FunClause [PVar "inferExprFn",PVar "env",PVar "cond",PVar "eThen",PVar "eElse"] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "s1") [],PApp (PVar "tCond") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env")) (EVar "cond")),Bind (PApp (PVar "sBool") []) (ECase (EApp (EApp (EVar "unify") (EVar "tCond")) (EApp (EVarType "TCon") (EString "Bool"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "env1") [],EApp (EApp (EVar "applyEnv") (EApp (EApp (EVar "sBool") (EVar "`composeSubst`")) (EVar "s1"))) (EVar "env"))],Bind (PApp (PTuple [PApp (PVar "s2") [],PApp (PVar "tThen") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env1")) (EVar "eThen")),Bind (PApp (PTuple [PApp (PVar "s3") [],PApp (PVar "tElse") []]) []) (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s2")) (EVar "env1"))) (EVar "eElse")),Bind (PApp (PVar "s4") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s3")) (EVar "tThen"))) (EVar "tElse")) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EApp (EApp (EVar "s4") (EVar "`composeSubst`")) (EVar "s3")) (EVar "`composeSubst`")) (EVar "s2")) (EVar "`composeSubst`")) (EVar "s1"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "s",EApp (EApp (EVar "apply") (EVar "s4")) (EVar "tElse")]))])) Nothing]]
+
+-- remainig-----------------------------
+[]
+module TypeInference.Infer.Expr.ExprIf
+  ( inferIf,
+  )
+where
+
+import AST.Expr
+import AST.Pattern
+import AST.Type
+import Control.Monad (foldM)
+import TypeInference.Error
+import TypeInference.Infer.Core
+-- import TypeInference.Infer.Expr.CoreExpr (inferExpr)
+-- import TypeInference.Infer.Expr.ExprLet (inferBinding, inferBindings)
+import TypeInference.Infer.Pattern
+import TypeInference.Subst
+import TypeInference.TypeEnv
+import TypeInference.Unify (unify)
+
+inferIf ::
+  (TypeEnv -> Expr -> Either InferError (Subst, Type)) ->
+  TypeEnv ->
+  Expr ->
+  Expr ->
+  Expr ->
+  Either InferError (Subst, Type)
+inferIf inferExprFn env cond eThen eElse = do
+  (s1, tCond) <- inferExprFn env cond
+  sBool <- case unify tCond (TCon "Bool") of
+    Left uerr -> Left (InferUnifyError uerr)
+    Right su -> Right su
+  let env1 = applyEnv (sBool `composeSubst` s1) env
+  (s2, tThen) <- inferExprFn env1 eThen
+  (s3, tElse) <- inferExprFn (applyEnv s2 env1) eElse
+  s4 <- case unify (apply s3 tThen) tElse of
+    Left uerr -> Left (InferUnifyError uerr)
+    Right su -> Right su
+  let s = s4 `composeSubst` s3 `composeSubst` s2 `composeSubst` s1
+  Right (s, apply s4 tElse)
+
+{-}
+inferIf inferExprFn env cond eThen eElse = do
+  (s1, tCond) <- inferExprFn env cond
+  sBool <- case unify tCond (TCon "Bool") of
+    Left uerr -> Left (InferUnifyError uerr)
+    Right su -> Right su
+  let env1 = applyEnv (sBool `composeSubst` s1) env
+  (s2, tThen) <- inferExprFn env1 eThen
+  (s3, tElse) <- inferExprFn (applyEnv s2 env1) eElse
+  s4 <- case unify (apply s3 tThen) tElse of
+    Left uerr -> Left (InferUnifyError uerr)
+    Right su -> Right su
+  let s = s4 `composeSubst` s3 `composeSubst` s2 `composeSubst` s1
+  Right (s, apply s4 tElse)
+-}
+[TokKeyword "module",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Expr",TokOperator ".",TokTypeIdent "ExprIf",TokVLBrace,TokSymbol "(",TokIdent "inferIf",TokSymbol ",",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Pattern",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Monad",TokSymbol "(",TokIdent "foldM",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Error",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Core",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Infer",TokOperator ".",TokTypeIdent "Pattern",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Subst",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "TypeEnv",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Unify",TokSymbol "(",TokIdent "unify",TokSymbol ")",TokNewline,TokIdent "inferIf",TokSymbol "::",TokVLBrace,TokSymbol "(",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "Expr",TokArrow,TokTypeIdent "Either",TokTypeIdent "InferError",TokSymbol "(",TokTypeIdent "Subst",TokSymbol ",",TokTypeIdent "Type",TokSymbol ")",TokSymbol ")",TokArrow,TokSymbol ";",TokTypeIdent "TypeEnv",TokArrow,TokSymbol ";",TokTypeIdent "Expr",TokArrow,TokSymbol ";",TokTypeIdent "Expr",TokArrow,TokSymbol ";",TokTypeIdent "Expr",TokArrow,TokSymbol ";",TokTypeIdent "Either",TokTypeIdent "InferError",TokSymbol "(",TokTypeIdent "Subst",TokSymbol ",",TokTypeIdent "Type",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "inferIf",TokIdent "inferExprFn",TokIdent "env",TokIdent "cond",TokIdent "eThen",TokIdent "eElse",TokSymbol "=",TokKeyword "do",TokVLBrace,TokSymbol "(",TokIdent "s1",TokSymbol ",",TokIdent "tCond",TokSymbol ")",TokSymbol "<-",TokIdent "inferExprFn",TokIdent "env",TokIdent "cond",TokSymbol ";",TokIdent "sBool",TokSymbol "<-",TokKeyword "case",TokIdent "unify",TokIdent "tCond",TokSymbol "(",TokTypeIdent "TCon",TokString "Bool",TokSymbol ")",TokKeyword "of",TokVLBrace,TokTypeIdent "Left",TokIdent "uerr",TokArrow,TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "InferUnifyError",TokIdent "uerr",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokIdent "su",TokArrow,TokTypeIdent "Right",TokIdent "su",TokVRBrace,TokNewline,TokKeyword "let",TokIdent "env1",TokSymbol "=",TokIdent "applyEnv",TokSymbol "(",TokIdent "sBool",TokIdent "`composeSubst`",TokIdent "s1",TokSymbol ")",TokIdent "env",TokSymbol ";",TokSymbol "(",TokIdent "s2",TokSymbol ",",TokIdent "tThen",TokSymbol ")",TokSymbol "<-",TokIdent "inferExprFn",TokIdent "env1",TokIdent "eThen",TokSymbol ";",TokSymbol "(",TokIdent "s3",TokSymbol ",",TokIdent "tElse",TokSymbol ")",TokSymbol "<-",TokIdent "inferExprFn",TokSymbol "(",TokIdent "applyEnv",TokIdent "s2",TokIdent "env1",TokSymbol ")",TokIdent "eElse",TokSymbol ";",TokIdent "s4",TokSymbol "<-",TokKeyword "case",TokIdent "unify",TokSymbol "(",TokIdent "apply",TokIdent "s3",TokIdent "tThen",TokSymbol ")",TokIdent "tElse",TokKeyword "of",TokVLBrace,TokTypeIdent "Left",TokIdent "uerr",TokArrow,TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "InferUnifyError",TokIdent "uerr",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokIdent "su",TokArrow,TokTypeIdent "Right",TokIdent "su",TokVRBrace,TokNewline,TokKeyword "let",TokIdent "s",TokSymbol "=",TokIdent "s4",TokIdent "`composeSubst`",TokIdent "s3",TokIdent "`composeSubst`",TokIdent "s2",TokIdent "`composeSubst`",TokIdent "s1",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s",TokSymbol ",",TokIdent "apply",TokIdent "s4",TokIdent "tElse",TokSymbol ")",TokVRBrace,TokNewline]
