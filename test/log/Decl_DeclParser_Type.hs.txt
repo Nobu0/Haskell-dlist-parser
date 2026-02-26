@@ -1,26 +1,331 @@
--- Raw Source --
-
--- Tokens from Lexer --
-
--- Parsing --
 
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 217 / 293
-Coverage: 74.06143344709898%
+Consumed tokens: 150 / 406
+Coverage: 36%
 
 -- AST----------------------------------
-[DeclModule "Decl.DeclParser.Type" (Just [ExportVar "typeDecl",ExportVar "newtypeDecl",ExportVar "constr"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Data.Map", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "keys"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "newtypeDecl" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "newtypeDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "myTrace") (EString "<< newtypeDecl parser called")),ExprStmt (EApp (EVar "keyword") (EString "newtype")),Bind (PApp (PVar "name") []) (EVar "typeIdent"),Bind (PApp (PVar "vars") []) (EApp (EVar "many") (EVar "typeIdent")),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "c") []) (EVar "constr"),ExprStmt (EReturn (EApp (EApp (EApp (EVarType "DeclNewtype") (EVar "name")) (EVar "vars")) (EVar "c")))])) Nothing],DeclTypeSig "constr" (TApp (TCon "Parser") (TCon "Constraint")),DeclFunGroup "constr" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "myTrace") (EString "<< constr parser called")),Bind (PApp (PVar "cname") []) (EVar "typeIdent"),Bind (PApp (PVar "tys") []) (EApp (EVar "many") (EVar "typeExpr")),ExprStmt (EReturn (EApp (EApp (EVarType "Constraint") (EVar "cname")) (EVar "tys")))])) Nothing],DeclTypeSig "typeDecl" (TApp (TCon "Parser") (TCon "Decl"))]
 
--- remainig-----------------------------
-[TokIdent "typeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "type",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "typ",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "DeclTypeAlias",TokIdent "name",TokIdent "vars",TokIdent "typ",TokVRBrace,TokNewline,TokIdent "contextListParser",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "contextListParser",TokSymbol "=",TokIdent "parens",TokSymbol "(",TokIdent "sepBy1",TokIdent "constraintParser",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "constraintParser",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintParser",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokVRBrace,TokNewline]
+-- AST (numbered) --
+[0] DeclModule "Decl.DeclParser.Type" (Just [ExportVar "typeDecl",ExportVar "newtypeDecl",ExportVar "constr",ExportVar "typeSigDecl"])
+[1] DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[2] DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[3] DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]}
+[4] DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]}
+[5] DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]}
+[6] DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]}
+[7] DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]}
+[8] DeclImport {importQualified = False, importModule = "Data.Map", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "keys"]}
+[9] DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[10] DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]}
+[11] DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[12] DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[13] DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[14] DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[15] DeclTypeSig "typeSigDecl" (TApp (TCon "Parser") (TCon "Decl"))
+[DeclModule "Decl.DeclParser.Type" (Just [ExportVar "typeDecl",ExportVar "newtypeDecl",ExportVar "constr",ExportVar "typeSigDecl"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Data.Map", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "keys"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "typeSigDecl" (TApp (TCon "Parser") (TCon "Decl"))]
+
+-- Remaining-----------------------------
+[TokIdent "typeSigDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< typeSigDecl: ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokVLBrace,TokIdent "try",TokIdent "ident",TokVLBrace,TokOperator "<|>",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "parens",TokIdent "operatorI",TokSymbol ";",TokKeyword "return",TokOperator "$",TokString "(",TokOperator "++",TokIdent "op",TokOperator "++",TokString ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< typeSigDecl:2 ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "::",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "parseType",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< parsed type signature: ",TokOperator "++",TokIdent "name",TokOperator "++",TokString " :: ",TokOperator "++",TokIdent "show",TokIdent "ty",TokSymbol ")",TokSymbol ";",TokKeyword "let",TokIdent "decl",TokSymbol "=",TokTypeIdent "DeclTypeSig",TokIdent "name",TokIdent "ty",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< returning DeclTypeSig: ",TokOperator "++",TokIdent "show",TokIdent "decl",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "decl",TokVRBrace,TokNewline,TokIdent "newtypeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "newtypeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< newtypeDecl parser called",TokSymbol ";",TokIdent "keyword",TokString "newtype",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< newtypeDecl name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " vars ",TokOperator "++",TokIdent "show",TokIdent "vars",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "c",TokSymbol "<-",TokIdent "constr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*newtypeDecl c ",TokOperator "++",TokIdent "show",TokIdent "c",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "DeclNewtype",TokIdent "name",TokIdent "vars",TokIdent "c",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "typeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "type",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< typeDecl name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " vars ",TokOperator "++",TokIdent "show",TokIdent "vars",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "typ",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*typeDecl typ ",TokOperator "++",TokIdent "show",TokIdent "typ",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "DeclTypeAlias",TokIdent "name",TokIdent "vars",TokIdent "typ",TokVRBrace,TokNewline,TokIdent "contextListParser",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "contextListParser",TokSymbol "=",TokIdent "parens",TokSymbol "(",TokIdent "sepBy1",TokIdent "constraintParser",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "constraintParser",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintParser",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokVRBrace,TokNewline]
+
+-- Parsed AST log --
+<< decl next token: TokNewline
+<< decl parser called
+<< decl dispatch: TokKeyword "module"
+<< exportItem: next token=TokIdent "typeDecl"
+<< exportItem: name "typeDecl"
+<< exportItem: next token=TokIdent "newtypeDecl"
+<< exportItem: name "newtypeDecl"
+<< exportItem: next token=TokIdent "constr"
+<< exportItem: name "constr"
+<< exportItem: next token=TokIdent "typeSigDecl"
+<< exportItem: name "typeSigDecl"
+<< exportItem: next token=TokSymbol ")"
+>>*declBody: e DeclModule "Decl.DeclParser.Type" (Just [ExportVar "typeDecl",ExportVar "newtypeDecl",ExportVar "constr",ExportVar "typeSigDecl"])
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+<< importIdent: next token TokTypeIdent "Pattern"
+<< importIdent: name "Pattern"
+<< importIdent: m Just (ImportTypeAll "Pattern")
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+<< importIdent: next token TokTypeIdent "Constraint"
+<< importIdent: name "Constraint"
+<< importIdent: m Just (ImportTypeAll "Constraint")
+<< importIdent: next token TokTypeIdent "Type"
+<< importIdent: name "Type"
+<< importIdent: m Just (ImportTypeAll "Type")
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Control"
+<< importIdent: next token TokIdent "empty"
+<< importIdent: name "empty"
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "many"
+<< importIdent: name "many"
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "optional"
+<< importIdent: name "optional"
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "some"
+<< importIdent: name "some"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol "("
+<< importIdent: name "(())"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Data"
+<< importIdent: next token TokIdent "isUpper"
+<< importIdent: name "isUpper"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Data"
+<< importIdent: next token TokIdent "intercalate"
+<< importIdent: name "intercalate"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Data"
+<< importIdent: next token TokIdent "keys"
+<< importIdent: name "keys"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Data.Map", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "keys"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Decl"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Lexer"
+<< importIdent: next token TokTypeIdent "Token"
+<< importIdent: name "Token"
+<< importIdent: m Just (ImportTypeAll "Token")
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Parser"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Parser"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Parser"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Utils"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokIdent "typeSigDecl"
+<< decl parser called
+<< decl dispatch: TokIdent "typeSigDecl"
+<< funDecl: next token=TokIdent "typeSigDecl"
+<< funClause: next token=TokIdent "typeSigDecl"
+<< funClause: args=[] t = TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::"
+<< guardedRhs: next token = TokSymbol "::"
+<< parseGuardLine: next token=TokSymbol "::"
+<< typeSigDecl: TokIdent "typeSigDecl"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Decl")
+<< parsed type signature: typeSigDecl :: TApp (TCon "Parser") (TCon "Decl")
+<< returning DeclTypeSig: DeclTypeSig "typeSigDecl" (TApp (TCon "Parser") (TCon "Decl"))
+>>*declBody: e DeclTypeSig "typeSigDecl" (TApp (TCon "Parser") (TCon "Decl"))
+<< decl next token: TokIdent "typeSigDecl"
+<< decl parser called
+<< decl dispatch: TokIdent "typeSigDecl"
+<< funDecl: next token=TokIdent "typeSigDecl"
+<< funClause: next token=TokIdent "typeSigDecl"
+<< funClause: args=[] t = TokSymbol "="
+<< parseSimpleClause:2 next token=TokKeyword "do"
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "t"
+<< pattern: (pAs <|> makeCons)PApp (PVar "t") []
+<< expr dispatch: TokIdent "lookAhead"
+>>*appExprCore: f= EVar "lookAhead" args= [EVar "anyToken"]
+<< exprCore: rt EApp (EVar "lookAhead") (EVar "anyToken")
+<< exprNoLoop: e EApp (EVar "lookAhead") (EVar "anyToken")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "lookAhead") (EVar "anyToken")
+>>*bindStmt pat= PApp (PVar "t") [] e= EApp (EVar "lookAhead") (EVar "anyToken")
+>>*doStmt: rt Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken"))
+<< bindStmt
+<< pConstrOrVar: next token "myTrace"
+<< pConstrOrVar: next token "++"
+<< pConstrOrVar: next token "show"
+<< pConstrOrVar: next token "t"
+<< pattern: (pAs <|> makeCons)PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]]
+<< expr dispatch: TokIdent "myTrace"
+>>*appExprCore: f= EString "<< typeSigDecl: " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "t"]
+<< exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*appExprCore: f= EString "<< typeSigDecl: " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "t"]
+<< exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*appExprCore: f= EString "<< typeSigDecl: " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "t"]
+<< exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*appExprCore: f= EVar "myTrace" args= [EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))]
+<< exprCore: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+<< exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*exprStmt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))))
+<< bindStmt
+<< pConstrOrVar: next token "name"
+<< pattern: (pAs <|> makeCons)PApp (PVar "name") []
+<< expr dispatch: TokIdent "try"
+>>*appExprCore: f= EVar "try" args= [EVar "ident"]
+<< exprCore: rt EApp (EVar "try") (EVar "ident")
+<< exprNoLoop: e EApp (EVar "try") (EVar "ident")
+<< postfix: operator = Nothing
+<< expr dispatch: TokIdent "name"
+>>*appExprCore: f= EVar "name" args= []
+<< exprCore: rt EVar "name"
+<< exprNoLoop: e EVar "name"
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "name"
+>>*exprStmt EVar "name"
+>>*doStmt: rt ExprStmt (EVar "name")
+<< bindStmt
+<< expr dispatch: TokSymbol "<-"
+>>*doBlock: (f:m)[Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (EVar "name")]
+>>*doExprCore: stmts [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (EVar "name")]
+<< typeSigDecl: TokIdent "typeSigDecl"
+<< typeSigDecl:2 TokSymbol "="
+<< valueDecl: TokIdent "typeSigDecl"
+<< pConstrOrVar: next token "typeSigDecl"
+<< pattern: (pAs <|> makeCons)PApp (PVar "typeSigDecl") []
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "t"
+<< pattern: (pAs <|> makeCons)PApp (PVar "t") []
+<< expr dispatch: TokIdent "lookAhead"
+>>*appExprCore: f= EVar "lookAhead" args= [EVar "anyToken"]
+<< exprCore: rt EApp (EVar "lookAhead") (EVar "anyToken")
+<< exprNoLoop: e EApp (EVar "lookAhead") (EVar "anyToken")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "lookAhead") (EVar "anyToken")
+>>*bindStmt pat= PApp (PVar "t") [] e= EApp (EVar "lookAhead") (EVar "anyToken")
+>>*doStmt: rt Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken"))
+<< bindStmt
+<< pConstrOrVar: next token "myTrace"
+<< pConstrOrVar: next token "++"
+<< pConstrOrVar: next token "show"
+<< pConstrOrVar: next token "t"
+<< pattern: (pAs <|> makeCons)PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]]
+<< expr dispatch: TokIdent "myTrace"
+>>*appExprCore: f= EString "<< typeSigDecl: " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "t"]
+<< exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*appExprCore: f= EString "<< typeSigDecl: " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "t"]
+<< exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*appExprCore: f= EString "<< typeSigDecl: " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "t"]
+<< exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*appExprCore: f= EVar "myTrace" args= [EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))]
+<< exprCore: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+<< exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*exprStmt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))))
+<< bindStmt
+<< pConstrOrVar: next token "name"
+<< pattern: (pAs <|> makeCons)PApp (PVar "name") []
+<< expr dispatch: TokIdent "try"
+>>*appExprCore: f= EVar "try" args= [EVar "ident"]
+<< exprCore: rt EApp (EVar "try") (EVar "ident")
+<< exprNoLoop: e EApp (EVar "try") (EVar "ident")
+<< postfix: operator = Nothing
+<< expr dispatch: TokIdent "name"
+>>*appExprCore: f= EVar "name" args= []
+<< exprCore: rt EVar "name"
+<< exprNoLoop: e EVar "name"
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "name"
+>>*exprStmt EVar "name"
+>>*doStmt: rt ExprStmt (EVar "name")
+<< bindStmt
+<< expr dispatch: TokSymbol "<-"
+>>*doBlock: (f:m)[Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (EVar "name")]
+>>*doExprCore: stmts [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (EVar "name")]
+Just ([DeclModule "Decl.DeclParser.Type" (Just [ExportVar "typeDecl",ExportVar "newtypeDecl",ExportVar "constr",ExportVar "typeSigDecl"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Data.Map", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "keys"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "typeSigDecl" (TApp (TCon "Parser") (TCon "Decl"))],[TokIdent "typeSigDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< typeSigDecl: ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokVLBrace,TokIdent "try",TokIdent "ident",TokVLBrace,TokOperator "<|>",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "parens",TokIdent "operatorI",TokSymbol ";",TokKeyword "return",TokOperator "$",TokString "(",TokOperator "++",TokIdent "op",TokOperator "++",TokString ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< typeSigDecl:2 ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "::",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "parseType",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< parsed type signature: ",TokOperator "++",TokIdent "name",TokOperator "++",TokString " :: ",TokOperator "++",TokIdent "show",TokIdent "ty",TokSymbol ")",TokSymbol ";",TokKeyword "let",TokIdent "decl",TokSymbol "=",TokTypeIdent "DeclTypeSig",TokIdent "name",TokIdent "ty",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< returning DeclTypeSig: ",TokOperator "++",TokIdent "show",TokIdent "decl",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "decl",TokVRBrace,TokNewline,TokIdent "newtypeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "newtypeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< newtypeDecl parser called",TokSymbol ";",TokIdent "keyword",TokString "newtype",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< newtypeDecl name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " vars ",TokOperator "++",TokIdent "show",TokIdent "vars",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "c",TokSymbol "<-",TokIdent "constr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*newtypeDecl c ",TokOperator "++",TokIdent "show",TokIdent "c",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "DeclNewtype",TokIdent "name",TokIdent "vars",TokIdent "c",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "typeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "type",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< typeDecl name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " vars ",TokOperator "++",TokIdent "show",TokIdent "vars",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "typ",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*typeDecl typ ",TokOperator "++",TokIdent "show",TokIdent "typ",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "DeclTypeAlias",TokIdent "name",TokIdent "vars",TokIdent "typ",TokVRBrace,TokNewline,TokIdent "contextListParser",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "contextListParser",TokSymbol "=",TokIdent "parens",TokSymbol "(",TokIdent "sepBy1",TokIdent "constraintParser",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "constraintParser",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintParser",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokVRBrace,TokNewline])
+
+-- src code --
 {-# LANGUAGE LambdaCase #-}
 
 module Decl.DeclParser.Type
   ( typeDecl,
     newtypeDecl,
     constr,
+    typeSigDecl,
     -- classDecl,
     -- instanceDecl,
   )
@@ -46,24 +351,47 @@ import Parser.Core.TokenParser
 import Parser.Type.TypeParser
 import Utils.MyTrace
 
+
+typeSigDecl :: Parser Decl
+typeSigDecl = do
+  t <- lookAhead anyToken
+  myTrace ("<< typeSigDecl: " ++ show t)
+  name <-
+    try ident
+      <|> do
+        op <- parens operatorI
+        return $ "(" ++ op ++ ")"
+  t <- lookAhead anyToken
+  myTrace ("<< typeSigDecl:2 " ++ show t)
+  symbol "::"
+  ty <- parseType
+  myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
+  let decl = DeclTypeSig name ty
+  myTrace ("<< returning DeclTypeSig: " ++ show decl)
+  return decl
+
 -- newtype 宣言
 newtypeDecl :: Parser Decl
 newtypeDecl = do
   myTrace "<< newtypeDecl parser called"
   keyword "newtype"
   name <- typeIdent
-  vars <- many typeIdent
+  vars <- many identI
+  myTrace("<< newtypeDecl name "++ show name++ " vars "++ show vars)
   symbol "="
   c <- constr
+  myTrace(">>*newtypeDecl c "++ show c)
   return (DeclNewtype name vars c)
 
+{-}
 -- コンストラクタ
 constr :: Parser Constraint
 constr = do
   myTrace "<< constr parser called"
   cname <- typeIdent
-  tys <- many typeExpr
+  tys <- braces $ sepBy1 typeSig (symbol ",")
   return (Constraint cname tys)
+-}
 
 -- type Foo a b = (a, b)
 typeDecl :: Parser Decl
@@ -71,8 +399,10 @@ typeDecl = do
   keyword "type"
   name <- identI
   vars <- many identI
+  myTrace("<< typeDecl name "++ show name++ " vars "++ show vars)
   symbol "="
   typ <- typeExpr
+  myTrace(">>*typeDecl typ "++ show typ)
   return $ DeclTypeAlias name vars typ
 
 {-}
@@ -110,4 +440,87 @@ constraintParser = do
   ty <- typeExpr
   return $ Constraint cls [ty]
 
-[TokNewline,TokKeyword "module",TokTypeIdent "Decl",TokOperator ".",TokTypeIdent "DeclParser",TokOperator ".",TokTypeIdent "Type",TokVLBrace,TokSymbol "(",TokIdent "typeDecl",TokSymbol ",",TokIdent "newtypeDecl",TokSymbol ",",TokIdent "constr",TokSymbol ",",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Decl",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Expr",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Pattern",TokSymbol "(",TokTypeIdent "Pattern",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Constraint",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ",",TokTypeIdent "Type",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Control",TokOperator ".",TokTypeIdent "Applicative",TokSymbol "(",TokIdent "empty",TokSymbol ",",TokIdent "many",TokSymbol ",",TokIdent "optional",TokSymbol ",",TokIdent "some",TokSymbol ",",TokSymbol "(",TokOperator "<|>",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "Char",TokSymbol "(",TokIdent "isUpper",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "List",TokSymbol "(",TokIdent "intercalate",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Data",TokOperator ".",TokTypeIdent "Map",TokSymbol "(",TokIdent "keys",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Decl",TokOperator ".",TokTypeIdent "DeclParser",TokOperator ".",TokTypeIdent "Util",TokNewline,TokKeyword "import",TokTypeIdent "Lexer",TokOperator ".",TokTypeIdent "Token",TokSymbol "(",TokTypeIdent "Token",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "Combinator",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Core",TokOperator ".",TokTypeIdent "TokenParser",TokNewline,TokKeyword "import",TokTypeIdent "Parser",TokOperator ".",TokTypeIdent "Type",TokOperator ".",TokTypeIdent "TypeParser",TokNewline,TokKeyword "import",TokTypeIdent "Utils",TokOperator ".",TokTypeIdent "MyTrace",TokNewline,TokIdent "newtypeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "newtypeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< newtypeDecl parser called",TokSymbol ";",TokIdent "keyword",TokString "newtype",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "typeIdent",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "c",TokSymbol "<-",TokIdent "constr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "DeclNewtype",TokIdent "name",TokIdent "vars",TokIdent "c",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< constr parser called",TokSymbol ";",TokIdent "cname",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "tys",TokSymbol "<-",TokIdent "many",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cname",TokIdent "tys",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeDecl",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Decl",TokNewline,TokIdent "typeDecl",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "type",TokSymbol ";",TokIdent "name",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "many",TokIdent "identI",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "typ",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "DeclTypeAlias",TokIdent "name",TokIdent "vars",TokIdent "typ",TokVRBrace,TokNewline,TokIdent "contextListParser",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "contextListParser",TokSymbol "=",TokIdent "parens",TokSymbol "(",TokIdent "sepBy1",TokIdent "constraintParser",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "constraintParser",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintParser",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "identI",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeExpr",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokVRBrace,TokNewline]
+
+-- token --
+[0] TokNewline          TokKeyword "module" TokTypeIdent "Decl" TokOperator "."     TokTypeIdent "DeclPa
+[5] TokOperator "."     TokTypeIdent "Type" TokVLBrace          TokSymbol "("       TokIdent "typeDecl" 
+[10] TokSymbol ","       TokIdent "newtypeDecTokSymbol ","       TokIdent "constr"   TokSymbol ","       
+[15] TokIdent "typeSigDecTokSymbol ","       TokSymbol ")"       TokVRBrace          TokNewline          
+[20] TokKeyword "where"  TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     
+[25] TokTypeIdent "Decl" TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     
+[30] TokTypeIdent "Expr" TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     
+[35] TokTypeIdent "PatterTokSymbol "("       TokTypeIdent "PatterTokSymbol "("       TokSymbol ".."      
+[40] TokSymbol ")"       TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "AST"  
+[45] TokOperator "."     TokTypeIdent "Type" TokSymbol "("       TokTypeIdent "ConstrTokSymbol "("       
+[50] TokSymbol ".."      TokSymbol ")"       TokSymbol ","       TokTypeIdent "Type" TokSymbol "("       
+[55] TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       TokNewline          TokKeyword "import" 
+[60] TokTypeIdent "ControTokOperator "."     TokTypeIdent "ApplicTokSymbol "("       TokIdent "empty"    
+[65] TokSymbol ","       TokIdent "many"     TokSymbol ","       TokIdent "optional" TokSymbol ","       
+[70] TokIdent "some"     TokSymbol ","       TokSymbol "("       TokOperator "<|>"   TokSymbol ")"       
+[75] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "Data" TokOperator "."     
+[80] TokTypeIdent "Char" TokSymbol "("       TokIdent "isUpper"  TokSymbol ")"       TokNewline          
+[85] TokKeyword "import" TokTypeIdent "Data" TokOperator "."     TokTypeIdent "List" TokSymbol "("       
+[90] TokIdent "intercalatTokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "Data" 
+[95] TokOperator "."     TokTypeIdent "Map"  TokSymbol "("       TokIdent "keys"     TokSymbol ")"       
+[100] TokNewline          TokKeyword "import" TokTypeIdent "Decl" TokOperator "."     TokTypeIdent "DeclPa
+[105] TokOperator "."     TokTypeIdent "Util" TokNewline          TokKeyword "import" TokTypeIdent "Lexer"
+[110] TokOperator "."     TokTypeIdent "Token"TokSymbol "("       TokTypeIdent "Token"TokSymbol "("       
+[115] TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       TokNewline          TokKeyword "import" 
+[120] TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Core" TokOperator "."     TokTypeIdent "Combin
+[125] TokNewline          TokKeyword "import" TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Core" 
+[130] TokOperator "."     TokTypeIdent "TokenPTokNewline          TokKeyword "import" TokTypeIdent "Parser
+[135] TokOperator "."     TokTypeIdent "Type" TokOperator "."     TokTypeIdent "TypePaTokNewline          
+[140] TokKeyword "import" TokTypeIdent "Utils"TokOperator "."     TokTypeIdent "MyTracTokNewline          
+[145] TokIdent "typeSigDecTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Decl" TokNewline          
+[150] TokIdent "typeSigDecTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t"        
+[155] TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  
+[160] TokSymbol "("       TokString "<< typeSiTokOperator "++"    TokIdent "show"     TokIdent "t"        
+[165] TokSymbol ")"       TokSymbol ";"       TokIdent "name"     TokSymbol "<-"      TokVLBrace          
+[170] TokIdent "try"      TokIdent "ident"    TokVLBrace          TokOperator "<|>"   TokKeyword "do"     
+[175] TokVLBrace          TokIdent "op"       TokSymbol "<-"      TokIdent "parens"   TokIdent "operatorI"
+[180] TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokString "("       TokOperator "++"    
+[185] TokIdent "op"       TokOperator "++"    TokString ")"       TokVRBrace          TokVRBrace          
+[190] TokVRBrace          TokNewline          TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"
+[195] TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< typeSi
+[200] TokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       
+[205] TokIdent "symbol"   TokString "::"      TokSymbol ";"       TokIdent "ty"       TokSymbol "<-"      
+[210] TokIdent "parseType"TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< parsed
+[215] TokOperator "++"    TokIdent "name"     TokOperator "++"    TokString " :: "    TokOperator "++"    
+[220] TokIdent "show"     TokIdent "ty"       TokSymbol ")"       TokSymbol ";"       TokKeyword "let"    
+[225] TokIdent "decl"     TokSymbol "="       TokTypeIdent "DeclTyTokIdent "name"     TokIdent "ty"       
+[230] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< returnTokOperator "++"    
+[235] TokIdent "show"     TokIdent "decl"     TokSymbol ")"       TokSymbol ";"       TokKeyword "return" 
+[240] TokIdent "decl"     TokVRBrace          TokNewline          TokIdent "newtypeDecTokSymbol "::"      
+[245] TokTypeIdent "ParserTokTypeIdent "Decl" TokNewline          TokIdent "newtypeDecTokSymbol "="       
+[250] TokKeyword "do"     TokVLBrace          TokIdent "myTrace"  TokString "<< newtypTokSymbol ";"       
+[255] TokIdent "keyword"  TokString "newtype" TokSymbol ";"       TokIdent "name"     TokSymbol "<-"      
+[260] TokIdent "typeIdent"TokSymbol ";"       TokIdent "vars"     TokSymbol "<-"      TokIdent "many"     
+[265] TokIdent "identI"   TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< newtyp
+[270] TokOperator "++"    TokIdent "show"     TokIdent "name"     TokOperator "++"    TokString " vars "  
+[275] TokOperator "++"    TokIdent "show"     TokIdent "vars"     TokSymbol ")"       TokSymbol ";"       
+[280] TokIdent "symbol"   TokString "="       TokSymbol ";"       TokIdent "c"        TokSymbol "<-"      
+[285] TokIdent "constr"   TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*newtyp
+[290] TokOperator "++"    TokIdent "show"     TokIdent "c"        TokSymbol ")"       TokSymbol ";"       
+[295] TokKeyword "return" TokSymbol "("       TokTypeIdent "DeclNeTokIdent "name"     TokIdent "vars"     
+[300] TokIdent "c"        TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "typeDecl" 
+[305] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Decl" TokNewline          TokIdent "typeDecl" 
+[310] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "keyword"  TokString "type"    
+[315] TokSymbol ";"       TokIdent "name"     TokSymbol "<-"      TokIdent "identI"   TokSymbol ";"       
+[320] TokIdent "vars"     TokSymbol "<-"      TokIdent "many"     TokIdent "identI"   TokSymbol ";"       
+[325] TokIdent "myTrace"  TokSymbol "("       TokString "<< typeDeTokOperator "++"    TokIdent "show"     
+[330] TokIdent "name"     TokOperator "++"    TokString " vars "  TokOperator "++"    TokIdent "show"     
+[335] TokIdent "vars"     TokSymbol ")"       TokSymbol ";"       TokIdent "symbol"   TokString "="       
+[340] TokSymbol ";"       TokIdent "typ"      TokSymbol "<-"      TokIdent "typeExpr" TokSymbol ";"       
+[345] TokIdent "myTrace"  TokSymbol "("       TokString ">>*typeDeTokOperator "++"    TokIdent "show"     
+[350] TokIdent "typ"      TokSymbol ")"       TokSymbol ";"       TokKeyword "return" TokOperator "$"     
+[355] TokTypeIdent "DeclTyTokIdent "name"     TokIdent "vars"     TokIdent "typ"      TokVRBrace          
+[360] TokNewline          TokIdent "contextLisTokSymbol "::"      TokTypeIdent "ParserTokSymbol "["       
+[365] TokTypeIdent "ConstrTokSymbol "]"       TokNewline          TokIdent "contextLisTokSymbol "="       
+[370] TokIdent "parens"   TokSymbol "("       TokIdent "sepBy1"   TokIdent "constraintTokSymbol "("       
+[375] TokIdent "symbol"   TokString ","       TokSymbol ")"       TokSymbol ")"       TokNewline          
+[380] TokIdent "constraintTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "ConstrTokNewline          
+[385] TokIdent "constraintTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "cls"      
+[390] TokSymbol "<-"      TokIdent "identI"   TokSymbol ";"       TokIdent "ty"       TokSymbol "<-"      
+[395] TokIdent "typeExpr" TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokTypeIdent "Constr
+[400] TokIdent "cls"      TokSymbol "["       TokIdent "ty"       TokSymbol "]"       TokVRBrace          
+[405] TokNewline          

@@ -67,9 +67,10 @@ bindStmt expr = try $ do
   -- 実際に読む
   pat <- pattern
   symbol "<-"
-  e <- expr
-  myTrace (">>*bindStmt pat= " ++ show pat ++ " e= " ++ show e)
-  return (Bind pat e)
+  bracesV $ do
+    e <- expr
+    myTrace (">>*bindStmt pat= " ++ show pat ++ " e= " ++ show e)
+    return (Bind pat e)
 
 letStmt :: Parser Expr -> Parser Stmt
 letStmt expr = do

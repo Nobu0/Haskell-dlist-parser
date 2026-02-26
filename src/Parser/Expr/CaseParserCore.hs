@@ -16,13 +16,14 @@ import Utils.MyTrace
 
 caseExprCore :: Parser Expr -> Parser Expr
 caseExprCore expr = do
+  myTrace ("<< caseExprCore:")
   keyword "case"
   scrut <- expr
   keyword "of"
   bracesV $ do
     alts <- caseAltBlock expr -- sepBy1 (try(caseAlt expr)) caseSep
     -- t <- lookAhead anyToken
-    myTrace ("<< caseExprCore: alts " ++ show alts)
+    myTrace (">>*caseExprCore: alts " ++ show alts)
     return (ECase scrut alts)
 
 caseAltBlock :: Parser Expr -> Parser [CaseAlt]
@@ -122,17 +123,18 @@ caseAlt expr = do
   pat <- pattern
   -- t <- lookAhead anyToken
   -- myTrace ("<< caseAlt: next token " ++ show t ++ " " ++ show pat)
-  guards <- many (guardExpr expr)
-  case guards of
-    [] -> do
-      token TokArrow
-      bracesV $ do
-        body <- expr -- guardedExpr expr
-        myTrace ("<< caseAlt: " ++ show pat ++ " " ++ show body)
-        return (CaseAlt pat body)
-    _ -> do
-      myTrace ("<< caseAlt: g " ++ show pat ++ " " ++ show guards)
-      return (CaseAltGuard pat guards)
+  bracesV $ do
+    guards <- many (guardExpr expr)
+    case guards of
+      [] -> do
+        token TokArrow
+        bracesV $ do
+          body <- expr -- guardedExpr expr
+          myTrace (">>*caseAlt: " ++ show pat ++ " " ++ show body)
+          return (CaseAlt pat body)
+      _ -> do
+        myTrace (">>*caseAlt: g " ++ show pat ++ " " ++ show guards)
+        return (CaseAltGuard pat guards)
 
 guardExpr :: Parser Expr -> Parser (Expr, Expr)
 guardExpr expr = do
@@ -142,7 +144,7 @@ guardExpr expr = do
   cond <- expr
   token TokArrow
   body <- expr
-  myTrace ("<< guardExpr body: " ++ show body)
+  myTrace (">>*guardExpr body: " ++ show body)
   return (cond, body)
 
 caseGuard :: Parser Expr -> Parser (Expr, Expr)
@@ -155,7 +157,7 @@ caseGuard expr = do
   tokenIs (\case TokArrow -> Just (); _ -> Nothing)
   -- token TokArrow
   body <- expr
-  myTrace ("<< caseGuard body: " ++ show body)
+  myTrace (">>*caseGuard body: " ++ show body)
   return (cond, body)
 
 caseAltSimple :: Parser Expr -> Parser CaseAlt
@@ -165,7 +167,7 @@ caseAltSimple expr = do
   pat <- pattern
   token TokArrow
   body <- expr
-  myTrace ("<< caseAltSimple body: " ++ show body)
+  myTrace (">>*caseAltSimple body: " ++ show body)
   return (CaseAlt pat body)
 
 unguarded :: Pattern -> Parser Expr -> Parser CaseAlt

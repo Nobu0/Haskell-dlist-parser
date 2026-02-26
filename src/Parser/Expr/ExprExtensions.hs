@@ -32,7 +32,7 @@ import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.CaseParserCore (caseExprCore, lambdaCaseExpr)
 import Parser.Expr.DoParserCore (doExprCore)
-import Parser.Expr.ExprCore (atomCore, exprCore)
+import Parser.Expr.ExprCore -- (atomCore, exprCore)
 import Parser.Expr.ListParserCore (listExprCore)
 import Parser.Expr.PatternParser (pPattern, pattern)
 import Parser.SQL.SQLParser
@@ -102,6 +102,11 @@ postfix e = do
   mop <- optional operatorA
   myTrace ("<< postfix: operator = " ++ show mop)
   case mop of
+    Just "$" -> do
+      myTrace "<< postfix: operator = $"
+      rhs <- layoutExpr  -- ← ここがポイント！
+      myTrace (">> postfix: out rhs = "++ show rhs)
+      postfix (EApp (EApp (EVar "$") e) rhs)
     Just op -> do
       myTrace ("<< postfix: infix operator = " ++ show op)
       rhs <- expr -- NoLoop
@@ -112,25 +117,18 @@ postfix e = do
         Just binds -> postfix (EWhere e binds)
         Nothing -> return e
 
-{-}
-postfix :: Expr -> Parser Expr
-postfix e = do
-  -- 連続して後置演算子を処理する
-  let loop acc = do
-        mop <- optional operatorA
-        myTrace ("<< postfix: mop = " ++ show mop)
-        case mop of
-          Just op -> do
-            myTrace ("<< postfix: infix operator = " ++ show op)
-            rhs <- exprNoLoop
-            loop (EApp (EApp (EVar op) acc) rhs)
-          Nothing -> do
-            mbBinds <- whereClause
-            case mbBinds of
-              Just binds -> loop (EWhere acc binds)
-              Nothing -> return acc
-  loop e
--}
+--layoutExpr :: Parser Expr
+--layoutExpr = doBlockExpr <|> expr
+
+layoutExpr:: Parser Expr
+layoutExpr = do
+  t <- lookAhead anyToken
+  case t of
+    TokVLBrace -> do
+      bracesVO expr
+    TokSymbol "{" -> do
+      braces expr
+    _ -> expr
 
 -- postfixで参照
 operatorA :: Parser String
@@ -146,7 +144,7 @@ operatorB :: Parser String
 operatorB = satisfyToken isOp
   where
     isOp (TokOperator s)
-      | s `elem` [".", ">>", "++", "<?>", ">>=", "<|>"] = Just s
+      | s `elem` [".", ">>", "++", "<?>", ">>=", "<|>","*>","<$","<*>","<*"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 
@@ -165,8 +163,8 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
-    TokVLBrace -> empty -- bracesv expr
-    -- TokSymbol "\\" -> lambdaExpr
+    -- TokVLBrace -> bracesVO expr
+    TokSymbol "\\" -> lambdaExpr
     -- TokSymbol ";" -> empty
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
     _ -> exprCore
@@ -190,49 +188,57 @@ whereClause = do
         myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
         return (b : bs)
 
-{-}
-binding :: Parser Binding
-binding = do
-  rt <- try valueBinding <|> funBinding
-  skipNewlines
-  return rt
--}
--- ============================================
---  let / if / return / for
--- ============================================
-{-}
-def :: Parser (Pattern, Expr)
-def = do
-  p <- pattern
-  symbol "="
+
+
+lambdaExpr :: Parser Expr
+lambdaExpr = do
+  symbol "\\"
+  arg <- pattern
+  tokenIs (\case TokArrow -> Just (); _ -> Nothing)
   bracesV $ do
-    e <- expr -- NoLoop
-    return (p, e)
--}
+    body <- expr
+    return (ELam arg body)
+
 
 ifExpr :: Parser Expr
 ifExpr = do
   keyword "if"
   cond <- expr -- NoLoop
-  keyword "then"
-  th <- expr -- NoLoop
-  keyword "else"
-  el <- expr -- NoLoop
-  return (EIf cond th el)
+  bracesV $ do
+    keyword "then"
+    th <- expr -- NoLoop
+    keyword "else"
+    el <- expr -- NoLoop
+    return (EIf cond th el)
 
+{-}
 returnExpr :: Parser Expr
 returnExpr = do
   keyword "return"
-  t <- lookAhead anyToken
-  case t of
-    TokOperator "$" -> do
-      e <- expr
-      myTrace (">>*return: e " ++ show e)
-      return (EReturn e)
-    _ -> do
-      e <- atomCore -- exprNoLoop
-      myTrace (">>*return: e " ++ show e)
-      return (EReturn e)
+  e <- expr -- exprNoLoop
+  myTrace (">>*return: e " ++ show e)
+  return (EReturn e)
+-}  
+returnExpr :: Parser Expr
+returnExpr =
+  try returnWithDollar <|> returnSimple
+
+-- return $ expr
+returnWithDollar :: Parser Expr
+returnWithDollar = do
+  keyword "return"
+  token (TokOperator "$")
+  e <- expr
+  myTrace (">>*return $: " ++ show e)
+  return (EReturn e)
+
+-- return expr (just one atom)
+returnSimple :: Parser Expr
+returnSimple = do
+  keyword "return"
+  e <- atomCore  -- or exprNoLoop
+  myTrace (">>*return atom: " ++ show e)
+  return (EReturn e)
 
 forExpr :: Parser Expr
 forExpr = do
@@ -362,8 +368,9 @@ bindingsBlock = do
   where
     bindings = do
       f <- binding
-      xs <- many binding
-      return (f : xs)
+      bracesV $ do
+        xs <- many binding
+        return (f : xs)
 
 bindingsBlockXX :: Parser [Binding]
 bindingsBlockXX = do

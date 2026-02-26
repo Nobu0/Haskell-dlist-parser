@@ -1,20 +1,62 @@
--- Raw Source --
-
--- Tokens from Lexer --
-
--- Parsing --
 
 -- Parsed AST --
 
 -- Parse Coverage --
 Consumed tokens: 53 / 53
-Coverage: 100.0%
+Coverage: 100%
 
 -- AST----------------------------------
+
+-- AST (numbered) --
+[0] DeclModule "TypeInference.Error" Nothing
+[1] DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]}
+[2] DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "UnifyError"]}
+[3] DeclData "InferError" [] [Constraint "InferUnboundVariable" [TCon "String"],Constraint "InferMismatch" [TCon "Type",TCon "Type"],Constraint "InferUnifyError" [TCon "UnifyError"],Constraint "InferOther" [TCon "String"]] ["Show","Eq"]
 [DeclModule "TypeInference.Error" Nothing,DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "UnifyError"]},DeclData "InferError" [] [Constraint "InferUnboundVariable" [TCon "String"],Constraint "InferMismatch" [TCon "Type",TCon "Type"],Constraint "InferUnifyError" [TCon "UnifyError"],Constraint "InferOther" [TCon "String"]] ["Show","Eq"]]
 
--- remainig-----------------------------
+-- Remaining-----------------------------
 []
+
+-- Parsed AST log --
+<< decl next token: TokKeyword "module"
+<< decl parser called
+<< decl dispatch: TokKeyword "module"
+>>*declBody: e DeclModule "TypeInference.Error" Nothing
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+<< importIdent: next token TokTypeIdent "Type"
+<< importIdent: name "Type"
+<< importIdent: m Just (ImportTypeAll "Type")
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+<< importIdent: next token TokTypeIdent "UnifyError"
+<< importIdent: name "UnifyError"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "UnifyError"]}
+<< decl next token: TokKeyword "data"
+<< decl parser called
+<< decl dispatch: TokKeyword "data"
+<< dataConstrRecord: TokTypeIdent "String"
+<< dataConstrNormal: "InferUnboundVariable" [TCon "String"]
+<< dataConstrRecord: TokTypeIdent "Type"
+<< dataConstrNormal: "InferMismatch" [TCon "Type",TCon "Type"]
+<< dataConstrRecord: TokTypeIdent "UnifyError"
+<< dataConstrNormal: "InferUnifyError" [TCon "UnifyError"]
+<< dataConstrRecord: TokTypeIdent "String"
+<< dataConstrNormal: "InferOther" [TCon "String"]
+>>*declBody: e DeclData "InferError" [] [Constraint "InferUnboundVariable" [TCon "String"],Constraint "InferMismatch" [TCon "Type",TCon "Type"],Constraint "InferUnifyError" [TCon "UnifyError"],Constraint "InferOther" [TCon "String"]] ["Show","Eq"]
+Just ([DeclModule "TypeInference.Error" Nothing,DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "UnifyError"]},DeclData "InferError" [] [Constraint "InferUnboundVariable" [TCon "String"],Constraint "InferMismatch" [TCon "Type",TCon "Type"],Constraint "InferUnifyError" [TCon "UnifyError"],Constraint "InferOther" [TCon "String"]] ["Show","Eq"]],[])
+
+-- src code --
 module TypeInference.Error where
 
 import AST.Type (Type (..))
@@ -28,4 +70,16 @@ data InferError
   | InferOther String
   deriving (Show, Eq)
 
-[TokKeyword "module",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Error",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokSymbol "(",TokTypeIdent "Type",TokSymbol "(",TokSymbol "..",TokSymbol ")",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "TypeInference",TokOperator ".",TokTypeIdent "Unify",TokSymbol "(",TokTypeIdent "UnifyError",TokSymbol ")",TokNewline,TokKeyword "data",TokTypeIdent "InferError",TokVLBrace,TokSymbol "=",TokTypeIdent "InferUnboundVariable",TokTypeIdent "String",TokSymbol ";",TokSymbol "|",TokTypeIdent "InferMismatch",TokTypeIdent "Type",TokTypeIdent "Type",TokSymbol ";",TokSymbol "|",TokTypeIdent "InferUnifyError",TokTypeIdent "UnifyError",TokSymbol ";",TokSymbol "|",TokTypeIdent "InferOther",TokTypeIdent "String",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline]
+
+-- token --
+[0] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Error"TokKeyword "where"  
+[5] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Type" 
+[10] TokSymbol "("       TokTypeIdent "Type" TokSymbol "("       TokSymbol ".."      TokSymbol ")"       
+[15] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     
+[20] TokTypeIdent "Unify"TokSymbol "("       TokTypeIdent "UnifyETokSymbol ")"       TokNewline          
+[25] TokKeyword "data"   TokTypeIdent "InferETokVLBrace          TokSymbol "="       TokTypeIdent "InferU
+[30] TokTypeIdent "StringTokSymbol ";"       TokSymbol "|"       TokTypeIdent "InferMTokTypeIdent "Type" 
+[35] TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       TokTypeIdent "InferUTokTypeIdent "UnifyE
+[40] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "InferOTokTypeIdent "StringTokSymbol ";"       
+[45] TokKeyword "derivingTokSymbol "("       TokTypeIdent "Show" TokSymbol ","       TokTypeIdent "Eq"   
+[50] TokSymbol ")"       TokVRBrace          TokNewline          

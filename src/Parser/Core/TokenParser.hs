@@ -297,6 +297,10 @@ parseBinOp s = case s of
   -- 関数合成
   "." -> Just BinOpCompose
   -- モナディック操作など（必要に応じて）
+  "*>" -> Just BinOpThen
+  "<*" -> Just BinOpThen
+  "<$" -> Just BinOpThen
+  "<*>" -> Just BinOpThen
   ">>" -> Just BinOpThen
   ">>=" -> Just BinOpBind
   "<|>" -> Just BinOpAlt
@@ -337,6 +341,7 @@ operatorVar = do
 {-}
 
 -}
+-- importに関係する
 operatorI :: Parser String
 operatorI = satisfyToken isOp
   where
@@ -345,7 +350,7 @@ operatorI = satisfyToken isOp
       | otherwise = Nothing
     isOp _ = Nothing
 
-    allowed = ["::", ":", "++", "<$>", "$"] -- "$" を含めない！
+    allowed = ["::", ":", "++", "<$>", "$","\\","<*>",">>=","<|>"] -- "$" を含めない！
 
 {-}
 -- postfixで参照

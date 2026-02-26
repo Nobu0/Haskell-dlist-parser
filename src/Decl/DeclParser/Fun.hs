@@ -39,6 +39,7 @@ funDecl = do
   (name, clause1) <- funClause -- funDecl
   rest <- many (try (funClauseWithName name))
   -- optional (token TokVRBrace)
+  myTrace(">>*funDecl name "++ show name++" clause1 "++ show clause1++ " rest "++ show rest)
   return (DeclFunGroup name (clause1 : rest))
 
 funClause :: Parser (Name, FunClause)

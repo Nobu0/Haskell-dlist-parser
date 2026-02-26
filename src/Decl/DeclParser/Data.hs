@@ -59,13 +59,9 @@ dataConstrRecord = do
 
 fieldDef :: Parser Field
 fieldDef = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< fieldDef: " ++ show t)
   name <- identI
   symbol "::"
   ty <- typeExpr
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< fieldDef:2 " ++ show name ++ " " ++ show ty ++ " " ++ show t)
   return $ Field name ty
 
 fieldDefs :: Parser [Field]

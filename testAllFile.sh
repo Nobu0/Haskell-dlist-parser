@@ -18,6 +18,7 @@ find src -type f -name "*.hs" | while read file; do
   cabal run myapp -- "$file" > "$outfile"
   echo ""
 done
+head $outdir/*.hs.txt > $outdir/../all_result.txt
 exit
 
 

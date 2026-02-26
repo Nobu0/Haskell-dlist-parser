@@ -50,6 +50,26 @@
   (major1) == 1 && (major2) <  3 || \
   (major1) == 1 && (major2) == 3 && (minor) <= 1)
 #endif /* MIN_VERSION_parser_combinators */
+/* package prettyprinter-1.7.1 */
+#ifndef VERSION_prettyprinter
+#define VERSION_prettyprinter "1.7.1"
+#endif /* VERSION_prettyprinter */
+#ifndef MIN_VERSION_prettyprinter
+#define MIN_VERSION_prettyprinter(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  7 || \
+  (major1) == 1 && (major2) == 7 && (minor) <= 1)
+#endif /* MIN_VERSION_prettyprinter */
+/* package prettyprinter-ansi-terminal-1.1.3 */
+#ifndef VERSION_prettyprinter_ansi_terminal
+#define VERSION_prettyprinter_ansi_terminal "1.1.3"
+#endif /* VERSION_prettyprinter_ansi_terminal */
+#ifndef MIN_VERSION_prettyprinter_ansi_terminal
+#define MIN_VERSION_prettyprinter_ansi_terminal(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  1 || \
+  (major1) == 1 && (major2) == 1 && (minor) <= 3)
+#endif /* MIN_VERSION_prettyprinter_ansi_terminal */
 /* package text-2.0.2 */
 #ifndef VERSION_text
 #define VERSION_text "2.0.2"

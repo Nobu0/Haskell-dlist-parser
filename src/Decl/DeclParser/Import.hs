@@ -38,9 +38,7 @@ importDecl = do
 
 importList :: Parser [ImportItem]
 importList =
-  parens $
-    pure ImportAllItems <$ symbol ".."
-      <|> list -- sepBy1 importIdent (symbol ",")
+  parens $ pure ImportAllItems <$ symbol ".." <|> list
   where
     list = do
       f <- importIdent

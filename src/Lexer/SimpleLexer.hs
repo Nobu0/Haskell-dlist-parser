@@ -81,19 +81,20 @@ slexer = go
     ------------------------------------------------------------
     -- 複数文字記号
     ------------------------------------------------------------
+    go ('<' : '|' : '>' : rest) = TokOperator "<|>" : go rest
+    go ('<' : '$' : '>' : rest) = TokOperator "<$>" : go rest
+    go ('<' : '?' : '>' : rest) = TokOperator "<?>" : go rest
+    go ('<' : '*' : '>' : rest) = TokOperator "<*>" : go rest
+    go ('>' : '>' : '=' : rest) = TokOperator ">>=" : go rest
+    -- go ('<' : '+' : '>' : rest) = TokOperator "<+>" : go rest
     go ('-' : '>' : rest) = TokArrow : go rest
     go ('=' : '>' : rest) = TokKeyword "=>" : go rest
     go ('+' : '+' : rest) = TokOperator "++" : go rest
     go (':' : ':' : rest) = TokSymbol "::" : go rest
-    go (':' : rest) = TokOperator ":" : go rest
-    go ('$' : rest) = TokOperator "$" : go rest
     go ('*' : '>' : rest) = TokOperator "*>" : go rest
     go ('<' : '*' : rest) = TokOperator "<*" : go rest
     go ('>' : '>' : rest) = TokOperator ">>" : go rest
-    go ('<' : '|' : '>' : rest) = TokOperator "<|>" : go rest
-    go ('<' : '$' : '>' : rest) = TokOperator "<$>" : go rest
-    go ('<' : '?' : '>' : rest) = TokOperator "<?>" : go rest
-    go ('>' : '>' : '=' : rest) = TokOperator ">>=" : go rest
+    go ('<' : '$' : rest) = TokOperator "<$" : go rest
     -- go ('+' : '+' : rest) = TokSymbol "++" : go rest
     go ('=' : '=' : rest) = TokOperator "==" : go rest
     -- go ('(' : ')' : rest) = TokSymbol "()" : go rest
@@ -105,6 +106,8 @@ slexer = go
     go ('.' : '.' : '.' : rest) = TokEllipsis : go rest
     go ('.' : '.' : rest) = TokSymbol ".." : go rest
     go ('.' : rest) = TokOperator "." : go rest
+    go (':' : rest) = TokOperator ":" : go rest
+    go ('$' : rest) = TokOperator "$" : go rest
     go ('+' : rest) = TokOperator "+" : go rest
     go ('-' : rest) = TokOperator "-" : go rest
     go ('*' : rest) = TokOperator "*" : go rest

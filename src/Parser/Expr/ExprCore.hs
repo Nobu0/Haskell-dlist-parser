@@ -2,9 +2,6 @@
 
 module Parser.Expr.ExprCore
   ( exprCore,
-    -- exprLevel1Core,
-    -- exprLevel2Core,
-    -- exprLevel3Core,
     appExprCore,
     atomCore,
     atomBaseCore,
@@ -12,7 +9,7 @@ module Parser.Expr.ExprCore
     tupleExprCore,
     oPsectionCore,
     pRecordExpr,
-    lambdaExpr,
+    -- lambdaExpr,
   )
 where
 
@@ -46,16 +43,6 @@ field = do
 -- ============================================
 --  lambdaExpr（ExprCore に戻す）
 -- ============================================
-
-lambdaExpr :: Parser Expr
-lambdaExpr = do
-  symbol "\\"
-  arg <- pattern
-  tokenIs (\case TokArrow -> Just (); _ -> Nothing)
-  bracesV $ do
-    body <- exprCore
-    return (ELam arg body)
-
 -- ============================================
 --  exprCore（純粋な式パーサー）
 -- ============================================
@@ -66,9 +53,9 @@ exprCore = do
   -- myTrace ("<< exprCore next token: " ++ show t)
   -- guard (t /= TokSymbol ";")
   rt <-
-    try lambdaExpr
+    --try lambdaExpr
       -- <|> void (token TokEllipsis >> return EPlaceholder)
-      <|> try binOpExprCore
+    try binOpExprCore
       <|> parseSQL
   myTrace ("<< exprCore: rt " ++ show rt)
   return rt
@@ -78,7 +65,9 @@ exprCore = do
 -- ===== 演算子階層 =====
 
 binOpExprCore :: Parser Expr
-binOpExprCore = exprCmpCore
+binOpExprCore = do
+  bracesVO $ do
+    exprCmpCore
 
 -- 比較演算子（左結合）
 exprCmpCore :: Parser Expr
@@ -88,7 +77,7 @@ exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
 -- ここは結合性に応じて分けるのがベスト！
 exprLevel1Core :: Parser Expr
 exprLevel1Core = do
-  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":"])
+  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":","*>","<$","<*","<|>","<$>"])
   -- chainr1 (return e) (binOp ["++", ":"])
   return e
 
@@ -102,8 +91,8 @@ exprAddSubCore = do
 -- 最下層：関数適用やリテラル、変数など
 exprLevel3Core :: Parser Expr
 exprLevel3Core =
-  try lambdaExpr
-    <|> appExprCore
+  -- try lambdaExpr
+  appExprCore
 
 {-}
 binOpExprCore :: Parser Expr
@@ -136,6 +125,7 @@ exprLevel3Core = do
 appExprCore :: Parser Expr
 appExprCore = do
   f <- atomCore
+  -- bracesVO $ do
   args <- many atomCore
   myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
   return (foldl EApp f args)
@@ -144,12 +134,21 @@ appExprCore = do
 --  atom
 -- ============================================
 
-atomCore :: Parser Expr
-atomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
+xatomCore :: Parser Expr
+xatomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
 
-xatomCore = do
-  try (parens parenExprCore)
-    <|> atomBaseCore
+atomCore :: Parser Expr
+atomCore = do
+  t <- lookAhead anyToken
+  case t of
+    TokSymbol "}" -> empty
+    TokSymbol ";" -> empty
+    TokSymbol "$" -> empty
+    TokVRBrace -> empty
+    TokLambdaCase -> empty
+    _ ->    
+      try (parens parenExprCore)
+        <|> atomBaseCore
 
 badToken :: Parser ()
 badToken =
@@ -185,8 +184,8 @@ oPsectionCore = do
 
 atomBaseCore :: Parser Expr
 atomBaseCore = do
-  lambdaExpr
-    <|> EVar <$> ident
+  --lambdaExpr
+    EVar <$> ident
     <|> EInt <$> int
     <|> tunitExpr
     <|> EVarType <$> typeIdent
@@ -204,7 +203,7 @@ operatorVar = do
   return (EVar op)
   where
     isOp (TokOperator s)
-      | s `elem` [":"] = Just s
+      | s `elem` [":","<|>"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 

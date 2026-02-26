@@ -40,7 +40,6 @@ decl = do
 
 decl :: Parser Decl
 decl = do
-  -- optional (newline)
   t <- lookAhead anyToken
   myTrace ("<< decl next token: " ++ show t)
   eof <- isEOF
@@ -52,10 +51,9 @@ decl = do
 
 declBody :: Parser Decl
 declBody = do
-  -- optional (newline)
   d <- declDispatch
   optional (newline)
-  myTrace ("<< declBody: return " ++ show d)
+  myTrace (">>*declBody: e " ++ show d)
   return d
 
 declDispatch :: Parser Decl
@@ -65,7 +63,7 @@ declDispatch = do
   myTrace ("<< decl dispatch: " ++ show t)
   case t of
     TokKeyword "data" -> dataDecl
-    TokKeyword "newType" -> newtypeDecl
+    TokKeyword "newtype" -> newtypeDecl
     TokKeyword "import" -> importDecl
     TokKeyword "instance" -> instanceDecl
     TokKeyword "module" -> moduleDecl
@@ -73,9 +71,9 @@ declDispatch = do
     TokKeyword "type" -> typeDecl
     TokLambdaCase -> empty
     -- _ -> try funDecl <|> valueDecl
-    TokIdent _ -> try (funDecl) <|> try typeSigDecl <|> valueDecl
+    TokIdent _ -> try funDecl <|> try typeSigDecl <|> valueDecl
     -- TokSymbol "{" -> try (braces (funDecl decl)) <|> empty
-    TokSymbol "(" -> try typeSigDecl <|> empty
+    TokSymbol "(" -> try typeSigDecl
     -- TokVRBrace -> empty
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)
@@ -84,24 +82,6 @@ declDispatch = do
 -- Haskell ファイル全体
 program :: Parser [Decl]
 program = many decl
-
-typeSigDecl :: Parser Decl
-typeSigDecl = do
-  t <- lookAhead anyToken
-  myTrace ("<< typeSigDecl: " ++ show t)
-  name <-
-    try ident
-      <|> do
-        op <- parens operatorI
-        return $ "(" ++ op ++ ")"
-  t <- lookAhead anyToken
-  myTrace ("<< typeSigDecl:2 " ++ show t)
-  symbol "::"
-  ty <- parseType
-  myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
-  let decl = DeclTypeSig name ty
-  myTrace ("<< returning DeclTypeSig: " ++ show decl)
-  return decl
 
 -- 値宣言
 valueDecl :: Parser Decl
@@ -121,8 +101,21 @@ instanceDecl = do
   className <- typeIdent
   args <- some typeAtom
   keyword "where"
-  methods <- bracedBlock decl
-  return (DeclInstance ctx className args methods)
+  bracesV $ do
+    methods <- declMany
+    myTrace $ ">>*instanceDecl: methods "++ show methods
+    return (DeclInstance ctx className args methods)
+
+declMany:: Parser [Decl]
+declMany = do
+  f <- decl
+  optional (symbol ";")
+  xs <- do 
+    many $ do
+      r <- decl
+      optional (symbol ";")
+      return r
+  return (f : xs)
 
 classDecl :: Parser Decl
 classDecl = do
@@ -131,6 +124,8 @@ classDecl = do
   className <- typeIdent
   vars <- some ident
   keyword "where"
-  t <- lookAhead anyToken
-  methods <- bracedBlock decl
-  return $ DeclClass className vars methods
+  bracesV $ do
+    -- t <- lookAhead anyToken
+    methods <- many decl -- (symbol ";")
+    myTrace $ ">>*classDecl: methods "++ show methods
+    return $ DeclClass className vars methods

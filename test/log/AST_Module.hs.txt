@@ -1,20 +1,68 @@
--- Raw Source --
-
--- Tokens from Lexer --
-
--- Parsing --
 
 -- Parsed AST --
 
 -- Parse Coverage --
 Consumed tokens: 81 / 81
-Coverage: 100.0%
+Coverage: 100%
 
 -- AST----------------------------------
+
+-- AST (numbered) --
+[0] DeclModule "AST.Module" Nothing
+[1] DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Decl"]}
+[2] DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[3] DeclTypeAlias "Name" [] (TCon "String")
+[4] DeclData "Module" [] [ConstraintRecord "Module" [Field "moduleDecls" (TList (TCon "Decl")),Field "moduleImports" (TList (TCon "Import")),Field "moduleName" (TCon "Name")]] ["Show","Eq"]
+[5] DeclData "Import" [] [ConstraintRecord "Import" [Field "importName" (TCon "Name")]] ["Show","Eq"]
 [DeclModule "AST.Module" Nothing,DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Decl"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeAlias "Name" [] (TCon "String"),DeclData "Module" [] [ConstraintRecord "Module" [Field "moduleDecls" (TList (TCon "Decl")),Field "moduleImports" (TList (TCon "Import")),Field "moduleName" (TCon "Name")]] ["Show","Eq"],DeclData "Import" [] [ConstraintRecord "Import" [Field "importName" (TCon "Name")]] ["Show","Eq"]]
 
--- remainig-----------------------------
+-- Remaining-----------------------------
 []
+
+-- Parsed AST log --
+<< decl next token: TokKeyword "module"
+<< decl parser called
+<< decl dispatch: TokKeyword "module"
+>>*declBody: e DeclModule "AST.Module" Nothing
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+<< importIdent: next token TokTypeIdent "Decl"
+<< importIdent: name "Decl"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Decl"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import"
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "type"
+<< decl parser called
+<< decl dispatch: TokKeyword "type"
+<< typeDecl name "Name" vars []
+>>*typeDecl typ TCon "String"
+>>*declBody: e DeclTypeAlias "Name" [] (TCon "String")
+<< decl next token: TokKeyword "data"
+<< decl parser called
+<< decl dispatch: TokKeyword "data"
+<< dataConstrRecord: TokSymbol "{"
+<< parseTypeCore: TCon "Import"
+<< parseTypeCore: TCon "Decl"
+<< dataConstrRecord: "Module" [Field "moduleDecls" (TList (TCon "Decl")),Field "moduleImports" (TList (TCon "Import")),Field "moduleName" (TCon "Name")]
+>>*declBody: e DeclData "Module" [] [ConstraintRecord "Module" [Field "moduleDecls" (TList (TCon "Decl")),Field "moduleImports" (TList (TCon "Import")),Field "moduleName" (TCon "Name")]] ["Show","Eq"]
+<< decl next token: TokKeyword "data"
+<< decl parser called
+<< decl dispatch: TokKeyword "data"
+<< dataConstrRecord: TokSymbol "{"
+<< dataConstrRecord: "Import" [Field "importName" (TCon "Name")]
+>>*declBody: e DeclData "Import" [] [ConstraintRecord "Import" [Field "importName" (TCon "Name")]] ["Show","Eq"]
+Just ([DeclModule "AST.Module" Nothing,DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Decl"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeAlias "Name" [] (TCon "String"),DeclData "Module" [] [ConstraintRecord "Module" [Field "moduleDecls" (TList (TCon "Decl")),Field "moduleImports" (TList (TCon "Import")),Field "moduleName" (TCon "Name")]] ["Show","Eq"],DeclData "Import" [] [ConstraintRecord "Import" [Field "importName" (TCon "Name")]] ["Show","Eq"]],[])
+
+-- src code --
 module AST.Module where
 
 import AST.Decl (Decl)
@@ -36,4 +84,22 @@ data Import
   }
   deriving (Show, Eq)
 
-[TokKeyword "module",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Module",TokKeyword "where",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Decl",TokSymbol "(",TokTypeIdent "Decl",TokSymbol ")",TokNewline,TokKeyword "import",TokTypeIdent "AST",TokOperator ".",TokTypeIdent "Type",TokNewline,TokKeyword "type",TokTypeIdent "Name",TokSymbol "=",TokTypeIdent "String",TokNewline,TokKeyword "data",TokTypeIdent "Module",TokVLBrace,TokSymbol "=",TokTypeIdent "Module",TokSymbol ";",TokSymbol "{",TokIdent "moduleName",TokSymbol "::",TokTypeIdent "Name",TokSymbol ",",TokVLBrace,TokIdent "moduleImports",TokSymbol "::",TokSymbol "[",TokTypeIdent "Import",TokSymbol "]",TokSymbol ",",TokSymbol ";",TokIdent "moduleDecls",TokSymbol "::",TokSymbol "[",TokTypeIdent "Decl",TokSymbol "]",TokVRBrace,TokNewline,TokSymbol "}",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "data",TokTypeIdent "Import",TokVLBrace,TokSymbol "=",TokTypeIdent "Import",TokSymbol ";",TokSymbol "{",TokIdent "importName",TokSymbol "::",TokTypeIdent "Name",TokSymbol ";",TokSymbol "}",TokSymbol ";",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokVRBrace,TokNewline]
+
+-- token --
+[0] TokKeyword "module" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "ModuleTokKeyword "where"  
+[5] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Decl" 
+[10] TokSymbol "("       TokTypeIdent "Decl" TokSymbol ")"       TokNewline          TokKeyword "import" 
+[15] TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Type" TokNewline          TokKeyword "type"   
+[20] TokTypeIdent "Name" TokSymbol "="       TokTypeIdent "StringTokNewline          TokKeyword "data"   
+[25] TokTypeIdent "ModuleTokVLBrace          TokSymbol "="       TokTypeIdent "ModuleTokSymbol ";"       
+[30] TokSymbol "{"       TokIdent "moduleNameTokSymbol "::"      TokTypeIdent "Name" TokSymbol ","       
+[35] TokVLBrace          TokIdent "moduleImpoTokSymbol "::"      TokSymbol "["       TokTypeIdent "Import
+[40] TokSymbol "]"       TokSymbol ","       TokSymbol ";"       TokIdent "moduleDeclTokSymbol "::"      
+[45] TokSymbol "["       TokTypeIdent "Decl" TokSymbol "]"       TokVRBrace          TokNewline          
+[50] TokSymbol "}"       TokSymbol ";"       TokKeyword "derivingTokSymbol "("       TokTypeIdent "Show" 
+[55] TokSymbol ","       TokTypeIdent "Eq"   TokSymbol ")"       TokVRBrace          TokNewline          
+[60] TokKeyword "data"   TokTypeIdent "ImportTokVLBrace          TokSymbol "="       TokTypeIdent "Import
+[65] TokSymbol ";"       TokSymbol "{"       TokIdent "importNameTokSymbol "::"      TokTypeIdent "Name" 
+[70] TokSymbol ";"       TokSymbol "}"       TokSymbol ";"       TokKeyword "derivingTokSymbol "("       
+[75] TokTypeIdent "Show" TokSymbol ","       TokTypeIdent "Eq"   TokSymbol ")"       TokVRBrace          
+[80] TokNewline          
