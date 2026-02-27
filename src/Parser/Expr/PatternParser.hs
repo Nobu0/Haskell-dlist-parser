@@ -25,19 +25,6 @@ import Parser.Core.TokenParser
 import Parser.Type.TypeParser (typeIdent)
 import Utils.MyTrace (myTrace)
 
-{-}
-patternParser :: Parser Pattern
-patternParser = do
-  p <- pAs <|> makeCons
-  myTrace ("<< patternParser: (pAs <|> makeCons)" ++ show p)
-  -- stopPattern
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< patten2 next token: stopPattern" ++ show t)
-  return p
--}
--- pattern :: Parser Pattern
--- pattern = pPattern
-
 pattern :: Parser Pattern
 pattern = do
   p <- pAs <|> makeCons
@@ -141,7 +128,6 @@ patternVar = tokenIs $ \case
 
 constraintP :: Parser Pattern
 constraintP = tokenIs $ \case
-  -- TokIdent name -> Just (PVar name)
   TokTypeIdent name -> Just (PConstr name [])
   _ -> Nothing
 

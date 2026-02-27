@@ -73,8 +73,6 @@ importIdent = do
         (ImportTypeAll name <$ symbol "..")
           <|> ImportTypeSome name
             <$> getNameList
-  -- <$> sepBy1 getNameList (symbol ",")
-  -- <|> (ImportTypeSome name <$> sepBy1 identI (symbol ","))
   optional (symbol ",")
   myTrace ("<< importIdent: m " ++ show m)
   return $ case m of

@@ -61,5 +61,4 @@ exportItem = do
         else ExportVar name
 
 exportList :: Parser [Export]
--- exportList = parens (exportItem `sepEndBy` symbol ",")
 exportList = parens $ sepBy1Skip exportItem (symbol ",")

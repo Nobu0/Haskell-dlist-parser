@@ -24,6 +24,7 @@ module Parser.Core.TokenParser
     skipNewlines,
     newline,
     skipSeparators,
+    skipVNl,
     -- skipVLBrace,
     name,
     operator,
@@ -82,21 +83,6 @@ bracesN :: Parser a -> Parser a
 bracesN p = p
 
 -- 仮想括弧
-{-}
-skipVB :: Parser Token
-skipVB = do
-  mtok <- optional (lookAhead anyToken)
-  case mtok of
-    Just TokVLBrace -> empty
-    Just TokVRBrace -> empty
-    Nothing -> empty
-    _ -> mtok
--}
-
--- optional (token TokVLBrace)
--- optional (token TokVRBrace)
--- return ()
-
 bracesV :: Parser a -> Parser a
 bracesV p = do
   mtok <- optional (lookAhead anyToken)
@@ -130,9 +116,7 @@ int :: Parser Int
 int = do
   t <- satisfy isNumber
   case t of
-    -- TokNumber n -> myTrace ("<< int: " ++ show n) >> pure n
     TokNumber n -> pure n
-    -- TokNumber n -> pure n
     _ -> empty
   where
     isNumber (TokNumber _) = True
@@ -142,7 +126,6 @@ keyword :: String -> Parser ()
 keyword kw = do
   t <- satisfy isKeyword
   case t of
-    -- TokKeyword s | s == kw -> myTrace ("<< keyword: " ++ s) >> pure ()
     TokKeyword s | s == kw -> pure ()
     _ -> empty
   where
@@ -154,13 +137,6 @@ symbol s = tokenIs $ \case
   TokSymbol s' | s' == s -> Just ()
   TokOperator s' | s' == s -> Just ()
   _ -> Nothing
-
-{-}
-isSymbolName :: String -> Bool
-isSymbolName s = case s of
-  ('(' : c : _) -> not (isAlpha c) -- 例: "(++)", "(>>=)", "(<?>)"
-  _ -> False
--}
 
 isSymbolName :: String -> Bool
 isSymbolName s =
@@ -227,16 +203,26 @@ satisfyToken f = Parser $ \ts -> case ts of
     Just x -> Just (x, ts')
     Nothing -> Nothing
 
+skipVNl :: Parser ()
+skipVNl = do
+  _ <- tokenIs isSep
+  return ()
+  where
+    isSep TokVNl = Just ()
+    isSep _ = Nothing
+
 skipSeparators :: Parser ()
 skipSeparators = do
   _ <- many (tokenIs isSep)
   return ()
   where
-    -- isSep TokVLBrace = Just ()
-    -- isSep TokVRBrace = Just ()
+    isSep TokVNl = Just ()
     isSep TokNewline = Just ()
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
+
+-- isSep TokVLBrace = Just ()
+-- isSep TokVRBrace = Just ()
 
 skipVB :: Parser ()
 skipVB = do
@@ -254,16 +240,6 @@ skipNewlines :: Parser ()
 skipNewlines = do
   _ <- many (tokenIs (\t -> if t == TokNewline then Just () else Nothing))
   return ()
-
-{-}
-binOp :: [String] -> Parser (Expr -> Expr -> Expr)
-binOp ops = tokenIs $ \case
-  TokOperator op | op `elem` ops ->
-    case parseBinOp op of
-      Just bop -> Just (EBinOp bop)
-      Nothing -> Nothing
-  _ -> Nothing
--}
 
 binOp :: [String] -> Parser (Expr -> Expr -> Expr)
 binOp ops = tokenIs $ \tok -> case tok of
@@ -329,18 +305,6 @@ operator = choice (map (\s -> symbol s >> return s) allOps)
         ":"
       ]
 
-{-}
-operatorVar :: Parser Expr
-operatorVar = do
-  op <- satisfyToken isOp
-  return (EVar op)
-  where
-    isOp (TokOperator s) = Just s
-    isOp _ = Nothing
--}
-{-}
-
--}
 -- importに関係する
 operatorI :: Parser String
 operatorI = satisfyToken isOp
@@ -350,27 +314,8 @@ operatorI = satisfyToken isOp
       | otherwise = Nothing
     isOp _ = Nothing
 
-    allowed = ["::", ":", "++", "<$>", "$","\\","<*>",">>=","<|>"] -- "$" を含めない！
+    allowed = ["::", ":", "++", "<$>", "$", "\\", "<*>", ">>=", "<|>"] -- "$" を含めない！
 
-{-}
--- postfixで参照
-operatorA :: Parser String
-operatorA = satisfyToken isOp
-  where
-    isOp (TokOperator s)
-      | s `elem` ["$", "<$>", "..", ":"] = Just s
-      | otherwise = Nothing
-    isOp _ = Nothing
-
--- infixで参照
-operatorB :: Parser String
-operatorB = satisfyToken isOp
-  where
-    isOp (TokOperator s)
-      | s `elem` [".", ">>", "++", "<?>", ">>=", "<|>"] = Just s
-      | otherwise = Nothing
-    isOp _ = Nothing
--}
 operatorAll :: Parser String
 operatorAll = satisfyToken f
   where
@@ -392,15 +337,6 @@ operatorIAsName = do
       <|> operatorI -- 括弧なし演算子（例: <?>, ++）
   myTrace ("<< operatorIAsName: " ++ show op)
   return op
-
-{-}
-operator :: Parser String
-operator = do
-  symbol "("
-  op <- operatorTok
-  symbol ")"
-  return (op)
--}
 
 -- 関数名や演算子名をパースする共通パーサー
 -- 例: "f" や "==" や "(==)"

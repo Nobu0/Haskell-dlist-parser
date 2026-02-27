@@ -15,16 +15,105 @@ where
 
 import AST.Expr
 import AST.Expr (BinOp (..), Expr (..))
-import Control.Applicative (empty, many, (<|>))
-import Control.Monad (guard)
-import Data.Functor (void)
+import Control.Applicative (empty, many, optional, (<|>))
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.PatternParser (pattern)
 import Parser.SQL.SQLParser
 import Parser.Type.TypeParser (typeIdent)
+-- import Text.ParserCombinators.ReadP (skipSpaces)
 import Utils.MyTrace
+
+-- isSep TokVLBrace = Just ()
+-- isSep TokVRBrace = Just ()
+
+skipSeparatorsZ :: Parser ()
+skipSeparatorsZ = do
+  _ <- many (tokenIs isSep)
+  return ()
+  where
+    isSep TokNewline = Just ()
+    isSep (TokSymbol ";") = Just ()
+    isSep _ = Nothing
+
+
+opAltChain :: Expr -> Parser Expr
+opAltChain lhs = do
+  optional $ token TokVLBrace
+  -- token TokVLBrace
+  hasOp <- optional operatorZ
+  case hasOp of
+    Just _ -> do
+      rhs <- exprCore
+      optional $ token TokVRBrace
+      -- token TokVRBrace
+      skipSeparatorsZ
+      t <- lookAhead anyToken
+      myTrace (">>*opAltChain t " ++ show t ++ " lhs " ++ show lhs ++ " rhs " ++ show rhs)
+      let combined = EBinOp BinOpAlt lhs rhs
+      opAltChain combined
+    Nothing -> do
+      myTrace (">>*opAltChain Nop lhs " ++ show lhs)
+      return lhs
+
+exprCore :: Parser Expr
+exprCore = do
+  rt <-
+    try binOpExprCore
+      <|> parseSQL
+  myTrace (">>*exprCore: rt " ++ show rt)
+  -- return rt
+  opAltChain rt
+
+operatorZ :: Parser String
+operatorZ = satisfyToken isOp
+  where
+    isOp (TokOperator s)
+      | s `elem` ["<|>", "<$>"] = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
+
+{-}
+exprCore2 :: Parser Expr
+exprCore2 = do
+  skipSeparatorsZ
+  e <- exprCore2 -- layoutExpr -- try (parens exprCore2) <|> exprCore2
+  skipSeparatorsZ
+  t <- lookAhead anyToken
+  myTrace (">>*exprCore: e " ++ show e ++ " t " ++ show t)
+  return e
+
+layoutExpr :: Parser Expr
+layoutExpr = do
+  t <- lookAhead anyToken
+  myTrace ("<< layoutExpr: t " ++ show t)
+  case t of
+    TokVLBrace -> bracesv exprCore
+    -- TokSymbol "(" -> parens exprCore2
+    _ -> exprCore2
+-}
+-- isOp (TokVLBrace) = empty
+-- isOp (TokVRBrace) = empty
+{-}
+bracesExpr :: Parser Expr
+bracesExpr = do
+  myTrace ("<< exprCore1: 1")
+  token TokVLBrace
+  myTrace ("<< exprCore1: 2")
+  e <- exprCore
+  skipSeparatorsZ
+  t <- lookAhead anyToken
+  myTrace ("<< exprCore1: 3 " ++ show e ++ " t " ++ show t)
+  token TokVRBrace
+  myTrace (">>*exprCore1: 4 " ++ show e)
+  return e
+-}
+
+-- ============================================
+--  exprCore（純粋な式パーサー）
+-- ============================================
+
 
 pRecordExpr :: Parser Expr
 pRecordExpr = do
@@ -39,28 +128,6 @@ field = do
   symbol "="
   value <- exprCore
   return (name, value)
-
--- ============================================
---  lambdaExpr（ExprCore に戻す）
--- ============================================
--- ============================================
---  exprCore（純粋な式パーサー）
--- ============================================
-
-exprCore :: Parser Expr
-exprCore = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< exprCore next token: " ++ show t)
-  -- guard (t /= TokSymbol ";")
-  rt <-
-    --try lambdaExpr
-      -- <|> void (token TokEllipsis >> return EPlaceholder)
-    try binOpExprCore
-      <|> parseSQL
-  myTrace ("<< exprCore: rt " ++ show rt)
-  return rt
-
--- <|> exprLevel1Core
 
 -- ===== 演算子階層 =====
 
@@ -77,7 +144,7 @@ exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
 -- ここは結合性に応じて分けるのがベスト！
 exprLevel1Core :: Parser Expr
 exprLevel1Core = do
-  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":","*>","<$","<*","<|>","<$>"])
+  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":", "*>", "<$", "<*", "<$>"])
   -- chainr1 (return e) (binOp ["++", ":"])
   return e
 
@@ -90,33 +157,8 @@ exprAddSubCore = do
 
 -- 最下層：関数適用やリテラル、変数など
 exprLevel3Core :: Parser Expr
-exprLevel3Core =
-  -- try lambdaExpr
-  appExprCore
-
-{-}
-binOpExprCore :: Parser Expr
-binOpExprCore = exprCmpCore
-
-exprCmpCore :: Parser Expr
-exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
-
-exprLevel1Core :: Parser Expr
-exprLevel1Core = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< exprLevel1Core next token: " ++ show t)
-  chainl1 exprLevel2Core (binOp ["+", "-", "++", ":"])
-
-exprLevel2Core :: Parser Expr
-exprLevel2Core = chainl1 exprLevel3Core (binOp ["*", "/", "."])
-
-exprLevel3Core :: Parser Expr
 exprLevel3Core = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< exprLevel3Core next token: " ++ show t)
-  try lambdaExpr
-    <|> appExprCore
--}
+  appExprCore
 
 -- ============================================
 --  関数適用
@@ -128,7 +170,9 @@ appExprCore = do
   -- bracesVO $ do
   args <- many atomCore
   myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
-  return (foldl EApp f args)
+  -- return (foldl EApp f args)
+  let rt = (foldl EApp f args)
+  return rt
 
 -- ============================================
 --  atom
@@ -146,7 +190,7 @@ atomCore = do
     TokSymbol "$" -> empty
     TokVRBrace -> empty
     TokLambdaCase -> empty
-    _ ->    
+    _ ->
       try (parens parenExprCore)
         <|> atomBaseCore
 
@@ -168,8 +212,6 @@ parenExprCore = do
 
 tupleExprCore :: Parser Expr
 tupleExprCore = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< tupleExprCore next token: " ++ show t)
   e1 <- exprCore
   symbol ","
   es <- exprCore `sepBy1` symbol ","
@@ -177,14 +219,12 @@ tupleExprCore = do
 
 oPsectionCore :: Parser Expr
 oPsectionCore = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< oPsectionCore next token: " ++ show t)
   try (EOpSectionL <$> operator <*> exprCore)
     <|> (EOpSectionR <$> exprCore <*> operator)
 
 atomBaseCore :: Parser Expr
-atomBaseCore = do
-  --lambdaExpr
+atomBaseCore =
+  do
     EVar <$> ident
     <|> EInt <$> int
     <|> tunitExpr
@@ -203,7 +243,7 @@ operatorVar = do
   return (EVar op)
   where
     isOp (TokOperator s)
-      | s `elem` [":","<|>"] = Just s
+      | s `elem` [":"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 

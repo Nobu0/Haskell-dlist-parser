@@ -5,6 +5,10 @@ import Lexer.Token
 layoutTransform :: [Token] -> [Token]
 layoutTransform toks = go toks
 
+-- go (TokVNewline (x, y) : TokVNewline (x2, y2) : rest) =
+--   | x == y && x1 == y2 && x == x1 = TokSymbol ";" : go rest
+-- \| x == y = TokVNl : go rest
+
 go :: [Token] -> [Token]
 go [] = []
 go (TokVNewline (x, y) : rest)

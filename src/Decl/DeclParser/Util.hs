@@ -49,8 +49,6 @@ typeExpr = do
 
 sepBy1Skip :: Parser a -> Parser sep -> Parser [a]
 sepBy1Skip p sep = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< sepBy1Skip: next token " ++ show t)
   skipControlTokens
   x <- p
   xs <- many $ do

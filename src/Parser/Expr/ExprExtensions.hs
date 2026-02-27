@@ -49,13 +49,6 @@ exprTop = do
   es <- sepEndBy1 expr exprSep
   return $ if length es == 1 then head es else ESeq es
 
-{-}
-exprSeq :: Parser Expr
-exprSeq = do
-  es <- sepEndBy1 expr exprSep
-  return $ if length es == 1 then head es else ESeq es
--}
-
 exprSep :: Parser ()
 exprSep = skipMany (symbol ";" <|> newline)
 
@@ -95,17 +88,17 @@ infixOp = do
     Nothing -> do
       empty
 
+-- t <- lookAhead anyToken
+-- myTrace ("<< postfix: next token " ++ show t)
 postfix :: Expr -> Parser Expr
 postfix e = do
-  -- t <- lookAhead anyToken
-  -- myTrace ("<< postfix: next token " ++ show t)
   mop <- optional operatorA
   myTrace ("<< postfix: operator = " ++ show mop)
   case mop of
     Just "$" -> do
       myTrace "<< postfix: operator = $"
-      rhs <- layoutExpr  -- ← ここがポイント！
-      myTrace (">> postfix: out rhs = "++ show rhs)
+      rhs <- layoutExpr -- ← ここがポイント！
+      myTrace (">> postfix: out rhs = " ++ show rhs)
       postfix (EApp (EApp (EVar "$") e) rhs)
     Just op -> do
       myTrace ("<< postfix: infix operator = " ++ show op)
@@ -117,10 +110,10 @@ postfix e = do
         Just binds -> postfix (EWhere e binds)
         Nothing -> return e
 
---layoutExpr :: Parser Expr
---layoutExpr = doBlockExpr <|> expr
+-- layoutExpr :: Parser Expr
+-- layoutExpr = doBlockExpr <|> expr
 
-layoutExpr:: Parser Expr
+layoutExpr :: Parser Expr
 layoutExpr = do
   t <- lookAhead anyToken
   case t of
@@ -144,7 +137,7 @@ operatorB :: Parser String
 operatorB = satisfyToken isOp
   where
     isOp (TokOperator s)
-      | s `elem` [".", ">>", "++", "<?>", ">>=", "<|>","*>","<$","<*>","<*"] = Just s
+      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*", "<|>"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 
@@ -163,11 +156,16 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
-    -- TokVLBrace -> bracesVO expr
+    -- TokVRBrace -> skipVNlExpr -- bracesv expr
     TokSymbol "\\" -> lambdaExpr
-    -- TokSymbol ";" -> empty
+    TokVNl -> skipVNlExpr
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
     _ -> exprCore
+
+skipVNlExpr :: Parser Expr
+skipVNlExpr = do
+  many (token TokVRBrace) -- skipVNl
+  empty
 
 whereClause :: Parser (Maybe [Binding])
 whereClause = do
@@ -188,8 +186,6 @@ whereClause = do
         myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
         return (b : bs)
 
-
-
 lambdaExpr :: Parser Expr
 lambdaExpr = do
   symbol "\\"
@@ -198,7 +194,6 @@ lambdaExpr = do
   bracesV $ do
     body <- expr
     return (ELam arg body)
-
 
 ifExpr :: Parser Expr
 ifExpr = do
@@ -211,14 +206,6 @@ ifExpr = do
     el <- expr -- NoLoop
     return (EIf cond th el)
 
-{-}
-returnExpr :: Parser Expr
-returnExpr = do
-  keyword "return"
-  e <- expr -- exprNoLoop
-  myTrace (">>*return: e " ++ show e)
-  return (EReturn e)
--}  
 returnExpr :: Parser Expr
 returnExpr =
   try returnWithDollar <|> returnSimple
@@ -236,7 +223,7 @@ returnWithDollar = do
 returnSimple :: Parser Expr
 returnSimple = do
   keyword "return"
-  e <- atomCore  -- or exprNoLoop
+  e <- atomCore -- or exprNoLoop
   myTrace (">>*return atom: " ++ show e)
   return (EReturn e)
 

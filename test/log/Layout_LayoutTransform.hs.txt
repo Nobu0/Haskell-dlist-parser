@@ -62,7 +62,8 @@ Coverage: 27%
 << parseSimpleClause:2 next token=TokIdent "go"
 << expr dispatch: TokIdent "go"
 >>*appExprCore: f= EVar "go" args= [EVar "toks"]
-<< exprCore: rt EApp (EVar "go") (EVar "toks")
+>>*exprCore: rt EApp (EVar "go") (EVar "toks")
+>>*opAltChain Nop lhs EApp (EVar "go") (EVar "toks")
 << exprNoLoop: e EApp (EVar "go") (EVar "toks")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -136,7 +137,8 @@ Coverage: 27%
 << expr dispatch: TokIdent "x"
 >>*appExprCore: f= EVar "x" args= []
 >>*appExprCore: f= EInt 0 args= []
-<< exprCore: rt EBinOp BinOpEq (EVar "x") (EInt 0)
+>>*exprCore: rt EBinOp BinOpEq (EVar "x") (EInt 0)
+>>*opAltChain Nop lhs EBinOp BinOpEq (EVar "x") (EInt 0)
 << exprNoLoop: e EBinOp BinOpEq (EVar "x") (EInt 0)
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -163,6 +165,10 @@ import Lexer.Token
 
 layoutTransform :: [Token] -> [Token]
 layoutTransform toks = go toks
+
+-- go (TokVNewline (x, y) : TokVNewline (x2, y2) : rest) =
+--   | x == y && x1 == y2 && x == x1 = TokSymbol ";" : go rest
+-- \| x == y = TokVNl : go rest
 
 go :: [Token] -> [Token]
 go [] = []
