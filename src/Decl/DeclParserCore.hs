@@ -74,10 +74,15 @@ declDispatch = do
     TokIdent _ -> try funDecl <|> try typeSigDecl <|> valueDecl
     -- TokSymbol "{" -> try (braces (funDecl decl)) <|> empty
     TokSymbol "(" -> try typeSigDecl
-    -- TokVRBrace -> empty
+    TokVRBrace -> skipVNlExpr -- empty
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)
       empty
+
+skipVNlExpr :: Parser Decl
+skipVNlExpr = do
+  token TokVRBrace -- skipVNl
+  empty
 
 -- Haskell ファイル全体
 program :: Parser [Decl]
@@ -103,14 +108,14 @@ instanceDecl = do
   keyword "where"
   bracesV $ do
     methods <- declMany
-    myTrace $ ">>*instanceDecl: methods "++ show methods
+    myTrace $ ">>*instanceDecl: methods " ++ show methods
     return (DeclInstance ctx className args methods)
 
-declMany:: Parser [Decl]
+declMany :: Parser [Decl]
 declMany = do
   f <- decl
   optional (symbol ";")
-  xs <- do 
+  xs <- do
     many $ do
       r <- decl
       optional (symbol ";")
@@ -127,5 +132,5 @@ classDecl = do
   bracesV $ do
     -- t <- lookAhead anyToken
     methods <- many decl -- (symbol ";")
-    myTrace $ ">>*classDecl: methods "++ show methods
+    myTrace $ ">>*classDecl: methods " ++ show methods
     return $ DeclClass className vars methods

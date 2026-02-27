@@ -158,13 +158,13 @@ exprDispatch = do
     TokSymbol "[" -> listExprCore expr -- NoLoop
     -- TokVRBrace -> skipVNlExpr -- bracesv expr
     TokSymbol "\\" -> lambdaExpr
-    TokVNl -> skipVNlExpr
+    -- TokVNl -> skipVNlExpr
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
     _ -> exprCore
 
 skipVNlExpr :: Parser Expr
 skipVNlExpr = do
-  many (token TokVRBrace) -- skipVNl
+  token TokVRBrace -- skipVNl
   empty
 
 whereClause :: Parser (Maybe [Binding])

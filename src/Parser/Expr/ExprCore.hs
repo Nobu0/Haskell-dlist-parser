@@ -37,7 +37,6 @@ skipSeparatorsZ = do
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
 
-
 opAltChain :: Expr -> Parser Expr
 opAltChain lhs = do
   optional $ token TokVLBrace
@@ -57,14 +56,44 @@ opAltChain lhs = do
       myTrace (">>*opAltChain Nop lhs " ++ show lhs)
       return lhs
 
+opAltChainx :: Expr -> Parser Expr
+opAltChainx lhs = do
+  hasOp <- optional operatorZ
+  case hasOp of
+    Just _ -> do
+      t <- lookAhead anyToken
+      rhs <- case t of
+        TokVLBrace -> bracesv exprCore
+        TokSymbol "(" -> parens exprCore
+        _ -> exprCore
+      skipSeparatorsZ
+      let combined = EBinOp BinOpAlt lhs rhs
+      opAltChain combined
+    Nothing -> return lhs
+
 exprCore :: Parser Expr
 exprCore = do
+  bracesvExpr <|> exprCore2
+
+bracesvExpr :: Parser Expr
+bracesvExpr = do
+  token TokVLBrace
+  e <- exprCore >>= opAltChain
+  token TokVRBrace
+  return e
+
+exprCore2 :: Parser Expr
+exprCore2 = do
   rt <-
     try binOpExprCore
       <|> parseSQL
   myTrace (">>*exprCore: rt " ++ show rt)
-  -- return rt
-  opAltChain rt
+  -- e <- opAltChain0 rt
+  return rt
+
+-- return rt
+-- e <- try (opAltChain rt) <|> (nopChain rt)
+-- return e
 
 operatorZ :: Parser String
 operatorZ = satisfyToken isOp
@@ -113,7 +142,6 @@ bracesExpr = do
 -- ============================================
 --  exprCore（純粋な式パーサー）
 -- ============================================
-
 
 pRecordExpr :: Parser Expr
 pRecordExpr = do
