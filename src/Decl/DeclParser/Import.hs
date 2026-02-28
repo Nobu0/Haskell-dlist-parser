@@ -66,7 +66,6 @@ importIdent = do
     try identI
       <|> operatorEdName
       <|> operatorIAsName
-  myTrace ("<< importIdent: name " ++ show name)
   m <-
     optional $
       parensI $

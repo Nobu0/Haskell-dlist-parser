@@ -2,8 +2,8 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 193 / 1682
-Coverage: 11%
+Consumed tokens: 292 / 1684
+Coverage: 17%
 
 -- AST----------------------------------
 
@@ -26,11 +26,20 @@ Coverage: 11%
 [15] DeclTypeSig "exprTop" (TApp (TCon "Parser") (TCon "Expr"))
 [16] DeclFunGroup "exprTop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "es") []) (EApp (EApp (EVar "sepEndBy1") (EVar "expr")) (EVar "exprSep")),ExprStmt (EReturn (EIf (EBinOp BinOpEq (EApp (EVar "length") (EVar "es")) (EInt 1)) (EApp (EVar "head") (EVar "es")) (EApp (EVarType "ESeq") (EVar "es"))))])) Nothing]
 [17] DeclTypeSig "exprSep" (TApp (TCon "Parser") TUnit)
-[18] DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EVar "skipMany")) Nothing]
-[DeclModule "Parser.Expr.ExprExtensions" (Just [ExportVar "expr",ExportVar "exprTop",ExportVar "letExpr",ExportVar "ifExpr",ExportVar "returnExpr",ExportVar "forExpr",ExportVar "postfix",ExportVar "skipNewlines"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Functor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "void"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.CaseParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "caseExprCore",ImportVar "lambdaCaseExpr"]},DeclImport {importQualified = False, importModule = "Parser.Expr.DoParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "doExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.ExprCore", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.ListParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "listExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pPattern",ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprTop" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprTop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "es") []) (EApp (EApp (EVar "sepEndBy1") (EVar "expr")) (EVar "exprSep")),ExprStmt (EReturn (EIf (EBinOp BinOpEq (EApp (EVar "length") (EVar "es")) (EInt 1)) (EApp (EVar "head") (EVar "es")) (EApp (EVarType "ESeq") (EVar "es"))))])) Nothing],DeclTypeSig "exprSep" (TApp (TCon "Parser") TUnit),DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EVar "skipMany")) Nothing]]
+[18] DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))) Nothing]
+[19] DeclTypeSig "expr" (TApp (TCon "Parser") (TCon "Expr"))
+[20] DeclFunGroup "expr" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+[21] DeclTypeSig "infixExpr" (TApp (TCon "Parser") (TCon "Expr"))
+[22] DeclFunGroup "infixExpr" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp"))) Nothing]
+[23] DeclTypeSig "exprTerm" (TApp (TCon "Parser") (TCon "Expr"))
+[24] DeclFunGroup "exprTerm" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))])) Nothing]
+[25] DeclTypeSig "exprNoLoop" (TApp (TCon "Parser") (TCon "Expr"))
+[26] DeclFunGroup "exprNoLoop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+[27] DeclTypeSig "infixOp" (TApp (TCon "Parser") (TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr"))))
+[DeclModule "Parser.Expr.ExprExtensions" (Just [ExportVar "expr",ExportVar "exprTop",ExportVar "letExpr",ExportVar "ifExpr",ExportVar "returnExpr",ExportVar "forExpr",ExportVar "postfix",ExportVar "skipNewlines"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Functor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "void"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.CaseParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "caseExprCore",ImportVar "lambdaCaseExpr"]},DeclImport {importQualified = False, importModule = "Parser.Expr.DoParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "doExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.ExprCore", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.ListParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "listExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pPattern",ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprTop" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprTop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "es") []) (EApp (EApp (EVar "sepEndBy1") (EVar "expr")) (EVar "exprSep")),ExprStmt (EReturn (EIf (EBinOp BinOpEq (EApp (EVar "length") (EVar "es")) (EInt 1)) (EApp (EVar "head") (EVar "es")) (EApp (EVarType "ESeq") (EVar "es"))))])) Nothing],DeclTypeSig "exprSep" (TApp (TCon "Parser") TUnit),DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))) Nothing],DeclTypeSig "expr" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "expr" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "infixExpr" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "infixExpr" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp"))) Nothing],DeclTypeSig "exprTerm" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprTerm" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))])) Nothing],DeclTypeSig "exprNoLoop" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprNoLoop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "infixOp" (TApp (TCon "Parser") (TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr"))))]
 
 -- Remaining-----------------------------
-[TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokNewline,TokIdent "expr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "expr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "infixExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< expr: e ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "infixExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "infixExpr",TokSymbol "=",TokIdent "chainr1",TokSymbol "(",TokIdent "try",TokIdent "exprTerm",TokSymbol ")",TokIdent "infixOp",TokNewline,TokIdent "exprTerm",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprTerm",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "exprNoLoop",TokSymbol ";",TokIdent "postfix",TokIdent "e",TokVRBrace,TokNewline,TokIdent "exprNoLoop",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprNoLoop",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "exprDispatch",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< exprNoLoop: e ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "infixOp",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Expr",TokArrow,TokTypeIdent "Expr",TokArrow,TokTypeIdent "Expr",TokSymbol ")",TokNewline,TokIdent "infixOp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "optional",TokIdent "operatorB",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> infixOp: out ",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "op",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "mop",TokArrow,TokVLBrace,TokKeyword "case",TokIdent "parseBinOp",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "bop",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parsed as ",TokOperator "++",TokIdent "show",TokIdent "bop",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokSymbol "\\",TokIdent "a",TokIdent "b",TokArrow,TokTypeIdent "EBinOp",TokIdent "bop",TokIdent "a",TokIdent "b",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parseBinOp failed for ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "postfix",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "postfix",TokIdent "e",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "mop",TokSymbol "<-",TokIdent "optional",TokIdent "operatorA",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: operator = ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokString "$",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< postfix: operator = $",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "layoutExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> postfix: out rhs = ",TokOperator "++",TokIdent "show",TokIdent "rhs",TokSymbol ")",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokString "$",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Just",TokIdent "op",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: infix operator = ",TokOperator "++",TokIdent "show",TokIdent "op",TokSymbol ")",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "mbBinds",TokSymbol "<-",TokIdent "whereClause",TokSymbol ";",TokKeyword "case",TokIdent "mbBinds",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "binds",TokArrow,TokIdent "postfix",TokSymbol "(",TokTypeIdent "EWhere",TokIdent "e",TokIdent "binds",TokSymbol ")",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokIdent "e",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "layoutExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "layoutExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVLBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "bracesVO",TokIdent "expr",TokVRBrace,TokNewline,TokTypeIdent "TokSymbol",TokString "{",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "braces",TokIdent "expr",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokIdent "expr",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorA",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorA",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString "<$>",TokSymbol ",",TokString "..",TokSymbol ",",TokString ":",TokSymbol ",",TokString "$",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorB",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorB",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString ".",TokSymbol ",",TokString ">>",TokSymbol ",",TokString "++",TokSymbol ",",TokString "<?>",TokSymbol ",",TokString ">>=",TokSymbol ",",TokString "*>",TokSymbol ",",TokString "<$",TokSymbol ",",TokString "<*>",TokSymbol ",",TokString "<*",TokSymbol ",",TokString "<|>",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "exprDispatch",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprDispatch",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< expr dispatch: ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokKeyword",TokString "do",TokArrow,TokIdent "doExprCore",TokIdent "expr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "case",TokArrow,TokIdent "caseExprCore",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "let",TokArrow,TokIdent "letBlock",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "if",TokArrow,TokIdent "ifExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "for",TokArrow,TokIdent "forExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "return",TokArrow,TokIdent "returnExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "sql",TokArrow,TokIdent "parseSQL",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "[",TokArrow,TokIdent "listExprCore",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "\\",TokArrow,TokIdent "lambdaExpr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokLambdaCase",TokArrow,TokIdent "lambdaCaseExpr",TokIdent "expr",TokSymbol ";",TokIdent "_",TokArrow,TokIdent "exprCore",TokVRBrace,TokVRBrace,TokNewline,TokIdent "skipVNlExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "skipVNlExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "empty",TokVRBrace,TokNewline,TokIdent "whereClause",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "whereClause",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "mWhere",TokSymbol "<-",TokIdent "optional",TokSymbol "(",TokIdent "try",TokSymbol "(",TokIdent "keyword",TokString "where",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mWhere",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "_",TokArrow,TokTypeIdent "Just",TokOperator "<$>",TokIdent "bindings",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ";",TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "b",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "bs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*whereClause (b:bs) ",TokOperator "++",TokIdent "show",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "ifExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "ifExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "if",TokSymbol ";",TokIdent "cond",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "then",TokSymbol ";",TokIdent "th",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "keyword",TokString "else",TokSymbol ";",TokIdent "el",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EIf",TokIdent "cond",TokIdent "th",TokIdent "el",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "returnExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnExpr",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "returnWithDollar",TokOperator "<|>",TokIdent "returnSimple",TokVRBrace,TokNewline,TokIdent "returnWithDollar",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnWithDollar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString "$",TokSymbol ")",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return $: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "returnSimple",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnSimple",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "atomCore",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return atom: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "forExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "forExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "for",TokSymbol ";",TokIdent "qs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "qualifier",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "token",TokTypeIdent "TokArrow",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EListComp",TokIdent "body",TokIdent "qs",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "qualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "qualifier",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "genQualifier",TokVLBrace,TokOperator "<|>",TokIdent "guardQualifier",TokVRBrace,TokVRBrace,TokNewline,TokIdent "genQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "genQualifier",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "src",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "QGenerator",TokIdent "pat",TokIdent "src",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "guardQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "guardQualifier",TokSymbol "=",TokTypeIdent "QGuard",TokOperator "<$>",TokIdent "exprNoLoop",TokNewline,TokIdent "funBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "funBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokSymbol ";",TokIdent "next",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " next ",TokOperator "++",TokIdent "show",TokIdent "next",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "next",TokKeyword "of",TokVLBrace,TokTypeIdent "TokOperator",TokString "=",TokArrow,TokIdent "empty",TokSymbol ";",TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: args ",TokOperator "++",TokIdent "show",TokIdent "args",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*funBinding: body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "PApp",TokSymbol "(",TokTypeIdent "PVar",TokIdent "name",TokSymbol ")",TokIdent "args",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "valueBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "valueBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< valueBinding: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*valueBinding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "pat",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "letExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letExpr",TokSymbol "=",TokIdent "try",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokIdent "binds",TokSymbol "<-",TokIdent "bindingsBlock",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVRBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVLBrace",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokSymbol "(",TokTypeIdent "TokKeyword",TokString "in",TokSymbol ")",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokSymbol "(",TokTypeIdent "EVar",TokString "__unit__",TokSymbol ")",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "pLetExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "pLetExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokSymbol ";",TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "e1",TokSymbol "<-",TokIdent "exprNoLoop",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "e2",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*pLetExpr: e1 ",TokOperator "++",TokIdent "show",TokIdent "e1",TokOperator "++",TokString " e2 ",TokOperator "++",TokIdent "show",TokIdent "e2",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELet",TokIdent "pat",TokIdent "e1",TokIdent "e2",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "letBlock",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "letExpr",TokOperator "<|>",TokIdent "pLetExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letBlock: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "binding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "binding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< binding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "valueBinding",TokOperator "<|>",TokIdent "funBinding",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*binding: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "bindingsBlock",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< bindingBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "braces",TokIdent "bindings",TokOperator "<|>",TokIdent "bindings",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*bindingBlock next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "xs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokOperator ":",TokIdent "xs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "bindingsBlockXX",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlockXX",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "braces",TokSymbol "(",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline]
+[TokIdent "infixOp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "optional",TokIdent "operatorB",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> infixOp: out ",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "op",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "mop",TokArrow,TokVLBrace,TokKeyword "case",TokIdent "parseBinOp",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "bop",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parsed as ",TokOperator "++",TokIdent "show",TokIdent "bop",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokSymbol "\\",TokIdent "a",TokIdent "b",TokArrow,TokTypeIdent "EBinOp",TokIdent "bop",TokIdent "a",TokIdent "b",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parseBinOp failed for ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "postfix",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "postfix",TokIdent "e",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "mop",TokSymbol "<-",TokIdent "optional",TokIdent "operatorA",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: operator = ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokString "$",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< postfix: operator = $",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "layoutExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> postfix: out rhs = ",TokOperator "++",TokIdent "show",TokIdent "rhs",TokSymbol ")",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokString "$",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Just",TokIdent "op",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: infix operator = ",TokOperator "++",TokIdent "show",TokIdent "op",TokSymbol ")",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "mbBinds",TokSymbol "<-",TokIdent "whereClause",TokSymbol ";",TokKeyword "case",TokIdent "mbBinds",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "binds",TokArrow,TokIdent "postfix",TokSymbol "(",TokTypeIdent "EWhere",TokIdent "e",TokIdent "binds",TokSymbol ")",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokIdent "e",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "layoutExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "layoutExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVLBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "bracesVO",TokIdent "expr",TokVRBrace,TokNewline,TokTypeIdent "TokSymbol",TokString "{",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "braces",TokIdent "expr",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokIdent "expr",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorA",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorA",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString "<$>",TokSymbol ",",TokString "..",TokSymbol ",",TokString ":",TokSymbol ",",TokString "$",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorB",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorB",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString ".",TokSymbol ",",TokString ">>",TokSymbol ",",TokString "++",TokSymbol ",",TokString "<?>",TokSymbol ",",TokString ">>=",TokSymbol ",",TokString "*>",TokSymbol ",",TokString "<$",TokSymbol ",",TokString "<*>",TokSymbol ",",TokString "<*",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "exprDispatch",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprDispatch",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< expr dispatch: ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokKeyword",TokString "do",TokArrow,TokIdent "doExprCore",TokIdent "expr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "case",TokArrow,TokIdent "caseExprCore",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "let",TokArrow,TokIdent "letBlock",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "if",TokArrow,TokIdent "ifExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "for",TokArrow,TokIdent "forExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "return",TokArrow,TokIdent "returnExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "sql",TokArrow,TokIdent "parseSQL",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "[",TokArrow,TokIdent "listExprCore",TokIdent "expr",TokSymbol ";",TokTypeIdent "TokVRBrace",TokArrow,TokIdent "skipVNlExpr",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "\\",TokArrow,TokIdent "lambdaExpr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokLambdaCase",TokArrow,TokIdent "lambdaCaseExpr",TokIdent "expr",TokSymbol ";",TokIdent "_",TokArrow,TokIdent "exprCore",TokVRBrace,TokVRBrace,TokNewline,TokIdent "skipVNlExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "skipVNlExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "empty",TokVRBrace,TokNewline,TokIdent "whereClause",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "whereClause",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "mWhere",TokSymbol "<-",TokIdent "optional",TokSymbol "(",TokIdent "try",TokSymbol "(",TokIdent "keyword",TokString "where",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mWhere",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "_",TokArrow,TokTypeIdent "Just",TokOperator "<$>",TokIdent "bindings",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ";",TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "b",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "bs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*whereClause (b:bs) ",TokOperator "++",TokIdent "show",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "ifExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "ifExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "if",TokSymbol ";",TokIdent "cond",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "then",TokSymbol ";",TokIdent "th",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "keyword",TokString "else",TokSymbol ";",TokIdent "el",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EIf",TokIdent "cond",TokIdent "th",TokIdent "el",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "returnExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnExpr",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "returnWithDollar",TokOperator "<|>",TokIdent "returnSimple",TokVRBrace,TokNewline,TokIdent "returnWithDollar",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnWithDollar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString "$",TokSymbol ")",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return $: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "returnSimple",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnSimple",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "atomCore",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return atom: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "forExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "forExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "for",TokSymbol ";",TokIdent "qs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "qualifier",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "token",TokTypeIdent "TokArrow",TokSymbol ";",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EListComp",TokIdent "body",TokIdent "qs",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "qualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "qualifier",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "genQualifier",TokVLBrace,TokOperator "<|>",TokIdent "guardQualifier",TokVRBrace,TokVRBrace,TokNewline,TokIdent "genQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "genQualifier",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "src",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "QGenerator",TokIdent "pat",TokIdent "src",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "guardQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "guardQualifier",TokSymbol "=",TokTypeIdent "QGuard",TokOperator "<$>",TokIdent "exprNoLoop",TokNewline,TokIdent "funBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "funBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokSymbol ";",TokIdent "next",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " next ",TokOperator "++",TokIdent "show",TokIdent "next",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "next",TokKeyword "of",TokVLBrace,TokTypeIdent "TokOperator",TokString "=",TokArrow,TokIdent "empty",TokSymbol ";",TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: args ",TokOperator "++",TokIdent "show",TokIdent "args",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*funBinding: body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "PApp",TokSymbol "(",TokTypeIdent "PVar",TokIdent "name",TokSymbol ")",TokIdent "args",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "valueBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "valueBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< valueBinding: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*valueBinding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "pat",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "letExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letExpr",TokSymbol "=",TokIdent "try",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokIdent "binds",TokSymbol "<-",TokIdent "bindingsBlock",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVRBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVLBrace",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokSymbol "(",TokTypeIdent "TokKeyword",TokString "in",TokSymbol ")",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokSymbol "(",TokTypeIdent "EVar",TokString "__unit__",TokSymbol ")",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "pLetExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "pLetExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokSymbol ";",TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "e1",TokSymbol "<-",TokIdent "exprNoLoop",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "e2",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*pLetExpr: e1 ",TokOperator "++",TokIdent "show",TokIdent "e1",TokOperator "++",TokString " e2 ",TokOperator "++",TokIdent "show",TokIdent "e2",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELet",TokIdent "pat",TokIdent "e1",TokIdent "e2",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "letBlock",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "letExpr",TokOperator "<|>",TokIdent "pLetExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letBlock: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "binding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "binding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< binding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "valueBinding",TokOperator "<|>",TokIdent "funBinding",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*binding: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "bindingsBlock",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< bindingBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "braces",TokIdent "bindings",TokOperator "<|>",TokIdent "bindings",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*bindingBlock next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "xs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokOperator ":",TokIdent "xs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "bindingsBlockXX",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlockXX",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "braces",TokSymbol "(",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline]
 
 -- Parsed AST log --
 << decl next token: TokNewline
@@ -72,19 +81,14 @@ Coverage: 11%
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 << importIdent: next token TokIdent "empty"
-<< importIdent: name "empty"
 << importIdent: m Nothing
 << importIdent: next token TokIdent "many"
-<< importIdent: name "many"
 << importIdent: m Nothing
 << importIdent: next token TokIdent "optional"
-<< importIdent: name "optional"
 << importIdent: m Nothing
 << importIdent: next token TokIdent "some"
-<< importIdent: name "some"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol "("
-<< importIdent: name "(())"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]}
@@ -94,7 +98,6 @@ Coverage: 11%
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 << importIdent: next token TokIdent "void"
-<< importIdent: name "void"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Data.Functor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "void"]}
@@ -104,7 +107,6 @@ Coverage: 11%
 << importDecl parser called
 << importDecl: TokTypeIdent "Lexer"
 << importIdent: next token TokTypeIdent "Token"
-<< importIdent: name "Token"
 << importIdent: m Just (ImportTypeAll "Token")
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]}
@@ -126,10 +128,8 @@ Coverage: 11%
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "caseExprCore"
-<< importIdent: name "caseExprCore"
 << importIdent: m Nothing
 << importIdent: next token TokIdent "lambdaCaseExpr"
-<< importIdent: name "lambdaCaseExpr"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Expr.CaseParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "caseExprCore",ImportVar "lambdaCaseExpr"]}
@@ -139,7 +139,6 @@ Coverage: 11%
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "doExprCore"
-<< importIdent: name "doExprCore"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Expr.DoParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "doExprCore"]}
@@ -155,7 +154,6 @@ Coverage: 11%
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "listExprCore"
-<< importIdent: name "listExprCore"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Expr.ListParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "listExprCore"]}
@@ -165,10 +163,8 @@ Coverage: 11%
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "pPattern"
-<< importIdent: name "pPattern"
 << importIdent: m Nothing
 << importIdent: next token TokIdent "pattern"
-<< importIdent: name "pattern"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pPattern",ImportVar "pattern"]}
@@ -293,24 +289,419 @@ Coverage: 11%
 << expr dispatch: TokIdent "skipMany"
 >>*appExprCore: f= EVar "symbol" args= [EString ";"]
 >>*exprCore: rt EApp (EVar "symbol") (EString ";")
+>>*appExprCore: f= EVar "newline" args= []
+>>*exprCore: rt EVar "newline"
+<<--- opChain EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")
 >>*appExprCore: f= EVar "symbol" args= [EString ";"]
 >>*exprCore: rt EApp (EVar "symbol") (EString ";")
+>>*appExprCore: f= EVar "newline" args= []
+>>*exprCore: rt EVar "newline"
+<<--- opChain EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")
 >>*appExprCore: f= EVar "symbol" args= [EString ";"]
 >>*exprCore: rt EApp (EVar "symbol") (EString ";")
->>*appExprCore: f= EVar "skipMany" args= []
->>*exprCore: rt EVar "skipMany"
-<< exprNoLoop: e EVar "skipMany"
+>>*appExprCore: f= EVar "newline" args= []
+>>*exprCore: rt EVar "newline"
+<<--- opChain EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")
+>>*appExprCore: f= EVar "skipMany" args= [EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")]
+>>*exprCore: rt EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
+<< exprNoLoop: e EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EVar "skipMany"
-<< funClauseWithName: next token=TokSymbol "("
->>*funDecl name "exprSep" clause1 FunClause [] Nothing (Just (EVar "skipMany")) Nothing rest []
->>*declBody: e DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EVar "skipMany")) Nothing]
-<< decl next token: TokSymbol "("
+<< expr: e EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
+<< funClauseWithName: next token=TokIdent "expr"
+>>*funDecl name "exprSep" clause1 FunClause [] Nothing (Just (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))) Nothing rest []
+>>*declBody: e DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))) Nothing]
+<< decl next token: TokIdent "expr"
 << decl parser called
-<< decl dispatch: TokSymbol "("
-<< typeSigDecl: TokSymbol "("
-Just ([DeclModule "Parser.Expr.ExprExtensions" (Just [ExportVar "expr",ExportVar "exprTop",ExportVar "letExpr",ExportVar "ifExpr",ExportVar "returnExpr",ExportVar "forExpr",ExportVar "postfix",ExportVar "skipNewlines"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Functor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "void"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.CaseParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "caseExprCore",ImportVar "lambdaCaseExpr"]},DeclImport {importQualified = False, importModule = "Parser.Expr.DoParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "doExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.ExprCore", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.ListParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "listExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pPattern",ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprTop" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprTop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "es") []) (EApp (EApp (EVar "sepEndBy1") (EVar "expr")) (EVar "exprSep")),ExprStmt (EReturn (EIf (EBinOp BinOpEq (EApp (EVar "length") (EVar "es")) (EInt 1)) (EApp (EVar "head") (EVar "es")) (EApp (EVarType "ESeq") (EVar "es"))))])) Nothing],DeclTypeSig "exprSep" (TApp (TCon "Parser") TUnit),DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EVar "skipMany")) Nothing]],[TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokNewline,TokIdent "expr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "expr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "infixExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< expr: e ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "infixExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "infixExpr",TokSymbol "=",TokIdent "chainr1",TokSymbol "(",TokIdent "try",TokIdent "exprTerm",TokSymbol ")",TokIdent "infixOp",TokNewline,TokIdent "exprTerm",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprTerm",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "exprNoLoop",TokSymbol ";",TokIdent "postfix",TokIdent "e",TokVRBrace,TokNewline,TokIdent "exprNoLoop",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprNoLoop",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "exprDispatch",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< exprNoLoop: e ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "infixOp",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Expr",TokArrow,TokTypeIdent "Expr",TokArrow,TokTypeIdent "Expr",TokSymbol ")",TokNewline,TokIdent "infixOp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "optional",TokIdent "operatorB",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> infixOp: out ",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "op",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "mop",TokArrow,TokVLBrace,TokKeyword "case",TokIdent "parseBinOp",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "bop",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parsed as ",TokOperator "++",TokIdent "show",TokIdent "bop",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokSymbol "\\",TokIdent "a",TokIdent "b",TokArrow,TokTypeIdent "EBinOp",TokIdent "bop",TokIdent "a",TokIdent "b",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parseBinOp failed for ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "postfix",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "postfix",TokIdent "e",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "mop",TokSymbol "<-",TokIdent "optional",TokIdent "operatorA",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: operator = ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokString "$",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< postfix: operator = $",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "layoutExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> postfix: out rhs = ",TokOperator "++",TokIdent "show",TokIdent "rhs",TokSymbol ")",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokString "$",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Just",TokIdent "op",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: infix operator = ",TokOperator "++",TokIdent "show",TokIdent "op",TokSymbol ")",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "mbBinds",TokSymbol "<-",TokIdent "whereClause",TokSymbol ";",TokKeyword "case",TokIdent "mbBinds",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "binds",TokArrow,TokIdent "postfix",TokSymbol "(",TokTypeIdent "EWhere",TokIdent "e",TokIdent "binds",TokSymbol ")",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokIdent "e",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "layoutExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "layoutExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVLBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "bracesVO",TokIdent "expr",TokVRBrace,TokNewline,TokTypeIdent "TokSymbol",TokString "{",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "braces",TokIdent "expr",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokIdent "expr",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorA",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorA",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString "<$>",TokSymbol ",",TokString "..",TokSymbol ",",TokString ":",TokSymbol ",",TokString "$",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorB",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorB",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString ".",TokSymbol ",",TokString ">>",TokSymbol ",",TokString "++",TokSymbol ",",TokString "<?>",TokSymbol ",",TokString ">>=",TokSymbol ",",TokString "*>",TokSymbol ",",TokString "<$",TokSymbol ",",TokString "<*>",TokSymbol ",",TokString "<*",TokSymbol ",",TokString "<|>",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "exprDispatch",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprDispatch",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< expr dispatch: ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokKeyword",TokString "do",TokArrow,TokIdent "doExprCore",TokIdent "expr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "case",TokArrow,TokIdent "caseExprCore",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "let",TokArrow,TokIdent "letBlock",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "if",TokArrow,TokIdent "ifExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "for",TokArrow,TokIdent "forExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "return",TokArrow,TokIdent "returnExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "sql",TokArrow,TokIdent "parseSQL",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "[",TokArrow,TokIdent "listExprCore",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "\\",TokArrow,TokIdent "lambdaExpr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokLambdaCase",TokArrow,TokIdent "lambdaCaseExpr",TokIdent "expr",TokSymbol ";",TokIdent "_",TokArrow,TokIdent "exprCore",TokVRBrace,TokVRBrace,TokNewline,TokIdent "skipVNlExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "skipVNlExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "empty",TokVRBrace,TokNewline,TokIdent "whereClause",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "whereClause",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "mWhere",TokSymbol "<-",TokIdent "optional",TokSymbol "(",TokIdent "try",TokSymbol "(",TokIdent "keyword",TokString "where",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mWhere",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "_",TokArrow,TokTypeIdent "Just",TokOperator "<$>",TokIdent "bindings",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ";",TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "b",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "bs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*whereClause (b:bs) ",TokOperator "++",TokIdent "show",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "ifExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "ifExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "if",TokSymbol ";",TokIdent "cond",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "then",TokSymbol ";",TokIdent "th",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "keyword",TokString "else",TokSymbol ";",TokIdent "el",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EIf",TokIdent "cond",TokIdent "th",TokIdent "el",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "returnExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnExpr",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "returnWithDollar",TokOperator "<|>",TokIdent "returnSimple",TokVRBrace,TokNewline,TokIdent "returnWithDollar",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnWithDollar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString "$",TokSymbol ")",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return $: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "returnSimple",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnSimple",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "atomCore",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return atom: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "forExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "forExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "for",TokSymbol ";",TokIdent "qs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "qualifier",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "token",TokTypeIdent "TokArrow",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EListComp",TokIdent "body",TokIdent "qs",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "qualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "qualifier",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "genQualifier",TokVLBrace,TokOperator "<|>",TokIdent "guardQualifier",TokVRBrace,TokVRBrace,TokNewline,TokIdent "genQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "genQualifier",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "src",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "QGenerator",TokIdent "pat",TokIdent "src",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "guardQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "guardQualifier",TokSymbol "=",TokTypeIdent "QGuard",TokOperator "<$>",TokIdent "exprNoLoop",TokNewline,TokIdent "funBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "funBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokSymbol ";",TokIdent "next",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " next ",TokOperator "++",TokIdent "show",TokIdent "next",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "next",TokKeyword "of",TokVLBrace,TokTypeIdent "TokOperator",TokString "=",TokArrow,TokIdent "empty",TokSymbol ";",TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: args ",TokOperator "++",TokIdent "show",TokIdent "args",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*funBinding: body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "PApp",TokSymbol "(",TokTypeIdent "PVar",TokIdent "name",TokSymbol ")",TokIdent "args",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "valueBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "valueBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< valueBinding: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*valueBinding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "pat",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "letExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letExpr",TokSymbol "=",TokIdent "try",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokIdent "binds",TokSymbol "<-",TokIdent "bindingsBlock",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVRBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVLBrace",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokSymbol "(",TokTypeIdent "TokKeyword",TokString "in",TokSymbol ")",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokSymbol "(",TokTypeIdent "EVar",TokString "__unit__",TokSymbol ")",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "pLetExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "pLetExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokSymbol ";",TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "e1",TokSymbol "<-",TokIdent "exprNoLoop",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "e2",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*pLetExpr: e1 ",TokOperator "++",TokIdent "show",TokIdent "e1",TokOperator "++",TokString " e2 ",TokOperator "++",TokIdent "show",TokIdent "e2",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELet",TokIdent "pat",TokIdent "e1",TokIdent "e2",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "letBlock",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "letExpr",TokOperator "<|>",TokIdent "pLetExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letBlock: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "binding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "binding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< binding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "valueBinding",TokOperator "<|>",TokIdent "funBinding",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*binding: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "bindingsBlock",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< bindingBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "braces",TokIdent "bindings",TokOperator "<|>",TokIdent "bindings",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*bindingBlock next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "xs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokOperator ":",TokIdent "xs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "bindingsBlockXX",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlockXX",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "braces",TokSymbol "(",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline])
+<< decl dispatch: TokIdent "expr"
+<< funDecl: next token=TokIdent "expr"
+<< funClause: next token=TokIdent "expr"
+<< funClause: args=[] t = TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::"
+<< guardedRhs: next token = TokSymbol "::"
+<< parseGuardLine: next token=TokSymbol "::"
+<< typeSigDecl: TokIdent "expr"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: expr :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "expr" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "expr" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "expr"
+<< decl parser called
+<< decl dispatch: TokIdent "expr"
+<< funDecl: next token=TokIdent "expr"
+<< funClause: next token=TokIdent "expr"
+<< funClause: args=[] t = TokSymbol "="
+<< parseSimpleClause:2 next token=TokKeyword "do"
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "e"
+<< pattern: (pAs <|> makeCons)PApp (PVar "e") []
+<< expr dispatch: TokIdent "infixExpr"
+>>*appExprCore: f= EVar "infixExpr" args= []
+>>*exprCore: rt EVar "infixExpr"
+<< exprNoLoop: e EVar "infixExpr"
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "infixExpr"
+>>*bindStmt pat= PApp (PVar "e") [] e= EVar "infixExpr"
+>>*doStmt: rt Bind (PApp (PVar "e") []) (EVar "infixExpr")
+<< bindStmt
+<< pConstrOrVar: next token "myTrace"
+<< pConstrOrVar: next token "++"
+<< pConstrOrVar: next token "show"
+<< pConstrOrVar: next token "e"
+<< pattern: (pAs <|> makeCons)PApp (PString "<< expr: e ") [PConstr "++" [],PVar "show",PVar "e"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< expr: e ") [PConstr "++" [],PVar "show",PVar "e"]]
+<< expr dispatch: TokIdent "myTrace"
+>>*appExprCore: f= EString "<< expr: e " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "e"]
+>>*exprCore: rt EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e"))
+>>*appExprCore: f= EString "<< expr: e " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "e"]
+>>*exprCore: rt EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e"))
+>>*appExprCore: f= EString "<< expr: e " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "e"]
+>>*exprCore: rt EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e"))
+>>*appExprCore: f= EVar "myTrace" args= [EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e"))]
+>>*exprCore: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))
+<< exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))
+>>*exprStmt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))
+>>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e"))))
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+>>*return atom: EVar "e"
+<< exprNoLoop: e EReturn (EVar "e")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EVar "e")
+>>*exprStmt EReturn (EVar "e")
+>>*doStmt: rt ExprStmt (EReturn (EVar "e"))
+<< bindStmt
+<< expr dispatch: TokVRBrace
+>>*doBlock: (f:m)[Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+>>*doExprCore: stmts [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+<< funClauseWithName: next token=TokIdent "infixExpr"
+>>*funDecl name "expr" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "expr" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+<< decl next token: TokIdent "infixExpr"
+<< decl parser called
+<< decl dispatch: TokIdent "infixExpr"
+<< funDecl: next token=TokIdent "infixExpr"
+<< funClause: next token=TokIdent "infixExpr"
+<< funClause: args=[] t = TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::"
+<< guardedRhs: next token = TokSymbol "::"
+<< parseGuardLine: next token=TokSymbol "::"
+<< typeSigDecl: TokIdent "infixExpr"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: infixExpr :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "infixExpr" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "infixExpr" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "infixExpr"
+<< decl parser called
+<< decl dispatch: TokIdent "infixExpr"
+<< funDecl: next token=TokIdent "infixExpr"
+<< funClause: next token=TokIdent "infixExpr"
+<< funClause: args=[] t = TokSymbol "="
+<< parseSimpleClause:2 next token=TokIdent "chainr1"
+<< expr dispatch: TokIdent "chainr1"
+>>*appExprCore: f= EVar "try" args= [EVar "exprTerm"]
+>>*exprCore: rt EApp (EVar "try") (EVar "exprTerm")
+>>*appExprCore: f= EVar "try" args= [EVar "exprTerm"]
+>>*exprCore: rt EApp (EVar "try") (EVar "exprTerm")
+>>*appExprCore: f= EVar "try" args= [EVar "exprTerm"]
+>>*exprCore: rt EApp (EVar "try") (EVar "exprTerm")
+>>*appExprCore: f= EVar "chainr1" args= [EApp (EVar "try") (EVar "exprTerm"),EVar "infixOp"]
+>>*exprCore: rt EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp")
+<< exprNoLoop: e EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp")
+<< funClauseWithName: next token=TokIdent "exprTerm"
+>>*funDecl name "infixExpr" clause1 FunClause [] Nothing (Just (EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp"))) Nothing rest []
+>>*declBody: e DeclFunGroup "infixExpr" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp"))) Nothing]
+<< decl next token: TokIdent "exprTerm"
+<< decl parser called
+<< decl dispatch: TokIdent "exprTerm"
+<< funDecl: next token=TokIdent "exprTerm"
+<< funClause: next token=TokIdent "exprTerm"
+<< funClause: args=[] t = TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::"
+<< guardedRhs: next token = TokSymbol "::"
+<< parseGuardLine: next token=TokSymbol "::"
+<< typeSigDecl: TokIdent "exprTerm"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: exprTerm :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "exprTerm" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "exprTerm" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "exprTerm"
+<< decl parser called
+<< decl dispatch: TokIdent "exprTerm"
+<< funDecl: next token=TokIdent "exprTerm"
+<< funClause: next token=TokIdent "exprTerm"
+<< funClause: args=[] t = TokSymbol "="
+<< parseSimpleClause:2 next token=TokKeyword "do"
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "e"
+<< pattern: (pAs <|> makeCons)PApp (PVar "e") []
+<< expr dispatch: TokIdent "exprNoLoop"
+>>*appExprCore: f= EVar "exprNoLoop" args= []
+>>*exprCore: rt EVar "exprNoLoop"
+<< exprNoLoop: e EVar "exprNoLoop"
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "exprNoLoop"
+>>*bindStmt pat= PApp (PVar "e") [] e= EVar "exprNoLoop"
+>>*doStmt: rt Bind (PApp (PVar "e") []) (EVar "exprNoLoop")
+<< bindStmt
+<< pConstrOrVar: next token "postfix"
+<< pConstrOrVar: next token "e"
+<< pattern: (pAs <|> makeCons)PApp (PVar "postfix") [PVar "e"]
+<< expr dispatch: TokIdent "postfix"
+>>*appExprCore: f= EVar "postfix" args= [EVar "e"]
+>>*exprCore: rt EApp (EVar "postfix") (EVar "e")
+<< exprNoLoop: e EApp (EVar "postfix") (EVar "e")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "postfix") (EVar "e")
+>>*exprStmt EApp (EVar "postfix") (EVar "e")
+>>*doStmt: rt ExprStmt (EApp (EVar "postfix") (EVar "e"))
+<< bindStmt
+<< expr dispatch: TokVRBrace
+>>*doBlock: (f:m)[Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))]
+>>*doExprCore: stmts [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))]
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))]
+<< funClauseWithName: next token=TokIdent "exprNoLoop"
+>>*funDecl name "exprTerm" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exprTerm" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))])) Nothing]
+<< decl next token: TokIdent "exprNoLoop"
+<< decl parser called
+<< decl dispatch: TokIdent "exprNoLoop"
+<< funDecl: next token=TokIdent "exprNoLoop"
+<< funClause: next token=TokIdent "exprNoLoop"
+<< funClause: args=[] t = TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::"
+<< guardedRhs: next token = TokSymbol "::"
+<< parseGuardLine: next token=TokSymbol "::"
+<< typeSigDecl: TokIdent "exprNoLoop"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: exprNoLoop :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "exprNoLoop" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "exprNoLoop" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "exprNoLoop"
+<< decl parser called
+<< decl dispatch: TokIdent "exprNoLoop"
+<< funDecl: next token=TokIdent "exprNoLoop"
+<< funClause: next token=TokIdent "exprNoLoop"
+<< funClause: args=[] t = TokSymbol "="
+<< parseSimpleClause:2 next token=TokKeyword "do"
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "e"
+<< pattern: (pAs <|> makeCons)PApp (PVar "e") []
+<< expr dispatch: TokIdent "exprDispatch"
+>>*appExprCore: f= EVar "exprDispatch" args= []
+>>*exprCore: rt EVar "exprDispatch"
+<< exprNoLoop: e EVar "exprDispatch"
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "exprDispatch"
+>>*bindStmt pat= PApp (PVar "e") [] e= EVar "exprDispatch"
+>>*doStmt: rt Bind (PApp (PVar "e") []) (EVar "exprDispatch")
+<< bindStmt
+<< pConstrOrVar: next token "myTrace"
+<< pConstrOrVar: next token "++"
+<< pConstrOrVar: next token "show"
+<< pConstrOrVar: next token "e"
+<< pattern: (pAs <|> makeCons)PApp (PString "<< exprNoLoop: e ") [PConstr "++" [],PVar "show",PVar "e"]
+<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< exprNoLoop: e ") [PConstr "++" [],PVar "show",PVar "e"]]
+<< expr dispatch: TokIdent "myTrace"
+>>*appExprCore: f= EString "<< exprNoLoop: e " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "e"]
+>>*exprCore: rt EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e"))
+>>*appExprCore: f= EString "<< exprNoLoop: e " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "e"]
+>>*exprCore: rt EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e"))
+>>*appExprCore: f= EString "<< exprNoLoop: e " args= []
+>>*appExprCore: f= EVar "show" args= [EVar "e"]
+>>*exprCore: rt EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e"))
+>>*appExprCore: f= EVar "myTrace" args= [EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e"))]
+>>*exprCore: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))
+<< exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))
+>>*exprStmt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))
+>>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e"))))
+<< bindStmt
+<< expr dispatch: TokKeyword "return"
+>>*return atom: EVar "e"
+<< exprNoLoop: e EReturn (EVar "e")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EVar "e")
+>>*exprStmt EReturn (EVar "e")
+>>*doStmt: rt ExprStmt (EReturn (EVar "e"))
+<< bindStmt
+<< expr dispatch: TokVRBrace
+>>*doBlock: (f:m)[Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+>>*doExprCore: stmts [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))]
+<< funClauseWithName: next token=TokIdent "infixOp"
+>>*funDecl name "exprNoLoop" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exprNoLoop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+<< decl next token: TokIdent "infixOp"
+<< decl parser called
+<< decl dispatch: TokIdent "infixOp"
+<< funDecl: next token=TokIdent "infixOp"
+<< funClause: next token=TokIdent "infixOp"
+<< funClause: args=[] t = TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::"
+<< guardedRhs: next token = TokSymbol "::"
+<< parseGuardLine: next token=TokSymbol "::"
+<< typeSigDecl: TokIdent "infixOp"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< parseTypeCore: TCon "Expr"
+<< parseTypeCore: TFun (TCon "Expr") (TCon "Expr")
+<< parseTypeCore: TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr"))
+<< parseTypeCore: TApp (TCon "Parser") (TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr")))
+<< parsed type signature: infixOp :: TApp (TCon "Parser") (TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr")))
+<< returning DeclTypeSig: DeclTypeSig "infixOp" (TApp (TCon "Parser") (TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr"))))
+>>*declBody: e DeclTypeSig "infixOp" (TApp (TCon "Parser") (TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr"))))
+<< decl next token: TokIdent "infixOp"
+<< decl parser called
+<< decl dispatch: TokIdent "infixOp"
+<< funDecl: next token=TokIdent "infixOp"
+<< funClause: next token=TokIdent "infixOp"
+<< funClause: args=[] t = TokSymbol "="
+<< parseSimpleClause:2 next token=TokKeyword "do"
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "op"
+<< pattern: (pAs <|> makeCons)PApp (PVar "op") []
+<< expr dispatch: TokIdent "optional"
+>>*appExprCore: f= EVar "optional" args= [EVar "operatorB"]
+>>*exprCore: rt EApp (EVar "optional") (EVar "operatorB")
+<< exprNoLoop: e EApp (EVar "optional") (EVar "operatorB")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "optional") (EVar "operatorB")
+>>*bindStmt pat= PApp (PVar "op") [] e= EApp (EVar "optional") (EVar "operatorB")
+>>*doStmt: rt Bind (PApp (PVar "op") []) (EApp (EVar "optional") (EVar "operatorB"))
+<< bindStmt
+<< pConstrOrVar: next token "myTrace"
+<< pattern: (pAs <|> makeCons)PApp (PString ">> infixOp: out ") []
+<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString ">> infixOp: out ") []]
+<< expr dispatch: TokIdent "myTrace"
+>>*appExprCore: f= EString ">> infixOp: out " args= []
+>>*exprCore: rt EString ">> infixOp: out "
+>>*appExprCore: f= EString ">> infixOp: out " args= []
+>>*exprCore: rt EString ">> infixOp: out "
+>>*appExprCore: f= EString ">> infixOp: out " args= []
+>>*exprCore: rt EString ">> infixOp: out "
+>>*appExprCore: f= EVar "myTrace" args= [EString ">> infixOp: out "]
+>>*exprCore: rt EApp (EVar "myTrace") (EString ">> infixOp: out ")
+<< exprNoLoop: e EApp (EVar "myTrace") (EString ">> infixOp: out ")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTrace") (EString ">> infixOp: out ")
+>>*exprStmt EApp (EVar "myTrace") (EString ">> infixOp: out ")
+>>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EString ">> infixOp: out "))
+<< bindStmt
+<< expr dispatch: TokKeyword "case"
+<< caseExprCore:
+<< expr dispatch: TokIdent "op"
+>>*appExprCore: f= EVar "op" args= []
+>>*exprCore: rt EVar "op"
+<< exprNoLoop: e EVar "op"
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "op"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "mop"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "mop"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokVLBrace
+>>*doBlock: (f:m)[Bind (PApp (PVar "op") []) (EApp (EVar "optional") (EVar "operatorB")),ExprStmt (EApp (EVar "myTrace") (EString ">> infixOp: out "))]
+>>*doExprCore: stmts [Bind (PApp (PVar "op") []) (EApp (EVar "optional") (EVar "operatorB")),ExprStmt (EApp (EVar "myTrace") (EString ">> infixOp: out "))]
+<< typeSigDecl: TokIdent "infixOp"
+<< typeSigDecl:2 TokSymbol "="
+<< valueDecl: TokIdent "infixOp"
+<< pConstrOrVar: next token "infixOp"
+<< pattern: (pAs <|> makeCons)PApp (PVar "infixOp") []
+<< expr dispatch: TokKeyword "do"
+<< bindStmt
+<< pConstrOrVar: next token "op"
+<< pattern: (pAs <|> makeCons)PApp (PVar "op") []
+<< expr dispatch: TokIdent "optional"
+>>*appExprCore: f= EVar "optional" args= [EVar "operatorB"]
+>>*exprCore: rt EApp (EVar "optional") (EVar "operatorB")
+<< exprNoLoop: e EApp (EVar "optional") (EVar "operatorB")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "optional") (EVar "operatorB")
+>>*bindStmt pat= PApp (PVar "op") [] e= EApp (EVar "optional") (EVar "operatorB")
+>>*doStmt: rt Bind (PApp (PVar "op") []) (EApp (EVar "optional") (EVar "operatorB"))
+<< bindStmt
+<< pConstrOrVar: next token "myTrace"
+<< pattern: (pAs <|> makeCons)PApp (PString ">> infixOp: out ") []
+<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString ">> infixOp: out ") []]
+<< expr dispatch: TokIdent "myTrace"
+>>*appExprCore: f= EString ">> infixOp: out " args= []
+>>*exprCore: rt EString ">> infixOp: out "
+>>*appExprCore: f= EString ">> infixOp: out " args= []
+>>*exprCore: rt EString ">> infixOp: out "
+>>*appExprCore: f= EString ">> infixOp: out " args= []
+>>*exprCore: rt EString ">> infixOp: out "
+>>*appExprCore: f= EVar "myTrace" args= [EString ">> infixOp: out "]
+>>*exprCore: rt EApp (EVar "myTrace") (EString ">> infixOp: out ")
+<< exprNoLoop: e EApp (EVar "myTrace") (EString ">> infixOp: out ")
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTrace") (EString ">> infixOp: out ")
+>>*exprStmt EApp (EVar "myTrace") (EString ">> infixOp: out ")
+>>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EString ">> infixOp: out "))
+<< bindStmt
+<< expr dispatch: TokKeyword "case"
+<< caseExprCore:
+<< expr dispatch: TokIdent "op"
+>>*appExprCore: f= EVar "op" args= []
+>>*exprCore: rt EVar "op"
+<< exprNoLoop: e EVar "op"
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "op"
+<< pConstrOrVar: next token "Just"
+<< pConstrOrVar: next token "mop"
+<< pattern: (pAs <|> makeCons)PApp (PVar "Just") [PVar "mop"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokVLBrace
+>>*doBlock: (f:m)[Bind (PApp (PVar "op") []) (EApp (EVar "optional") (EVar "operatorB")),ExprStmt (EApp (EVar "myTrace") (EString ">> infixOp: out "))]
+>>*doExprCore: stmts [Bind (PApp (PVar "op") []) (EApp (EVar "optional") (EVar "operatorB")),ExprStmt (EApp (EVar "myTrace") (EString ">> infixOp: out "))]
+Just ([DeclModule "Parser.Expr.ExprExtensions" (Just [ExportVar "expr",ExportVar "exprTop",ExportVar "letExpr",ExportVar "ifExpr",ExportVar "returnExpr",ExportVar "forExpr",ExportVar "postfix",ExportVar "skipNewlines"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]},DeclImport {importQualified = False, importModule = "Data.Functor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "void"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.CaseParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "caseExprCore",ImportVar "lambdaCaseExpr"]},DeclImport {importQualified = False, importModule = "Parser.Expr.DoParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "doExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.ExprCore", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.ListParserCore", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "listExprCore"]},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pPattern",ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprTop" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprTop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "es") []) (EApp (EApp (EVar "sepEndBy1") (EVar "expr")) (EVar "exprSep")),ExprStmt (EReturn (EIf (EBinOp BinOpEq (EApp (EVar "length") (EVar "es")) (EInt 1)) (EApp (EVar "head") (EVar "es")) (EApp (EVarType "ESeq") (EVar "es"))))])) Nothing],DeclTypeSig "exprSep" (TApp (TCon "Parser") TUnit),DeclFunGroup "exprSep" [FunClause [] Nothing (Just (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))) Nothing],DeclTypeSig "expr" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "expr" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "infixExpr"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< expr: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "infixExpr" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "infixExpr" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainr1") (EApp (EVar "try") (EVar "exprTerm"))) (EVar "infixOp"))) Nothing],DeclTypeSig "exprTerm" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprTerm" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprNoLoop"),ExprStmt (EApp (EVar "postfix") (EVar "e"))])) Nothing],DeclTypeSig "exprNoLoop" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprNoLoop" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exprDispatch"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exprNoLoop: e ") (EApp (EVar "show") (EVar "e")))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "infixOp" (TApp (TCon "Parser") (TFun (TCon "Expr") (TFun (TCon "Expr") (TCon "Expr"))))],[TokIdent "infixOp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "optional",TokIdent "operatorB",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> infixOp: out ",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "op",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "mop",TokArrow,TokVLBrace,TokKeyword "case",TokIdent "parseBinOp",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "bop",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parsed as ",TokOperator "++",TokIdent "show",TokIdent "bop",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokSymbol "\\",TokIdent "a",TokIdent "b",TokArrow,TokTypeIdent "EBinOp",TokIdent "bop",TokIdent "a",TokIdent "b",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< infixOp: parseBinOp failed for ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "empty",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "postfix",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "postfix",TokIdent "e",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "mop",TokSymbol "<-",TokIdent "optional",TokIdent "operatorA",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: operator = ",TokOperator "++",TokIdent "show",TokIdent "mop",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mop",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokString "$",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokString "<< postfix: operator = $",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "layoutExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">> postfix: out rhs = ",TokOperator "++",TokIdent "show",TokIdent "rhs",TokSymbol ")",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokString "$",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Just",TokIdent "op",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "myTrace",TokSymbol "(",TokString "<< postfix: infix operator = ",TokOperator "++",TokIdent "show",TokIdent "op",TokSymbol ")",TokSymbol ";",TokIdent "rhs",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "postfix",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EApp",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokIdent "e",TokSymbol ")",TokIdent "rhs",TokSymbol ")",TokVRBrace,TokNewline,TokTypeIdent "Nothing",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "mbBinds",TokSymbol "<-",TokIdent "whereClause",TokSymbol ";",TokKeyword "case",TokIdent "mbBinds",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "binds",TokArrow,TokIdent "postfix",TokSymbol "(",TokTypeIdent "EWhere",TokIdent "e",TokIdent "binds",TokSymbol ")",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokIdent "e",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "layoutExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "layoutExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVLBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "bracesVO",TokIdent "expr",TokVRBrace,TokNewline,TokTypeIdent "TokSymbol",TokString "{",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "braces",TokIdent "expr",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokIdent "expr",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorA",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorA",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString "<$>",TokSymbol ",",TokString "..",TokSymbol ",",TokString ":",TokSymbol ",",TokString "$",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "operatorB",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "String",TokNewline,TokIdent "operatorB",TokSymbol "=",TokIdent "satisfyToken",TokIdent "isOp",TokVLBrace,TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "s",TokIdent "`elem`",TokSymbol "[",TokString ".",TokSymbol ",",TokString ">>",TokSymbol ",",TokString "++",TokSymbol ",",TokString "<?>",TokSymbol ",",TokString ">>=",TokSymbol ",",TokString "*>",TokSymbol ",",TokString "<$",TokSymbol ",",TokString "<*>",TokSymbol ",",TokString "<*",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokIdent "exprDispatch",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprDispatch",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< expr dispatch: ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokKeyword",TokString "do",TokArrow,TokIdent "doExprCore",TokIdent "expr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "case",TokArrow,TokIdent "caseExprCore",TokIdent "expr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "let",TokArrow,TokIdent "letBlock",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "if",TokArrow,TokIdent "ifExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "for",TokArrow,TokIdent "forExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "return",TokArrow,TokIdent "returnExpr",TokSymbol ";",TokTypeIdent "TokKeyword",TokString "sql",TokArrow,TokIdent "parseSQL",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "[",TokArrow,TokIdent "listExprCore",TokIdent "expr",TokSymbol ";",TokTypeIdent "TokVRBrace",TokArrow,TokIdent "skipVNlExpr",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "\\",TokArrow,TokIdent "lambdaExpr",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokLambdaCase",TokArrow,TokIdent "lambdaCaseExpr",TokIdent "expr",TokSymbol ";",TokIdent "_",TokArrow,TokIdent "exprCore",TokVRBrace,TokVRBrace,TokNewline,TokIdent "skipVNlExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "skipVNlExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "empty",TokVRBrace,TokNewline,TokIdent "whereClause",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "Maybe",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "whereClause",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "skipSeparators",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "mWhere",TokSymbol "<-",TokIdent "optional",TokSymbol "(",TokIdent "try",TokSymbol "(",TokIdent "keyword",TokString "where",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "mWhere",TokKeyword "of",TokVLBrace,TokTypeIdent "Just",TokIdent "_",TokArrow,TokTypeIdent "Just",TokOperator "<$>",TokIdent "bindings",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokTypeIdent "Nothing",TokVRBrace,TokVRBrace,TokNewline,TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokSymbol ";",TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "b",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "bs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*whereClause (b:bs) ",TokOperator "++",TokIdent "show",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "b",TokOperator ":",TokIdent "bs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "ifExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "ifExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "if",TokSymbol ";",TokIdent "cond",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "then",TokSymbol ";",TokIdent "th",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "keyword",TokString "else",TokSymbol ";",TokIdent "el",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EIf",TokIdent "cond",TokIdent "th",TokIdent "el",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline,TokIdent "returnExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnExpr",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "returnWithDollar",TokOperator "<|>",TokIdent "returnSimple",TokVRBrace,TokNewline,TokIdent "returnWithDollar",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnWithDollar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString "$",TokSymbol ")",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return $: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "returnSimple",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "returnSimple",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "return",TokSymbol ";",TokIdent "e",TokSymbol "<-",TokIdent "atomCore",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*return atom: ",TokOperator "++",TokIdent "show",TokIdent "e",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EReturn",TokIdent "e",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "forExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "forExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "for",TokSymbol ";",TokIdent "qs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "qualifier",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "token",TokTypeIdent "TokArrow",TokSymbol ";",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EListComp",TokIdent "body",TokIdent "qs",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "qualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "qualifier",TokSymbol "=",TokVLBrace,TokIdent "try",TokIdent "genQualifier",TokVLBrace,TokOperator "<|>",TokIdent "guardQualifier",TokVRBrace,TokVRBrace,TokNewline,TokIdent "genQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "genQualifier",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "src",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "QGenerator",TokIdent "pat",TokIdent "src",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "guardQualifier",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Qualifier",TokNewline,TokIdent "guardQualifier",TokSymbol "=",TokTypeIdent "QGuard",TokOperator "<$>",TokIdent "exprNoLoop",TokNewline,TokIdent "funBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "funBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokSymbol ";",TokIdent "next",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: name ",TokOperator "++",TokIdent "show",TokIdent "name",TokOperator "++",TokString " next ",TokOperator "++",TokIdent "show",TokIdent "next",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "next",TokKeyword "of",TokVLBrace,TokTypeIdent "TokOperator",TokString "=",TokArrow,TokIdent "empty",TokSymbol ";",TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< funBinding: args ",TokOperator "++",TokIdent "show",TokIdent "args",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*funBinding: body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "PApp",TokSymbol "(",TokTypeIdent "PVar",TokIdent "name",TokSymbol ")",TokIdent "args",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "valueBinding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "valueBinding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< valueBinding: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*valueBinding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "pat",TokSymbol ",",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "letExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letExpr",TokSymbol "=",TokIdent "try",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokIdent "binds",TokSymbol "<-",TokIdent "bindingsBlock",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TokVRBrace",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokVLBrace",TokSymbol ";",TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "token",TokTypeIdent "TokVRBrace",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokSymbol "(",TokTypeIdent "TokKeyword",TokString "in",TokSymbol ")",TokArrow,TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letExpr: in body ",TokOperator "++",TokIdent "show",TokIdent "body",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "_",TokArrow,TokKeyword "do",TokVLBrace,TokKeyword "return",TokSymbol "(",TokTypeIdent "ELetBlock",TokIdent "binds",TokSymbol "(",TokTypeIdent "EVar",TokString "__unit__",TokSymbol ")",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "pLetExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "pLetExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "keyword",TokString "let",TokSymbol ";",TokSymbol ";",TokIdent "pat",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< pLetExpr: pat ",TokOperator "++",TokIdent "show",TokIdent "pat",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "e1",TokSymbol "<-",TokIdent "exprNoLoop",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "keyword",TokString "in",TokSymbol ";",TokIdent "e2",TokSymbol "<-",TokIdent "expr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*pLetExpr: e1 ",TokOperator "++",TokIdent "show",TokIdent "e1",TokOperator "++",TokString " e2 ",TokOperator "++",TokIdent "show",TokIdent "e2",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELet",TokIdent "pat",TokIdent "e1",TokIdent "e2",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "letBlock",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "letBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< letBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "letExpr",TokOperator "<|>",TokIdent "pLetExpr",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*letBlock: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "binding",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Binding",TokNewline,TokIdent "binding",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< binding: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "try",TokIdent "valueBinding",TokOperator "<|>",TokIdent "funBinding",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*binding: rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokIdent "skipNewlines",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "bindingsBlock",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< bindingBlock: next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "rt",TokSymbol "<-",TokIdent "braces",TokIdent "bindings",TokOperator "<|>",TokIdent "bindings",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString ">>*bindingBlock next token ",TokOperator "++",TokIdent "show",TokIdent "t",TokOperator "++",TokString " rt ",TokOperator "++",TokIdent "show",TokIdent "rt",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "bindings",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "binding",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "xs",TokSymbol "<-",TokIdent "many",TokIdent "binding",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokOperator ":",TokIdent "xs",TokSymbol ")",TokVRBrace,TokVRBrace,TokVRBrace,TokVRBrace,TokNewline,TokIdent "bindingsBlockXX",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Binding",TokSymbol "]",TokNewline,TokIdent "bindingsBlockXX",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "braces",TokSymbol "(",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "sepBy",TokIdent "binding",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokVRBrace,TokVRBrace,TokNewline])
 
 -- src code --
 {-# LANGUAGE LambdaCase #-}
@@ -452,7 +843,7 @@ operatorB :: Parser String
 operatorB = satisfyToken isOp
   where
     isOp (TokOperator s)
-      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*", "<|>"] = Just s
+      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 
@@ -471,7 +862,7 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
-    -- TokVRBrace -> skipVNlExpr -- bracesv expr
+    TokVRBrace -> skipVNlExpr -- bracesv expr
     TokSymbol "\\" -> lambdaExpr
     -- TokVNl -> skipVNlExpr
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
@@ -547,6 +938,7 @@ forExpr = do
   keyword "for"
   qs <- sepBy1 qualifier (symbol ",")
   token TokArrow
+  -- bracesV $ do
   body <- expr -- NoLoop
   return (EListComp body qs)
 
@@ -806,215 +1198,215 @@ bindingsBlockXX = do
 [610] TokString ">>"      TokSymbol ","       TokString "++"      TokSymbol ","       TokString "<?>"     
 [615] TokSymbol ","       TokString ">>="     TokSymbol ","       TokString "*>"      TokSymbol ","       
 [620] TokString "<$"      TokSymbol ","       TokString "<*>"     TokSymbol ","       TokString "<*"      
-[625] TokSymbol ","       TokString "<|>"     TokSymbol "]"       TokSymbol "="       TokTypeIdent "Just" 
-[630] TokIdent "s"        TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       
-[635] TokTypeIdent "NothinTokVRBrace          TokNewline          TokIdent "isOp"     TokIdent "_"        
-[640] TokSymbol "="       TokTypeIdent "NothinTokVRBrace          TokVRBrace          TokNewline          
-[645] TokIdent "exprDispatTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          
-[650] TokIdent "exprDispatTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t"        
-[655] TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  
-[660] TokSymbol "("       TokString "<< expr dTokOperator "++"    TokIdent "show"     TokIdent "t"        
-[665] TokSymbol ")"       TokSymbol ";"       TokKeyword "case"   TokIdent "t"        TokKeyword "of"     
-[670] TokVLBrace          TokTypeIdent "TokKeyTokString "do"      TokArrow            TokIdent "doExprCore
-[675] TokIdent "expr"     TokSymbol ";"       TokTypeIdent "TokKeyTokString "case"    TokArrow            
-[680] TokIdent "caseExprCoTokIdent "expr"     TokSymbol ";"       TokSymbol ";"       TokTypeIdent "TokKey
-[685] TokString "let"     TokArrow            TokIdent "letBlock" TokSymbol ";"       TokTypeIdent "TokKey
-[690] TokString "if"      TokArrow            TokIdent "ifExpr"   TokSymbol ";"       TokTypeIdent "TokKey
-[695] TokString "for"     TokArrow            TokIdent "forExpr"  TokSymbol ";"       TokTypeIdent "TokKey
-[700] TokString "return"  TokArrow            TokIdent "returnExprTokSymbol ";"       TokTypeIdent "TokKey
-[705] TokString "sql"     TokArrow            TokIdent "parseSQL" TokSymbol ";"       TokTypeIdent "TokSym
-[710] TokString "["       TokArrow            TokIdent "listExprCoTokIdent "expr"     TokSymbol ";"       
-[715] TokSymbol ";"       TokTypeIdent "TokSymTokString "\\"      TokArrow            TokIdent "lambdaExpr
-[720] TokSymbol ";"       TokSymbol ";"       TokTypeIdent "TokLamTokArrow            TokIdent "lambdaCase
-[725] TokIdent "expr"     TokSymbol ";"       TokIdent "_"        TokArrow            TokIdent "exprCore" 
-[730] TokVRBrace          TokVRBrace          TokNewline          TokIdent "skipVNlExpTokSymbol "::"      
-[735] TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "skipVNlExpTokSymbol "="       
-[740] TokKeyword "do"     TokVLBrace          TokIdent "token"    TokTypeIdent "TokVRBTokSymbol ";"       
-[745] TokIdent "empty"    TokVRBrace          TokNewline          TokIdent "whereClausTokSymbol "::"      
-[750] TokTypeIdent "ParserTokSymbol "("       TokTypeIdent "Maybe"TokSymbol "["       TokTypeIdent "Bindin
-[755] TokSymbol "]"       TokSymbol ")"       TokNewline          TokIdent "whereClausTokSymbol "="       
-[760] TokKeyword "do"     TokVLBrace          TokIdent "skipSeparaTokSymbol ";"       TokIdent "bracesV"  
-[765] TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "mWhere"   TokSymbol "<-"      
-[770] TokIdent "optional" TokSymbol "("       TokIdent "try"      TokSymbol "("       TokIdent "keyword"  
-[775] TokString "where"   TokSymbol ")"       TokSymbol ")"       TokSymbol ";"       TokKeyword "case"   
-[780] TokIdent "mWhere"   TokKeyword "of"     TokVLBrace          TokTypeIdent "Just" TokIdent "_"        
-[785] TokArrow            TokTypeIdent "Just" TokOperator "<$>"   TokIdent "bindings" TokSymbol ";"       
-[790] TokTypeIdent "NothinTokArrow            TokKeyword "return" TokTypeIdent "NothinTokVRBrace          
-[795] TokVRBrace          TokNewline          TokKeyword "where"  TokVLBrace          TokIdent "bindings" 
-[800] TokSymbol "::"      TokTypeIdent "ParserTokSymbol "["       TokTypeIdent "BindinTokSymbol "]"       
-[805] TokSymbol ";"       TokIdent "bindings" TokSymbol "="       TokKeyword "do"     TokVLBrace          
-[810] TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "b"        
-[815] TokSymbol "<-"      TokIdent "binding"  TokSymbol ";"       TokSymbol ";"       TokIdent "bs"       
-[820] TokSymbol "<-"      TokIdent "many"     TokIdent "binding"  TokSymbol ";"       TokSymbol ";"       
-[825] TokIdent "myTrace"  TokSymbol "("       TokString ">>*whereCTokOperator "++"    TokIdent "show"     
-[830] TokSymbol "("       TokIdent "b"        TokOperator ":"     TokIdent "bs"       TokSymbol ")"       
-[835] TokSymbol ")"       TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokIdent "b"        
-[840] TokOperator ":"     TokIdent "bs"       TokSymbol ")"       TokVRBrace          TokVRBrace          
-[845] TokVRBrace          TokVRBrace          TokNewline          TokIdent "lambdaExprTokSymbol "::"      
-[850] TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "lambdaExprTokSymbol "="       
-[855] TokKeyword "do"     TokVLBrace          TokIdent "symbol"   TokString "\\"      TokSymbol ";"       
-[860] TokIdent "arg"      TokSymbol "<-"      TokIdent "pattern"  TokSymbol ";"       TokIdent "tokenIs"  
-[865] TokSymbol "("       TokLambdaCase       TokTypeIdent "TokArrTokArrow            TokTypeIdent "Just" 
-[870] TokSymbol "("       TokSymbol ")"       TokSymbol ";"       TokIdent "_"        TokArrow            
-[875] TokTypeIdent "NothinTokSymbol ")"       TokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     
-[880] TokKeyword "do"     TokVLBrace          TokIdent "body"     TokSymbol "<-"      TokIdent "expr"     
-[885] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "ELam" TokIdent "arg"      
-[890] TokIdent "body"     TokSymbol ")"       TokVRBrace          TokVRBrace          TokNewline          
-[895] TokIdent "ifExpr"   TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          
-[900] TokIdent "ifExpr"   TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "keyword"  
-[905] TokString "if"      TokSymbol ";"       TokIdent "cond"     TokSymbol "<-"      TokIdent "expr"     
-[910] TokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     TokVLBrace          
-[915] TokIdent "keyword"  TokString "then"    TokSymbol ";"       TokIdent "th"       TokSymbol "<-"      
-[920] TokIdent "expr"     TokSymbol ";"       TokIdent "keyword"  TokString "else"    TokSymbol ";"       
-[925] TokIdent "el"       TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokKeyword "return" 
-[930] TokSymbol "("       TokTypeIdent "EIf"  TokIdent "cond"     TokIdent "th"       TokIdent "el"       
-[935] TokSymbol ")"       TokVRBrace          TokVRBrace          TokNewline          TokIdent "returnExpr
-[940] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "returnExpr
-[945] TokSymbol "="       TokVLBrace          TokIdent "try"      TokIdent "returnWithTokOperator "<|>"   
-[950] TokIdent "returnSimpTokVRBrace          TokNewline          TokIdent "returnWithTokSymbol "::"      
-[955] TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "returnWithTokSymbol "="       
-[960] TokKeyword "do"     TokVLBrace          TokIdent "keyword"  TokString "return"  TokSymbol ";"       
-[965] TokIdent "token"    TokSymbol "("       TokTypeIdent "TokOpeTokString "$"       TokSymbol ")"       
-[970] TokSymbol ";"       TokIdent "e"        TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       
-[975] TokIdent "myTrace"  TokSymbol "("       TokString ">>*returnTokOperator "++"    TokIdent "show"     
-[980] TokIdent "e"        TokSymbol ")"       TokSymbol ";"       TokKeyword "return" TokSymbol "("       
-[985] TokTypeIdent "EReturTokIdent "e"        TokSymbol ")"       TokVRBrace          TokNewline          
-[990] TokIdent "returnSimpTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          
-[995] TokIdent "returnSimpTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "keyword"  
-[1000] TokString "return"  TokSymbol ";"       TokIdent "e"        TokSymbol "<-"      TokIdent "atomCore" 
-[1005] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*returnTokOperator "++"    
-[1010] TokIdent "show"     TokIdent "e"        TokSymbol ")"       TokSymbol ";"       TokKeyword "return" 
-[1015] TokSymbol "("       TokTypeIdent "EReturTokIdent "e"        TokSymbol ")"       TokVRBrace          
-[1020] TokNewline          TokIdent "forExpr"  TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" 
-[1025] TokNewline          TokIdent "forExpr"  TokSymbol "="       TokKeyword "do"     TokVLBrace          
-[1030] TokIdent "keyword"  TokString "for"     TokSymbol ";"       TokIdent "qs"       TokSymbol "<-"      
-[1035] TokIdent "sepBy1"   TokIdent "qualifier"TokSymbol "("       TokIdent "symbol"   TokString ","       
-[1040] TokSymbol ")"       TokSymbol ";"       TokIdent "token"    TokTypeIdent "TokArrTokSymbol ";"       
-[1045] TokIdent "body"     TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokKeyword "return" 
-[1050] TokSymbol "("       TokTypeIdent "EListCTokIdent "body"     TokIdent "qs"       TokSymbol ")"       
-[1055] TokVRBrace          TokNewline          TokIdent "qualifier"TokSymbol "::"      TokTypeIdent "Parser
-[1060] TokTypeIdent "QualifTokNewline          TokIdent "qualifier"TokSymbol "="       TokVLBrace          
-[1065] TokIdent "try"      TokIdent "genQualifiTokVLBrace          TokOperator "<|>"   TokIdent "guardQuali
-[1070] TokVRBrace          TokVRBrace          TokNewline          TokIdent "genQualifiTokSymbol "::"      
-[1075] TokTypeIdent "ParserTokTypeIdent "QualifTokNewline          TokIdent "genQualifiTokSymbol "="       
-[1080] TokKeyword "do"     TokVLBrace          TokIdent "pat"      TokSymbol "<-"      TokIdent "pattern"  
-[1085] TokSymbol ";"       TokSymbol ";"       TokIdent "keyword"  TokString "in"      TokSymbol ";"       
-[1090] TokIdent "src"      TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokKeyword "return" 
-[1095] TokSymbol "("       TokTypeIdent "QGenerTokIdent "pat"      TokIdent "src"      TokSymbol ")"       
-[1100] TokVRBrace          TokNewline          TokIdent "guardQualiTokSymbol "::"      TokTypeIdent "Parser
-[1105] TokTypeIdent "QualifTokNewline          TokIdent "guardQualiTokSymbol "="       TokTypeIdent "QGuard
-[1110] TokOperator "<$>"   TokIdent "exprNoLoopTokNewline          TokIdent "funBindingTokSymbol "::"      
-[1115] TokTypeIdent "ParserTokTypeIdent "BindinTokNewline          TokIdent "funBindingTokSymbol "="       
-[1120] TokKeyword "do"     TokVLBrace          TokIdent "name"     TokSymbol "<-"      TokIdent "ident"    
-[1125] TokSymbol ";"       TokSymbol ";"       TokIdent "next"     TokSymbol "<-"      TokIdent "lookAhead"
-[1130] TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< funBin
-[1135] TokOperator "++"    TokIdent "show"     TokIdent "name"     TokOperator "++"    TokString " next "  
-[1140] TokOperator "++"    TokIdent "show"     TokIdent "next"     TokSymbol ")"       TokSymbol ";"       
-[1145] TokKeyword "case"   TokIdent "next"     TokKeyword "of"     TokVLBrace          TokTypeIdent "TokOpe
-[1150] TokString "="       TokArrow            TokIdent "empty"    TokSymbol ";"       TokIdent "_"        
-[1155] TokArrow            TokKeyword "do"     TokVLBrace          TokIdent "args"     TokSymbol "<-"      
-[1160] TokIdent "many"     TokIdent "pattern"  TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
-[1165] TokString "<< funBinTokOperator "++"    TokIdent "show"     TokIdent "args"     TokSymbol ")"       
-[1170] TokSymbol ";"       TokIdent "symbol"   TokString "="       TokSymbol ";"       TokIdent "bracesV"  
-[1175] TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "body"     TokSymbol "<-"      
-[1180] TokIdent "expr"     TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*funBin
-[1185] TokOperator "++"    TokIdent "show"     TokIdent "body"     TokSymbol ")"       TokSymbol ";"       
-[1190] TokKeyword "return" TokSymbol "("       TokTypeIdent "PApp" TokSymbol "("       TokTypeIdent "PVar" 
-[1195] TokIdent "name"     TokSymbol ")"       TokIdent "args"     TokSymbol ","       TokIdent "body"     
-[1200] TokSymbol ")"       TokVRBrace          TokVRBrace          TokVRBrace          TokVRBrace          
-[1205] TokNewline          TokIdent "valueBindiTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Bindin
-[1210] TokNewline          TokIdent "valueBindiTokSymbol "="       TokKeyword "do"     TokVLBrace          
-[1215] TokIdent "pat"      TokSymbol "<-"      TokIdent "pattern"  TokSymbol ";"       TokIdent "myTrace"  
-[1220] TokSymbol "("       TokString "<< valueBTokOperator "++"    TokIdent "show"     TokIdent "pat"      
-[1225] TokSymbol ")"       TokSymbol ";"       TokIdent "symbol"   TokString "="       TokSymbol ";"       
-[1230] TokSymbol ";"       TokSymbol ";"       TokIdent "body"     TokSymbol "<-"      TokIdent "expr"     
-[1235] TokSymbol ";"       TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" 
-[1240] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*valueBTokOperator "++"    
-[1245] TokIdent "show"     TokIdent "t"        TokOperator "++"    TokString " body "  TokOperator "++"    
-[1250] TokIdent "show"     TokIdent "body"     TokSymbol ")"       TokSymbol ";"       TokKeyword "return" 
-[1255] TokSymbol "("       TokIdent "pat"      TokSymbol ","       TokIdent "body"     TokSymbol ")"       
-[1260] TokVRBrace          TokNewline          TokIdent "letExpr"  TokSymbol "::"      TokTypeIdent "Parser
-[1265] TokTypeIdent "Expr" TokNewline          TokIdent "letExpr"  TokSymbol "="       TokIdent "try"      
-[1270] TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "t"        TokSymbol "<-"      
-[1275] TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
-[1280] TokString "<< letExpTokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       
-[1285] TokSymbol ";"       TokIdent "keyword"  TokString "let"     TokSymbol ";"       TokIdent "binds"    
-[1290] TokSymbol "<-"      TokIdent "bindingsBlTokSymbol ";"       TokSymbol ";"       TokSymbol ";"       
-[1295] TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       
-[1300] TokIdent "myTrace"  TokSymbol "("       TokString "<< letExpTokOperator "++"    TokIdent "show"     
-[1305] TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokKeyword "case"   TokIdent "t"        
-[1310] TokKeyword "of"     TokVLBrace          TokTypeIdent "TokVRBTokArrow            TokKeyword "do"     
-[1315] TokVLBrace          TokIdent "token"    TokTypeIdent "TokVLBTokSymbol ";"       TokIdent "keyword"  
-[1320] TokString "in"      TokSymbol ";"       TokIdent "body"     TokSymbol "<-"      TokIdent "expr"     
-[1325] TokSymbol ";"       TokIdent "token"    TokTypeIdent "TokVRBTokSymbol ";"       TokIdent "myTrace"  
-[1330] TokSymbol "("       TokString ">>*letExpTokOperator "++"    TokIdent "show"     TokIdent "body"     
-[1335] TokSymbol ")"       TokSymbol ";"       TokSymbol ";"       TokKeyword "return" TokSymbol "("       
-[1340] TokTypeIdent "ELetBlTokIdent "binds"    TokIdent "body"     TokSymbol ")"       TokVRBrace          
-[1345] TokNewline          TokSymbol "("       TokTypeIdent "TokKeyTokString "in"      TokSymbol ")"       
-[1350] TokArrow            TokKeyword "do"     TokVLBrace          TokIdent "keyword"  TokString "in"      
-[1355] TokSymbol ";"       TokIdent "body"     TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       
-[1360] TokIdent "myTrace"  TokSymbol "("       TokString ">>*letExpTokOperator "++"    TokIdent "show"     
-[1365] TokIdent "body"     TokSymbol ")"       TokSymbol ";"       TokSymbol ";"       TokIdent "skipNewlin
-[1370] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "ELetBlTokIdent "binds"    
-[1375] TokIdent "body"     TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "_"        
-[1380] TokArrow            TokKeyword "do"     TokVLBrace          TokKeyword "return" TokSymbol "("       
-[1385] TokTypeIdent "ELetBlTokIdent "binds"    TokSymbol "("       TokTypeIdent "EVar" TokString "__unit__"
-[1390] TokSymbol ")"       TokSymbol ")"       TokVRBrace          TokVRBrace          TokVRBrace          
-[1395] TokNewline          TokIdent "pLetExpr" TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" 
-[1400] TokNewline          TokIdent "pLetExpr" TokSymbol "="       TokKeyword "do"     TokVLBrace          
-[1405] TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       
-[1410] TokIdent "myTrace"  TokSymbol "("       TokString "<< pLetExTokOperator "++"    TokIdent "show"     
-[1415] TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokIdent "keyword"  TokString "let"     
-[1420] TokSymbol ";"       TokSymbol ";"       TokIdent "pat"      TokSymbol "<-"      TokIdent "pattern"  
-[1425] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< pLetExTokOperator "++"    
-[1430] TokIdent "show"     TokIdent "pat"      TokSymbol ")"       TokSymbol ";"       TokIdent "symbol"   
-[1435] TokString "="       TokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     
-[1440] TokVLBrace          TokIdent "e1"       TokSymbol "<-"      TokIdent "exprNoLoopTokSymbol ";"       
-[1445] TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "keyword"  
-[1450] TokString "in"      TokSymbol ";"       TokIdent "e2"       TokSymbol "<-"      TokIdent "expr"     
-[1455] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*pLetExTokOperator "++"    
-[1460] TokIdent "show"     TokIdent "e1"       TokOperator "++"    TokString " e2 "    TokOperator "++"    
-[1465] TokIdent "show"     TokIdent "e2"       TokSymbol ")"       TokSymbol ";"       TokKeyword "return" 
-[1470] TokSymbol "("       TokTypeIdent "ELet" TokIdent "pat"      TokIdent "e1"       TokIdent "e2"       
-[1475] TokSymbol ")"       TokVRBrace          TokVRBrace          TokVRBrace          TokNewline          
-[1480] TokIdent "letBlock" TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          
-[1485] TokIdent "letBlock" TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t"        
-[1490] TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  
-[1495] TokSymbol "("       TokString "<< letBloTokOperator "++"    TokIdent "show"     TokIdent "t"        
-[1500] TokSymbol ")"       TokSymbol ";"       TokIdent "rt"       TokSymbol "<-"      TokIdent "try"      
-[1505] TokIdent "letExpr"  TokOperator "<|>"   TokIdent "pLetExpr" TokSymbol ";"       TokIdent "myTrace"  
-[1510] TokSymbol "("       TokString ">>*letBloTokOperator "++"    TokIdent "show"     TokIdent "rt"       
-[1515] TokSymbol ")"       TokSymbol ";"       TokSymbol ";"       TokKeyword "return" TokIdent "rt"       
-[1520] TokVRBrace          TokNewline          TokIdent "binding"  TokSymbol "::"      TokTypeIdent "Parser
-[1525] TokTypeIdent "BindinTokNewline          TokIdent "binding"  TokSymbol "="       TokKeyword "do"     
-[1530] TokVLBrace          TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" 
-[1535] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< bindinTokOperator "++"    
-[1540] TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokIdent "rt"       
-[1545] TokSymbol "<-"      TokIdent "try"      TokIdent "valueBindiTokOperator "<|>"   TokIdent "funBinding
-[1550] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*bindinTokOperator "++"    
-[1555] TokIdent "show"     TokIdent "rt"       TokSymbol ")"       TokSymbol ";"       TokIdent "skipNewlin
-[1560] TokSymbol ";"       TokKeyword "return" TokIdent "rt"       TokVRBrace          TokNewline          
-[1565] TokIdent "bindingsBlTokSymbol "::"      TokTypeIdent "ParserTokSymbol "["       TokTypeIdent "Bindin
-[1570] TokSymbol "]"       TokNewline          TokIdent "bindingsBlTokSymbol "="       TokKeyword "do"     
-[1575] TokVLBrace          TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" 
-[1580] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< bindinTokOperator "++"    
-[1585] TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokIdent "rt"       
-[1590] TokSymbol "<-"      TokIdent "braces"   TokIdent "bindings" TokOperator "<|>"   TokIdent "bindings" 
-[1595] TokSymbol ";"       TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" 
-[1600] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*bindinTokOperator "++"    
-[1605] TokIdent "show"     TokIdent "t"        TokOperator "++"    TokString " rt "    TokOperator "++"    
-[1610] TokIdent "show"     TokIdent "rt"       TokSymbol ")"       TokSymbol ";"       TokKeyword "return" 
-[1615] TokIdent "rt"       TokSymbol ";"       TokKeyword "where"  TokVLBrace          TokIdent "bindings" 
-[1620] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "f"        TokSymbol "<-"      
-[1625] TokIdent "binding"  TokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     
-[1630] TokVLBrace          TokIdent "xs"       TokSymbol "<-"      TokIdent "many"     TokIdent "binding"  
-[1635] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokIdent "f"        TokOperator ":"     
-[1640] TokIdent "xs"       TokSymbol ")"       TokVRBrace          TokVRBrace          TokVRBrace          
-[1645] TokVRBrace          TokNewline          TokIdent "bindingsBlTokSymbol "::"      TokTypeIdent "Parser
-[1650] TokSymbol "["       TokTypeIdent "BindinTokSymbol "]"       TokNewline          TokIdent "bindingsBl
-[1655] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "braces"   TokSymbol "("       
-[1660] TokIdent "sepBy"    TokIdent "binding"  TokSymbol "("       TokIdent "symbol"   TokString ";"       
-[1665] TokOperator "<|>"   TokIdent "newline"  TokSymbol ")"       TokSymbol ")"       TokVLBrace          
-[1670] TokOperator "<|>"   TokIdent "sepBy"    TokIdent "binding"  TokSymbol "("       TokIdent "symbol"   
-[1675] TokString ";"       TokOperator "<|>"   TokIdent "newline"  TokSymbol ")"       TokVRBrace          
-[1680] TokVRBrace          TokNewline          
+[625] TokSymbol "]"       TokSymbol "="       TokTypeIdent "Just" TokIdent "s"        TokSymbol ";"       
+[630] TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       TokTypeIdent "NothinTokVRBrace          
+[635] TokNewline          TokIdent "isOp"     TokIdent "_"        TokSymbol "="       TokTypeIdent "Nothin
+[640] TokVRBrace          TokVRBrace          TokNewline          TokIdent "exprDispatTokSymbol "::"      
+[645] TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "exprDispatTokSymbol "="       
+[650] TokKeyword "do"     TokVLBrace          TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"
+[655] TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< expr d
+[660] TokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       
+[665] TokKeyword "case"   TokIdent "t"        TokKeyword "of"     TokVLBrace          TokTypeIdent "TokKey
+[670] TokString "do"      TokArrow            TokIdent "doExprCoreTokIdent "expr"     TokSymbol ";"       
+[675] TokTypeIdent "TokKeyTokString "case"    TokArrow            TokIdent "caseExprCoTokIdent "expr"     
+[680] TokSymbol ";"       TokSymbol ";"       TokTypeIdent "TokKeyTokString "let"     TokArrow            
+[685] TokIdent "letBlock" TokSymbol ";"       TokTypeIdent "TokKeyTokString "if"      TokArrow            
+[690] TokIdent "ifExpr"   TokSymbol ";"       TokTypeIdent "TokKeyTokString "for"     TokArrow            
+[695] TokIdent "forExpr"  TokSymbol ";"       TokTypeIdent "TokKeyTokString "return"  TokArrow            
+[700] TokIdent "returnExprTokSymbol ";"       TokTypeIdent "TokKeyTokString "sql"     TokArrow            
+[705] TokIdent "parseSQL" TokSymbol ";"       TokTypeIdent "TokSymTokString "["       TokArrow            
+[710] TokIdent "listExprCoTokIdent "expr"     TokSymbol ";"       TokTypeIdent "TokVRBTokArrow            
+[715] TokIdent "skipVNlExpTokSymbol ";"       TokTypeIdent "TokSymTokString "\\"      TokArrow            
+[720] TokIdent "lambdaExprTokSymbol ";"       TokSymbol ";"       TokTypeIdent "TokLamTokArrow            
+[725] TokIdent "lambdaCaseTokIdent "expr"     TokSymbol ";"       TokIdent "_"        TokArrow            
+[730] TokIdent "exprCore" TokVRBrace          TokVRBrace          TokNewline          TokIdent "skipVNlExp
+[735] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "skipVNlExp
+[740] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "token"    TokTypeIdent "TokVRB
+[745] TokSymbol ";"       TokIdent "empty"    TokVRBrace          TokNewline          TokIdent "whereClaus
+[750] TokSymbol "::"      TokTypeIdent "ParserTokSymbol "("       TokTypeIdent "Maybe"TokSymbol "["       
+[755] TokTypeIdent "BindinTokSymbol "]"       TokSymbol ")"       TokNewline          TokIdent "whereClaus
+[760] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "skipSeparaTokSymbol ";"       
+[765] TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "mWhere"   
+[770] TokSymbol "<-"      TokIdent "optional" TokSymbol "("       TokIdent "try"      TokSymbol "("       
+[775] TokIdent "keyword"  TokString "where"   TokSymbol ")"       TokSymbol ")"       TokSymbol ";"       
+[780] TokKeyword "case"   TokIdent "mWhere"   TokKeyword "of"     TokVLBrace          TokTypeIdent "Just" 
+[785] TokIdent "_"        TokArrow            TokTypeIdent "Just" TokOperator "<$>"   TokIdent "bindings" 
+[790] TokSymbol ";"       TokTypeIdent "NothinTokArrow            TokKeyword "return" TokTypeIdent "Nothin
+[795] TokVRBrace          TokVRBrace          TokNewline          TokKeyword "where"  TokVLBrace          
+[800] TokIdent "bindings" TokSymbol "::"      TokTypeIdent "ParserTokSymbol "["       TokTypeIdent "Bindin
+[805] TokSymbol "]"       TokSymbol ";"       TokIdent "bindings" TokSymbol "="       TokKeyword "do"     
+[810] TokVLBrace          TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     TokVLBrace          
+[815] TokIdent "b"        TokSymbol "<-"      TokIdent "binding"  TokSymbol ";"       TokSymbol ";"       
+[820] TokIdent "bs"       TokSymbol "<-"      TokIdent "many"     TokIdent "binding"  TokSymbol ";"       
+[825] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*whereCTokOperator "++"    
+[830] TokIdent "show"     TokSymbol "("       TokIdent "b"        TokOperator ":"     TokIdent "bs"       
+[835] TokSymbol ")"       TokSymbol ")"       TokSymbol ";"       TokKeyword "return" TokSymbol "("       
+[840] TokIdent "b"        TokOperator ":"     TokIdent "bs"       TokSymbol ")"       TokVRBrace          
+[845] TokVRBrace          TokVRBrace          TokVRBrace          TokNewline          TokIdent "lambdaExpr
+[850] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "lambdaExpr
+[855] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "symbol"   TokString "\\"      
+[860] TokSymbol ";"       TokIdent "arg"      TokSymbol "<-"      TokIdent "pattern"  TokSymbol ";"       
+[865] TokIdent "tokenIs"  TokSymbol "("       TokLambdaCase       TokTypeIdent "TokArrTokArrow            
+[870] TokTypeIdent "Just" TokSymbol "("       TokSymbol ")"       TokSymbol ";"       TokIdent "_"        
+[875] TokArrow            TokTypeIdent "NothinTokSymbol ")"       TokSymbol ";"       TokIdent "bracesV"  
+[880] TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "body"     TokSymbol "<-"      
+[885] TokIdent "expr"     TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "ELam" 
+[890] TokIdent "arg"      TokIdent "body"     TokSymbol ")"       TokVRBrace          TokVRBrace          
+[895] TokNewline          TokIdent "ifExpr"   TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" 
+[900] TokNewline          TokIdent "ifExpr"   TokSymbol "="       TokKeyword "do"     TokVLBrace          
+[905] TokIdent "keyword"  TokString "if"      TokSymbol ";"       TokIdent "cond"     TokSymbol "<-"      
+[910] TokIdent "expr"     TokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     
+[915] TokVLBrace          TokIdent "keyword"  TokString "then"    TokSymbol ";"       TokIdent "th"       
+[920] TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokIdent "keyword"  TokString "else"    
+[925] TokSymbol ";"       TokIdent "el"       TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       
+[930] TokKeyword "return" TokSymbol "("       TokTypeIdent "EIf"  TokIdent "cond"     TokIdent "th"       
+[935] TokIdent "el"       TokSymbol ")"       TokVRBrace          TokVRBrace          TokNewline          
+[940] TokIdent "returnExprTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          
+[945] TokIdent "returnExprTokSymbol "="       TokVLBrace          TokIdent "try"      TokIdent "returnWith
+[950] TokOperator "<|>"   TokIdent "returnSimpTokVRBrace          TokNewline          TokIdent "returnWith
+[955] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "returnWith
+[960] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "keyword"  TokString "return"  
+[965] TokSymbol ";"       TokIdent "token"    TokSymbol "("       TokTypeIdent "TokOpeTokString "$"       
+[970] TokSymbol ")"       TokSymbol ";"       TokIdent "e"        TokSymbol "<-"      TokIdent "expr"     
+[975] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*returnTokOperator "++"    
+[980] TokIdent "show"     TokIdent "e"        TokSymbol ")"       TokSymbol ";"       TokKeyword "return" 
+[985] TokSymbol "("       TokTypeIdent "EReturTokIdent "e"        TokSymbol ")"       TokVRBrace          
+[990] TokNewline          TokIdent "returnSimpTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" 
+[995] TokNewline          TokIdent "returnSimpTokSymbol "="       TokKeyword "do"     TokVLBrace          
+[1000] TokIdent "keyword"  TokString "return"  TokSymbol ";"       TokIdent "e"        TokSymbol "<-"      
+[1005] TokIdent "atomCore" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*return
+[1010] TokOperator "++"    TokIdent "show"     TokIdent "e"        TokSymbol ")"       TokSymbol ";"       
+[1015] TokKeyword "return" TokSymbol "("       TokTypeIdent "EReturTokIdent "e"        TokSymbol ")"       
+[1020] TokVRBrace          TokNewline          TokIdent "forExpr"  TokSymbol "::"      TokTypeIdent "Parser
+[1025] TokTypeIdent "Expr" TokNewline          TokIdent "forExpr"  TokSymbol "="       TokKeyword "do"     
+[1030] TokVLBrace          TokIdent "keyword"  TokString "for"     TokSymbol ";"       TokIdent "qs"       
+[1035] TokSymbol "<-"      TokIdent "sepBy1"   TokIdent "qualifier"TokSymbol "("       TokIdent "symbol"   
+[1040] TokString ","       TokSymbol ")"       TokSymbol ";"       TokIdent "token"    TokTypeIdent "TokArr
+[1045] TokSymbol ";"       TokSymbol ";"       TokIdent "body"     TokSymbol "<-"      TokIdent "expr"     
+[1050] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "EListCTokIdent "body"     
+[1055] TokIdent "qs"       TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "qualifier"
+[1060] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "QualifTokNewline          TokIdent "qualifier"
+[1065] TokSymbol "="       TokVLBrace          TokIdent "try"      TokIdent "genQualifiTokVLBrace          
+[1070] TokOperator "<|>"   TokIdent "guardQualiTokVRBrace          TokVRBrace          TokNewline          
+[1075] TokIdent "genQualifiTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "QualifTokNewline          
+[1080] TokIdent "genQualifiTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "pat"      
+[1085] TokSymbol "<-"      TokIdent "pattern"  TokSymbol ";"       TokSymbol ";"       TokIdent "keyword"  
+[1090] TokString "in"      TokSymbol ";"       TokIdent "src"      TokSymbol "<-"      TokIdent "expr"     
+[1095] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "QGenerTokIdent "pat"      
+[1100] TokIdent "src"      TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "guardQuali
+[1105] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "QualifTokNewline          TokIdent "guardQuali
+[1110] TokSymbol "="       TokTypeIdent "QGuardTokOperator "<$>"   TokIdent "exprNoLoopTokNewline          
+[1115] TokIdent "funBindingTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "BindinTokNewline          
+[1120] TokIdent "funBindingTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "name"     
+[1125] TokSymbol "<-"      TokIdent "ident"    TokSymbol ";"       TokSymbol ";"       TokIdent "next"     
+[1130] TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  
+[1135] TokSymbol "("       TokString "<< funBinTokOperator "++"    TokIdent "show"     TokIdent "name"     
+[1140] TokOperator "++"    TokString " next "  TokOperator "++"    TokIdent "show"     TokIdent "next"     
+[1145] TokSymbol ")"       TokSymbol ";"       TokKeyword "case"   TokIdent "next"     TokKeyword "of"     
+[1150] TokVLBrace          TokTypeIdent "TokOpeTokString "="       TokArrow            TokIdent "empty"    
+[1155] TokSymbol ";"       TokIdent "_"        TokArrow            TokKeyword "do"     TokVLBrace          
+[1160] TokIdent "args"     TokSymbol "<-"      TokIdent "many"     TokIdent "pattern"  TokSymbol ";"       
+[1165] TokIdent "myTrace"  TokSymbol "("       TokString "<< funBinTokOperator "++"    TokIdent "show"     
+[1170] TokIdent "args"     TokSymbol ")"       TokSymbol ";"       TokIdent "symbol"   TokString "="       
+[1175] TokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     TokVLBrace          
+[1180] TokIdent "body"     TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokIdent "myTrace"  
+[1185] TokSymbol "("       TokString ">>*funBinTokOperator "++"    TokIdent "show"     TokIdent "body"     
+[1190] TokSymbol ")"       TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "PApp" 
+[1195] TokSymbol "("       TokTypeIdent "PVar" TokIdent "name"     TokSymbol ")"       TokIdent "args"     
+[1200] TokSymbol ","       TokIdent "body"     TokSymbol ")"       TokVRBrace          TokVRBrace          
+[1205] TokVRBrace          TokVRBrace          TokNewline          TokIdent "valueBindiTokSymbol "::"      
+[1210] TokTypeIdent "ParserTokTypeIdent "BindinTokNewline          TokIdent "valueBindiTokSymbol "="       
+[1215] TokKeyword "do"     TokVLBrace          TokIdent "pat"      TokSymbol "<-"      TokIdent "pattern"  
+[1220] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< valueBTokOperator "++"    
+[1225] TokIdent "show"     TokIdent "pat"      TokSymbol ")"       TokSymbol ";"       TokIdent "symbol"   
+[1230] TokString "="       TokSymbol ";"       TokSymbol ";"       TokSymbol ";"       TokIdent "body"     
+[1235] TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokIdent "t"        TokSymbol "<-"      
+[1240] TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[1245] TokString ">>*valueBTokOperator "++"    TokIdent "show"     TokIdent "t"        TokOperator "++"    
+[1250] TokString " body "  TokOperator "++"    TokIdent "show"     TokIdent "body"     TokSymbol ")"       
+[1255] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokIdent "pat"      TokSymbol ","       
+[1260] TokIdent "body"     TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "letExpr"  
+[1265] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "letExpr"  
+[1270] TokSymbol "="       TokIdent "try"      TokOperator "$"     TokKeyword "do"     TokVLBrace          
+[1275] TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       
+[1280] TokIdent "myTrace"  TokSymbol "("       TokString "<< letExpTokOperator "++"    TokIdent "show"     
+[1285] TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokIdent "keyword"  TokString "let"     
+[1290] TokSymbol ";"       TokIdent "binds"    TokSymbol "<-"      TokIdent "bindingsBlTokSymbol ";"       
+[1295] TokSymbol ";"       TokSymbol ";"       TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"
+[1300] TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< letExp
+[1305] TokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       
+[1310] TokKeyword "case"   TokIdent "t"        TokKeyword "of"     TokVLBrace          TokTypeIdent "TokVRB
+[1315] TokArrow            TokKeyword "do"     TokVLBrace          TokIdent "token"    TokTypeIdent "TokVLB
+[1320] TokSymbol ";"       TokIdent "keyword"  TokString "in"      TokSymbol ";"       TokIdent "body"     
+[1325] TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokIdent "token"    TokTypeIdent "TokVRB
+[1330] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*letExpTokOperator "++"    
+[1335] TokIdent "show"     TokIdent "body"     TokSymbol ")"       TokSymbol ";"       TokSymbol ";"       
+[1340] TokKeyword "return" TokSymbol "("       TokTypeIdent "ELetBlTokIdent "binds"    TokIdent "body"     
+[1345] TokSymbol ")"       TokVRBrace          TokNewline          TokSymbol "("       TokTypeIdent "TokKey
+[1350] TokString "in"      TokSymbol ")"       TokArrow            TokKeyword "do"     TokVLBrace          
+[1355] TokIdent "keyword"  TokString "in"      TokSymbol ";"       TokIdent "body"     TokSymbol "<-"      
+[1360] TokIdent "expr"     TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*letExp
+[1365] TokOperator "++"    TokIdent "show"     TokIdent "body"     TokSymbol ")"       TokSymbol ";"       
+[1370] TokSymbol ";"       TokIdent "skipNewlinTokSymbol ";"       TokKeyword "return" TokSymbol "("       
+[1375] TokTypeIdent "ELetBlTokIdent "binds"    TokIdent "body"     TokSymbol ")"       TokVRBrace          
+[1380] TokNewline          TokIdent "_"        TokArrow            TokKeyword "do"     TokVLBrace          
+[1385] TokKeyword "return" TokSymbol "("       TokTypeIdent "ELetBlTokIdent "binds"    TokSymbol "("       
+[1390] TokTypeIdent "EVar" TokString "__unit__"TokSymbol ")"       TokSymbol ")"       TokVRBrace          
+[1395] TokVRBrace          TokVRBrace          TokNewline          TokIdent "pLetExpr" TokSymbol "::"      
+[1400] TokTypeIdent "ParserTokTypeIdent "Expr" TokNewline          TokIdent "pLetExpr" TokSymbol "="       
+[1405] TokKeyword "do"     TokVLBrace          TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"
+[1410] TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< pLetEx
+[1415] TokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       
+[1420] TokIdent "keyword"  TokString "let"     TokSymbol ";"       TokSymbol ";"       TokIdent "pat"      
+[1425] TokSymbol "<-"      TokIdent "pattern"  TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[1430] TokString "<< pLetExTokOperator "++"    TokIdent "show"     TokIdent "pat"      TokSymbol ")"       
+[1435] TokSymbol ";"       TokIdent "symbol"   TokString "="       TokSymbol ";"       TokIdent "bracesV"  
+[1440] TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "e1"       TokSymbol "<-"      
+[1445] TokIdent "exprNoLoopTokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     
+[1450] TokVLBrace          TokIdent "keyword"  TokString "in"      TokSymbol ";"       TokIdent "e2"       
+[1455] TokSymbol "<-"      TokIdent "expr"     TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[1460] TokString ">>*pLetExTokOperator "++"    TokIdent "show"     TokIdent "e1"       TokOperator "++"    
+[1465] TokString " e2 "    TokOperator "++"    TokIdent "show"     TokIdent "e2"       TokSymbol ")"       
+[1470] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "ELet" TokIdent "pat"      
+[1475] TokIdent "e1"       TokIdent "e2"       TokSymbol ")"       TokVRBrace          TokVRBrace          
+[1480] TokVRBrace          TokNewline          TokIdent "letBlock" TokSymbol "::"      TokTypeIdent "Parser
+[1485] TokTypeIdent "Expr" TokNewline          TokIdent "letBlock" TokSymbol "="       TokKeyword "do"     
+[1490] TokVLBrace          TokIdent "t"        TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" 
+[1495] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString "<< letBloTokOperator "++"    
+[1500] TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokIdent "rt"       
+[1505] TokSymbol "<-"      TokIdent "try"      TokIdent "letExpr"  TokOperator "<|>"   TokIdent "pLetExpr" 
+[1510] TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       TokString ">>*letBloTokOperator "++"    
+[1515] TokIdent "show"     TokIdent "rt"       TokSymbol ")"       TokSymbol ";"       TokSymbol ";"       
+[1520] TokKeyword "return" TokIdent "rt"       TokVRBrace          TokNewline          TokIdent "binding"  
+[1525] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "BindinTokNewline          TokIdent "binding"  
+[1530] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t"        TokSymbol "<-"      
+[1535] TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[1540] TokString "<< bindinTokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       
+[1545] TokSymbol ";"       TokIdent "rt"       TokSymbol "<-"      TokIdent "try"      TokIdent "valueBindi
+[1550] TokOperator "<|>"   TokIdent "funBindingTokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[1555] TokString ">>*bindinTokOperator "++"    TokIdent "show"     TokIdent "rt"       TokSymbol ")"       
+[1560] TokSymbol ";"       TokIdent "skipNewlinTokSymbol ";"       TokKeyword "return" TokIdent "rt"       
+[1565] TokVRBrace          TokNewline          TokIdent "bindingsBlTokSymbol "::"      TokTypeIdent "Parser
+[1570] TokSymbol "["       TokTypeIdent "BindinTokSymbol "]"       TokNewline          TokIdent "bindingsBl
+[1575] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t"        TokSymbol "<-"      
+[1580] TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[1585] TokString "<< bindinTokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       
+[1590] TokSymbol ";"       TokIdent "rt"       TokSymbol "<-"      TokIdent "braces"   TokIdent "bindings" 
+[1595] TokOperator "<|>"   TokIdent "bindings" TokSymbol ";"       TokIdent "t"        TokSymbol "<-"      
+[1600] TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[1605] TokString ">>*bindinTokOperator "++"    TokIdent "show"     TokIdent "t"        TokOperator "++"    
+[1610] TokString " rt "    TokOperator "++"    TokIdent "show"     TokIdent "rt"       TokSymbol ")"       
+[1615] TokSymbol ";"       TokKeyword "return" TokIdent "rt"       TokSymbol ";"       TokKeyword "where"  
+[1620] TokVLBrace          TokIdent "bindings" TokSymbol "="       TokKeyword "do"     TokVLBrace          
+[1625] TokIdent "f"        TokSymbol "<-"      TokIdent "binding"  TokSymbol ";"       TokIdent "bracesV"  
+[1630] TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "xs"       TokSymbol "<-"      
+[1635] TokIdent "many"     TokIdent "binding"  TokSymbol ";"       TokKeyword "return" TokSymbol "("       
+[1640] TokIdent "f"        TokOperator ":"     TokIdent "xs"       TokSymbol ")"       TokVRBrace          
+[1645] TokVRBrace          TokVRBrace          TokVRBrace          TokNewline          TokIdent "bindingsBl
+[1650] TokSymbol "::"      TokTypeIdent "ParserTokSymbol "["       TokTypeIdent "BindinTokSymbol "]"       
+[1655] TokNewline          TokIdent "bindingsBlTokSymbol "="       TokKeyword "do"     TokVLBrace          
+[1660] TokIdent "braces"   TokSymbol "("       TokIdent "sepBy"    TokIdent "binding"  TokSymbol "("       
+[1665] TokIdent "symbol"   TokString ";"       TokOperator "<|>"   TokIdent "newline"  TokSymbol ")"       
+[1670] TokSymbol ")"       TokVLBrace          TokOperator "<|>"   TokIdent "sepBy"    TokIdent "binding"  
+[1675] TokSymbol "("       TokIdent "symbol"   TokString ";"       TokOperator "<|>"   TokIdent "newline"  
+[1680] TokSymbol ")"       TokVRBrace          TokVRBrace          TokNewline          

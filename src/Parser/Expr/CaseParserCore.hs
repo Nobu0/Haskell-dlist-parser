@@ -52,6 +52,7 @@ caseBranch :: Parser Expr -> Parser (Pattern, Expr)
 caseBranch expr = do
   pat <- pPattern
   token TokArrow
+  -- bracesV $ do
   body <- expr -- NoInfix
   return (pat, body)
 
@@ -69,10 +70,10 @@ caseAlt expr = do
     case guards of
       [] -> do
         token TokArrow
-        bracesV $ do
-          body <- expr -- guardedExpr expr
-          myTrace (">>*caseAlt: " ++ show pat ++ " " ++ show body)
-          return (CaseAlt pat body)
+        -- bracesV $ do
+        body <- expr -- guardedExpr expr
+        myTrace (">>*caseAlt: " ++ show pat ++ " " ++ show body)
+        return (CaseAlt pat body)
       _ -> do
         myTrace (">>*caseAlt: g " ++ show pat ++ " " ++ show guards)
         return (CaseAltGuard pat guards)
@@ -84,6 +85,7 @@ guardExpr expr = do
   symbol "|"
   cond <- expr
   token TokArrow
+  -- bracesV $ do
   body <- expr
   myTrace (">>*guardExpr body: " ++ show body)
   return (cond, body)
@@ -106,6 +108,7 @@ caseAltSimple expr = do
   myTrace ("<< caseAltSimple next token: " ++ show t)
   pat <- pattern
   token TokArrow
+  -- bracesV $ do
   body <- expr
   myTrace (">>*caseAltSimple body: " ++ show body)
   return (CaseAlt pat body)

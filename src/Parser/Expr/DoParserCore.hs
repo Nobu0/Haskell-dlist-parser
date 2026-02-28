@@ -51,17 +51,19 @@ bindStmt :: Parser Expr -> Parser Stmt
 bindStmt expr = try $ do
   myTrace ("<< bindStmt")
   -- まず、次のトークン列に "<-" が含まれるか確認
+  {-}
   lookAhead $ do
     _ <- pattern
     symbol "<-"
     return ()
+  -}
   -- 実際に読む
   pat <- pattern
   symbol "<-"
-  bracesV $ do
-    e <- expr
-    myTrace (">>*bindStmt pat= " ++ show pat ++ " e= " ++ show e)
-    return (Bind pat e)
+  -- bracesV $ do
+  e <- expr
+  myTrace (">>*bindStmt pat= " ++ show pat ++ " e= " ++ show e)
+  return (Bind pat e)
 
 letStmt :: Parser Expr -> Parser Stmt
 letStmt expr = do
@@ -83,6 +85,7 @@ letStmt expr = do
       bracesV $ do
         pat <- pattern
         symbol "="
+        -- bracesV $ do
         e <- expr
         return (pat, e)
 

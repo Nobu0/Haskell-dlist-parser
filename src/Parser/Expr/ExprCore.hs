@@ -37,16 +37,15 @@ skipSeparatorsZ = do
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
 
+{-}
 opAltChain :: Expr -> Parser Expr
 opAltChain lhs = do
   optional $ token TokVLBrace
-  -- token TokVLBrace
   hasOp <- optional operatorZ
   case hasOp of
     Just _ -> do
       rhs <- exprCore
       optional $ token TokVRBrace
-      -- token TokVRBrace
       skipSeparatorsZ
       t <- lookAhead anyToken
       myTrace (">>*opAltChain t " ++ show t ++ " lhs " ++ show lhs ++ " rhs " ++ show rhs)
@@ -56,21 +55,7 @@ opAltChain lhs = do
       myTrace (">>*opAltChain Nop lhs " ++ show lhs)
       return lhs
 
-opAltChainx :: Expr -> Parser Expr
-opAltChainx lhs = do
-  hasOp <- optional operatorZ
-  case hasOp of
-    Just _ -> do
-      t <- lookAhead anyToken
-      rhs <- case t of
-        TokVLBrace -> bracesv exprCore
-        TokSymbol "(" -> parens exprCore
-        _ -> exprCore
-      skipSeparatorsZ
-      let combined = EBinOp BinOpAlt lhs rhs
-      opAltChain combined
-    Nothing -> return lhs
-
+-- 今までの関数
 exprCore :: Parser Expr
 exprCore = do
   bracesvExpr <|> exprCore2
@@ -82,26 +67,71 @@ bracesvExpr = do
   token TokVRBrace
   return e
 
+operatorZ :: Parser String
+operatorZ = satisfyToken isOp
+  where
+    isOp (TokOperator s)
+      | s `elem` ["<|>","<$>"] = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
+-}
+
+bracesvExpr :: Parser Expr
+bracesvExpr = do
+  token TokVLBrace
+  base <- exprCore
+  token TokVLBrace
+  e <- opChain operatorBinOp EBinOp base
+  token TokVRBrace
+  token TokVRBrace
+  skipSeparatorsZ
+  return e
+
+-- 改造バージョン
+exprCore :: Parser Expr
+exprCore = do
+  bracesvExpr <|> exprCoreWithOp
+
+exprCoreWithOp :: Parser Expr
+exprCoreWithOp = do
+  base <- exprCore2
+  skipSeparatorsZ
+  opChain operatorBinOp EBinOp base
+
+opChain :: Parser BinOp -> (BinOp -> Expr -> Expr -> Expr) -> Expr -> Parser Expr
+opChain opParser makeExpr lhs = do
+  hasOp <- optional opParser
+  case hasOp of
+    Just op -> do
+      rhs <- exprCore
+      skipSeparatorsZ
+      let combined = makeExpr op lhs rhs
+      myTrace ("<<--- opChain " ++ show combined)
+      opChain opParser makeExpr combined
+    Nothing -> return lhs
+
+operatorBinOp :: Parser BinOp
+operatorBinOp = satisfyToken matchOp
+  where
+    matchOp (TokOperator s) = lookup s operatorTable
+    matchOp _ = Nothing
+
+operatorTable :: [(String, BinOp)]
+operatorTable =
+  [ ("<|>", BinOpAlt),
+    ("<$>", BinOpMap),
+    ("&&", BinOpAnd),
+    (">>=", BinOpBind)
+  ]
+
 exprCore2 :: Parser Expr
 exprCore2 = do
   rt <-
     try binOpExprCore
       <|> parseSQL
   myTrace (">>*exprCore: rt " ++ show rt)
-  -- e <- opAltChain0 rt
+  -- e <- opAltChain rt
   return rt
-
--- return rt
--- e <- try (opAltChain rt) <|> (nopChain rt)
--- return e
-
-operatorZ :: Parser String
-operatorZ = satisfyToken isOp
-  where
-    isOp (TokOperator s)
-      | s `elem` ["<|>", "<$>"] = Just s
-      | otherwise = Nothing
-    isOp _ = Nothing
 
 {-}
 exprCore2 :: Parser Expr
@@ -198,9 +228,10 @@ appExprCore = do
   -- bracesVO $ do
   args <- many atomCore
   myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
-  -- return (foldl EApp f args)
-  let rt = (foldl EApp f args)
-  return rt
+  return (foldl EApp f args)
+
+-- let rt = (foldl EApp f args)
+-- return rt
 
 -- ============================================
 --  atom

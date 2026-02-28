@@ -137,7 +137,7 @@ operatorB :: Parser String
 operatorB = satisfyToken isOp
   where
     isOp (TokOperator s)
-      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*", "<|>"] = Just s
+      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 
@@ -156,7 +156,7 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
-    -- TokVRBrace -> skipVNlExpr -- bracesv expr
+    TokVRBrace -> skipVNlExpr -- bracesv expr
     TokSymbol "\\" -> lambdaExpr
     -- TokVNl -> skipVNlExpr
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
@@ -232,6 +232,7 @@ forExpr = do
   keyword "for"
   qs <- sepBy1 qualifier (symbol ",")
   token TokArrow
+  -- bracesV $ do
   body <- expr -- NoLoop
   return (EListComp body qs)
 

@@ -62,6 +62,7 @@ genQualifier :: Parser Expr -> Parser Qualifier
 genQualifier expr = do
   pat <- pattern
   symbol "<-"
+  -- bracesV $ do
   src <- expr
   return (QGenerator pat src)
 
@@ -77,6 +78,6 @@ letQualifier expr = do
     binding = do
       pat <- pattern
       symbol "="
-      bracesV $ do
-        e <- expr
-        return (pat, e)
+      --bracesV $ do
+      e <- expr
+      return (pat, e)

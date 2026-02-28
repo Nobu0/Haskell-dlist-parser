@@ -81,7 +81,7 @@ declDispatch = do
 
 skipVNlExpr :: Parser Decl
 skipVNlExpr = do
-  token TokVRBrace -- skipVNl
+  many $ token TokVRBrace -- skipVNl
   empty
 
 -- Haskell ファイル全体
@@ -95,6 +95,7 @@ valueDecl = do
   myTrace ("<< valueDecl: " ++ show t)
   pat <- pattern -- patternParser
   symbol "="
+  -- bracesV $ do
   body <- expr
   return (DeclValue pat body)
 

@@ -61,8 +61,9 @@ arrowType = do
   -- t <- lookAhead anyToken
   -- myTrace ("<< arrowType next token: " ++ show t)
   rest <- optional $ do
-    token (TokArrow)
-    parseTypeCore
+    token TokArrow
+    bracesV $ do
+      parseTypeCore
   return $ maybe t1 (TFun t1) rest
 
 parensTuple :: Parser Type
