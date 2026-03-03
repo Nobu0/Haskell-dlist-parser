@@ -13,8 +13,8 @@ Coverage: 27%
 [2] DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token")))
 [3] DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing]
 [4] DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token")))
-[5] DeclFunGroup "go" [FunClause [PList []] Nothing (Just (EList [])) Nothing]
-[DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing],DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "go" [FunClause [PList []] Nothing (Just (EList [])) Nothing]]
+[5] DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]
+[DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing],DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]]
 
 -- Remaining-----------------------------
 [TokIdent "go",TokSymbol "(",TokTypeIdent "TokVNewline",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator "==",TokNumber 0,TokSymbol "&",TokSymbol "&",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "<",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVLBrace",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "go",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "closeBlocks",TokSymbol "::",TokSymbol "(",TokTypeIdent "Int",TokSymbol ",",TokTypeIdent "Int",TokSymbol ")",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVRBrace",TokOperator ":",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokOperator "-",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline]
@@ -57,16 +57,19 @@ Coverage: 27%
 << funDecl: next token=TokIdent "layoutTransform"
 << funClause: next token=TokIdent "layoutTransform"
 << pConstrOrVar: next token "toks"
-<< pPattern: prased PVar "toks"
+<< pPattern:
+    prased PVar "toks"
 << funClause: args=[PVar "toks"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "go"
+<< parseSimpleClause: next token=TokIdent "go"
 << expr dispatch: TokIdent "go"
 >>*appExprCore: f= EVar "go" args= [EVar "toks"]
->>*exprCore: rt EApp (EVar "go") (EVar "toks")
+>>*exprCore2: rt EApp (EVar "go") (EVar "toks")
+>>*exprCore: e EApp (EVar "go") (EVar "toks")
 << exprNoLoop: e EApp (EVar "go") (EVar "toks")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVar "go") (EVar "toks")
+<< whereBlock: next token TokIdent "go"
 << funClauseWithName: next token=TokIdent "go"
 >>*funDecl name "layoutTransform" clause1 FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing rest []
 >>*declBody: e DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing]
@@ -94,27 +97,33 @@ Coverage: 27%
 << decl dispatch: TokIdent "go"
 << funDecl: next token=TokIdent "go"
 << funClause: next token=TokIdent "go"
-<< pPattern: prased PList []
-<< funClause: args=[PList []] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokSymbol "["
+<< pPattern:
+    prased PConstr "[]" []
+<< funClause: args=[PConstr "[]" []] t = TokSymbol "="
+<< parseSimpleClause: next token=TokSymbol "["
 << expr dispatch: TokSymbol "["
 << exprNoLoop: e EList []
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EList []
+<< whereBlock: next token TokIdent "go"
 << funClauseWithName: next token=TokIdent "go"
 << pConstrOrVar: next token "TokVNewline"
 << pConstrOrVar: next token "x"
-<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "x") []
 << pConstrOrVar: next token "y"
-<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "y") []
 << pConstrOrVar: next token ":"
 << pConstrOrVar: next token "rest"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
-<< pattern: (pAs <|> makeCons)PApp (PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]) []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]) []
 << expr dispatch: TokSymbol "|"
->>*funDecl name "go" clause1 FunClause [PList []] Nothing (Just (EList [])) Nothing rest []
->>*declBody: e DeclFunGroup "go" [FunClause [PList []] Nothing (Just (EList [])) Nothing]
+>>*funDecl name "go" clause1 FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]
 << decl next token: TokIdent "go"
 << decl parser called
 << decl dispatch: TokIdent "go"
@@ -122,13 +131,17 @@ Coverage: 27%
 << funClause: next token=TokIdent "go"
 << pConstrOrVar: next token "TokVNewline"
 << pConstrOrVar: next token "x"
-<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "x") []
 << pConstrOrVar: next token "y"
-<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "y") []
 << pConstrOrVar: next token ":"
 << pConstrOrVar: next token "rest"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
-<< pPattern: prased PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< pPattern:
+    prased PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
 << funClause: args=[PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokVLBrace
 << parseGuardedClause: next token=TokVLBrace
 << guardedRhs: next token = TokSymbol "|"
@@ -136,7 +149,8 @@ Coverage: 27%
 << expr dispatch: TokIdent "x"
 >>*appExprCore: f= EVar "x" args= []
 >>*appExprCore: f= EInt 0 args= []
->>*exprCore: rt EBinOp BinOpEq (EVar "x") (EInt 0)
+>>*exprCore2: rt EBinOp BinOpEq (EVar "x") (EInt 0)
+>>*exprCore: e EBinOp BinOpEq (EVar "x") (EInt 0)
 << exprNoLoop: e EBinOp BinOpEq (EVar "x") (EInt 0)
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -147,14 +161,18 @@ Coverage: 27%
 << pConstrOrVar: next token "go"
 << pConstrOrVar: next token "TokVNewline"
 << pConstrOrVar: next token "x"
-<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "x") []
 << pConstrOrVar: next token "y"
-<< pattern: (pAs <|> makeCons)PApp (PVar "y") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "y") []
 << pConstrOrVar: next token ":"
 << pConstrOrVar: next token "rest"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
-<< pattern: (pAs <|> makeCons)PApp (PVar "go") [PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]]
-Just ([DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing],DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "go" [FunClause [PList []] Nothing (Just (EList [])) Nothing]],[TokIdent "go",TokSymbol "(",TokTypeIdent "TokVNewline",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator "==",TokNumber 0,TokSymbol "&",TokSymbol "&",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "<",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVLBrace",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "go",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "closeBlocks",TokSymbol "::",TokSymbol "(",TokTypeIdent "Int",TokSymbol ",",TokTypeIdent "Int",TokSymbol ")",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVRBrace",TokOperator ":",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokOperator "-",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline])
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "go") [PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]]
+Just ([DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing],DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]],[TokIdent "go",TokSymbol "(",TokTypeIdent "TokVNewline",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator "==",TokNumber 0,TokSymbol "&",TokSymbol "&",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "<",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVLBrace",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "go",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "closeBlocks",TokSymbol "::",TokSymbol "(",TokTypeIdent "Int",TokSymbol ",",TokTypeIdent "Int",TokSymbol ")",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVRBrace",TokOperator ":",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokOperator "-",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline])
 
 -- src code --
 module Layout.LayoutTransform (layoutTransform) where

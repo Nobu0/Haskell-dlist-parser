@@ -22,7 +22,7 @@ module Parser.Core.Combinator
     lookAhead,
     option,
     skipMany,
-    skipMany1
+    skipMany1,
   )
 where
 
@@ -84,12 +84,6 @@ satisfyMap f = Parser $ \tokens -> case tokens of
 token :: Token -> Parser Token
 token t = satisfy (== t)
 
-tokens :: [Token] -> Parser [Token]
-tokens expected = Parser $ \input ->
-  if expected `isPrefixOf` input
-    then Just (expected, drop (length expected) input)
-    else Nothing
-
 between :: Parser open -> Parser close -> Parser a -> Parser a
 between open close p = do
   _ <- open
@@ -127,6 +121,7 @@ sepEndBy p sep = sepEndBy1 p sep <|> pure []
 
 try :: Parser a -> Parser a
 try p = Parser $ \tokens -> runParser p tokens
+
 {-}
 chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
 chainl1 p op = do
@@ -147,11 +142,13 @@ chainl1 p op = do
   x <- p
   rest x
   where
-    rest x = (do
-        f <- op
-        y <- p
-        rest (f x y))
-      <|> return x
+    rest x =
+      ( do
+          f <- op
+          y <- p
+          rest (f x y)
+      )
+        <|> return x
 
 -- chainr1: 右結合のパーサーコンビネータ
 chainr1 :: Parser a -> Parser (a -> a -> a) -> Parser a
@@ -161,11 +158,13 @@ chainr1 p op = scan
       x <- p
       rest x
 
-    rest x = (do
-        f <- op
-        y <- scan
-        rest (f x y))
-      <|> return x
+    rest x =
+      ( do
+          f <- op
+          y <- scan
+          rest (f x y)
+      )
+        <|> return x
 
 many1 :: Parser a -> Parser [a]
 many1 p = (:) <$> p <*> many p
@@ -207,7 +206,6 @@ lookAhead (Parser p) = Parser $ \input ->
     Just (a, _) -> Just (a, input) -- 結果はそのまま、入力は消費しない
     Nothing -> Nothing
 
-
 skipMany1 :: Parser a -> Parser ()
 skipMany1 p = p *> skipMany p
 
@@ -218,3 +216,8 @@ skipMany p = Parser $ \ts ->
     Nothing -> Just ((), ts)
 
 -- 依存：symbol は TokenParser 側で定義されるため、ここでは定義しない
+tokens :: [Token] -> Parser [Token]
+tokens expected = Parser $ \input ->
+  if expected `isPrefixOf` input
+    then Just (expected, drop (length expected) input)
+    else Nothing

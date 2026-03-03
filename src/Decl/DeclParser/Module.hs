@@ -56,9 +56,7 @@ exportItem = do
   return $ case hasAll of
     Just _ -> ExportType name True
     Nothing ->
-      if isUpper (head name)
-        then ExportType name False
-        else ExportVar name
+      if isUpper (head name) then ExportType name False else ExportVar name
 
 exportList :: Parser [Export]
 exportList = parens $ sepBy1Skip exportItem (symbol ",")

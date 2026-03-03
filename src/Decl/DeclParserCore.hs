@@ -44,7 +44,7 @@ decl = do
   myTrace ("<< decl next token: " ++ show t)
   eof <- isEOF
   if eof
-    then Parser $ \_ -> Nothing -- many decl に「もう終わり」と伝える
+    then Parser $ \_ -> Nothing
     else do
       myTrace "<< decl parser called"
       declBody
@@ -74,7 +74,7 @@ declDispatch = do
     TokIdent _ -> try funDecl <|> try typeSigDecl <|> valueDecl
     -- TokSymbol "{" -> try (braces (funDecl decl)) <|> empty
     TokSymbol "(" -> try typeSigDecl
-    TokVRBrace -> skipVNlExpr -- empty
+    -- TokVRBrace -> skipVNlExpr -- empty
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)
       empty

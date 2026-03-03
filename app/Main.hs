@@ -140,7 +140,17 @@ testCasesDo =
     ("$2", "do { print $ \"test\" }"),
     ("$3", "do { print \"test\"; return 0 }"),
     ("confirm", "[1,2]; [3,4];"),
-    ("do1", "do { let r = { x = 1 }; return r2 }")
+    ("do1", "do { let r = { x = 1 }; return r2 }"),
+    ( "if newline",
+      "if cond then return 1 else return 0"
+    ),
+    ( "if newline",
+      "if cond\n  then return 1\n  else return 0\n"
+    ),
+    ("bad case","do { \\tk -> (case tk of {(t : ts) -> return 1; [] -> return 0)}}"),
+    ("bad case","do { case tk of {(t : ts) -> pure (); [] -> Nothing}}"),
+    ("bad case","case tk of (t : ts) -> pure (); [] -> Nothing"),
+    ("bad case","case tk of (t : ts) -> pure (); _ -> Nothing")
   ]
 
 {-}

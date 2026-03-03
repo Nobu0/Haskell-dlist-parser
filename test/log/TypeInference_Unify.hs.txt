@@ -47,6 +47,7 @@ Coverage: 40%
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 << importIdent: next token TokIdent "unless"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]}
@@ -95,51 +96,66 @@ Coverage: 40%
 << funClause: next token=TokIdent "unify"
 << pConstrOrVar: next token "TVar"
 << pConstrOrVar: next token "a"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TVar") [PVar "a"]
-<< pPattern: prased PApp (PVar "TVar") [PVar "a"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TVar") [PVar "a"]
+<< pPattern:
+    prased PApp (PVar "TVar") [PVar "a"]
 << pConstrOrVar: next token "t"
-<< pPattern: prased PVar "t"
+<< pPattern:
+    prased PVar "t"
 << funClause: args=[PApp (PVar "TVar") [PVar "a"],PVar "t"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "varBind"
+<< parseSimpleClause: next token=TokIdent "varBind"
 << expr dispatch: TokIdent "varBind"
 >>*appExprCore: f= EVar "varBind" args= [EVar "a",EVar "t"]
->>*exprCore: rt EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
+>>*exprCore2: rt EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
+>>*exprCore: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
 << exprNoLoop: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
+<< whereBlock: next token TokIdent "unify"
 << funClauseWithName: next token=TokIdent "unify"
 << pConstrOrVar: next token "t"
 << pConstrOrVar: next token "TVar"
 << pConstrOrVar: next token "a"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TVar") [PVar "a"]
-<< pattern: (pAs <|> makeCons)PApp (PVar "t") [PApp (PVar "TVar") [PVar "a"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TVar") [PVar "a"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [PApp (PVar "TVar") [PVar "a"]]
 << expr dispatch: TokIdent "varBind"
 >>*appExprCore: f= EVar "varBind" args= [EVar "a",EVar "t"]
->>*exprCore: rt EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
+>>*exprCore2: rt EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
+>>*exprCore: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
 << exprNoLoop: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
+<< whereBlock: next token TokIdent "unify"
 << funClauseWithName: next token=TokIdent "unify"
 << pConstrOrVar: next token "TUnit"
 << pConstrOrVar: next token "TUnit"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TUnit") [PVar "TUnit"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TUnit") [PVar "TUnit"]
 << expr dispatch: TokTypeIdent "Right"
 >>*appExprCore: f= EVarType "Right" args= [EVar "emptySubst"]
->>*exprCore: rt EApp (EVarType "Right") (EVar "emptySubst")
+>>*exprCore2: rt EApp (EVarType "Right") (EVar "emptySubst")
+>>*exprCore: e EApp (EVarType "Right") (EVar "emptySubst")
 << exprNoLoop: e EApp (EVarType "Right") (EVar "emptySubst")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (EVar "emptySubst")
+<< whereBlock: next token TokIdent "unify"
 << funClauseWithName: next token=TokIdent "unify"
 << pConstrOrVar: next token "TCon"
 << pConstrOrVar: next token "a"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TCon") [PVar "a"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "a"]
 << pConstrOrVar: next token "TCon"
 << pConstrOrVar: next token "b"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TCon") [PVar "b"]
-<< pattern: (pAs <|> makeCons)PApp (PApp (PVar "TCon") [PVar "a"]) [PApp (PVar "TCon") [PVar "b"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "b"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PVar "TCon") [PVar "a"]) [PApp (PVar "TCon") [PVar "b"]]
 << expr dispatch: TokSymbol "|"
 >>*funDecl name "unify" clause1 FunClause [PApp (PVar "TVar") [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing rest [FunClause [PApp (PVar "t") [PApp (PVar "TVar") [PVar "a"]]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing,FunClause [PApp (PVar "TUnit") [PVar "TUnit"]] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing]
 >>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PVar "TVar") [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing,FunClause [PApp (PVar "t") [PApp (PVar "TVar") [PVar "a"]]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing,FunClause [PApp (PVar "TUnit") [PVar "TUnit"]] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing]
@@ -150,12 +166,16 @@ Coverage: 40%
 << funClause: next token=TokIdent "unify"
 << pConstrOrVar: next token "TCon"
 << pConstrOrVar: next token "a"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TCon") [PVar "a"]
-<< pPattern: prased PApp (PVar "TCon") [PVar "a"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "a"]
+<< pPattern:
+    prased PApp (PVar "TCon") [PVar "a"]
 << pConstrOrVar: next token "TCon"
 << pConstrOrVar: next token "b"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TCon") [PVar "b"]
-<< pPattern: prased PApp (PVar "TCon") [PVar "b"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "b"]
+<< pPattern:
+    prased PApp (PVar "TCon") [PVar "b"]
 << funClause: args=[PApp (PVar "TCon") [PVar "a"],PApp (PVar "TCon") [PVar "b"]] t = TokVLBrace
 << parseGuardedClause: next token=TokVLBrace
 << guardedRhs: next token = TokSymbol "|"
@@ -163,14 +183,16 @@ Coverage: 40%
 << expr dispatch: TokIdent "a"
 >>*appExprCore: f= EVar "a" args= []
 >>*appExprCore: f= EVar "b" args= []
->>*exprCore: rt EBinOp BinOpEq (EVar "a") (EVar "b")
+>>*exprCore2: rt EBinOp BinOpEq (EVar "a") (EVar "b")
+>>*exprCore: e EBinOp BinOpEq (EVar "a") (EVar "b")
 << exprNoLoop: e EBinOp BinOpEq (EVar "a") (EVar "b")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpEq (EVar "a") (EVar "b")
 << expr dispatch: TokTypeIdent "Right"
 >>*appExprCore: f= EVarType "Right" args= [EVar "emptySubst"]
->>*exprCore: rt EApp (EVarType "Right") (EVar "emptySubst")
+>>*exprCore2: rt EApp (EVarType "Right") (EVar "emptySubst")
+>>*exprCore: e EApp (EVarType "Right") (EVar "emptySubst")
 << exprNoLoop: e EApp (EVarType "Right") (EVar "emptySubst")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -179,79 +201,108 @@ Coverage: 40%
 << parseGuardLine: next token=TokSymbol "|"
 << expr dispatch: TokIdent "otherwise"
 >>*appExprCore: f= EVar "otherwise" args= []
->>*exprCore: rt EVar "otherwise"
+>>*exprCore2: rt EVar "otherwise"
+>>*exprCore: e EVar "otherwise"
 << exprNoLoop: e EVar "otherwise"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "otherwise"
 << expr dispatch: TokTypeIdent "Left"
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EApp (EVarType "TCon") (EVar "a"),EApp (EVarType "TCon") (EVar "b")]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EApp (EVarType "TCon") (EVar "a"),EApp (EVarType "TCon") (EVar "b")]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "a"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "a")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "a")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "TCon" args= [EVar "b"]
->>*exprCore: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore2: rt EApp (EVarType "TCon") (EVar "b")
+>>*exprCore: e EApp (EVarType "TCon") (EVar "b")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EApp (EVarType "TCon") (EVar "a"),EApp (EVarType "TCon") (EVar "b")]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))
 >>*appExprCore: f= EVarType "Left" args= [EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))]
->>*exprCore: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))
+>>*exprCore2: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))
+>>*exprCore: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))
 << guardedRhs: next token = TokVRBrace
 << parseGuardLine: next token=TokVRBrace
+<< whereBlock: next token TokVRBrace
 << funClauseWithName: next token=TokIdent "unify"
 << pConstrOrVar: next token "TArrow"
 << pConstrOrVar: next token "a1"
 << pConstrOrVar: next token "b1"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TArrow") [PVar "a1",PVar "b1"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TArrow") [PVar "a1",PVar "b1"]
 << pConstrOrVar: next token "TArrow"
 << pConstrOrVar: next token "a2"
 << pConstrOrVar: next token "b2"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TArrow") [PVar "a2",PVar "b2"]
-<< pattern: (pAs <|> makeCons)PApp (PApp (PVar "TArrow") [PVar "a1",PVar "b1"]) [PApp (PVar "TArrow") [PVar "a2",PVar "b2"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TArrow") [PVar "a2",PVar "b2"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PVar "TArrow") [PVar "a1",PVar "b1"]) [PApp (PVar "TArrow") [PVar "a2",PVar "b2"]]
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "s1"
-<< pattern: (pAs <|> makeCons)PApp (PVar "s1") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "s1") []
 << expr dispatch: TokIdent "unify"
 >>*appExprCore: f= EVar "unify" args= [EVar "a1",EVar "a2"]
->>*exprCore: rt EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")
+>>*exprCore2: rt EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")
+>>*exprCore: e EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")
 << exprNoLoop: e EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -260,22 +311,30 @@ Coverage: 40%
 >>*doStmt: rt Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2"))
 << bindStmt
 << pConstrOrVar: next token "s2"
-<< pattern: (pAs <|> makeCons)PApp (PVar "s2") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "s2") []
 << expr dispatch: TokIdent "unify"
 >>*appExprCore: f= EVar "apply" args= [EVar "s1",EVar "b1"]
->>*exprCore: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
+>>*exprCore2: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
+>>*exprCore: e EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
 >>*appExprCore: f= EVar "apply" args= [EVar "s1",EVar "b1"]
->>*exprCore: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
+>>*exprCore2: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
+>>*exprCore: e EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
 >>*appExprCore: f= EVar "apply" args= [EVar "s1",EVar "b1"]
->>*exprCore: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
+>>*exprCore2: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
+>>*exprCore: e EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1")
 >>*appExprCore: f= EVar "apply" args= [EVar "s1",EVar "b2"]
->>*exprCore: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
+>>*exprCore2: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
+>>*exprCore: e EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
 >>*appExprCore: f= EVar "apply" args= [EVar "s1",EVar "b2"]
->>*exprCore: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
+>>*exprCore2: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
+>>*exprCore: e EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
 >>*appExprCore: f= EVar "apply" args= [EVar "s1",EVar "b2"]
->>*exprCore: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
+>>*exprCore2: rt EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
+>>*exprCore: e EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")
 >>*appExprCore: f= EVar "unify" args= [EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"),EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")]
->>*exprCore: rt EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))
+>>*exprCore2: rt EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))
+>>*exprCore: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))
 << exprNoLoop: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -287,17 +346,23 @@ Coverage: 40%
 << pConstrOrVar: next token "s2"
 << pConstrOrVar: next token "`composeSubst`"
 << pConstrOrVar: next token "s1"
-<< pattern: (pAs <|> makeCons)PApp (PVar "s2") [PVar "`composeSubst`",PVar "s1"]
-<< pattern: (pAs <|> makeCons)PApp (PVar "Right") [PApp (PVar "s2") [PVar "`composeSubst`",PVar "s1"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "s2") [PVar "`composeSubst`",PVar "s1"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "Right") [PApp (PVar "s2") [PVar "`composeSubst`",PVar "s1"]]
 << expr dispatch: TokTypeIdent "Right"
 >>*appExprCore: f= EVar "s2" args= [EVar "`composeSubst`",EVar "s1"]
->>*exprCore: rt EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
+>>*exprCore2: rt EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
+>>*exprCore: e EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
 >>*appExprCore: f= EVar "s2" args= [EVar "`composeSubst`",EVar "s1"]
->>*exprCore: rt EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
+>>*exprCore2: rt EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
+>>*exprCore: e EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
 >>*appExprCore: f= EVar "s2" args= [EVar "`composeSubst`",EVar "s1"]
->>*exprCore: rt EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
+>>*exprCore2: rt EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
+>>*exprCore: e EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")
 >>*appExprCore: f= EVarType "Right" args= [EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")]
->>*exprCore: rt EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1"))
+>>*exprCore2: rt EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1"))
+>>*exprCore: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1"))
 << exprNoLoop: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1"))
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -312,14 +377,18 @@ Coverage: 40%
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")))]
+<< whereBlock: next token TokIdent "unify"
 << funClauseWithName: next token=TokIdent "unify"
 << pConstrOrVar: next token "TTuple"
 << pConstrOrVar: next token "xs"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "xs"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "xs"]
 << pConstrOrVar: next token "TTuple"
 << pConstrOrVar: next token "ys"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "ys"]
-<< pattern: (pAs <|> makeCons)PApp (PApp (PVar "TTuple") [PVar "xs"]) [PApp (PVar "TTuple") [PVar "ys"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "ys"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PVar "TTuple") [PVar "xs"]) [PApp (PVar "TTuple") [PVar "ys"]]
 << expr dispatch: TokSymbol "|"
 >>*funDecl name "unify" clause1 FunClause [PApp (PVar "TCon") [PVar "a"],PApp (PVar "TCon") [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing rest [FunClause [PApp (PApp (PVar "TArrow") [PVar "a1",PVar "b1"]) [PApp (PVar "TArrow") [PVar "a2",PVar "b2"]]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")))])) Nothing]
 >>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PVar "TCon") [PVar "a"],PApp (PVar "TCon") [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing,FunClause [PApp (PApp (PVar "TArrow") [PVar "a1",PVar "b1"]) [PApp (PVar "TArrow") [PVar "a2",PVar "b2"]]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")))])) Nothing]
@@ -330,12 +399,16 @@ Coverage: 40%
 << funClause: next token=TokIdent "unify"
 << pConstrOrVar: next token "TTuple"
 << pConstrOrVar: next token "xs"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "xs"]
-<< pPattern: prased PApp (PVar "TTuple") [PVar "xs"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "xs"]
+<< pPattern:
+    prased PApp (PVar "TTuple") [PVar "xs"]
 << pConstrOrVar: next token "TTuple"
 << pConstrOrVar: next token "ys"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "ys"]
-<< pPattern: prased PApp (PVar "TTuple") [PVar "ys"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "ys"]
+<< pPattern:
+    prased PApp (PVar "TTuple") [PVar "ys"]
 << funClause: args=[PApp (PVar "TTuple") [PVar "xs"],PApp (PVar "TTuple") [PVar "ys"]] t = TokVLBrace
 << parseGuardedClause: next token=TokVLBrace
 << guardedRhs: next token = TokSymbol "|"
@@ -343,14 +416,16 @@ Coverage: 40%
 << expr dispatch: TokIdent "length"
 >>*appExprCore: f= EVar "length" args= [EVar "xs"]
 >>*appExprCore: f= EVar "length" args= [EVar "ys"]
->>*exprCore: rt EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys"))
+>>*exprCore2: rt EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys"))
+>>*exprCore: e EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys"))
 << exprNoLoop: e EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys"))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys"))
 << expr dispatch: TokIdent "unifyMany"
 >>*appExprCore: f= EVar "unifyMany" args= [EVar "xs",EVar "ys"]
->>*exprCore: rt EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")
+>>*exprCore2: rt EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")
+>>*exprCore: e EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")
 << exprNoLoop: e EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -359,94 +434,129 @@ Coverage: 40%
 << parseGuardLine: next token=TokSymbol "|"
 << expr dispatch: TokIdent "otherwise"
 >>*appExprCore: f= EVar "otherwise" args= []
->>*exprCore: rt EVar "otherwise"
+>>*exprCore2: rt EVar "otherwise"
+>>*exprCore: e EVar "otherwise"
 << exprNoLoop: e EVar "otherwise"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "otherwise"
 << expr dispatch: TokTypeIdent "Left"
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EApp (EVarType "TTuple") (EVar "xs"),EApp (EVarType "TTuple") (EVar "ys")]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EApp (EVarType "TTuple") (EVar "xs"),EApp (EVarType "TTuple") (EVar "ys")]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "xs"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "xs")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "xs")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "TTuple" args= [EVar "ys"]
->>*exprCore: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore2: rt EApp (EVarType "TTuple") (EVar "ys")
+>>*exprCore: e EApp (EVarType "TTuple") (EVar "ys")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EApp (EVarType "TTuple") (EVar "xs"),EApp (EVarType "TTuple") (EVar "ys")]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))
 >>*appExprCore: f= EVarType "Left" args= [EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))]
->>*exprCore: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))
+>>*exprCore2: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))
+>>*exprCore: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))
 << guardedRhs: next token = TokVRBrace
 << parseGuardLine: next token=TokVRBrace
+<< whereBlock: next token TokVRBrace
 << funClauseWithName: next token=TokIdent "unify"
 << pConstrOrVar: next token "TList"
 << pConstrOrVar: next token "a"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TList") [PVar "a"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TList") [PVar "a"]
 << pConstrOrVar: next token "TList"
 << pConstrOrVar: next token "b"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TList") [PVar "b"]
-<< pattern: (pAs <|> makeCons)PApp (PApp (PVar "TList") [PVar "a"]) [PApp (PVar "TList") [PVar "b"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TList") [PVar "b"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PVar "TList") [PVar "a"]) [PApp (PVar "TList") [PVar "b"]]
 << expr dispatch: TokIdent "unify"
 >>*appExprCore: f= EVar "unify" args= [EVar "a",EVar "b"]
->>*exprCore: rt EApp (EApp (EVar "unify") (EVar "a")) (EVar "b")
+>>*exprCore2: rt EApp (EApp (EVar "unify") (EVar "a")) (EVar "b")
+>>*exprCore: e EApp (EApp (EVar "unify") (EVar "a")) (EVar "b")
 << exprNoLoop: e EApp (EApp (EVar "unify") (EVar "a")) (EVar "b")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "unify") (EVar "a")) (EVar "b")
+<< whereBlock: next token TokIdent "unify"
 << funClauseWithName: next token=TokIdent "unify"
 << pConstrOrVar: next token "t1"
 << pConstrOrVar: next token "t2"
-<< pattern: (pAs <|> makeCons)PApp (PVar "t1") [PVar "t2"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t1") [PVar "t2"]
 << expr dispatch: TokTypeIdent "Left"
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EVar "t1",EVar "t2"]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EVar "t1",EVar "t2"]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
 >>*appExprCore: f= EVarType "UnifyMismatch" args= [EVar "t1",EVar "t2"]
->>*exprCore: rt EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
+>>*exprCore: e EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")
 >>*appExprCore: f= EVarType "Left" args= [EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")]
->>*exprCore: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2"))
+>>*exprCore2: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2"))
+>>*exprCore: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2"))
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2"))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2"))
+<< whereBlock: next token TokIdent "varBind"
 << funClauseWithName: next token=TokIdent "varBind"
 >>*funDecl name "unify" clause1 FunClause [PApp (PVar "TTuple") [PVar "xs"],PApp (PVar "TTuple") [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing rest [FunClause [PApp (PApp (PVar "TList") [PVar "a"]) [PApp (PVar "TList") [PVar "b"]]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing,FunClause [PApp (PVar "t1") [PVar "t2"]] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing]
 >>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PVar "TTuple") [PVar "xs"],PApp (PVar "TTuple") [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing,FunClause [PApp (PApp (PVar "TList") [PVar "a"]) [PApp (PVar "TList") [PVar "b"]]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing,FunClause [PApp (PVar "t1") [PVar "t2"]] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing]
@@ -474,9 +584,11 @@ Coverage: 40%
 << funDecl: next token=TokIdent "varBind"
 << funClause: next token=TokIdent "varBind"
 << pConstrOrVar: next token "a"
-<< pPattern: prased PVar "a"
+<< pPattern:
+    prased PVar "a"
 << pConstrOrVar: next token "t"
-<< pPattern: prased PVar "t"
+<< pPattern:
+    prased PVar "t"
 << funClause: args=[PVar "a",PVar "t"] t = TokVLBrace
 << parseGuardedClause: next token=TokVLBrace
 << guardedRhs: next token = TokSymbol "|"
@@ -484,14 +596,16 @@ Coverage: 40%
 << expr dispatch: TokIdent "t"
 >>*appExprCore: f= EVar "t" args= []
 >>*appExprCore: f= EVarType "TVar" args= [EVar "a"]
->>*exprCore: rt EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a"))
+>>*exprCore2: rt EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a"))
+>>*exprCore: e EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a"))
 << exprNoLoop: e EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a"))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a"))
 << expr dispatch: TokTypeIdent "Right"
 >>*appExprCore: f= EVarType "Right" args= [EVar "emptySubst"]
->>*exprCore: rt EApp (EVarType "Right") (EVar "emptySubst")
+>>*exprCore2: rt EApp (EVarType "Right") (EVar "emptySubst")
+>>*exprCore: e EApp (EVarType "Right") (EVar "emptySubst")
 << exprNoLoop: e EApp (EVarType "Right") (EVar "emptySubst")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -500,20 +614,25 @@ Coverage: 40%
 << parseGuardLine: next token=TokSymbol "|"
 << expr dispatch: TokIdent "occursCheck"
 >>*appExprCore: f= EVar "occursCheck" args= [EVar "a",EVar "t"]
->>*exprCore: rt EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t")
+>>*exprCore2: rt EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t")
+>>*exprCore: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t")
 << exprNoLoop: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t")
 << expr dispatch: TokTypeIdent "Left"
 >>*appExprCore: f= EVarType "UnifyOccursCheckFailed" args= [EVar "a",EVar "t"]
->>*exprCore: rt EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
+>>*exprCore: e EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
 >>*appExprCore: f= EVarType "UnifyOccursCheckFailed" args= [EVar "a",EVar "t"]
->>*exprCore: rt EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
+>>*exprCore: e EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
 >>*appExprCore: f= EVarType "UnifyOccursCheckFailed" args= [EVar "a",EVar "t"]
->>*exprCore: rt EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
+>>*exprCore2: rt EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
+>>*exprCore: e EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")
 >>*appExprCore: f= EVarType "Left" args= [EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")]
->>*exprCore: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))
+>>*exprCore2: rt EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))
+>>*exprCore: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -522,33 +641,40 @@ Coverage: 40%
 << parseGuardLine: next token=TokSymbol "|"
 << expr dispatch: TokIdent "otherwise"
 >>*appExprCore: f= EVar "otherwise" args= []
->>*exprCore: rt EVar "otherwise"
+>>*exprCore2: rt EVar "otherwise"
+>>*exprCore: e EVar "otherwise"
 << exprNoLoop: e EVar "otherwise"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "otherwise"
 << expr dispatch: TokTypeIdent "Right"
 >>*appExprCore: f= EVarType "M" args= []
->>*exprCore: rt EVarType "M"
+>>*exprCore2: rt EVarType "M"
+>>*exprCore: e EVarType "M"
 >>*appExprCore: f= EVarType "M" args= []
->>*exprCore: rt EVarType "M"
+>>*exprCore2: rt EVarType "M"
+>>*exprCore: e EVarType "M"
 >>*appExprCore: f= EVarType "M" args= []
->>*exprCore: rt EVarType "M"
+>>*exprCore2: rt EVarType "M"
+>>*exprCore: e EVarType "M"
 >>*appExprCore: f= EVarType "Right" args= []
->>*exprCore: rt EVarType "Right"
+>>*exprCore2: rt EVarType "Right"
+>>*exprCore: e EVarType "Right"
 << exprNoLoop: e EVarType "Right"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVarType "Right"
 << guardedRhs: next token = TokSymbol "("
 << parseGuardLine: next token=TokSymbol "("
+<< whereBlock: next token TokSymbol "("
 << typeSigDecl: TokIdent "varBind"
 << typeSigDecl:2 TokIdent "a"
 << valueDecl: TokIdent "varBind"
 << pConstrOrVar: next token "varBind"
 << pConstrOrVar: next token "a"
 << pConstrOrVar: next token "t"
-<< pattern: (pAs <|> makeCons)PApp (PVar "varBind") [PVar "a",PVar "t"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "varBind") [PVar "a",PVar "t"]
 Just ([DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"],DeclTypeSig "unify" (TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unify" [FunClause [PApp (PVar "TVar") [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing,FunClause [PApp (PVar "t") [PApp (PVar "TVar") [PVar "a"]]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing,FunClause [PApp (PVar "TUnit") [PVar "TUnit"]] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PVar "TCon") [PVar "a"],PApp (PVar "TCon") [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing,FunClause [PApp (PApp (PVar "TArrow") [PVar "a1",PVar "b1"]) [PApp (PVar "TArrow") [PVar "a2",PVar "b2"]]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "`composeSubst`")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PVar "TTuple") [PVar "xs"],PApp (PVar "TTuple") [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing,FunClause [PApp (PApp (PVar "TList") [PVar "a"]) [PApp (PVar "TList") [PVar "b"]]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing,FunClause [PApp (PVar "t1") [PVar "t2"]] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing],DeclTypeSig "varBind" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))],[TokIdent "varBind",TokIdent "a",TokIdent "t",TokVLBrace,TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "a",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "occursCheck",TokIdent "a",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "a",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Right",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "singleton",TokIdent "a",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursCheck",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TVar",TokIdent "b",TokSymbol ")",TokSymbol "=",TokIdent "a",TokOperator "==",TokIdent "b",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TCon",TokIdent "_",TokSymbol ")",TokSymbol "=",TokTypeIdent "False",TokNewline,TokIdent "occursCheck",TokIdent "a",TokTypeIdent "TUnit",TokSymbol "=",TokTypeIdent "False",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TList",TokIdent "t",TokSymbol ")",TokSymbol "=",TokIdent "occursCheck",TokIdent "a",TokIdent "t",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokIdent "any",TokSymbol "(",TokIdent "occursCheck",TokIdent "a",TokSymbol ")",TokIdent "ts",TokNewline,TokIdent "occursCheck",TokIdent "a",TokSymbol "(",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokSymbol ")",TokSymbol "=",TokIdent "occursCheck",TokIdent "a",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursCheck",TokIdent "a",TokIdent "t2",TokNewline,TokIdent "unifyMany",TokSymbol "::",TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unifyMany",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unifyMany",TokSymbol "(",TokIdent "t1",TokOperator ":",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "t2",TokOperator ":",TokIdent "ts2",TokSymbol ")",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unifyMany",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokIdent "`composeSubst`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unifyMany",TokIdent "ts1",TokIdent "ts2",TokSymbol "=",TokVLBrace,TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts2",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "bindVar",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "bindVar",TokIdent "v",TokIdent "t",TokVLBrace,TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "v",TokSymbol "=",TokKeyword "return",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "v",TokIdent "`occursIn`",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "v",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokKeyword "return",TokSymbol "(",TokIdent "singletonSubst",TokIdent "v",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursIn",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursIn",TokIdent "v",TokIdent "t",TokSymbol "=",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TVar",TokIdent "x",TokArrow,TokIdent "x",TokOperator "==",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "_",TokArrow,TokTypeIdent "False",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursInConstraint",TokIdent "v",TokSymbol ")",TokIdent "cs",TokSymbol "|",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t1",TokArrow,TokKeyword "if",TokIdent "v",TokIdent "`elem`",TokIdent "vs",TokKeyword "then",TokTypeIdent "False",TokKeyword "else",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokVRBrace,TokNewline,TokIdent "occursInConstraint",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursInConstraint",TokIdent "v",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "_",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokIdent "ts",TokVRBrace,TokNewline])
 
 -- src code --

@@ -15,7 +15,7 @@ doExprCore :: Parser Expr -> Parser Expr
 doExprCore expr = do
   keyword "do"
   bracesV $ do
-    optional (token TokNewline)
+    skipSeparators
     stmts <- doBlock expr
     myTrace (">>*doExprCore: stmts " ++ show stmts)
     return (EDo stmts)
@@ -85,9 +85,9 @@ letStmt expr = do
       bracesV $ do
         pat <- pattern
         symbol "="
-        -- bracesV $ do
-        e <- expr
-        return (pat, e)
+        bracesV $ do
+          e <- expr
+          return (pat, e)
 
 doSemi :: Parser ()
 doSemi =

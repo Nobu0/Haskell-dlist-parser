@@ -2,6 +2,7 @@
 
 module Parser.Expr.ExprCore
   ( exprCore,
+    exprCoreNoBraces,
     appExprCore,
     atomCore,
     atomBaseCore,
@@ -25,9 +26,6 @@ import Parser.Type.TypeParser (typeIdent)
 -- import Text.ParserCombinators.ReadP (skipSpaces)
 import Utils.MyTrace
 
--- isSep TokVLBrace = Just ()
--- isSep TokVRBrace = Just ()
-
 skipSeparatorsZ :: Parser ()
 skipSeparatorsZ = do
   _ <- many (tokenIs isSep)
@@ -37,45 +35,27 @@ skipSeparatorsZ = do
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
 
-{-}
-opAltChain :: Expr -> Parser Expr
-opAltChain lhs = do
-  optional $ token TokVLBrace
-  hasOp <- optional operatorZ
-  case hasOp of
-    Just _ -> do
-      rhs <- exprCore
-      optional $ token TokVRBrace
-      skipSeparatorsZ
-      t <- lookAhead anyToken
-      myTrace (">>*opAltChain t " ++ show t ++ " lhs " ++ show lhs ++ " rhs " ++ show rhs)
-      let combined = EBinOp BinOpAlt lhs rhs
-      opAltChain combined
-    Nothing -> do
-      myTrace (">>*opAltChain Nop lhs " ++ show lhs)
-      return lhs
+exprCoreNoBraces :: Parser Expr
+exprCoreNoBraces = exprCoreWithOpNoBraces <|> exprCore2
 
--- 今までの関数
-exprCore :: Parser Expr
-exprCore = do
-  bracesvExpr <|> exprCore2
+exprCoreWithOpNoBraces :: Parser Expr
+exprCoreWithOpNoBraces = do
+  base <- exprCore2
+  skipSeparatorsZ
+  opChain operatorBinOp EBinOp base
 
 bracesvExpr :: Parser Expr
 bracesvExpr = do
   token TokVLBrace
-  e <- exprCore >>= opAltChain
+  base <- exprCoreNoBraces
+  token TokVLBrace
+  e <- opChain operatorBinOp EBinOp base
   token TokVRBrace
+  token TokVRBrace
+  skipSeparatorsZ
   return e
 
-operatorZ :: Parser String
-operatorZ = satisfyToken isOp
-  where
-    isOp (TokOperator s)
-      | s `elem` ["<|>","<$>"] = Just s
-      | otherwise = Nothing
-    isOp _ = Nothing
--}
-
+{-}
 bracesvExpr :: Parser Expr
 bracesvExpr = do
   token TokVLBrace
@@ -86,17 +66,31 @@ bracesvExpr = do
   token TokVRBrace
   skipSeparatorsZ
   return e
-
+-}
 -- 改造バージョン
 exprCore :: Parser Expr
 exprCore = do
-  bracesvExpr <|> exprCoreWithOp
+  e <-
+    try bracesvExpr
+      <|> exprCoreWithOp
+  myTrace (">>*exprCore: e " ++ show e)
+  return e
 
 exprCoreWithOp :: Parser Expr
 exprCoreWithOp = do
   base <- exprCore2
   skipSeparatorsZ
   opChain operatorBinOp EBinOp base
+
+exprCore2 :: Parser Expr
+exprCore2 = do
+  rt <-
+    try lambdaExpr
+      <|> try binOpExprCore
+      <|> parseSQL
+  -- t <- lookAhead anyToken
+  myTrace (">>*exprCore2: rt " ++ show rt)
+  return rt
 
 opChain :: Parser BinOp -> (BinOp -> Expr -> Expr -> Expr) -> Expr -> Parser Expr
 opChain opParser makeExpr lhs = do
@@ -124,51 +118,6 @@ operatorTable =
     (">>=", BinOpBind)
   ]
 
-exprCore2 :: Parser Expr
-exprCore2 = do
-  rt <-
-    try binOpExprCore
-      <|> parseSQL
-  myTrace (">>*exprCore: rt " ++ show rt)
-  -- e <- opAltChain rt
-  return rt
-
-{-}
-exprCore2 :: Parser Expr
-exprCore2 = do
-  skipSeparatorsZ
-  e <- exprCore2 -- layoutExpr -- try (parens exprCore2) <|> exprCore2
-  skipSeparatorsZ
-  t <- lookAhead anyToken
-  myTrace (">>*exprCore: e " ++ show e ++ " t " ++ show t)
-  return e
-
-layoutExpr :: Parser Expr
-layoutExpr = do
-  t <- lookAhead anyToken
-  myTrace ("<< layoutExpr: t " ++ show t)
-  case t of
-    TokVLBrace -> bracesv exprCore
-    -- TokSymbol "(" -> parens exprCore2
-    _ -> exprCore2
--}
--- isOp (TokVLBrace) = empty
--- isOp (TokVRBrace) = empty
-{-}
-bracesExpr :: Parser Expr
-bracesExpr = do
-  myTrace ("<< exprCore1: 1")
-  token TokVLBrace
-  myTrace ("<< exprCore1: 2")
-  e <- exprCore
-  skipSeparatorsZ
-  t <- lookAhead anyToken
-  myTrace ("<< exprCore1: 3 " ++ show e ++ " t " ++ show t)
-  token TokVRBrace
-  myTrace (">>*exprCore1: 4 " ++ show e)
-  return e
--}
-
 -- ============================================
 --  exprCore（純粋な式パーサー）
 -- ============================================
@@ -191,8 +140,7 @@ field = do
 
 binOpExprCore :: Parser Expr
 binOpExprCore = do
-  bracesVO $ do
-    exprCmpCore
+  exprCmpCore
 
 -- 比較演算子（左結合）
 exprCmpCore :: Parser Expr
@@ -216,7 +164,7 @@ exprAddSubCore = do
 -- 最下層：関数適用やリテラル、変数など
 exprLevel3Core :: Parser Expr
 exprLevel3Core = do
-  appExprCore
+  try lambdaExpr <|> appExprCore
 
 -- ============================================
 --  関数適用
@@ -230,24 +178,21 @@ appExprCore = do
   myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
   return (foldl EApp f args)
 
--- let rt = (foldl EApp f args)
--- return rt
-
 -- ============================================
 --  atom
 -- ============================================
 
-xatomCore :: Parser Expr
-xatomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
-
 atomCore :: Parser Expr
-atomCore = do
+atomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
+
+atomCorex :: Parser Expr
+atomCorex = do
   t <- lookAhead anyToken
   case t of
     TokSymbol "}" -> empty
     TokSymbol ";" -> empty
     TokSymbol "$" -> empty
-    TokVRBrace -> empty
+    -- TokVRBrace -> empty
     TokLambdaCase -> empty
     _ ->
       try (parens parenExprCore)
@@ -315,7 +260,8 @@ tunitExpr = do
 elistExpr :: Parser Expr
 elistExpr = do
   symbol "["
-  elems <- exprCore `sepBy` symbol ","
+  elems <- exprCore `sepBy` (symbol ",")
+  optional (symbol ",")
   symbol "]"
   return (EList elems)
 
@@ -327,3 +273,14 @@ emptyListExpr = do
   symbol "["
   symbol "]"
   return (EList [])
+
+-- ほぼ２重定義だけど
+lambdaExpr :: Parser Expr
+lambdaExpr = do
+  symbol "\\"
+  arg <- pattern
+  myTrace ("<< lambdaExpr arg " ++ show arg)
+  tokenIs (\case TokArrow -> Just (); _ -> Nothing)
+  bracesV $ do
+    body <- exprCore
+    return (ELam arg body)

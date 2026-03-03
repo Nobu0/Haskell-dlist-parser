@@ -73,14 +73,16 @@ Coverage: 100%
 << funDecl: next token=TokIdent "parseSQL"
 << funClause: next token=TokIdent "parseSQL"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokKeyword "do"
+<< parseSimpleClause: next token=TokKeyword "do"
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "_"
-<< pattern: (pAs <|> makeCons)PApp (PVar "_") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") []
 << expr dispatch: TokIdent "keyword"
 >>*appExprCore: f= EVar "keyword" args= [EString "sql"]
->>*exprCore: rt EApp (EVar "keyword") (EString "sql")
+>>*exprCore2: rt EApp (EVar "keyword") (EString "sql")
+>>*exprCore: e EApp (EVar "keyword") (EString "sql")
 << exprNoLoop: e EApp (EVar "keyword") (EString "sql")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -89,10 +91,12 @@ Coverage: 100%
 >>*doStmt: rt Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql"))
 << bindStmt
 << pConstrOrVar: next token "sqlText"
-<< pattern: (pAs <|> makeCons)PApp (PVar "sqlText") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "sqlText") []
 << expr dispatch: TokIdent "stringLiteralExpr"
 >>*appExprCore: f= EVar "stringLiteralExpr" args= []
->>*exprCore: rt EVar "stringLiteralExpr"
+>>*exprCore2: rt EVar "stringLiteralExpr"
+>>*exprCore: e EVar "stringLiteralExpr"
 << exprNoLoop: e EVar "stringLiteralExpr"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -102,13 +106,17 @@ Coverage: 100%
 << bindStmt
 << letStmt
 << pConstrOrVar: next token "sqlBody"
-<< pattern: (pAs <|> makeCons)PApp (PVar "sqlBody") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "sqlBody") []
 << pConstrOrVar: next token "vars"
-<< pattern: (pAs <|> makeCons)PApp (PVar "vars") []
-<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "vars") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) []
 << expr dispatch: TokIdent "extractSQLVars"
 >>*appExprCore: f= EVar "extractSQLVars" args= [EVar "sqlText"]
->>*exprCore: rt EApp (EVar "extractSQLVars") (EVar "sqlText")
+>>*exprCore2: rt EApp (EVar "extractSQLVars") (EVar "sqlText")
+>>*exprCore: e EApp (EVar "extractSQLVars") (EVar "sqlText")
 << exprNoLoop: e EApp (EVar "extractSQLVars") (EVar "sqlText")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -117,30 +125,43 @@ Coverage: 100%
 >>*doStmt: rt LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))]
 << bindStmt
 << expr dispatch: TokKeyword "return"
+<< returnWithDollar
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVarType "ESQL" args= [EVar "sqlBody",EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")]
->>*exprCore: rt EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
+>>*exprCore2: rt EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
+>>*exprCore: e EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVarType "ESQL" args= [EVar "sqlBody",EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")]
->>*exprCore: rt EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
+>>*exprCore2: rt EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
+>>*exprCore: e EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVar "map" args= [EVarType "EVar",EVar "vars"]
->>*exprCore: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore2: rt EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
+>>*exprCore: e EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")
 >>*appExprCore: f= EVarType "ESQL" args= [EVar "sqlBody",EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")]
->>*exprCore: rt EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
+>>*exprCore2: rt EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
+>>*exprCore: e EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
 >>*return atom: EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))
 << exprNoLoop: e EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars")))
 << postfix: operator = Nothing

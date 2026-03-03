@@ -107,14 +107,19 @@ Coverage: 85%
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 << importIdent: next token TokIdent "empty"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "many"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "optional"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "some"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokSymbol "("
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]}
@@ -124,6 +129,7 @@ Coverage: 85%
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 << importIdent: next token TokIdent "intercalate"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]}
@@ -154,8 +160,10 @@ Coverage: 85%
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "expr"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "skipNewlines"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Expr.ExprExtensions", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "expr",ImportVar "skipNewlines"]}
@@ -165,6 +173,7 @@ Coverage: 85%
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "pattern"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pattern"]}
@@ -174,14 +183,19 @@ Coverage: 85%
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "constraintList"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "parseType"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "typeAtom"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "typeIdent"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "typeP"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "constraintList",ImportVar "parseType",ImportVar "typeAtom",ImportVar "typeIdent",ImportVar "typeP"]}
@@ -214,18 +228,21 @@ Coverage: 85%
 << funDecl: next token=TokIdent "parensI"
 << funClause: next token=TokIdent "parensI"
 << pConstrOrVar: next token "p"
-<< pPattern: prased PVar "p"
+<< pPattern:
+    prased PVar "p"
 << funClause: args=[PVar "p"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "symbol"
+<< parseSimpleClause: next token=TokIdent "symbol"
 << expr dispatch: TokIdent "symbol"
 >>*appExprCore: f= EVar "symbol" args= [EString "("]
 >>*appExprCore: f= EVar "p" args= []
 >>*appExprCore: f= EVar "symbol" args= [EString ")"]
->>*exprCore: rt EBinOp BinOpThen (EBinOp BinOpThen (EApp (EVar "symbol") (EString "(")) (EVar "p")) (EApp (EVar "symbol") (EString ")"))
+>>*exprCore2: rt EBinOp BinOpThen (EBinOp BinOpThen (EApp (EVar "symbol") (EString "(")) (EVar "p")) (EApp (EVar "symbol") (EString ")"))
+>>*exprCore: e EBinOp BinOpThen (EBinOp BinOpThen (EApp (EVar "symbol") (EString "(")) (EVar "p")) (EApp (EVar "symbol") (EString ")"))
 << exprNoLoop: e EBinOp BinOpThen (EBinOp BinOpThen (EApp (EVar "symbol") (EString "(")) (EVar "p")) (EApp (EVar "symbol") (EString ")"))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpThen (EBinOp BinOpThen (EApp (EVar "symbol") (EString "(")) (EVar "p")) (EApp (EVar "symbol") (EString ")"))
+<< whereBlock: next token TokIdent "moduleName"
 << funClauseWithName: next token=TokIdent "moduleName"
 >>*funDecl name "parensI" clause1 FunClause [PVar "p"] Nothing (Just (EBinOp BinOpThen (EBinOp BinOpThen (EApp (EVar "symbol") (EString "(")) (EVar "p")) (EApp (EVar "symbol") (EString ")")))) Nothing rest []
 >>*declBody: e DeclFunGroup "parensI" [FunClause [PVar "p"] Nothing (Just (EBinOp BinOpThen (EBinOp BinOpThen (EApp (EVar "symbol") (EString "(")) (EVar "p")) (EApp (EVar "symbol") (EString ")")))) Nothing]
@@ -251,15 +268,17 @@ Coverage: 85%
 << funDecl: next token=TokIdent "moduleName"
 << funClause: next token=TokIdent "moduleName"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "intercalate"
+<< parseSimpleClause: next token=TokIdent "intercalate"
 << expr dispatch: TokIdent "intercalate"
 >>*appExprCore: f= EVar "intercalate" args= [EString "."]
 >>*appExprCore: f= EVar "sepBy1" args= [EVar "identI",EVar "tokdot"]
->>*exprCore: rt EBinOp BinOpFmap (EApp (EVar "intercalate") (EString ".")) (EApp (EApp (EVar "sepBy1") (EVar "identI")) (EVar "tokdot"))
+>>*exprCore2: rt EBinOp BinOpFmap (EApp (EVar "intercalate") (EString ".")) (EApp (EApp (EVar "sepBy1") (EVar "identI")) (EVar "tokdot"))
+>>*exprCore: e EBinOp BinOpFmap (EApp (EVar "intercalate") (EString ".")) (EApp (EApp (EVar "sepBy1") (EVar "identI")) (EVar "tokdot"))
 << exprNoLoop: e EBinOp BinOpFmap (EApp (EVar "intercalate") (EString ".")) (EApp (EApp (EVar "sepBy1") (EVar "identI")) (EVar "tokdot"))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpFmap (EApp (EVar "intercalate") (EString ".")) (EApp (EApp (EVar "sepBy1") (EVar "identI")) (EVar "tokdot"))
+<< whereBlock: next token TokIdent "tokdot"
 << funClauseWithName: next token=TokIdent "tokdot"
 >>*funDecl name "moduleName" clause1 FunClause [] Nothing (Just (EBinOp BinOpFmap (EApp (EVar "intercalate") (EString ".")) (EApp (EApp (EVar "sepBy1") (EVar "identI")) (EVar "tokdot")))) Nothing rest []
 >>*declBody: e DeclFunGroup "moduleName" [FunClause [] Nothing (Just (EBinOp BinOpFmap (EApp (EVar "intercalate") (EString ".")) (EApp (EApp (EVar "sepBy1") (EVar "identI")) (EVar "tokdot")))) Nothing]
@@ -285,21 +304,26 @@ Coverage: 85%
 << funDecl: next token=TokIdent "tokdot"
 << funClause: next token=TokIdent "tokdot"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "token"
+<< parseSimpleClause: next token=TokIdent "token"
 << expr dispatch: TokIdent "token"
 >>*appExprCore: f= EVarType "TokOperator" args= [EString "."]
->>*exprCore: rt EApp (EVarType "TokOperator") (EString ".")
+>>*exprCore2: rt EApp (EVarType "TokOperator") (EString ".")
+>>*exprCore: e EApp (EVarType "TokOperator") (EString ".")
 >>*appExprCore: f= EVarType "TokOperator" args= [EString "."]
->>*exprCore: rt EApp (EVarType "TokOperator") (EString ".")
+>>*exprCore2: rt EApp (EVarType "TokOperator") (EString ".")
+>>*exprCore: e EApp (EVarType "TokOperator") (EString ".")
 >>*appExprCore: f= EVarType "TokOperator" args= [EString "."]
->>*exprCore: rt EApp (EVarType "TokOperator") (EString ".")
+>>*exprCore2: rt EApp (EVarType "TokOperator") (EString ".")
+>>*exprCore: e EApp (EVarType "TokOperator") (EString ".")
 >>*appExprCore: f= EVar "token" args= [EApp (EVarType "TokOperator") (EString ".")]
 >>*appExprCore: f= EVar "pure" args= [EString "."]
->>*exprCore: rt EBinOp BinOpThen (EApp (EVar "token") (EApp (EVarType "TokOperator") (EString "."))) (EApp (EVar "pure") (EString "."))
+>>*exprCore2: rt EBinOp BinOpThen (EApp (EVar "token") (EApp (EVarType "TokOperator") (EString "."))) (EApp (EVar "pure") (EString "."))
+>>*exprCore: e EBinOp BinOpThen (EApp (EVar "token") (EApp (EVarType "TokOperator") (EString "."))) (EApp (EVar "pure") (EString "."))
 << exprNoLoop: e EBinOp BinOpThen (EApp (EVar "token") (EApp (EVarType "TokOperator") (EString "."))) (EApp (EVar "pure") (EString "."))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpThen (EApp (EVar "token") (EApp (EVarType "TokOperator") (EString "."))) (EApp (EVar "pure") (EString "."))
+<< whereBlock: next token TokIdent "typeExpr"
 << funClauseWithName: next token=TokIdent "typeExpr"
 >>*funDecl name "tokdot" clause1 FunClause [] Nothing (Just (EBinOp BinOpThen (EApp (EVar "token") (EApp (EVarType "TokOperator") (EString "."))) (EApp (EVar "pure") (EString ".")))) Nothing rest []
 >>*declBody: e DeclFunGroup "tokdot" [FunClause [] Nothing (Just (EBinOp BinOpThen (EApp (EVar "token") (EApp (EVarType "TokOperator") (EString "."))) (EApp (EVar "pure") (EString ".")))) Nothing]
@@ -325,14 +349,16 @@ Coverage: 85%
 << funDecl: next token=TokIdent "typeExpr"
 << funClause: next token=TokIdent "typeExpr"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokKeyword "do"
+<< parseSimpleClause: next token=TokKeyword "do"
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "ts"
-<< pattern: (pAs <|> makeCons)PApp (PVar "ts") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "ts") []
 << expr dispatch: TokIdent "some"
 >>*appExprCore: f= EVar "some" args= [EVar "typeAtom"]
->>*exprCore: rt EApp (EVar "some") (EVar "typeAtom")
+>>*exprCore2: rt EApp (EVar "some") (EVar "typeAtom")
+>>*exprCore: e EApp (EVar "some") (EVar "typeAtom")
 << exprNoLoop: e EApp (EVar "some") (EVar "typeAtom")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -341,9 +367,11 @@ Coverage: 85%
 >>*doStmt: rt Bind (PApp (PVar "ts") []) (EApp (EVar "some") (EVar "typeAtom"))
 << bindStmt
 << expr dispatch: TokKeyword "return"
+<< returnWithDollar
 << expr dispatch: TokIdent "foldl1"
 >>*appExprCore: f= EVar "foldl1" args= [EVarType "TApp",EVar "ts"]
->>*exprCore: rt EApp (EApp (EVar "foldl1") (EVarType "TApp")) (EVar "ts")
+>>*exprCore2: rt EApp (EApp (EVar "foldl1") (EVarType "TApp")) (EVar "ts")
+>>*exprCore: e EApp (EApp (EVar "foldl1") (EVarType "TApp")) (EVar "ts")
 << exprNoLoop: e EApp (EApp (EVar "foldl1") (EVarType "TApp")) (EVar "ts")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -363,6 +391,7 @@ Coverage: 85%
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EDo [Bind (PApp (PVar "ts") []) (EApp (EVar "some") (EVar "typeAtom")),ExprStmt (EReturn (EApp (EApp (EVar "foldl1") (EVarType "TApp")) (EVar "ts")))]
+<< whereBlock: next token TokIdent "sepBy1Skip"
 << funClauseWithName: next token=TokIdent "sepBy1Skip"
 >>*funDecl name "typeExpr" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "ts") []) (EApp (EVar "some") (EVar "typeAtom")),ExprStmt (EReturn (EApp (EApp (EVar "foldl1") (EVarType "TApp")) (EVar "ts")))])) Nothing rest []
 >>*declBody: e DeclFunGroup "typeExpr" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "ts") []) (EApp (EVar "some") (EVar "typeAtom")),ExprStmt (EReturn (EApp (EApp (EVar "foldl1") (EVarType "TApp")) (EVar "ts")))])) Nothing]
@@ -391,18 +420,22 @@ Coverage: 85%
 << funDecl: next token=TokIdent "sepBy1Skip"
 << funClause: next token=TokIdent "sepBy1Skip"
 << pConstrOrVar: next token "p"
-<< pPattern: prased PVar "p"
+<< pPattern:
+    prased PVar "p"
 << pConstrOrVar: next token "sep"
-<< pPattern: prased PVar "sep"
+<< pPattern:
+    prased PVar "sep"
 << funClause: args=[PVar "p",PVar "sep"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokKeyword "do"
+<< parseSimpleClause: next token=TokKeyword "do"
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "skipControlTokens"
-<< pattern: (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
 << expr dispatch: TokIdent "skipControlTokens"
 >>*appExprCore: f= EVar "skipControlTokens" args= []
->>*exprCore: rt EVar "skipControlTokens"
+>>*exprCore2: rt EVar "skipControlTokens"
+>>*exprCore: e EVar "skipControlTokens"
 << exprNoLoop: e EVar "skipControlTokens"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -411,10 +444,12 @@ Coverage: 85%
 >>*doStmt: rt ExprStmt (EVar "skipControlTokens")
 << bindStmt
 << pConstrOrVar: next token "x"
-<< pattern: (pAs <|> makeCons)PApp (PVar "x") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "x") []
 << expr dispatch: TokIdent "p"
 >>*appExprCore: f= EVar "p" args= []
->>*exprCore: rt EVar "p"
+>>*exprCore2: rt EVar "p"
+>>*exprCore: e EVar "p"
 << exprNoLoop: e EVar "p"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -423,20 +458,24 @@ Coverage: 85%
 >>*doStmt: rt Bind (PApp (PVar "x") []) (EVar "p")
 << bindStmt
 << pConstrOrVar: next token "xs"
-<< pattern: (pAs <|> makeCons)PApp (PVar "xs") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "xs") []
 << expr dispatch: TokIdent "many"
 >>*appExprCore: f= EVar "many" args= []
->>*exprCore: rt EVar "many"
+>>*exprCore2: rt EVar "many"
+>>*exprCore: e EVar "many"
 << exprNoLoop: e EVar "many"
 << postfix: operator = Just "$"
 << postfix: operator = $
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "skipControlTokens"
-<< pattern: (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
 << expr dispatch: TokIdent "skipControlTokens"
 >>*appExprCore: f= EVar "skipControlTokens" args= []
->>*exprCore: rt EVar "skipControlTokens"
+>>*exprCore2: rt EVar "skipControlTokens"
+>>*exprCore: e EVar "skipControlTokens"
 << exprNoLoop: e EVar "skipControlTokens"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -445,10 +484,12 @@ Coverage: 85%
 >>*doStmt: rt ExprStmt (EVar "skipControlTokens")
 << bindStmt
 << pConstrOrVar: next token "_"
-<< pattern: (pAs <|> makeCons)PApp (PVar "_") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") []
 << expr dispatch: TokIdent "sep"
 >>*appExprCore: f= EVar "sep" args= []
->>*exprCore: rt EVar "sep"
+>>*exprCore2: rt EVar "sep"
+>>*exprCore: e EVar "sep"
 << exprNoLoop: e EVar "sep"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -457,10 +498,12 @@ Coverage: 85%
 >>*doStmt: rt Bind (PApp (PVar "_") []) (EVar "sep")
 << bindStmt
 << pConstrOrVar: next token "skipControlTokens"
-<< pattern: (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
 << expr dispatch: TokIdent "skipControlTokens"
 >>*appExprCore: f= EVar "skipControlTokens" args= []
->>*exprCore: rt EVar "skipControlTokens"
+>>*exprCore2: rt EVar "skipControlTokens"
+>>*exprCore: e EVar "skipControlTokens"
 << exprNoLoop: e EVar "skipControlTokens"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -469,10 +512,12 @@ Coverage: 85%
 >>*doStmt: rt ExprStmt (EVar "skipControlTokens")
 << bindStmt
 << pConstrOrVar: next token "p"
-<< pattern: (pAs <|> makeCons)PApp (PVar "p") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "p") []
 << expr dispatch: TokIdent "p"
 >>*appExprCore: f= EVar "p" args= []
->>*exprCore: rt EVar "p"
+>>*exprCore2: rt EVar "p"
+>>*exprCore: e EVar "p"
 << exprNoLoop: e EVar "p"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -495,10 +540,12 @@ Coverage: 85%
 >>*doStmt: rt Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [ExprStmt (EVar "skipControlTokens"),Bind (PApp (PVar "_") []) (EVar "sep"),ExprStmt (EVar "skipControlTokens"),ExprStmt (EVar "p")]))
 << bindStmt
 << pConstrOrVar: next token "skipControlTokens"
-<< pattern: (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
 << expr dispatch: TokIdent "skipControlTokens"
 >>*appExprCore: f= EVar "skipControlTokens" args= []
->>*exprCore: rt EVar "skipControlTokens"
+>>*exprCore2: rt EVar "skipControlTokens"
+>>*exprCore: e EVar "skipControlTokens"
 << exprNoLoop: e EVar "skipControlTokens"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -508,10 +555,12 @@ Coverage: 85%
 << bindStmt
 << pConstrOrVar: next token "optional"
 << pConstrOrVar: next token "sep"
-<< pattern: (pAs <|> makeCons)PApp (PVar "optional") [PVar "sep"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "optional") [PVar "sep"]
 << expr dispatch: TokIdent "optional"
 >>*appExprCore: f= EVar "optional" args= [EVar "sep"]
->>*exprCore: rt EApp (EVar "optional") (EVar "sep")
+>>*exprCore2: rt EApp (EVar "optional") (EVar "sep")
+>>*exprCore: e EApp (EVar "optional") (EVar "sep")
 << exprNoLoop: e EApp (EVar "optional") (EVar "sep")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -520,10 +569,12 @@ Coverage: 85%
 >>*doStmt: rt ExprStmt (EApp (EVar "optional") (EVar "sep"))
 << bindStmt
 << pConstrOrVar: next token "skipControlTokens"
-<< pattern: (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "skipControlTokens") []
 << expr dispatch: TokIdent "skipControlTokens"
 >>*appExprCore: f= EVar "skipControlTokens" args= []
->>*exprCore: rt EVar "skipControlTokens"
+>>*exprCore2: rt EVar "skipControlTokens"
+>>*exprCore: e EVar "skipControlTokens"
 << exprNoLoop: e EVar "skipControlTokens"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -532,12 +583,16 @@ Coverage: 85%
 >>*doStmt: rt ExprStmt (EVar "skipControlTokens")
 << bindStmt
 << expr dispatch: TokKeyword "return"
+<< returnWithDollar
 >>*appExprCore: f= EVar "x" args= [EVar ":",EVar "xs"]
->>*exprCore: rt EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
+>>*exprCore2: rt EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
+>>*exprCore: e EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
 >>*appExprCore: f= EVar "x" args= [EVar ":",EVar "xs"]
->>*exprCore: rt EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
+>>*exprCore2: rt EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
+>>*exprCore: e EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
 >>*appExprCore: f= EVar "x" args= [EVar ":",EVar "xs"]
->>*exprCore: rt EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
+>>*exprCore2: rt EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
+>>*exprCore: e EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
 >>*return atom: EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")
 << exprNoLoop: e EReturn (EApp (EApp (EVar "x") (EVar ":")) (EVar "xs"))
 << postfix: operator = Nothing
@@ -553,6 +608,7 @@ Coverage: 85%
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EDo [ExprStmt (EVar "skipControlTokens"),Bind (PApp (PVar "x") []) (EVar "p"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [ExprStmt (EVar "skipControlTokens"),Bind (PApp (PVar "_") []) (EVar "sep"),ExprStmt (EVar "skipControlTokens"),ExprStmt (EVar "p")])),ExprStmt (EVar "skipControlTokens"),ExprStmt (EApp (EVar "optional") (EVar "sep")),ExprStmt (EVar "skipControlTokens"),ExprStmt (EReturn (EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")))]
+<< whereBlock: next token TokIdent "isControlToken"
 << funClauseWithName: next token=TokIdent "isControlToken"
 >>*funDecl name "sepBy1Skip" clause1 FunClause [PVar "p",PVar "sep"] Nothing (Just (EDo [ExprStmt (EVar "skipControlTokens"),Bind (PApp (PVar "x") []) (EVar "p"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [ExprStmt (EVar "skipControlTokens"),Bind (PApp (PVar "_") []) (EVar "sep"),ExprStmt (EVar "skipControlTokens"),ExprStmt (EVar "p")])),ExprStmt (EVar "skipControlTokens"),ExprStmt (EApp (EVar "optional") (EVar "sep")),ExprStmt (EVar "skipControlTokens"),ExprStmt (EReturn (EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")))])) Nothing rest []
 >>*declBody: e DeclFunGroup "sepBy1Skip" [FunClause [PVar "p",PVar "sep"] Nothing (Just (EDo [ExprStmt (EVar "skipControlTokens"),Bind (PApp (PVar "x") []) (EVar "p"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [ExprStmt (EVar "skipControlTokens"),Bind (PApp (PVar "_") []) (EVar "sep"),ExprStmt (EVar "skipControlTokens"),ExprStmt (EVar "p")])),ExprStmt (EVar "skipControlTokens"),ExprStmt (EApp (EVar "optional") (EVar "sep")),ExprStmt (EVar "skipControlTokens"),ExprStmt (EReturn (EApp (EApp (EVar "x") (EVar ":")) (EVar "xs")))])) Nothing]
@@ -579,78 +635,91 @@ Coverage: 85%
 << funDecl: next token=TokIdent "isControlToken"
 << funClause: next token=TokIdent "isControlToken"
 << pConstrOrVar: next token "t"
-<< pPattern: prased PVar "t"
+<< pPattern:
+    prased PVar "t"
 << funClause: args=[PVar "t"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokKeyword "case"
+<< parseSimpleClause: next token=TokKeyword "case"
 << expr dispatch: TokKeyword "case"
 << caseExprCore:
-<< expr dispatch: TokIdent "t"
 >>*appExprCore: f= EVar "t" args= []
->>*exprCore: rt EVar "t"
-<< exprNoLoop: e EVar "t"
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVar "t"
+>>*exprCore2: rt EVar "t"
 << pConstrOrVar: next token "TokVLBrace"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TokVLBrace") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokVLBrace") []
+<< caseAlt: pat PApp (PVar "TokVLBrace") []
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "True"
 >>*appExprCore: f= EVarType "True" args= []
->>*exprCore: rt EVarType "True"
+>>*exprCore2: rt EVarType "True"
+>>*exprCore: e EVarType "True"
 << exprNoLoop: e EVarType "True"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVarType "True"
->>*caseAlt: PApp (PVar "TokVLBrace") [] EVarType "True"
+>>*caseAlt: pat PApp (PVar "TokVLBrace") [] body EVarType "True"
 << pConstrOrVar: next token "TokVRBrace"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TokVRBrace") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokVRBrace") []
+<< caseAlt: pat PApp (PVar "TokVRBrace") []
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "True"
 >>*appExprCore: f= EVarType "True" args= []
->>*exprCore: rt EVarType "True"
+>>*exprCore2: rt EVarType "True"
+>>*exprCore: e EVarType "True"
 << exprNoLoop: e EVarType "True"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVarType "True"
->>*caseAlt: PApp (PVar "TokVRBrace") [] EVarType "True"
+>>*caseAlt: pat PApp (PVar "TokVRBrace") [] body EVarType "True"
 << pConstrOrVar: next token "TokNewline"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TokNewline") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokNewline") []
+<< caseAlt: pat PApp (PVar "TokNewline") []
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "True"
 >>*appExprCore: f= EVarType "True" args= []
->>*exprCore: rt EVarType "True"
+>>*exprCore2: rt EVarType "True"
+>>*exprCore: e EVarType "True"
 << exprNoLoop: e EVarType "True"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVarType "True"
->>*caseAlt: PApp (PVar "TokNewline") [] EVarType "True"
+>>*caseAlt: pat PApp (PVar "TokNewline") [] body EVarType "True"
 << pConstrOrVar: next token "TokSymbol"
-<< pattern: (pAs <|> makeCons)PApp (PVar "TokSymbol") [PString ";"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokSymbol") [PString ";"]
+<< caseAlt: pat PApp (PVar "TokSymbol") [PString ";"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "True"
 >>*appExprCore: f= EVarType "True" args= []
->>*exprCore: rt EVarType "True"
+>>*exprCore2: rt EVarType "True"
+>>*exprCore: e EVarType "True"
 << exprNoLoop: e EVarType "True"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVarType "True"
->>*caseAlt: PApp (PVar "TokSymbol") [PString ";"] EVarType "True"
+>>*caseAlt: pat PApp (PVar "TokSymbol") [PString ";"] body EVarType "True"
 << pConstrOrVar: next token "_"
-<< pattern: (pAs <|> makeCons)PApp (PVar "_") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") []
+<< caseAlt: pat PApp (PVar "_") []
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "False"
 >>*appExprCore: f= EVarType "False" args= []
->>*exprCore: rt EVarType "False"
+>>*exprCore2: rt EVarType "False"
+>>*exprCore: e EVarType "False"
 << exprNoLoop: e EVarType "False"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVarType "False"
->>*caseAlt: PApp (PVar "_") [] EVarType "False"
+>>*caseAlt: pat PApp (PVar "_") [] body EVarType "False"
+>>*caseAltBlock: xs [CaseAlt (PApp (PVar "TokVRBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokNewline") []) (EVarType "True"),CaseAlt (PApp (PVar "TokSymbol") [PString ";"]) (EVarType "True"),CaseAlt (PApp (PVar "_") []) (EVarType "False")]
 >>*caseExprCore: alts [CaseAlt (PApp (PVar "TokVLBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokVRBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokNewline") []) (EVarType "True"),CaseAlt (PApp (PVar "TokSymbol") [PString ";"]) (EVarType "True"),CaseAlt (PApp (PVar "_") []) (EVarType "False")]
 << exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokVRBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokNewline") []) (EVarType "True"),CaseAlt (PApp (PVar "TokSymbol") [PString ";"]) (EVarType "True"),CaseAlt (PApp (PVar "_") []) (EVarType "False")]
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokVRBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokNewline") []) (EVarType "True"),CaseAlt (PApp (PVar "TokSymbol") [PString ";"]) (EVarType "True"),CaseAlt (PApp (PVar "_") []) (EVarType "False")]
+<< whereBlock: next token TokIdent "skipControlTokens"
 << funClauseWithName: next token=TokIdent "skipControlTokens"
 >>*funDecl name "isControlToken" clause1 FunClause [PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokVRBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokNewline") []) (EVarType "True"),CaseAlt (PApp (PVar "TokSymbol") [PString ";"]) (EVarType "True"),CaseAlt (PApp (PVar "_") []) (EVarType "False")])) Nothing rest []
 >>*declBody: e DeclFunGroup "isControlToken" [FunClause [PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokVRBrace") []) (EVarType "True"),CaseAlt (PApp (PVar "TokNewline") []) (EVarType "True"),CaseAlt (PApp (PVar "TokSymbol") [PString ";"]) (EVarType "True"),CaseAlt (PApp (PVar "_") []) (EVarType "False")])) Nothing]
@@ -676,16 +745,42 @@ Coverage: 85%
 << funDecl: next token=TokIdent "skipControlTokens"
 << funClause: next token=TokIdent "skipControlTokens"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "skipMany"
+<< parseSimpleClause: next token=TokIdent "skipMany"
 << expr dispatch: TokIdent "skipMany"
 >>*appExprCore: f= EVar "skipMany" args= []
->>*exprCore: rt EVar "skipMany"
+>>*exprCore2: rt EVar "skipMany"
+>>*exprCore: e EVar "skipMany"
 << exprNoLoop: e EVar "skipMany"
 << postfix: operator = Just "$"
 << postfix: operator = $
 << expr dispatch: TokIdent "satisfyToken"
+<< pConstrOrVar: next token "t"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
+<< lambdaExpr arg PApp (PVar "t") []
+<< pConstrOrVar: next token "t"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
+<< lambdaExpr arg PApp (PVar "t") []
+<< pConstrOrVar: next token "t"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
+<< lambdaExpr arg PApp (PVar "t") []
+<< pConstrOrVar: next token "t"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
+<< lambdaExpr arg PApp (PVar "t") []
+<< pConstrOrVar: next token "t"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
+<< lambdaExpr arg PApp (PVar "t") []
+<< pConstrOrVar: next token "t"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
+<< lambdaExpr arg PApp (PVar "t") []
 >>*appExprCore: f= EVar "satisfyToken" args= []
->>*exprCore: rt EVar "satisfyToken"
+>>*exprCore2: rt EVar "satisfyToken"
+>>*exprCore: e EVar "satisfyToken"
 << exprNoLoop: e EVar "satisfyToken"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -694,6 +789,7 @@ Coverage: 85%
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "$") (EVar "skipMany")) (EVar "satisfyToken")
+<< whereBlock: next token TokSymbol "("
 << funClauseWithName: next token=TokSymbol "("
 >>*funDecl name "skipControlTokens" clause1 FunClause [] Nothing (Just (EApp (EApp (EVar "$") (EVar "skipMany")) (EVar "satisfyToken"))) Nothing rest []
 >>*declBody: e DeclFunGroup "skipControlTokens" [FunClause [] Nothing (Just (EApp (EApp (EVar "$") (EVar "skipMany")) (EVar "satisfyToken"))) Nothing]

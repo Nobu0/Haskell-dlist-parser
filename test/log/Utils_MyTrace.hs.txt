@@ -50,6 +50,7 @@ Coverage: 100%
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 << importIdent: next token TokIdent "when"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "when"]}
@@ -65,10 +66,13 @@ Coverage: 100%
 << importDecl parser called
 << importDecl: TokTypeIdent "Debug"
 << importIdent: next token TokIdent "trace"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "traceIO"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "traceShowId"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Debug.Trace", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "trace",ImportVar "traceIO",ImportVar "traceShowId"]}
@@ -87,6 +91,7 @@ Coverage: 100%
 << importDecl parser called
 << importDecl: TokTypeIdent "System"
 << importIdent: next token TokIdent "unsafePerformIO"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "System.IO.Unsafe", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unsafePerformIO"]}
@@ -112,20 +117,25 @@ Coverage: 100%
 << funDecl: next token=TokIdent "traceEnabled"
 << funClause: next token=TokIdent "traceEnabled"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "unsafePerformIO"
+<< parseSimpleClause: next token=TokIdent "unsafePerformIO"
 << expr dispatch: TokIdent "unsafePerformIO"
 >>*appExprCore: f= EVar "newIORef" args= [EVarType "True"]
->>*exprCore: rt EApp (EVar "newIORef") (EVarType "True")
+>>*exprCore2: rt EApp (EVar "newIORef") (EVarType "True")
+>>*exprCore: e EApp (EVar "newIORef") (EVarType "True")
 >>*appExprCore: f= EVar "newIORef" args= [EVarType "True"]
->>*exprCore: rt EApp (EVar "newIORef") (EVarType "True")
+>>*exprCore2: rt EApp (EVar "newIORef") (EVarType "True")
+>>*exprCore: e EApp (EVar "newIORef") (EVarType "True")
 >>*appExprCore: f= EVar "newIORef" args= [EVarType "True"]
->>*exprCore: rt EApp (EVar "newIORef") (EVarType "True")
+>>*exprCore2: rt EApp (EVar "newIORef") (EVarType "True")
+>>*exprCore: e EApp (EVar "newIORef") (EVarType "True")
 >>*appExprCore: f= EVar "unsafePerformIO" args= [EApp (EVar "newIORef") (EVarType "True")]
->>*exprCore: rt EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True"))
+>>*exprCore2: rt EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True"))
+>>*exprCore: e EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True"))
 << exprNoLoop: e EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True"))
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True"))
+<< whereBlock: next token TokIdent "setTrace"
 << funClauseWithName: next token=TokIdent "setTrace"
 >>*funDecl name "traceEnabled" clause1 FunClause [] Nothing (Just (EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True")))) Nothing rest []
 >>*declBody: e DeclFunGroup "traceEnabled" [FunClause [] Nothing (Just (EApp (EVar "unsafePerformIO") (EApp (EVar "newIORef") (EVarType "True")))) Nothing]
@@ -152,16 +162,19 @@ Coverage: 100%
 << funDecl: next token=TokIdent "setTrace"
 << funClause: next token=TokIdent "setTrace"
 << pConstrOrVar: next token "b"
-<< pPattern: prased PVar "b"
+<< pPattern:
+    prased PVar "b"
 << funClause: args=[PVar "b"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "writeIORef"
+<< parseSimpleClause: next token=TokIdent "writeIORef"
 << expr dispatch: TokIdent "writeIORef"
 >>*appExprCore: f= EVar "writeIORef" args= [EVar "traceEnabled",EVar "b"]
->>*exprCore: rt EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b")
+>>*exprCore2: rt EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b")
+>>*exprCore: e EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b")
 << exprNoLoop: e EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b")
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b")
+<< whereBlock: next token TokIdent "myTrace"
 << funClauseWithName: next token=TokIdent "myTrace"
 >>*funDecl name "setTrace" clause1 FunClause [PVar "b"] Nothing (Just (EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b"))) Nothing rest []
 >>*declBody: e DeclFunGroup "setTrace" [FunClause [PVar "b"] Nothing (Just (EApp (EApp (EVar "writeIORef") (EVar "traceEnabled")) (EVar "b"))) Nothing]
@@ -188,31 +201,38 @@ Coverage: 100%
 << funDecl: next token=TokIdent "myTrace"
 << funClause: next token=TokIdent "myTrace"
 << pConstrOrVar: next token "msg"
-<< pPattern: prased PVar "msg"
+<< pPattern:
+    prased PVar "msg"
 << funClause: args=[PVar "msg"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokTypeIdent "Parser"
+<< parseSimpleClause: next token=TokTypeIdent "Parser"
 << expr dispatch: TokTypeIdent "Parser"
 >>*appExprCore: f= EVarType "Parser" args= []
->>*exprCore: rt EVarType "Parser"
+>>*exprCore2: rt EVarType "Parser"
+>>*exprCore: e EVarType "Parser"
 << exprNoLoop: e EVarType "Parser"
 << postfix: operator = Just "$"
 << postfix: operator = $
 << expr dispatch: TokSymbol "\\"
 << pConstrOrVar: next token "input"
-<< pattern: (pAs <|> makeCons)PApp (PVar "input") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "input") []
+<< lambdaExpr arg PApp (PVar "input") []
 << expr dispatch: TokIdent "unsafePerformIO"
 >>*appExprCore: f= EVar "unsafePerformIO" args= []
->>*exprCore: rt EVar "unsafePerformIO"
+>>*exprCore2: rt EVar "unsafePerformIO"
+>>*exprCore: e EVar "unsafePerformIO"
 << exprNoLoop: e EVar "unsafePerformIO"
 << postfix: operator = Just "$"
 << postfix: operator = $
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "enabled"
-<< pattern: (pAs <|> makeCons)PApp (PVar "enabled") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "enabled") []
 << expr dispatch: TokIdent "readIORef"
 >>*appExprCore: f= EVar "readIORef" args= [EVar "traceEnabled"]
->>*exprCore: rt EApp (EVar "readIORef") (EVar "traceEnabled")
+>>*exprCore2: rt EApp (EVar "readIORef") (EVar "traceEnabled")
+>>*exprCore: e EApp (EVar "readIORef") (EVar "traceEnabled")
 << exprNoLoop: e EApp (EVar "readIORef") (EVar "traceEnabled")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -224,17 +244,23 @@ Coverage: 100%
 << pConstrOrVar: next token "enabled"
 << pConstrOrVar: next token "putStrLn"
 << pConstrOrVar: next token "msg"
-<< pattern: (pAs <|> makeCons)PApp (PVar "putStrLn") [PVar "msg"]
-<< pattern: (pAs <|> makeCons)PApp (PVar "when") [PVar "enabled",PApp (PVar "putStrLn") [PVar "msg"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "putStrLn") [PVar "msg"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "when") [PVar "enabled",PApp (PVar "putStrLn") [PVar "msg"]]
 << expr dispatch: TokIdent "when"
 >>*appExprCore: f= EVar "putStrLn" args= [EVar "msg"]
->>*exprCore: rt EApp (EVar "putStrLn") (EVar "msg")
+>>*exprCore2: rt EApp (EVar "putStrLn") (EVar "msg")
+>>*exprCore: e EApp (EVar "putStrLn") (EVar "msg")
 >>*appExprCore: f= EVar "putStrLn" args= [EVar "msg"]
->>*exprCore: rt EApp (EVar "putStrLn") (EVar "msg")
+>>*exprCore2: rt EApp (EVar "putStrLn") (EVar "msg")
+>>*exprCore: e EApp (EVar "putStrLn") (EVar "msg")
 >>*appExprCore: f= EVar "putStrLn" args= [EVar "msg"]
->>*exprCore: rt EApp (EVar "putStrLn") (EVar "msg")
+>>*exprCore2: rt EApp (EVar "putStrLn") (EVar "msg")
+>>*exprCore: e EApp (EVar "putStrLn") (EVar "msg")
 >>*appExprCore: f= EVar "when" args= [EVar "enabled",EApp (EVar "putStrLn") (EVar "msg")]
->>*exprCore: rt EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))
+>>*exprCore2: rt EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))
+>>*exprCore: e EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))
 << exprNoLoop: e EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -243,30 +269,43 @@ Coverage: 100%
 >>*doStmt: rt ExprStmt (EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg")))
 << bindStmt
 << expr dispatch: TokKeyword "return"
+<< returnWithDollar
 >>*appExprCore: f= EUnit args= []
->>*exprCore: rt EUnit
+>>*exprCore2: rt EUnit
+>>*exprCore: e EUnit
 >>*appExprCore: f= EUnit args= []
->>*exprCore: rt EUnit
+>>*exprCore2: rt EUnit
+>>*exprCore: e EUnit
 >>*appExprCore: f= EVar "input" args= []
->>*exprCore: rt EVar "input"
+>>*exprCore2: rt EVar "input"
+>>*exprCore: e EVar "input"
 >>*appExprCore: f= EVarType "Just" args= [ETuple [EUnit,EVar "input"]]
->>*exprCore: rt EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
+>>*exprCore2: rt EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
+>>*exprCore: e EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
 >>*appExprCore: f= EUnit args= []
->>*exprCore: rt EUnit
+>>*exprCore2: rt EUnit
+>>*exprCore: e EUnit
 >>*appExprCore: f= EUnit args= []
->>*exprCore: rt EUnit
+>>*exprCore2: rt EUnit
+>>*exprCore: e EUnit
 >>*appExprCore: f= EVar "input" args= []
->>*exprCore: rt EVar "input"
+>>*exprCore2: rt EVar "input"
+>>*exprCore: e EVar "input"
 >>*appExprCore: f= EVarType "Just" args= [ETuple [EUnit,EVar "input"]]
->>*exprCore: rt EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
+>>*exprCore2: rt EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
+>>*exprCore: e EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
 >>*appExprCore: f= EUnit args= []
->>*exprCore: rt EUnit
+>>*exprCore2: rt EUnit
+>>*exprCore: e EUnit
 >>*appExprCore: f= EUnit args= []
->>*exprCore: rt EUnit
+>>*exprCore2: rt EUnit
+>>*exprCore: e EUnit
 >>*appExprCore: f= EVar "input" args= []
->>*exprCore: rt EVar "input"
+>>*exprCore2: rt EVar "input"
+>>*exprCore: e EVar "input"
 >>*appExprCore: f= EVarType "Just" args= [ETuple [EUnit,EVar "input"]]
->>*exprCore: rt EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
+>>*exprCore2: rt EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
+>>*exprCore: e EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
 >>*return atom: EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])
 << exprNoLoop: e EReturn (EApp (EVarType "Just") (ETuple [EUnit,EVar "input"]))
 << postfix: operator = Nothing
@@ -294,6 +333,7 @@ Coverage: 100%
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "$") (EVarType "Parser")) (ELam (PApp (PVar "input") []) (EApp (EApp (EVar "$") (EVar "unsafePerformIO")) (EDo [Bind (PApp (PVar "enabled") []) (EApp (EVar "readIORef") (EVar "traceEnabled")),ExprStmt (EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))),ExprStmt (EReturn (EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])))])))
+<< whereBlock: next token TokIdent "myTraceIO"
 << funClauseWithName: next token=TokIdent "myTraceIO"
 >>*funDecl name "myTrace" clause1 FunClause [PVar "msg"] Nothing (Just (EApp (EApp (EVar "$") (EVarType "Parser")) (ELam (PApp (PVar "input") []) (EApp (EApp (EVar "$") (EVar "unsafePerformIO")) (EDo [Bind (PApp (PVar "enabled") []) (EApp (EVar "readIORef") (EVar "traceEnabled")),ExprStmt (EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))),ExprStmt (EReturn (EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])))]))))) Nothing rest []
 >>*declBody: e DeclFunGroup "myTrace" [FunClause [PVar "msg"] Nothing (Just (EApp (EApp (EVar "$") (EVarType "Parser")) (ELam (PApp (PVar "input") []) (EApp (EApp (EVar "$") (EVar "unsafePerformIO")) (EDo [Bind (PApp (PVar "enabled") []) (EApp (EVar "readIORef") (EVar "traceEnabled")),ExprStmt (EApp (EApp (EVar "when") (EVar "enabled")) (EApp (EVar "putStrLn") (EVar "msg"))),ExprStmt (EReturn (EApp (EVarType "Just") (ETuple [EUnit,EVar "input"])))]))))) Nothing]
@@ -320,14 +360,16 @@ Coverage: 100%
 << funDecl: next token=TokIdent "myTraceIO"
 << funClause: next token=TokIdent "myTraceIO"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "traceIO"
+<< parseSimpleClause: next token=TokIdent "traceIO"
 << expr dispatch: TokIdent "traceIO"
 >>*appExprCore: f= EVar "traceIO" args= []
->>*exprCore: rt EVar "traceIO"
+>>*exprCore2: rt EVar "traceIO"
+>>*exprCore: e EVar "traceIO"
 << exprNoLoop: e EVar "traceIO"
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "traceIO"
+<< whereBlock: next token TokIdent "myTraceShowId"
 << funClauseWithName: next token=TokIdent "myTraceShowId"
 >>*funDecl name "myTraceIO" clause1 FunClause [] Nothing (Just (EVar "traceIO")) Nothing rest []
 >>*declBody: e DeclFunGroup "myTraceIO" [FunClause [] Nothing (Just (EVar "traceIO")) Nothing]
@@ -356,10 +398,11 @@ Coverage: 100%
 << funDecl: next token=TokIdent "myTraceShowId"
 << funClause: next token=TokIdent "myTraceShowId"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokIdent "traceShowId"
+<< parseSimpleClause: next token=TokIdent "traceShowId"
 << expr dispatch: TokIdent "traceShowId"
 >>*appExprCore: f= EVar "traceShowId" args= []
->>*exprCore: rt EVar "traceShowId"
+>>*exprCore2: rt EVar "traceShowId"
+>>*exprCore: e EVar "traceShowId"
 << exprNoLoop: e EVar "traceShowId"
 << postfix: operator = Nothing
 << expr: e EVar "traceShowId"

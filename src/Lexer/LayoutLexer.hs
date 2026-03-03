@@ -48,6 +48,10 @@ go stack depth (TokSymbol "(" : rest) =
   TokSymbol "(" : go stack (depth + 1) rest
 go stack depth (TokSymbol ")" : rest) =
   TokSymbol ")" : go stack (max 0 (depth - 1)) rest
+go stack depth (TokSymbol "[" : rest) =
+  TokSymbol "[" : go stack (depth + 1) rest
+go stack depth (TokSymbol "]" : rest) =
+  TokSymbol "]" : go stack (max 0 (depth - 1)) rest
 -- その他のトークン
 go stack depth (t : rest) =
   t : go stack depth rest

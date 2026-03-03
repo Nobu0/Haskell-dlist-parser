@@ -18,7 +18,7 @@ import Decl.DeclParser.Util
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Parser.Expr.ExprExtensions (expr, skipNewlines)
+import Parser.Expr.ExprExtensions -- (expr, exprCore, skipNewlines)
 import Parser.Expr.PatternParser (pPattern, pattern)
 import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
 import Utils.MyTrace
@@ -39,7 +39,7 @@ funDecl = do
   (name, clause1) <- funClause -- funDecl
   rest <- many (try (funClauseWithName name))
   -- optional (token TokVRBrace)
-  myTrace(">>*funDecl name "++ show name++" clause1 "++ show clause1++ " rest "++ show rest)
+  myTrace (">>*funDecl name " ++ show name ++ " clause1 " ++ show clause1 ++ " rest " ++ show rest)
   return (DeclFunGroup name (clause1 : rest))
 
 funClause :: Parser (Name, FunClause)
@@ -60,11 +60,11 @@ parseSimpleClause :: Name -> [Pattern] -> Parser (Name, FunClause)
 parseSimpleClause name args = do
   symbol "="
   t <- lookAhead anyToken
-  myTrace ("<< parseSimpleClause:2 next token=" ++ show t)
+  myTrace ("<< parseSimpleClause: next token=" ++ show t)
   bracesV $ do
-    skipSeparators
-    e <- expr
-    w <- optional (bracesV (whereBlock))
+    -- skipSeparators
+    e <- expr <|> exprCore
+    w <- optional whereBlock
     return (name, mkSimpleClause args e w)
 
 parseGuardedClause :: Name -> [Pattern] -> Parser (Name, FunClause)
@@ -118,6 +118,8 @@ funClauseWithName name = try $ do
 
 whereBlock :: Parser [Decl]
 whereBlock = do
+  t <- lookAhead anyToken
+  myTrace ("<< whereBlock: next token " ++ show t)
   bracesV $ do
     keyword "where"
     skipSeparators

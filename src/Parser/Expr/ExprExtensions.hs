@@ -3,8 +3,7 @@
 module Parser.Expr.ExprExtensions
   ( expr,
     exprTop,
-    -- exprSeq,
-    -- exprSep,
+    exprCore,
     letExpr,
     ifExpr,
     returnExpr,
@@ -32,7 +31,7 @@ import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.CaseParserCore (caseExprCore, lambdaCaseExpr)
 import Parser.Expr.DoParserCore (doExprCore)
-import Parser.Expr.ExprCore -- (atomCore, exprCore)
+import Parser.Expr.ExprCore (atomCore, exprCore, exprCoreNoBraces)
 import Parser.Expr.ListParserCore (listExprCore)
 import Parser.Expr.PatternParser (pPattern, pattern)
 import Parser.SQL.SQLParser
@@ -156,7 +155,9 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
-    TokVRBrace -> skipVNlExpr -- bracesv expr
+    -- TokSymbol "(" -> parens expr -- NoLoop
+    -- TokVRBrace -> skipVNlExpr -- bracesv expr
+    -- TokVLBrace -> bracesv expr
     TokSymbol "\\" -> lambdaExpr
     -- TokVNl -> skipVNlExpr
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
@@ -190,6 +191,7 @@ lambdaExpr :: Parser Expr
 lambdaExpr = do
   symbol "\\"
   arg <- pattern
+  myTrace ("<< lambdaExpr arg " ++ show arg)
   tokenIs (\case TokArrow -> Just (); _ -> Nothing)
   bracesV $ do
     body <- expr
@@ -197,13 +199,18 @@ lambdaExpr = do
 
 ifExpr :: Parser Expr
 ifExpr = do
+  myTrace ("<< ifExpr")
   keyword "if"
-  cond <- expr -- NoLoop
+  cond <- exprCoreNoBraces -- expr -- NoLoop
+  t <- lookAhead anyToken
+  myTrace ("<< ifExpr cond " ++ show cond ++ " t " ++ show t)
   bracesV $ do
     keyword "then"
     th <- expr -- NoLoop
+    myTrace ("<< ifExpr th " ++ show th)
     keyword "else"
     el <- expr -- NoLoop
+    myTrace ("<< ifExpr el " ++ show el)
     return (EIf cond th el)
 
 returnExpr :: Parser Expr
@@ -213,6 +220,7 @@ returnExpr =
 -- return $ expr
 returnWithDollar :: Parser Expr
 returnWithDollar = do
+  myTrace ("<< returnWithDollar")
   keyword "return"
   token (TokOperator "$")
   e <- expr
@@ -232,9 +240,9 @@ forExpr = do
   keyword "for"
   qs <- sepBy1 qualifier (symbol ",")
   token TokArrow
-  -- bracesV $ do
-  body <- expr -- NoLoop
-  return (EListComp body qs)
+  bracesV $ do
+    body <- expr -- NoLoop
+    return (EListComp body qs)
 
 qualifier :: Parser Qualifier
 qualifier =
@@ -290,7 +298,7 @@ letExpr = try $ do
   -- skipNewlines
   -- binds <- manyTill binding (lookAhead (token TokVLBrace))
   t <- lookAhead anyToken
-  myTrace ("<< letExpr: next token " ++ show t)
+  myTrace ("<< letExpr: next token " ++ show t++ " binds "++show binds)
   case t of
     TokVRBrace -> do
       token TokVLBrace

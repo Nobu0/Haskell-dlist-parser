@@ -19,6 +19,10 @@ find src -type f -name "*.hs" | while read file; do
   echo ""
 done
 head $outdir/*.hs.txt > $outdir/../all_result.txt
+diff $outdir/../all_result.txt $outdir/../all_result_org.txt
+
+cabal run dlist > test/dlist_tmp.txt
+diff test/dlist_log.txt test/dlist_tmp.txt
 exit
 
 
@@ -30,4 +34,5 @@ find src -type f -name "*.hs" | while read file; do
   echo "=== Running: $file ==="
   cabal run myapp -- "$file" > test/log/$file.txt
   echo ""
+
 done

@@ -7,6 +7,7 @@ module Parser.Core.TokenParser
     symbol,
     tokenIs,
     parens,
+    parensOpt,
     brackets,
     braces,
     bracesv,
@@ -82,12 +83,25 @@ bracesB p = try (braces p) <|> p
 bracesN :: Parser a -> Parser a
 bracesN p = p
 
+{-}
 -- 仮想括弧
 bracesV :: Parser a -> Parser a
 bracesV p = do
   mtok <- optional (lookAhead anyToken)
   case mtok of
     Just TokVLBrace -> bracesv p
+    Just (TokSymbol "{") -> braces p
+    _ -> p
+-}
+bracesV :: Parser b -> Parser b
+bracesV p = do
+  mtok <- optional (lookAhead anyToken)
+  case mtok of
+    Just TokVLBrace -> do
+      token TokVLBrace
+      x <- p
+      token TokVRBrace
+      return x
     Just (TokSymbol "{") -> braces p
     _ -> p
 
@@ -103,6 +117,13 @@ parens p = do
   x <- p
   symbol ")"
   return x
+
+parensOpt :: Parser a -> Parser a
+parensOpt p = do
+  mtok <- optional (lookAhead anyToken)
+  case mtok of
+    Just (TokSymbol "(") -> parens p
+    _ -> p
 
 brackets :: Parser a -> Parser a
 brackets p = between (symbol "[") (symbol "]") p
@@ -275,6 +296,7 @@ parseBinOp s = case s of
   -- モナディック操作など（必要に応じて）
   "*>" -> Just BinOpThen
   "<*" -> Just BinOpThen
+  "<?>" -> Just BinOpThen
   "<$" -> Just BinOpThen
   "<*>" -> Just BinOpThen
   ">>" -> Just BinOpThen
@@ -314,7 +336,7 @@ operatorI = satisfyToken isOp
       | otherwise = Nothing
     isOp _ = Nothing
 
-    allowed = ["::", ":", "++", "<$>", "$", "\\", "<*>", ">>=", "<|>"] -- "$" を含めない！
+    allowed = ["::", ":", "++", "<$>", "$", "\\", "<*>", ">>=", "<|>", "<?>"] -- "$" を含めない！
 
 operatorAll :: Parser String
 operatorAll = satisfyToken f

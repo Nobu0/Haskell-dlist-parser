@@ -66,17 +66,16 @@ importIdent = do
     try identI
       <|> operatorEdName
       <|> operatorIAsName
-  m <-
-    optional $
-      parensI $
-        (ImportTypeAll name <$ symbol "..")
-          <|> ImportTypeSome name
-            <$> getNameList
+  m <- optional $ importType name
   optional (symbol ",")
   myTrace ("<< importIdent: m " ++ show m)
   return $ case m of
     Just x -> x
     Nothing -> ImportVar name
+
+importType :: String -> Parser ImportItem
+importType name =
+  parensI (ImportTypeAll name <$ symbol "..") <|> (ImportTypeSome name <$> getNameList)
 
 getNameList :: Parser [String]
 getNameList = do

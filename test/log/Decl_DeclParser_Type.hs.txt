@@ -81,14 +81,19 @@ Coverage: 36%
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 << importIdent: next token TokIdent "empty"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "many"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "optional"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokIdent "some"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
 << importIdent: next token TokSymbol "("
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(())"]}
@@ -98,6 +103,7 @@ Coverage: 36%
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 << importIdent: next token TokIdent "isUpper"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]}
@@ -107,6 +113,7 @@ Coverage: 36%
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 << importIdent: next token TokIdent "intercalate"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]}
@@ -116,6 +123,7 @@ Coverage: 36%
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 << importIdent: next token TokIdent "keys"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Data.Map", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "keys"]}
@@ -180,14 +188,16 @@ Coverage: 36%
 << funDecl: next token=TokIdent "typeSigDecl"
 << funClause: next token=TokIdent "typeSigDecl"
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokKeyword "do"
+<< parseSimpleClause: next token=TokKeyword "do"
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "t"
-<< pattern: (pAs <|> makeCons)PApp (PVar "t") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
 << expr dispatch: TokIdent "lookAhead"
 >>*appExprCore: f= EVar "lookAhead" args= [EVar "anyToken"]
->>*exprCore: rt EApp (EVar "lookAhead") (EVar "anyToken")
+>>*exprCore2: rt EApp (EVar "lookAhead") (EVar "anyToken")
+>>*exprCore: e EApp (EVar "lookAhead") (EVar "anyToken")
 << exprNoLoop: e EApp (EVar "lookAhead") (EVar "anyToken")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -199,20 +209,26 @@ Coverage: 36%
 << pConstrOrVar: next token "++"
 << pConstrOrVar: next token "show"
 << pConstrOrVar: next token "t"
-<< pattern: (pAs <|> makeCons)PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]
-<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]]
 << expr dispatch: TokIdent "myTrace"
 >>*appExprCore: f= EString "<< typeSigDecl: " args= []
 >>*appExprCore: f= EVar "show" args= [EVar "t"]
->>*exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore2: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore: e EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
 >>*appExprCore: f= EString "<< typeSigDecl: " args= []
 >>*appExprCore: f= EVar "show" args= [EVar "t"]
->>*exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore2: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore: e EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
 >>*appExprCore: f= EString "<< typeSigDecl: " args= []
 >>*appExprCore: f= EVar "show" args= [EVar "t"]
->>*exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore2: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore: e EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
 >>*appExprCore: f= EVar "myTrace" args= [EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))]
->>*exprCore: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*exprCore2: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*exprCore: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
 << exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -221,14 +237,15 @@ Coverage: 36%
 >>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))))
 << bindStmt
 << pConstrOrVar: next token "name"
-<< pattern: (pAs <|> makeCons)PApp (PVar "name") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "name") []
 << expr dispatch: TokVLBrace
 >>*appExprCore: f= EVar "try" args= [EVar "ident"]
->>*exprCore: rt EApp (EVar "try") (EVar "ident")
->>*appExprCore: f= EVar "try" args= [EVar "ident"]
+>>*exprCore2: rt EApp (EVar "try") (EVar "ident")
 << expr dispatch: TokIdent "name"
 >>*appExprCore: f= EVar "name" args= []
->>*exprCore: rt EVar "name"
+>>*exprCore2: rt EVar "name"
+>>*exprCore: e EVar "name"
 << exprNoLoop: e EVar "name"
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -243,14 +260,17 @@ Coverage: 36%
 << typeSigDecl:2 TokSymbol "="
 << valueDecl: TokIdent "typeSigDecl"
 << pConstrOrVar: next token "typeSigDecl"
-<< pattern: (pAs <|> makeCons)PApp (PVar "typeSigDecl") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "typeSigDecl") []
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "t"
-<< pattern: (pAs <|> makeCons)PApp (PVar "t") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") []
 << expr dispatch: TokIdent "lookAhead"
 >>*appExprCore: f= EVar "lookAhead" args= [EVar "anyToken"]
->>*exprCore: rt EApp (EVar "lookAhead") (EVar "anyToken")
+>>*exprCore2: rt EApp (EVar "lookAhead") (EVar "anyToken")
+>>*exprCore: e EApp (EVar "lookAhead") (EVar "anyToken")
 << exprNoLoop: e EApp (EVar "lookAhead") (EVar "anyToken")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -262,20 +282,26 @@ Coverage: 36%
 << pConstrOrVar: next token "++"
 << pConstrOrVar: next token "show"
 << pConstrOrVar: next token "t"
-<< pattern: (pAs <|> makeCons)PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]
-<< pattern: (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]]
+<< pattern:
+    (pAs <|> makeCons)PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< typeSigDecl: ") [PConstr "++" [],PVar "show",PVar "t"]]
 << expr dispatch: TokIdent "myTrace"
 >>*appExprCore: f= EString "<< typeSigDecl: " args= []
 >>*appExprCore: f= EVar "show" args= [EVar "t"]
->>*exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore2: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore: e EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
 >>*appExprCore: f= EString "<< typeSigDecl: " args= []
 >>*appExprCore: f= EVar "show" args= [EVar "t"]
->>*exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore2: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore: e EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
 >>*appExprCore: f= EString "<< typeSigDecl: " args= []
 >>*appExprCore: f= EVar "show" args= [EVar "t"]
->>*exprCore: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore2: rt EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
+>>*exprCore: e EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))
 >>*appExprCore: f= EVar "myTrace" args= [EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))]
->>*exprCore: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*exprCore2: rt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
+>>*exprCore: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
 << exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t")))
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -284,14 +310,15 @@ Coverage: 36%
 >>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< typeSigDecl: ") (EApp (EVar "show") (EVar "t"))))
 << bindStmt
 << pConstrOrVar: next token "name"
-<< pattern: (pAs <|> makeCons)PApp (PVar "name") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "name") []
 << expr dispatch: TokVLBrace
 >>*appExprCore: f= EVar "try" args= [EVar "ident"]
->>*exprCore: rt EApp (EVar "try") (EVar "ident")
->>*appExprCore: f= EVar "try" args= [EVar "ident"]
+>>*exprCore2: rt EApp (EVar "try") (EVar "ident")
 << expr dispatch: TokIdent "name"
 >>*appExprCore: f= EVar "name" args= []
->>*exprCore: rt EVar "name"
+>>*exprCore2: rt EVar "name"
+>>*exprCore: e EVar "name"
 << exprNoLoop: e EVar "name"
 << postfix: operator = Nothing
 >> infixOp: out 

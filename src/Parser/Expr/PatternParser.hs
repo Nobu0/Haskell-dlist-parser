@@ -28,7 +28,7 @@ import Utils.MyTrace (myTrace)
 pattern :: Parser Pattern
 pattern = do
   p <- pAs <|> makeCons
-  myTrace ("<< pattern: (pAs <|> makeCons)" ++ show p)
+  myTrace ("<< pattern:\n    (pAs <|> makeCons)" ++ show p)
   -- stopPattern
   return p
 
@@ -83,6 +83,7 @@ pAtom = do
     TokKeyword _ -> empty -- ★ キーワードはパターンにならない
     _ -> pure ()
   pAs
+    <|> pEmptyList
     <|> pList
     <|> pParenOrTuple
     <|> pConstrOrVar
@@ -94,7 +95,7 @@ pAtom = do
 pPattern :: Parser Pattern
 pPattern = do
   pat <- pInfix
-  myTrace ("<< pPattern: prased " ++ show pat)
+  myTrace ("<< pPattern:\n    prased " ++ show pat)
   return pat
 
 pInfix :: Parser Pattern
@@ -110,15 +111,6 @@ pAs = do
   symbol "@"
   pat <- pAtom
   return (PAs name pat)
-
-pConstrOrVar :: Parser Pattern
-pConstrOrVar = do
-  name <- try identI <|> try (parens operatorIAsName) <|> operatorI
-  myTrace ("<< pConstrOrVar: next token " ++ show name)
-  return $
-    if isSymbolName name
-      then PConstr name []
-      else PVar name
 
 patternVar :: Parser Pattern
 patternVar = tokenIs $ \case
@@ -151,13 +143,27 @@ isIdentOnly _ = False
 
 pParenOrTuple :: Parser Pattern
 pParenOrTuple = parens $ do
+  -- pats <- tupleCore
   pats <- pattern `sepBy1` symbol ","
   return $ case pats of
     [single] -> single
     _ -> PTuple pats
 
+tupleCore :: Parser Pattern
+tupleCore = do
+  -- e1 <- pattern
+  -- optional $ symbol ","
+  es <- pattern `sepBy1` symbol ","
+  return (PTuple es) -- (e1 : es))
+
 pList :: Parser Pattern
 pList = PList <$> brackets (pattern `sepBy` symbol ",")
+
+pEmptyList :: Parser Pattern
+pEmptyList = do
+  symbol "["
+  symbol "]"
+  return (PConstr "[]" [])
 
 pWildcard :: Parser Pattern
 pWildcard = symbol "_" >> return PWildcard
@@ -172,3 +178,12 @@ pChar = do
 
 pString :: Parser Pattern
 pString = PString <$> stringLiteralExpr
+
+pConstrOrVar :: Parser Pattern
+pConstrOrVar = do
+  name <- try identI <|> try (parens operatorIAsName) <|> operatorI
+  myTrace ("<< pConstrOrVar: next token " ++ show name)
+  return $
+    if isSymbolName name
+      then PConstr name []
+      else PVar name

@@ -48,6 +48,7 @@ Coverage: 100%
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 << importIdent: next token TokIdent "foldM"
+<< getNameList: next token TokSymbol ")"
 << importIdent: m Nothing
 << importIdent: next token TokSymbol ")"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM"]}
@@ -110,29 +111,39 @@ Coverage: 100%
 << funDecl: next token=TokIdent "inferSQL"
 << funClause: next token=TokIdent "inferSQL"
 << pConstrOrVar: next token "inferExprFn"
-<< pPattern: prased PVar "inferExprFn"
+<< pPattern:
+    prased PVar "inferExprFn"
 << pConstrOrVar: next token "env"
-<< pPattern: prased PVar "env"
+<< pPattern:
+    prased PVar "env"
 << pConstrOrVar: next token "params"
-<< pPattern: prased PVar "params"
+<< pPattern:
+    prased PVar "params"
 << funClause: args=[PVar "inferExprFn",PVar "env",PVar "params"] t = TokSymbol "="
-<< parseSimpleClause:2 next token=TokKeyword "do"
+<< parseSimpleClause: next token=TokKeyword "do"
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "s"
-<< pattern: (pAs <|> makeCons)PApp (PVar "s") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "s") []
 << pConstrOrVar: next token "_"
-<< pattern: (pAs <|> makeCons)PApp (PVar "_") []
-<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "s") [],PApp (PVar "_") []]) []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PTuple [PApp (PVar "s") [],PApp (PVar "_") []]) []
 << expr dispatch: TokIdent "foldM"
 >>*appExprCore: f= EVar "emptySubst" args= []
->>*exprCore: rt EVar "emptySubst"
+>>*exprCore2: rt EVar "emptySubst"
+>>*exprCore: e EVar "emptySubst"
 >>*appExprCore: f= EVar "emptySubst" args= []
->>*exprCore: rt EVar "emptySubst"
+>>*exprCore2: rt EVar "emptySubst"
+>>*exprCore: e EVar "emptySubst"
 >>*appExprCore: f= EVar "env" args= []
->>*exprCore: rt EVar "env"
+>>*exprCore2: rt EVar "env"
+>>*exprCore: e EVar "env"
 >>*appExprCore: f= EVar "foldM" args= [EVar "step",ETuple [EVar "emptySubst",EVar "env"],EVar "params"]
->>*exprCore: rt EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "emptySubst",EVar "env"])) (EVar "params")
+>>*exprCore2: rt EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "emptySubst",EVar "env"])) (EVar "params")
+>>*exprCore: e EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "emptySubst",EVar "env"])) (EVar "params")
 << exprNoLoop: e EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "emptySubst",EVar "env"])) (EVar "params")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -141,34 +152,45 @@ Coverage: 100%
 >>*doStmt: rt Bind (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "_") []]) []) (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "emptySubst",EVar "env"])) (EVar "params"))
 << bindStmt
 << expr dispatch: TokKeyword "return"
+<< returnWithDollar
 >>*appExprCore: f= EVar "s" args= []
->>*exprCore: rt EVar "s"
+>>*exprCore2: rt EVar "s"
+>>*exprCore: e EVar "s"
 >>*appExprCore: f= EVar "s" args= []
->>*exprCore: rt EVar "s"
+>>*exprCore2: rt EVar "s"
+>>*exprCore: e EVar "s"
 >>*appExprCore: f= EVarType "TUnit" args= []
->>*exprCore: rt EVarType "TUnit"
+>>*exprCore2: rt EVarType "TUnit"
+>>*exprCore: e EVarType "TUnit"
 >>*return atom: ETuple [EVar "s",EVarType "TUnit"]
 << exprNoLoop: e EReturn (ETuple [EVar "s",EVarType "TUnit"])
 << postfix: operator = Nothing
 << binding: next token TokIdent "step"
 << pConstrOrVar: next token "step"
 << pConstrOrVar: next token "sAcc"
-<< pattern: (pAs <|> makeCons)PApp (PVar "sAcc") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "sAcc") []
 << pConstrOrVar: next token "envAcc"
-<< pattern: (pAs <|> makeCons)PApp (PVar "envAcc") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "envAcc") []
 << pConstrOrVar: next token "param"
-<< pattern: (pAs <|> makeCons)PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "envAcc") []],PVar "param"]
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "envAcc") []],PVar "param"]
 << valueBinding: pat PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "envAcc") []],PVar "param"]
 << expr dispatch: TokKeyword "do"
 << bindStmt
 << pConstrOrVar: next token "sParam"
-<< pattern: (pAs <|> makeCons)PApp (PVar "sParam") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "sParam") []
 << pConstrOrVar: next token "_"
-<< pattern: (pAs <|> makeCons)PApp (PVar "_") []
-<< pattern: (pAs <|> makeCons)PApp (PTuple [PApp (PVar "sParam") [],PApp (PVar "_") []]) []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PTuple [PApp (PVar "sParam") [],PApp (PVar "_") []]) []
 << expr dispatch: TokIdent "inferExprFn"
 >>*appExprCore: f= EVar "inferExprFn" args= [EVar "envAcc",EVar "param"]
->>*exprCore: rt EApp (EApp (EVar "inferExprFn") (EVar "envAcc")) (EVar "param")
+>>*exprCore2: rt EApp (EApp (EVar "inferExprFn") (EVar "envAcc")) (EVar "param")
+>>*exprCore: e EApp (EApp (EVar "inferExprFn") (EVar "envAcc")) (EVar "param")
 << exprNoLoop: e EApp (EApp (EVar "inferExprFn") (EVar "envAcc")) (EVar "param")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -178,10 +200,12 @@ Coverage: 100%
 << bindStmt
 << letStmt
 << pConstrOrVar: next token "sNew"
-<< pattern: (pAs <|> makeCons)PApp (PVar "sNew") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "sNew") []
 << expr dispatch: TokIdent "sParam"
 >>*appExprCore: f= EVar "sParam" args= [EVar "`composeSubst`",EVar "sAcc"]
->>*exprCore: rt EApp (EApp (EVar "sParam") (EVar "`composeSubst`")) (EVar "sAcc")
+>>*exprCore2: rt EApp (EApp (EVar "sParam") (EVar "`composeSubst`")) (EVar "sAcc")
+>>*exprCore: e EApp (EApp (EVar "sParam") (EVar "`composeSubst`")) (EVar "sAcc")
 << exprNoLoop: e EApp (EApp (EVar "sParam") (EVar "`composeSubst`")) (EVar "sAcc")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -191,10 +215,12 @@ Coverage: 100%
 << bindStmt
 << letStmt
 << pConstrOrVar: next token "envNew"
-<< pattern: (pAs <|> makeCons)PApp (PVar "envNew") []
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "envNew") []
 << expr dispatch: TokIdent "applyEnv"
 >>*appExprCore: f= EVar "applyEnv" args= [EVar "sNew",EVar "envAcc"]
->>*exprCore: rt EApp (EApp (EVar "applyEnv") (EVar "sNew")) (EVar "envAcc")
+>>*exprCore2: rt EApp (EApp (EVar "applyEnv") (EVar "sNew")) (EVar "envAcc")
+>>*exprCore: e EApp (EApp (EVar "applyEnv") (EVar "sNew")) (EVar "envAcc")
 << exprNoLoop: e EApp (EApp (EVar "applyEnv") (EVar "sNew")) (EVar "envAcc")
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -203,12 +229,16 @@ Coverage: 100%
 >>*doStmt: rt LetStmt [(PApp (PVar "envNew") [],EApp (EApp (EVar "applyEnv") (EVar "sNew")) (EVar "envAcc"))]
 << bindStmt
 << expr dispatch: TokKeyword "return"
+<< returnWithDollar
 >>*appExprCore: f= EVar "sNew" args= []
->>*exprCore: rt EVar "sNew"
+>>*exprCore2: rt EVar "sNew"
+>>*exprCore: e EVar "sNew"
 >>*appExprCore: f= EVar "sNew" args= []
->>*exprCore: rt EVar "sNew"
+>>*exprCore2: rt EVar "sNew"
+>>*exprCore: e EVar "sNew"
 >>*appExprCore: f= EVar "envNew" args= []
->>*exprCore: rt EVar "envNew"
+>>*exprCore2: rt EVar "envNew"
+>>*exprCore: e EVar "envNew"
 >>*return atom: ETuple [EVar "sNew",EVar "envNew"]
 << exprNoLoop: e EReturn (ETuple [EVar "sNew",EVar "envNew"])
 << postfix: operator = Nothing
