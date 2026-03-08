@@ -105,6 +105,9 @@ slexer = go
     go ('<' : '-' : rest) = TokSymbol "<-" : go rest
     go ('.' : '.' : '.' : rest) = TokEllipsis : go rest
     go ('.' : '.' : rest) = TokSymbol ".." : go rest
+    go ('&' : '&' : rest) = TokOperator "&&" : go rest
+    go ('|' : '|' : rest) = TokOperator "||" : go rest
+    go ('`' : rest) = TokSymbol "`" : go rest
     go ('.' : rest) = TokOperator "." : go rest
     go (':' : rest) = TokOperator ":" : go rest
     go ('$' : rest) = TokOperator "$" : go rest
@@ -133,11 +136,11 @@ slexer = go
 
     -- isIdentChar x = isAlphaNum x || x == '_' || x == '\''
     -- isIdentChar c = isLetter c || isDigit c || c == '_' || c == '\'' || c == '`'
-    isIdentStart c = isLetter c || c == '_' || c == '`'
+    isIdentStart c = isLetter c || c == '_' --  || c == '`'
     isIdentChar c = isIdentStart c || isDigit c || c == '\''
 
     -- isSymbolChar x = x `elem` "=(){}[]:;,+-*/<>|&."
-    isSymbolChar x = x `elem` "=(){}[]:;,\\'`_|@&"
+    isSymbolChar x = x `elem` "=(){}[]:;,\\'_|@&"
 
     classifyIdent "sql" = TokKeyword "sql"
     classifyIdent "do" = TokKeyword "do"

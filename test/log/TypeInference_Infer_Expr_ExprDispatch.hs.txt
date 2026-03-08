@@ -213,28 +213,16 @@ Coverage: 100%
 << parseSimpleClause: next token=TokVLBrace
 << expr dispatch: TokKeyword "case"
 << caseExprCore:
->>*appExprCore: f= EVar "lookupEnv" args= [EVar "env",EVar "name"]
->>*exprCore2: rt EApp (EApp (EVar "lookupEnv") (EVar "env")) (EVar "name")
 << pConstrOrVar: next token "Nothing"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "Nothing") []
 << caseAlt: pat PApp (PVar "Nothing") []
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "Left"
->>*appExprCore: f= EVarType "InferUnboundVariable" args= [EVar "name"]
->>*exprCore2: rt EApp (EVarType "InferUnboundVariable") (EVar "name")
->>*exprCore: e EApp (EVarType "InferUnboundVariable") (EVar "name")
->>*appExprCore: f= EVarType "InferUnboundVariable" args= [EVar "name"]
->>*exprCore2: rt EApp (EVarType "InferUnboundVariable") (EVar "name")
->>*exprCore: e EApp (EVarType "InferUnboundVariable") (EVar "name")
->>*appExprCore: f= EVarType "InferUnboundVariable" args= [EVar "name"]
->>*exprCore2: rt EApp (EVarType "InferUnboundVariable") (EVar "name")
->>*exprCore: e EApp (EVarType "InferUnboundVariable") (EVar "name")
->>*appExprCore: f= EVarType "Left" args= [EApp (EVarType "InferUnboundVariable") (EVar "name")]
->>*exprCore2: rt EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))
->>*exprCore: e EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))
 >>*caseAlt: pat PApp (PVar "Nothing") [] body EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))
@@ -250,11 +238,10 @@ Coverage: 100%
 << pattern:
     (pAs <|> makeCons)PApp (PVar "t") []
 << expr dispatch: TokIdent "instantiate"
->>*appExprCore: f= EVar "instantiate" args= [EVar "sigma"]
->>*exprCore2: rt EApp (EVar "instantiate") (EVar "sigma")
->>*exprCore: e EApp (EVar "instantiate") (EVar "sigma")
 << exprNoLoop: e EApp (EVar "instantiate") (EVar "sigma")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EVar "instantiate") (EVar "sigma")
 >> infixOp: out 
 << expr: e EApp (EVar "instantiate") (EVar "sigma")
 >>*bindStmt pat= PApp (PVar "t") [] e= EApp (EVar "instantiate") (EVar "sigma")
@@ -270,20 +257,10 @@ Coverage: 100%
 << pattern:
     (pAs <|> makeCons)PApp (PVar "Right") [PTuple [PApp (PVar "emptySubst") [],PApp (PVar "t") []]]
 << expr dispatch: TokTypeIdent "Right"
->>*appExprCore: f= EVar "emptySubst" args= []
->>*exprCore2: rt EVar "emptySubst"
->>*exprCore: e EVar "emptySubst"
->>*appExprCore: f= EVar "emptySubst" args= []
->>*exprCore2: rt EVar "emptySubst"
->>*exprCore: e EVar "emptySubst"
->>*appExprCore: f= EVar "t" args= []
->>*exprCore2: rt EVar "t"
->>*exprCore: e EVar "t"
->>*appExprCore: f= EVarType "Right" args= [ETuple [EVar "emptySubst",EVar "t"]]
->>*exprCore2: rt EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"])
->>*exprCore: e EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"])
 << exprNoLoop: e EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"])
+<< expr dispatch: TokVRBrace
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"])
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"])
 >>*exprStmt EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"])
@@ -293,14 +270,18 @@ Coverage: 100%
 >>*doBlock: (f:m)[Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))]
 >>*doExprCore: stmts [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))]
 << exprNoLoop: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))]
+<< expr dispatch: TokVRBrace
 << postfix: operator = Nothing
+<< infixExpr: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))]
 >> infixOp: out 
 << expr: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))]
 >>*caseAlt: pat PApp (PVar "Just") [PVar "sigma"] body EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))]
 >>*caseAltBlock: xs [CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])]
 >>*caseExprCore: alts [CaseAlt (PApp (PVar "Nothing") []) (EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))),CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])]
 << exprNoLoop: e ECase (EApp (EApp (EVar "lookupEnv") (EVar "env")) (EVar "name")) [CaseAlt (PApp (PVar "Nothing") []) (EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))),CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])]
+<< expr dispatch: TokVRBrace
 << postfix: operator = Nothing
+<< infixExpr: e ECase (EApp (EApp (EVar "lookupEnv") (EVar "env")) (EVar "name")) [CaseAlt (PApp (PVar "Nothing") []) (EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))),CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])]
 >> infixOp: out 
 << expr: e ECase (EApp (EApp (EVar "lookupEnv") (EVar "env")) (EVar "name")) [CaseAlt (PApp (PVar "Nothing") []) (EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))),CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])]
 << whereBlock: next token TokVRBrace
@@ -311,8 +292,6 @@ Coverage: 100%
     (pAs <|> makeCons)PApp (PVar "env") [PVar "expr"]
 << expr dispatch: TokKeyword "case"
 << caseExprCore:
->>*appExprCore: f= EVar "expr" args= []
->>*exprCore2: rt EVar "expr"
 << pConstrOrVar: next token "ELet"
 << pConstrOrVar: next token "pat"
 << pConstrOrVar: next token "e1"
@@ -322,11 +301,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferLet"
->>*appExprCore: f= EVar "inferLet" args= [EVar "inferExpr",EVar "env",EVar "pat",EVar "e1",EVar "e2"]
->>*exprCore2: rt EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")
->>*exprCore: e EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")
 << exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")
 >>*caseAlt: pat PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"] body EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")
@@ -338,11 +316,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferLetBlock"
->>*appExprCore: f= EVar "inferLetBlock" args= [EVar "inferExpr",EVar "env",EVar "binds",EVar "body"]
->>*exprCore2: rt EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")
->>*exprCore: e EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")
 << exprNoLoop: e EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")
 >>*caseAlt: pat PApp (PVar "ELetBlock") [PVar "binds",PVar "body"] body EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")
@@ -354,11 +331,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EWhere") [PVar "e",PVar "binds"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferWhere"
->>*appExprCore: f= EVar "inferWhere" args= [EVar "inferExpr",EVar "env",EVar "e",EVar "binds"]
->>*exprCore2: rt EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")
->>*exprCore: e EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")
 << exprNoLoop: e EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")
 >>*caseAlt: pat PApp (PVar "EWhere") [PVar "e",PVar "binds"] body EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")
@@ -371,11 +347,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferIf"
->>*appExprCore: f= EVar "inferIf" args= [EVar "inferExpr",EVar "env",EVar "c",EVar "t",EVar "f"]
->>*exprCore2: rt EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")
->>*exprCore: e EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")
 << exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")
 >>*caseAlt: pat PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"] body EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")
@@ -386,11 +361,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EDo") [PVar "stmts"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferDo"
->>*appExprCore: f= EVar "inferDo" args= [EVar "inferExpr",EVar "env",EVar "stmts"]
->>*exprCore2: rt EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")
->>*exprCore: e EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")
 << exprNoLoop: e EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")
 >>*caseAlt: pat PApp (PVar "EDo") [PVar "stmts"] body EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")
@@ -402,11 +376,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "ECase") [PVar "scrut",PVar "alts"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferCase"
->>*appExprCore: f= EVar "inferCase" args= [EVar "inferExpr",EVar "env",EVar "scrut",EVar "alts"]
->>*exprCore2: rt EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")
->>*exprCore: e EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")
 << exprNoLoop: e EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")
 >>*caseAlt: pat PApp (PVar "ECase") [PVar "scrut",PVar "alts"] body EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")
@@ -418,11 +391,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EApp") [PVar "e1",PVar "e2"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferApp"
->>*appExprCore: f= EVar "inferApp" args= [EVar "inferExpr",EVar "env",EVar "e1",EVar "e2"]
->>*exprCore2: rt EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")
->>*exprCore: e EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")
 << exprNoLoop: e EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")
 >>*caseAlt: pat PApp (PVar "EApp") [PVar "e1",PVar "e2"] body EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")
@@ -435,11 +407,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferBinOp"
->>*appExprCore: f= EVar "inferBinOp" args= [EVar "inferExpr",EVar "env",EVar "op",EVar "e1",EVar "e2"]
->>*exprCore2: rt EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")
->>*exprCore: e EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")
 << exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")
 >>*caseAlt: pat PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"] body EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")
@@ -450,11 +421,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EInt") [PVar "_"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferInt"
->>*appExprCore: f= EVar "inferInt" args= []
->>*exprCore2: rt EVar "inferInt"
->>*exprCore: e EVar "inferInt"
 << exprNoLoop: e EVar "inferInt"
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EVar "inferInt"
 >> infixOp: out 
 << expr: e EVar "inferInt"
 >>*caseAlt: pat PApp (PVar "EInt") [PVar "_"] body EVar "inferInt"
@@ -465,11 +435,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EBool") [PVar "_"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferBool"
->>*appExprCore: f= EVar "inferBool" args= []
->>*exprCore2: rt EVar "inferBool"
->>*exprCore: e EVar "inferBool"
 << exprNoLoop: e EVar "inferBool"
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EVar "inferBool"
 >> infixOp: out 
 << expr: e EVar "inferBool"
 >>*caseAlt: pat PApp (PVar "EBool") [PVar "_"] body EVar "inferBool"
@@ -480,11 +449,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EString") [PVar "_"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferString"
->>*appExprCore: f= EVar "inferString" args= []
->>*exprCore2: rt EVar "inferString"
->>*exprCore: e EVar "inferString"
 << exprNoLoop: e EVar "inferString"
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EVar "inferString"
 >> infixOp: out 
 << expr: e EVar "inferString"
 >>*caseAlt: pat PApp (PVar "EString") [PVar "_"] body EVar "inferString"
@@ -495,11 +463,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "ETuple") [PVar "es"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferTuple"
->>*appExprCore: f= EVar "inferTuple" args= [EVar "inferExpr",EVar "env",EVar "es"]
->>*exprCore2: rt EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")
->>*exprCore: e EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")
 << exprNoLoop: e EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")
 >>*caseAlt: pat PApp (PVar "ETuple") [PVar "es"] body EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")
@@ -510,11 +477,10 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "EList") [PVar "es"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferList"
->>*appExprCore: f= EVar "inferList" args= [EVar "inferExpr",EVar "env",EVar "es"]
->>*exprCore2: rt EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")
->>*exprCore: e EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")
 << exprNoLoop: e EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")
+<< expr dispatch: TokSymbol ";"
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")
 >>*caseAlt: pat PApp (PVar "EList") [PVar "es"] body EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")
@@ -526,18 +492,20 @@ Coverage: 100%
 << caseAlt: pat PApp (PVar "ESQL") [PVar "_",PVar "params"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokIdent "inferSQL"
->>*appExprCore: f= EVar "inferSQL" args= [EVar "inferExpr",EVar "env",EVar "params"]
->>*exprCore2: rt EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params")
->>*exprCore: e EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params")
 << exprNoLoop: e EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params")
+<< expr dispatch: TokVRBrace
 << postfix: operator = Nothing
+<< infixExpr: e EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params")
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params")
 >>*caseAlt: pat PApp (PVar "ESQL") [PVar "_",PVar "params"] body EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params")
 >>*caseAltBlock: xs [CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))]
 >>*caseExprCore: alts [CaseAlt (PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))]
 << exprNoLoop: e ECase (EVar "expr") [CaseAlt (PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))]
+<< expr dispatch: TokNewline
 << postfix: operator = Nothing
+<< infixExpr: e ECase (EVar "expr") [CaseAlt (PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))]
+>> infixOp: out 
 << expr: e ECase (EVar "expr") [CaseAlt (PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))]
 >>*funDecl name "inferExpr" clause1 FunClause [PVar "env",PApp (PVar "EVar") [PVar "name"]] Nothing (Just (ECase (EApp (EApp (EVar "lookupEnv") (EVar "env")) (EVar "name")) [CaseAlt (PApp (PVar "Nothing") []) (EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))),CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])])) Nothing rest [FunClause [PApp (PVar "env") [PVar "expr"]] Nothing (Just (ECase (EVar "expr") [CaseAlt (PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))])) Nothing]
 >>*declBody: e DeclFunGroup "inferExpr" [FunClause [PVar "env",PApp (PVar "EVar") [PVar "name"]] Nothing (Just (ECase (EApp (EApp (EVar "lookupEnv") (EVar "env")) (EVar "name")) [CaseAlt (PApp (PVar "Nothing") []) (EApp (EVarType "Left") (EApp (EVarType "InferUnboundVariable") (EVar "name"))),CaseAlt (PApp (PVar "Just") [PVar "sigma"]) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "instantiate") (EVar "sigma")),ExprStmt (EApp (EVarType "Right") (ETuple [EVar "emptySubst",EVar "t"]))])])) Nothing,FunClause [PApp (PVar "env") [PVar "expr"]] Nothing (Just (ECase (EVar "expr") [CaseAlt (PApp (PVar "ELet") [PVar "pat",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferLet") (EVar "inferExpr")) (EVar "env")) (EVar "pat")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "ELetBlock") [PVar "binds",PVar "body"]) (EApp (EApp (EApp (EApp (EVar "inferLetBlock") (EVar "inferExpr")) (EVar "env")) (EVar "binds")) (EVar "body")),CaseAlt (PApp (PVar "EWhere") [PVar "e",PVar "binds"]) (EApp (EApp (EApp (EApp (EVar "inferWhere") (EVar "inferExpr")) (EVar "env")) (EVar "e")) (EVar "binds")),CaseAlt (PApp (PVar "EIf") [PVar "c",PVar "t",PVar "f"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferIf") (EVar "inferExpr")) (EVar "env")) (EVar "c")) (EVar "t")) (EVar "f")),CaseAlt (PApp (PVar "EDo") [PVar "stmts"]) (EApp (EApp (EApp (EVar "inferDo") (EVar "inferExpr")) (EVar "env")) (EVar "stmts")),CaseAlt (PApp (PVar "ECase") [PVar "scrut",PVar "alts"]) (EApp (EApp (EApp (EApp (EVar "inferCase") (EVar "inferExpr")) (EVar "env")) (EVar "scrut")) (EVar "alts")),CaseAlt (PApp (PVar "EApp") [PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EVar "inferApp") (EVar "inferExpr")) (EVar "env")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EBinOp") [PVar "op",PVar "e1",PVar "e2"]) (EApp (EApp (EApp (EApp (EApp (EVar "inferBinOp") (EVar "inferExpr")) (EVar "env")) (EVar "op")) (EVar "e1")) (EVar "e2")),CaseAlt (PApp (PVar "EInt") [PVar "_"]) (EVar "inferInt"),CaseAlt (PApp (PVar "EBool") [PVar "_"]) (EVar "inferBool"),CaseAlt (PApp (PVar "EString") [PVar "_"]) (EVar "inferString"),CaseAlt (PApp (PVar "ETuple") [PVar "es"]) (EApp (EApp (EApp (EVar "inferTuple") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "EList") [PVar "es"]) (EApp (EApp (EApp (EVar "inferList") (EVar "inferExpr")) (EVar "env")) (EVar "es")),CaseAlt (PApp (PVar "ESQL") [PVar "_",PVar "params"]) (EApp (EApp (EApp (EVar "inferSQL") (EVar "inferExpr")) (EVar "env")) (EVar "params"))])) Nothing]

@@ -14,7 +14,7 @@ module Parser.Core.TokenParser
     bracesVO,
     bracesV,
     bracesB,
-    bracesN,
+    -- bracesN,
     skipVB,
     newline,
     notFollowedBy,
@@ -80,20 +80,22 @@ bracesVO p = try (bracesv p) <|> p
 bracesB :: Parser a -> Parser a
 bracesB p = try (braces p) <|> p
 
-bracesN :: Parser a -> Parser a
-bracesN p = p
-
 {-}
--- 仮想括弧
-bracesV :: Parser a -> Parser a
-bracesV p = do
-  mtok <- optional (lookAhead anyToken)
-  case mtok of
-    Just TokVLBrace -> bracesv p
-    Just (TokSymbol "{") -> braces p
-    _ -> p
+bracesN :: Parser a -> Parser a
+bracesN p =  p
+    {-}
+    -- 仮想括弧
+    bracesV :: Parser a -> Parser a
+    bracesV p = do
+      mtok <- optional (lookAhead anyToken)
+      case mtok of
+        Just TokVLBrace -> bracesv p
+        Just (TokSymbol "{") -> braces p
+        _ -> p
+    -} bracesV ::
+    Parser b -> Parser b
 -}
-bracesV :: Parser b -> Parser b
+
 bracesV p = do
   mtok <- optional (lookAhead anyToken)
   case mtok of
@@ -335,8 +337,7 @@ operatorI = satisfyToken isOp
       | s `elem` allowed = Just s
       | otherwise = Nothing
     isOp _ = Nothing
-
-    allowed = ["::", ":", "++", "<$>", "$", "\\", "<*>", ">>=", "<|>", "<?>"] -- "$" を含めない！
+    allowed = ["::", ":", "++", "<$>", "$", "\\", "<*>", ">>=", "<|>", "<?>", "<+>"] -- "$" を含めない！
 
 operatorAll :: Parser String
 operatorAll = satisfyToken f
@@ -419,3 +420,18 @@ eof = Parser $ \ts ->
   case ts of
     [] -> Just ((), [])
     _ -> Nothing
+
+{-}
+lexIdentOrOperator = do
+  -- 通常の識別子
+  ident <- identifier
+  if ident `elem` keywords
+    then return (TokKeyword ident)
+    else return (TokIdent ident)
+
+lexBacktickIdent = do
+  symbol "`"
+  ident <- identifier
+  symbol "`"
+  return (TokIdent ident)  -- ← バッククォートを除いた形で返す！
+-}

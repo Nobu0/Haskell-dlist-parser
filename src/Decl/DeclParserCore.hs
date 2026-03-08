@@ -73,7 +73,7 @@ declDispatch = do
     -- _ -> try funDecl <|> valueDecl
     TokIdent _ -> try funDecl <|> try typeSigDecl <|> valueDecl
     -- TokSymbol "{" -> try (braces (funDecl decl)) <|> empty
-    TokSymbol "(" -> try typeSigDecl
+    TokSymbol "(" -> try typeSigDecl -- <|> parens decl
     -- TokVRBrace -> skipVNlExpr -- empty
     _ -> do
       myTrace ("<< unknown token in decl: " ++ show t)

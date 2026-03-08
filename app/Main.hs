@@ -147,10 +147,13 @@ testCasesDo =
     ( "if newline",
       "if cond\n  then return 1\n  else return 0\n"
     ),
-    ("bad case","do { \\tk -> (case tk of {(t : ts) -> return 1; [] -> return 0)}}"),
-    ("bad case","do { case tk of {(t : ts) -> pure (); [] -> Nothing}}"),
-    ("bad case","case tk of (t : ts) -> pure (); [] -> Nothing"),
-    ("bad case","case tk of (t : ts) -> pure (); _ -> Nothing")
+    ("case1", "do { case tk of {(t : ts) -> pure (); [] -> Nothing}}"),
+    ("case2", "case tk of (t : ts) -> pure (); [] -> Nothing"),
+    ("case3", "case tk of (t : ts) -> pure (); _ -> Nothing"),
+    ("call ", "do { let f = x (not . (elms ['a','\\n']))}"),
+    -- ("call ","do { let f = x (not . (elms ['a','\\n']))\n  y = x 1}"),
+    ("temp", "filter (not . (`elem` [' ', '\\n', '\\t']))"),
+    ("temp", "do { let f = filter (not . (`elem` [' ', '\\n', '\\t']))}")
   ]
 
 {-}

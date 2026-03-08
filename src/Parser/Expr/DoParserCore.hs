@@ -33,12 +33,12 @@ doBlock expr = do
 
 doStmt :: Parser Expr -> Parser Stmt
 doStmt expr = do
+  skipSeparators
   rt <-
     try (bindStmt expr)
       <|> try (letStmt expr)
       <|> exprStmt expr
   myTrace (">>*doStmt: rt " ++ show rt)
-  skipSeparators
   return rt
 
 exprStmt :: Parser Expr -> Parser Stmt
@@ -50,6 +50,7 @@ exprStmt expr = do
 bindStmt :: Parser Expr -> Parser Stmt
 bindStmt expr = try $ do
   myTrace ("<< bindStmt")
+  skipSeparators
   -- まず、次のトークン列に "<-" が含まれるか確認
   {-}
   lookAhead $ do
@@ -79,15 +80,18 @@ letStmt expr = do
   where
     bindings = do
       b <- binding
-      bs <- many binding
-      return (b : bs)
-    binding = do
+      myTrace ("<< letStmt: b " ++ show b)
       bracesV $ do
-        pat <- pattern
-        symbol "="
-        bracesV $ do
-          e <- expr
-          return (pat, e)
+        bs <- many binding
+        return (b : bs)
+    binding = do
+      skipSeparators
+      -- bracesV $ do
+      pat <- pattern
+      symbol "="
+      -- X bracesV $ do
+      e <- expr
+      return (pat, e)
 
 doSemi :: Parser ()
 doSemi =

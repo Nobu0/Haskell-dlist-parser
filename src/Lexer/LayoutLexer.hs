@@ -44,15 +44,17 @@ go stack depth (TokSpace _ : rest) =
 go stack depth (TokNewline : rest)
   | depth > 0 = go stack depth rest
 -- 括弧のネスト制御
-go stack depth (TokSymbol "(" : rest) =
-  TokSymbol "(" : go stack (depth + 1) rest
-go stack depth (TokSymbol ")" : rest) =
-  TokSymbol ")" : go stack (max 0 (depth - 1)) rest
+-- go stack depth (TokSymbol "(" : rest) =
+--  TokSymbol "(" : go stack (depth + 1) rest
+-- go stack depth (TokSymbol ")" : rest) =
+--  TokSymbol ")" : go stack (max 0 (depth - 1)) rest
 go stack depth (TokSymbol "[" : rest) =
   TokSymbol "[" : go stack (depth + 1) rest
 go stack depth (TokSymbol "]" : rest) =
   TokSymbol "]" : go stack (max 0 (depth - 1)) rest
 -- その他のトークン
+go stack depth (TokSymbol "`" : TokIdent id : TokSymbol "`" : rest) =
+  TokIdent id : go stack depth rest
 go stack depth (t : rest) =
   t : go stack depth rest
 

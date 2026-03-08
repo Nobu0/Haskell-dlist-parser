@@ -10,7 +10,7 @@ import Data.Functor (void)
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Parser.Expr.ExprCore (exprCore, exprCoreNoBraces)
+import Parser.Expr.ExprCore -- (exprCore, exprCoreNoBraces)
 import Parser.Expr.PatternParser
 import Utils.MyTrace
 
@@ -18,7 +18,7 @@ caseExprCore :: Parser Expr -> Parser Expr
 caseExprCore expr = do
   myTrace ("<< caseExprCore:")
   keyword "case"
-  scrut <- exprCoreNoBraces
+  scrut <- exprCore -- NoBraces
   keyword "of"
   bracesV $ do
     alts <- caseAltBlock expr -- CoreNoBraces -- expr -- sepBy1 (try(caseAlt expr)) caseSep
@@ -27,8 +27,8 @@ caseExprCore expr = do
     skipSeparators
     return (ECase scrut alts)
 
---caseAltBlock :: Parser Expr -> Parser [CaseAlt]
---caseAltBlock expr = sepBy1 (caseAlt expr) caseSep
+-- caseAltBlock :: Parser Expr -> Parser [CaseAlt]
+-- caseAltBlock expr = sepBy1 (caseAlt expr) caseSep
 
 caseAltBlock :: Parser Expr -> Parser [CaseAlt]
 caseAltBlock expr = do
@@ -50,10 +50,10 @@ caseAlt expr = do
   case guards of
     [] -> do
       token TokArrow
-      bracesV $ do
-        body <- expr -- guardedExpr expr
-        myTrace (">>*caseAlt: pat " ++ show pat ++ " body " ++ show body)
-        return (CaseAlt pat body)
+      -- X bracesV $ do
+      body <- expr -- guardedExpr expr
+      myTrace (">>*caseAlt: pat " ++ show pat ++ " body " ++ show body)
+      return (CaseAlt pat body)
     _ -> do
       myTrace (">>*caseAlt: g " ++ show pat ++ " " ++ show guards)
       return (CaseAltGuard pat guards)
@@ -66,10 +66,10 @@ guardExpr expr = do
   symbol "|"
   cond <- expr
   token TokArrow
-  bracesV $ do
-    body <- expr
-    myTrace (">>*guardExpr body: " ++ show body)
-    return (cond, body)
+  -- X bracesV $ do
+  body <- expr
+  myTrace (">>*guardExpr body: " ++ show body)
+  return (cond, body)
 
 caseSep :: Parser ()
 caseSep =
@@ -100,9 +100,9 @@ caseBranch :: Parser Expr -> Parser (Pattern, Expr)
 caseBranch expr = do
   pat <- pPattern
   token TokArrow
-  bracesV $ do
-    body <- expr -- NoInfix
-    return (pat, body)
+  -- X bracesV $ do
+  body <- expr -- NoInfix
+  return (pat, body)
 
 caseGuard :: Parser Expr -> Parser (Expr, Expr)
 caseGuard expr = do
@@ -122,10 +122,10 @@ caseAltSimple expr = do
   myTrace ("<< caseAltSimple next token: " ++ show t)
   pat <- pattern
   token TokArrow
-  bracesV $ do
-    body <- expr
-    myTrace (">>*caseAltSimple body: " ++ show body)
-    return (CaseAlt pat body)
+  -- X bracesV $ do
+  body <- expr
+  myTrace (">>*caseAltSimple body: " ++ show body)
+  return (CaseAlt pat body)
 
 unguarded :: Pattern -> Parser Expr -> Parser CaseAlt
 unguarded pat expr = do

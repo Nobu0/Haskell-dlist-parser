@@ -63,7 +63,7 @@ parseSimpleClause name args = do
   myTrace ("<< parseSimpleClause: next token=" ++ show t)
   bracesV $ do
     -- skipSeparators
-    e <- expr <|> exprCore
+    e <- expr -- <|> exprCore
     w <- optional whereBlock
     return (name, mkSimpleClause args e w)
 

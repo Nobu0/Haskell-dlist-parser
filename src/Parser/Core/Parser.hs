@@ -77,8 +77,8 @@ runToplevelTest (input, expected) = do
 compareAST :: [Char] -> [Char] -> IO ()
 compareAST actualRaw expectedRaw = do
   let normalize = filter (not . (`elem` [' ', '\n', '\t']))
-      actual = normalize actualRaw
-      expected = normalize expectedRaw
+  let actual = normalize actualRaw
+  let expected = normalize expectedRaw
   if actual == expected
     then putStrLn "  O Passed\n"
     else do

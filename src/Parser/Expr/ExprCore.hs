@@ -2,7 +2,6 @@
 
 module Parser.Expr.ExprCore
   ( exprCore,
-    exprCoreNoBraces,
     appExprCore,
     atomCore,
     atomBaseCore,
@@ -10,7 +9,6 @@ module Parser.Expr.ExprCore
     tupleExprCore,
     oPsectionCore,
     pRecordExpr,
-    -- lambdaExpr,
   )
 where
 
@@ -26,6 +24,7 @@ import Parser.Type.TypeParser (typeIdent)
 -- import Text.ParserCombinators.ReadP (skipSpaces)
 import Utils.MyTrace
 
+{-}
 skipSeparatorsZ :: Parser ()
 skipSeparatorsZ = do
   _ <- many (tokenIs isSep)
@@ -41,7 +40,7 @@ exprCoreNoBraces = exprCoreWithOpNoBraces <|> exprCore2
 exprCoreWithOpNoBraces :: Parser Expr
 exprCoreWithOpNoBraces = do
   base <- exprCore2
-  skipSeparatorsZ
+  -- skipSeparatorsZ
   opChain operatorBinOp EBinOp base
 
 bracesvExpr :: Parser Expr
@@ -55,24 +54,26 @@ bracesvExpr = do
   skipSeparatorsZ
   return e
 
-{-}
-bracesvExpr :: Parser Expr
-bracesvExpr = do
+bracesvExpr2 :: Parser Expr
+bracesvExpr2 = do
   token TokVLBrace
   base <- exprCore
+  -- base <- exprCoreNoBraces
   token TokVLBrace
   e <- opChain operatorBinOp EBinOp base
   token TokVRBrace
   token TokVRBrace
   skipSeparatorsZ
   return e
--}
+
 -- 改造バージョン
-exprCore :: Parser Expr
-exprCore = do
-  e <-
-    try bracesvExpr
-      <|> exprCoreWithOp
+exprCore2 :: Parser Expr
+exprCore2 = do
+  -- e <- try bracesvExpr <|> try bracesvExpr2 <|> exprCoreWithOp
+  ---e <- try bracesvExpr2 <|> try bracesvExpr <|> exprCoreWithOp
+  -- e <- try bracesvExpr2 <|> exprCoreWithOp
+  e <- try bracesvExpr <|> exprCoreWithOp
+  -- e <- exprCoreWithOp
   myTrace (">>*exprCore: e " ++ show e)
   return e
 
@@ -81,16 +82,6 @@ exprCoreWithOp = do
   base <- exprCore2
   skipSeparatorsZ
   opChain operatorBinOp EBinOp base
-
-exprCore2 :: Parser Expr
-exprCore2 = do
-  rt <-
-    try lambdaExpr
-      <|> try binOpExprCore
-      <|> parseSQL
-  -- t <- lookAhead anyToken
-  myTrace (">>*exprCore2: rt " ++ show rt)
-  return rt
 
 opChain :: Parser BinOp -> (BinOp -> Expr -> Expr -> Expr) -> Expr -> Parser Expr
 opChain opParser makeExpr lhs = do
@@ -117,10 +108,20 @@ operatorTable =
     ("&&", BinOpAnd),
     (">>=", BinOpBind)
   ]
+-}
 
 -- ============================================
 --  exprCore（純粋な式パーサー）
 -- ============================================
+exprCore :: Parser Expr
+exprCore = do
+  rt <-
+    try lambdaExpr
+      <|> try binOpExprCore
+      <|> parseSQL
+  -- t <- lookAhead anyToken
+  -- myTrace (">>*exprCore: rt " ++ show rt)
+  return rt
 
 pRecordExpr :: Parser Expr
 pRecordExpr = do
@@ -150,7 +151,7 @@ exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
 -- ここは結合性に応じて分けるのがベスト！
 exprLevel1Core :: Parser Expr
 exprLevel1Core = do
-  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":", "*>", "<$", "<*", "<$>"])
+  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":", "*>", "<$", "<*", "<$>", "<|>"])
   -- chainr1 (return e) (binOp ["++", ":"])
   return e
 
@@ -175,7 +176,7 @@ appExprCore = do
   f <- atomCore
   -- bracesVO $ do
   args <- many atomCore
-  myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
+  -- myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
   return (foldl EApp f args)
 
 -- ============================================

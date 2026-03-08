@@ -1,16 +1,30 @@
+typeAtom :: Parser Type
+typeAtom =
+  (parens parseTypeCore)
+    <|> (TCon <$> typeIdent)
+    <|> tUnitType
+    <|> (TVar <$> ident)
+    <|> brackets (TList <$> parseTypeCore)
+    <|> parensTuple
 
-compareAST :: [Char] -> [Char] -> IO ()
-compareAST actualRaw expectedRaw = do
-  let normalize = filter (not . (`elem` [' ', '\n', '\t']))
-      actual = normalize actualRaw
-      expected = normalize expectedRaw
-  if actual == expected
-    then putStrLn "  O Passed\n"
-    else do
-      putStrLn "  X Failed!"
-      putStrLn $ "     Expected: " ++ expectedRaw
-      putStrLn $ "     Got:      " ++ actualRaw ++ "\n"
 {-}
+extractSQLVars :: String -> (String, [String])
+extractSQLVars = go "" [] ""
+  where
+    go acc vars current [] =
+      (acc, reverse vars)
+    go acc vars current ('{' : xs) =
+      let (var, rest) = span (/= '}') xs in go (acc ++ "?") (var : vars) "" (drop 1 rest)
+    go acc vars current (x : xs) =
+      go (acc ++ [x]) vars current xs
+
+isSymbolName :: String -> Bool
+isSymbolName s =
+  case s of
+    ('(' : _) | last s == ')' -> True
+    _ -> not (null s) && isSymbolStart (head s)
+
+
 sepBy :: Parser a -> Parser sep -> Parser [a]
 sepBy p sep =
   ( do
@@ -20,11 +34,22 @@ sepBy p sep =
   )
     <|> pure []
 
-isSymbolName :: String -> Bool
-isSymbolName s =
-  case s of
-    ('(' : _) | last s == ')' -> True
-    _ -> not (null s) && isSymbolStart (head s)
+compareAST :: [Char] -> [Char] -> IO ()
+compareAST actualRaw expectedRaw = do
+  let normalize = filter (not . (`elem` [' ', '\n', '\t']))
+  let actual = normalize actualRaw
+  let expected = normalize expectedRaw
+  if actual == expected
+    then putStrLn "  O Passed\n"
+    else do
+      putStrLn "  X Failed!"
+      putStrLn $ "     Expected: " ++ expectedRaw
+      putStrLn $ "     Got:      " ++ actualRaw ++ "\n"
+
+constraintList :: Parser [Constraint]
+constraintList = do
+  try (parens (constraintP `sepBy1` symbol ","))
+    <|> fmap (: []) constraintP
 
 caseGuard :: Parser Expr -> Parser (Expr, Expr)
 caseGuard expr = do
@@ -37,11 +62,6 @@ caseGuard expr = do
   body <- expr
   myTrace (">>*caseGuard body: " ++ show body)
   return (cond, body)
-
-constraintList :: Parser [Constraint]
-constraintList = do
-  try (parens (constraintP `sepBy1` symbol ","))
-    <|> fmap (: []) constraintP
 
 makeCons :: Parser Pattern
 makeCons = do
@@ -56,24 +76,6 @@ makeCons = do
       )
         <|> return p
 
-typeSigDecl :: Parser Decl
-typeSigDecl = do
-  t <- lookAhead anyToken
-  myTrace ("<< typeSigDecl: " ++ show t)
-  name <-
-    try ident
-      <|> do
-        op <- parens operatorI
-        return $ "(" ++ op ++ ")"
-  t <- lookAhead anyToken
-  myTrace ("<< typeSigDecl:2 " ++ show t)
-  symbol "::"
-  ty <- parseType
-  myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
-  let decl = DeclTypeSig name ty
-  myTrace ("<< returning DeclTypeSig: " ++ show decl)
-  return decl
-
 atomCorex :: Parser Expr
 atomCorex = do
   t <- lookAhead anyToken
@@ -87,76 +89,12 @@ atomCorex = do
       try (parens parenExprCore)
         <|> atomBaseCore
 
-whereClause :: Parser (Maybe [Binding])
-whereClause = do
-  skipSeparators
-  bracesV $ do
-    mWhere <- optional (try (keyword "where"))
-    case mWhere of
-      Just _ -> Just <$> bindings -- Block
-      Nothing -> return Nothing
-  where
-    bindings :: Parser [Binding]
-    bindings = do
-      bracesV $ do
-        b <- binding
-        -- bs <- many (skipSeparators >> binding)
-        bs <- many binding
-        -- bs <- sepEndBy binding (symbol ";") --exprSep
-        myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
-        return (b : bs)
-
 satisfyMap :: (Token -> Maybe a) -> Parser a
 satisfyMap f = Parser $ \tokens -> case tokens of
   (t : ts) -> case f t of
     Just x -> Just (x, ts)
     Nothing -> Nothing
   [] -> Nothing
-
-operatorA :: Parser String
-operatorA = satisfyToken isOp
-  where
-    isOp (TokOperator s)
-      | s `elem` ["<$>", "..", ":", "$"] = Just s
-      | otherwise = Nothing
-    isOp _ = Nothing
-
-parseTypeCore :: Parser Type
-parseTypeCore = do
-  skipMany (symbol ";" <|> newline)
-  t1 <- arrowType
-  myTrace ("<< parseTypeCore: " ++ show t1)
-  rest <- optional $ do
-    token (TokKeyword "=>")
-    t2 <- parseTypeCore
-    return (t1, t2)
-  case rest of
-    Just (TApp (TCon cls) arg, body) ->
-      return $ TConstraint [Constraint cls [arg]] body
-    Just (TCon cls, body) ->
-      return $ TConstraint [Constraint cls []] body
-    Just (TTuple cs, body) ->
-      return $ TConstraint (map toConstraint cs) body
-    Nothing -> return t1
-    _ -> empty
-
-decl :: Parser Decl
-decl = do
-  t <- lookAhead anyToken
-  myTrace ("<< decl next token: " ++ show t)
-  eof <- isEOF
-  if eof then Parser $ \_ -> Nothing else declBody
-
-extractSQLVars :: String -> (String, [String])
-extractSQLVars = go "" [] ""
-  where
-    go acc vars current [] =
-      (acc, reverse vars)
-    go acc vars current ('{' : xs) =
-      let (var, rest) = span (/= '}') xs
-       in go (acc ++ "?") (var : vars) "" (drop 1 rest)
-    go acc vars current (x : xs) =
-      go (acc ++ [x]) vars current xs
 
 exportItem :: Parser Export
 exportItem =
@@ -286,3 +224,77 @@ skipBlk = do
   optional (token TokNewline)
   optional (token (TokSymbol ";"))
   return ()
+
+typeSigDecl :: Parser Decl
+typeSigDecl = do
+  t <- lookAhead anyToken
+  myTrace ("<< typeSigDecl: " ++ show t)
+  name <-
+    try ident
+      <|> do
+        op <- parens operatorI
+        return $ "(" ++ op ++ ")"
+  t <- lookAhead anyToken
+  myTrace ("<< typeSigDecl:2 " ++ show t)
+  symbol "::"
+  ty <- parseType
+  myTrace ("<< parsed type signature: " ++ name ++ " :: " ++ show ty)
+  let decl = DeclTypeSig name ty
+  myTrace ("<< returning DeclTypeSig: " ++ show decl)
+  return decl
+
+decl :: Parser Decl
+decl = do
+  t <- lookAhead anyToken
+  myTrace ("<< decl next token: " ++ show t)
+  eof <- isEOF
+  if eof
+    then Parser $ \_ -> Nothing
+    else declBody
+
+
+whereClause :: Parser (Maybe [Binding])
+whereClause = do
+  skipSeparators
+  bracesV $ do
+    mWhere <- optional (try (keyword "where"))
+    case mWhere of
+      Just _ -> Just <$> bindings -- Block
+      Nothing -> return Nothing
+  where
+    bindings :: Parser [Binding]
+    bindings = do
+      bracesV $ do
+        b <- binding
+        -- bs <- many (skipSeparators >> binding)
+        bs <- many binding
+        -- bs <- sepEndBy binding (symbol ";") --exprSep
+        myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
+        return (b : bs)
+
+operatorA :: Parser String
+operatorA = satisfyToken isOp
+  where
+    isOp (TokOperator s)
+      | s `elem` ["<$>", "..", ":", "$"] = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
+
+parseTypeCore :: Parser Type
+parseTypeCore = do
+  skipMany (symbol ";" <|> newline)
+  t1 <- arrowType
+  myTrace ("<< parseTypeCore: " ++ show t1)
+  rest <- optional $ do
+    token (TokKeyword "=>")
+    t2 <- parseTypeCore
+    return (t1, t2)
+  case rest of
+    Just (TApp (TCon cls) arg, body) ->
+      return $ TConstraint [Constraint cls [arg]] body
+    Just (TCon cls, body) ->
+      return $ TConstraint [Constraint cls []] body
+    Just (TTuple cs, body) ->
+      return $ TConstraint (map toConstraint cs) body
+    Nothing -> return t1
+    _ -> empty
