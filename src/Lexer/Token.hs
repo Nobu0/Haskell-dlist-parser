@@ -5,19 +5,6 @@ module Lexer.Token
   )
 where
 
-{-}
-import Control.Applicative
-import Data.Char (isUpper)
-import Data.Void
--- import Text.Megaparsec.Char (oneOf)
-import Text.Megaparsec (ParseErrorBundle, Parsec, choice, eof, manyTill, oneOf, parse, satisfy, try, (<|>))
-import Text.Megaparsec.Char (alphaNumChar, char, letterChar, space1, string)
-import qualified Text.Megaparsec.Char.Lexer as L
--}
-
--- Parser type
--- type Parser = Parsec Void String
-
 -- Token definition
 data Token
   = TokKeyword String
@@ -46,3 +33,13 @@ data Token
   | TokLambdaCase
   | TokUnknown Char
   deriving (Show, Eq, Ord)
+
+data SourcePos = SourcePos
+  { line :: Int,
+    column :: Int
+  } deriving (Show, Eq, Ord)
+
+data LocatedToken = LocatedToken
+  { tokenPos :: SourcePos,
+    token :: Token
+  } deriving (Show, Eq, Ord)

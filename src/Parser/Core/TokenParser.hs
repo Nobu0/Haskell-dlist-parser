@@ -80,22 +80,6 @@ bracesVO p = try (bracesv p) <|> p
 bracesB :: Parser a -> Parser a
 bracesB p = try (braces p) <|> p
 
-{-}
-bracesN :: Parser a -> Parser a
-bracesN p =  p
-    {-}
-    -- 仮想括弧
-    bracesV :: Parser a -> Parser a
-    bracesV p = do
-      mtok <- optional (lookAhead anyToken)
-      case mtok of
-        Just TokVLBrace -> bracesv p
-        Just (TokSymbol "{") -> braces p
-        _ -> p
-    -} bracesV ::
-    Parser b -> Parser b
--}
-
 bracesV p = do
   mtok <- optional (lookAhead anyToken)
   case mtok of
@@ -196,9 +180,10 @@ debugPeek = do
     Just ((), tokens)
 
 peekToken :: Parser Token
-peekToken = Parser $ \tokens -> case tokens of
-  [] -> Nothing
-  (t : _) -> Just (t, tokens)
+peekToken = Parser $ \tokens ->
+  case tokens of
+    [] -> Nothing
+    (t : _) -> Just (t, tokens)
 
 typeIdent :: Parser String
 typeIdent = satisfyMap $ \case
@@ -220,11 +205,12 @@ charLiteralExpr =
     f _ = Nothing
 
 satisfyToken :: (Token -> Maybe a) -> Parser a
-satisfyToken f = Parser $ \ts -> case ts of
-  [] -> Nothing
-  (t : ts') -> case f t of
-    Just x -> Just (x, ts')
-    Nothing -> Nothing
+satisfyToken f = Parser $ \ts ->
+  case ts of
+    [] -> Nothing
+    (t : ts') -> case f t of
+      Just x -> Just (x, ts')
+      Nothing -> Nothing
 
 skipVNl :: Parser ()
 skipVNl = do
@@ -265,12 +251,13 @@ skipNewlines = do
   return ()
 
 binOp :: [String] -> Parser (Expr -> Expr -> Expr)
-binOp ops = tokenIs $ \tok -> case tok of
-  TokOperator s | s `elem` ops ->
-    case parseBinOp s of
-      Just bop -> Just (\a b -> EBinOp bop a b)
-      Nothing -> Nothing
-  _ -> Nothing
+binOp ops = tokenIs $ \tok ->
+  case tok of
+    TokOperator s | s `elem` ops ->
+      case parseBinOp s of
+        Just bop -> Just (\a b -> EBinOp bop a b)
+        Nothing -> Nothing
+    _ -> Nothing
 
 parseBinOp :: String -> Maybe BinOp
 parseBinOp s = case s of
@@ -306,11 +293,11 @@ parseBinOp s = case s of
   "<|>" -> Just BinOpAlt
   "<$>" -> Just BinOpFmap
   "$" -> Just BinOpApp
+  _ -> Nothing
   -- その他（必要に応じて追加）
   -- "$" は構文的に扱うならここには入れない
   -- "<?>" -> Just TryAlt
 
-  _ -> Nothing
 
 operator :: Parser String
 operator = choice (map (\s -> symbol s >> return s) allOps)
@@ -337,7 +324,7 @@ operatorI = satisfyToken isOp
       | s `elem` allowed = Just s
       | otherwise = Nothing
     isOp _ = Nothing
-    allowed = ["::", ":", "++", "<$>", "$", "\\", "<*>", ">>=", "<|>", "<?>", "<+>"] -- "$" を含めない！
+    allowed = ["::", ":", "++", "<$>", "$", "\\\\", "<*>", ">>=", "<|>", "<?>", "<+>"] -- "$" を含めない！
 
 operatorAll :: Parser String
 operatorAll = satisfyToken f
@@ -347,11 +334,10 @@ operatorAll = satisfyToken f
 
 operatorEdName :: Parser Name
 operatorEdName = do
-  op <- do
-    symbol "("
-    operatorAll
-    symbol ")"
-  return $ "(" ++ show op ++ ")"
+  symbol "("
+  op <- operatorAll
+  symbol ")"
+  return $ "(" ++ op ++ ")"
 
 operatorIAsName :: Parser Name
 operatorIAsName = do

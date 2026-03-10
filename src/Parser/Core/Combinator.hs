@@ -70,16 +70,18 @@ instance Alternative Parser where
 
 -- 補助関数
 satisfy :: (Token -> Bool) -> Parser Token
-satisfy f = Parser $ \tokens -> case tokens of
-  (t : ts) | f t -> Just (t, ts)
-  _ -> Nothing
+satisfy f = Parser $ \tokens -> 
+  case tokens of
+    (t : ts) | f t -> Just (t, ts)
+    _ -> Nothing
 
 satisfyMap :: (Token -> Maybe a) -> Parser a
-satisfyMap f = Parser $ \tokens -> case tokens of
-  (t : ts) -> case f t of
-    Just x -> Just (x, ts)
-    Nothing -> Nothing
-  [] -> Nothing
+satisfyMap f = Parser $ \tokens ->
+  case tokens of
+    (t : ts) -> case f t of
+      Just x -> Just (x, ts)
+      Nothing -> Nothing
+    [] -> Nothing
 
 token :: Token -> Parser Token
 token t = satisfy (== t)
@@ -121,21 +123,6 @@ sepEndBy p sep = sepEndBy1 p sep <|> pure []
 
 try :: Parser a -> Parser a
 try p = Parser $ \tokens -> runParser p tokens
-
-{-}
-chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
-chainl1 p op = do
-  x <- p
-  rest x
-  where
-    rest x =
-      ( do
-          f <- op
-          y <- p
-          rest (f x y)
-      )
-        <|> return x
--}
 
 chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
 chainl1 p op = do
@@ -191,14 +178,6 @@ choice (p : ps) = choice1 p (choice ps)
 
 option :: a -> Parser a -> Parser a
 option x p = p <|> pure x
-
-{-}
-lookAhead :: Parser a -> Parser a
-lookAhead p = Parser $ \input ->
-  case runParser p input of
-    Just (a, _) -> Just (a, input) -- 成功しても input を消費しない
-    Nothing -> Nothing
--}
 
 lookAhead :: Parser a -> Parser a
 lookAhead (Parser p) = Parser $ \input ->

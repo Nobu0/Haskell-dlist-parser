@@ -51,14 +51,15 @@ decl = do
 
 declBody :: Parser Decl
 declBody = do
+  skipNewlines
   d <- declDispatch
+  -- skipSeparators
   optional (newline)
   myTrace (">>*declBody: e " ++ show d)
   return d
 
 declDispatch :: Parser Decl
 declDispatch = do
-  skipNewlines
   t <- lookAhead anyToken
   myTrace ("<< decl dispatch: " ++ show t)
   case t of

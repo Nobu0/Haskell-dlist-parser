@@ -58,9 +58,15 @@ newtypeDecl = do
   vars <- many identI
   myTrace("<< newtypeDecl name "++ show name++ " vars "++ show vars)
   symbol "="
-  c <- constr
-  myTrace(">>*newtypeDecl c "++ show c)
-  return (DeclNewtype name vars c)
+  con <- constr
+  deriv <- optional derivingClause
+  myTrace(">>*newtypeDecl con "++ show con ++ " derivs "++ show deriv)
+  return $ DeclNewtype name vars con deriv
+
+derivingClause :: Parser [Name]
+derivingClause = do
+  keyword "deriving"
+  parens (sepBy1 typeIdent (symbol ",")) <|> fmap pure typeIdent
 
 {-}
 -- コンストラクタ

@@ -22,7 +22,7 @@ where
 import AST.Expr
 -- import AST.Decl
 import AST.Pattern
-import Control.Applicative (empty, many, optional, some, (<|>))
+import Control.Applicative (empty, many, optional, some, (<|>), Alternative (empty))
 -- (keyword) -- , whereClause)
 import Data.Functor (void)
 -- import Decl.DeclParserCore (isEOF)
@@ -83,9 +83,9 @@ exprTerm = do
 
 exprTerm :: Parser Expr
 exprTerm = do
-  bracesV $ do
+  bracesVO $ do
     f <- exprNoLoop
-    bracesV $ do
+    bracesVO $ do
       args <- many exprNoLoop
       postfix (foldl EApp f args)
 
@@ -128,7 +128,8 @@ postfix e = do
       rhs <- expr -- NoLoop
       postfix (EApp (EApp (EVar op) e) rhs)
     Nothing -> do
-      mbBinds <- whereClause
+      -- skipSeparators
+      mbBinds <- whereBlock -- whereClause
       case mbBinds of
         Just binds -> postfix (EWhere e binds)
         Nothing -> return e
@@ -164,6 +165,7 @@ operatorB = satisfyToken isOp
       | otherwise = Nothing
     isOp _ = Nothing
 
+{-}
 bracesvExpr :: Parser Expr
 bracesvExpr = do
   try bracesv2Expr <|> bracesv1Expr
@@ -188,7 +190,7 @@ bracesv1Expr = do
   token TokVRBrace
   skipSeparators
   return e
-
+-}
 -- すべての構文の入口
 exprDispatch :: Parser Expr
 exprDispatch = do
@@ -205,10 +207,10 @@ exprDispatch = do
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr -- NoLoop
     -- TokSymbol "(" -> parens expr
-    TokSymbol "(" -> try exprCore <|> parens expr -- <|> exprCore
-    -- TokSymbol "(" -> try (parens expr) <|> try (parens exprCore) <|> exprCore
+    -- TokSymbol "(" -> try exprCore <|> parens expr -- <|> exprCore
+    TokSymbol "(" -> try (parens expr) <|> try (parens exprCore) <|> exprCore
     -- TokVRBrace -> skipVNlExpr -- bracesv expr
-    -- TokVLBrace -> bracesv2Expr <|> bracesv expr
+    -- TokSymbol "{" -> braces expr
     TokSymbol "\\" -> lambdaExpr
     -- TokVNl -> skipVNlExpr
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
@@ -220,9 +222,36 @@ skipVNlExpr = do
   token TokVRBrace -- skipVNl
   empty
 
+whereBlock = try whereClause <|> emptyClause
+
+emptyClause = do
+  optional (symbol ";")
+  return Nothing
+
 whereClause :: Parser (Maybe [Binding])
 whereClause = do
-  skipSeparators
+  -- skipSeparators
+  optional (symbol ";")
+  bracesV $ do
+    keyword "where"
+    bracesV $ do
+      Just <$> bindings -- Block
+  where
+    bindings :: Parser [Binding]
+    bindings = do
+      b <- binding
+      -- bs <- many (skipSeparators >> binding)
+      -- X bracesV $ do
+      bs <- many binding
+      -- bs <- sepEndBy binding (symbol ";") --exprSep
+      myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
+      return (b : bs)
+
+{-}
+whereClause :: Parser (Maybe [Binding])
+whereClause = do
+  -- skipSeparators
+  optional (symbol ";")
   bracesV $ do
     mWhere <- optional (try (keyword "where"))
     case mWhere of
@@ -240,6 +269,7 @@ whereClause = do
       -- bs <- sepEndBy binding (symbol ";") --exprSep
       myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
       return (b : bs)
+-}
 
 bindingsBlock :: Parser [Binding]
 bindingsBlock = do
@@ -268,7 +298,7 @@ letBlock = do
 
 binding :: Parser Binding
 binding = do
-  skipSeparators
+  -- skipSeparators
   t <- lookAhead anyToken
   myTrace ("<< binding: next token " ++ show t)
   rt <- try valueBinding <|> funBinding

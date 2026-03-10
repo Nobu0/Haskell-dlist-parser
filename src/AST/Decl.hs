@@ -11,7 +11,7 @@ data Decl
   | DeclValue Pattern Expr
   | DeclTypeSig Name Type
   | DeclData Name [Name] [Constraint] [Name]
-  | DeclNewtype Name [Name] Constraint
+  | DeclNewtype Name [Name] Constraint (Maybe [Name])  -- deriving節
   | DeclModule String (Maybe [Export])
   | DeclClass String [String] [Decl]
   | DeclInstance (Maybe [Constraint]) String [Type] [Decl]

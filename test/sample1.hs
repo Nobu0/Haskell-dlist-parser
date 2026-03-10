@@ -1,13 +1,48 @@
-typeAtom :: Parser Type
-typeAtom =
-  (parens parseTypeCore)
-    <|> (TCon <$> typeIdent)
-    <|> tUnitType
-    <|> (TVar <$> ident)
-    <|> brackets (TList <$> parseTypeCore)
-    <|> parensTuple
+operatorA :: Parser String
+operatorA = satisfyToken isOp
+  where
+    isOp (TokOperator s)
+      | s `elem` ["<$>", "..", ":", "$"] = Just s
+      | otherwise = Nothing
+    isOp _ = Nothing
+
+
+
+try :: Parser a -> Parser a
+try p = Parser $ \tokens -> runParser p tokens
+
+chainl1 :: Parser a -> Parser (a -> a -> a) -> Parser a
+chainl1 p op = do
+  x <- p
+  rest x
+  where
+    rest x =
+      ( do
+          f <- op
+          y <- p
+          rest (f x y)
+      )
+        <|> return x
+
 
 {-}
+
+satisfyMap :: (Token -> Maybe a) -> Parser a
+satisfyMap f = Parser $ \tokens ->
+  case tokens of
+    (t : ts) -> case f t of
+      Just x -> Just (x, ts)
+      Nothing -> Nothing
+    [] -> Nothing
+
+
+
+isSymbolName :: String -> Bool
+isSymbolName s =
+  case s of
+    ('(' : _) | last s == ')' -> True
+    _ -> not (null s) && isSymbolStart (head s)
+
 extractSQLVars :: String -> (String, [String])
 extractSQLVars = go "" [] ""
   where
@@ -18,21 +53,15 @@ extractSQLVars = go "" [] ""
     go acc vars current (x : xs) =
       go (acc ++ [x]) vars current xs
 
-isSymbolName :: String -> Bool
-isSymbolName s =
-  case s of
-    ('(' : _) | last s == ')' -> True
-    _ -> not (null s) && isSymbolStart (head s)
 
-
-sepBy :: Parser a -> Parser sep -> Parser [a]
-sepBy p sep =
-  ( do
-      x <- p
-      xs <- many (sep *> p)
-      return (x : xs)
-  )
-    <|> pure []
+typeAtom :: Parser Type
+typeAtom =
+  (parens parseTypeCore)
+    <|> (TCon <$> typeIdent)
+    <|> tUnitType
+    <|> (TVar <$> ident)
+    <|> brackets (TList <$> parseTypeCore)
+    <|> parensTuple
 
 compareAST :: [Char] -> [Char] -> IO ()
 compareAST actualRaw expectedRaw = do
@@ -89,12 +118,6 @@ atomCorex = do
       try (parens parenExprCore)
         <|> atomBaseCore
 
-satisfyMap :: (Token -> Maybe a) -> Parser a
-satisfyMap f = Parser $ \tokens -> case tokens of
-  (t : ts) -> case f t of
-    Just x -> Just (x, ts)
-    Nothing -> Nothing
-  [] -> Nothing
 
 exportItem :: Parser Export
 exportItem =
@@ -252,6 +275,34 @@ decl = do
     then Parser $ \_ -> Nothing
     else declBody
 
+parseTypeCore :: Parser Type
+parseTypeCore = do
+  skipMany (symbol ";" <|> newline)
+  t1 <- arrowType
+  myTrace ("<< parseTypeCore: " ++ show t1)
+  rest <- optional $ do
+    token (TokKeyword "=>")
+    t2 <- parseTypeCore
+    return (t1, t2)
+  case rest of
+    Just (TApp (TCon cls) arg, body) ->
+      return $ TConstraint [Constraint cls [arg]] body
+    Just (TCon cls, body) ->
+      return $ TConstraint [Constraint cls []] body
+    Just (TTuple cs, body) ->
+      return $ TConstraint (map toConstraint cs) body
+    Nothing -> return t1
+    _ -> empty
+
+
+sepBy :: Parser a -> Parser sep -> Parser [a]
+sepBy p sep =
+  ( do
+      x <- p
+      xs <- many (sep *> p)
+      return (x : xs)
+  )
+    <|> pure []
 
 whereClause :: Parser (Maybe [Binding])
 whereClause = do
@@ -272,29 +323,3 @@ whereClause = do
         myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
         return (b : bs)
 
-operatorA :: Parser String
-operatorA = satisfyToken isOp
-  where
-    isOp (TokOperator s)
-      | s `elem` ["<$>", "..", ":", "$"] = Just s
-      | otherwise = Nothing
-    isOp _ = Nothing
-
-parseTypeCore :: Parser Type
-parseTypeCore = do
-  skipMany (symbol ";" <|> newline)
-  t1 <- arrowType
-  myTrace ("<< parseTypeCore: " ++ show t1)
-  rest <- optional $ do
-    token (TokKeyword "=>")
-    t2 <- parseTypeCore
-    return (t1, t2)
-  case rest of
-    Just (TApp (TCon cls) arg, body) ->
-      return $ TConstraint [Constraint cls [arg]] body
-    Just (TCon cls, body) ->
-      return $ TConstraint [Constraint cls []] body
-    Just (TTuple cs, body) ->
-      return $ TConstraint (map toConstraint cs) body
-    Nothing -> return t1
-    _ -> empty

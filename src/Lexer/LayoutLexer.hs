@@ -13,9 +13,6 @@ go stack 0 (TokNewline : TokSpace n : TokNewline : rest)
       TokVNewline (level, level) : TokVNewline (level, level) : go stack 0 rest
   where
     level = length stack - 1
--- 空行（TokNewline のあとに TokNewline または EOF）
-go stack 0 (TokNewline : TokNewline : rest) =
-  go stack 0 (TokNewline : rest)
 -- 行頭のスペース（括弧外のみ処理）
 go stack 0 (TokNewline : TokSpace n : rest)
   | n == head stack =
@@ -31,23 +28,26 @@ go stack 0 (TokNewline : TokSpace n : rest)
           prevLevel = length stack - 1
           newLevel = length stack' - 1
        in TokVNewline (prevLevel, newLevel) : go stack' 0 rest
+-- 空行（TokNewline のあとに TokNewline または EOF）
+go stack 0 (TokNewline : TokNewline : rest) =
+  go stack 0 (TokNewline : rest)
 -- 行頭の改行（スペースなし）※括弧外のみ処理
 go stack 0 (TokNewline : rest) =
   let stack' = [0]
       prevLevel = length stack - 1
    in TokVNewline (prevLevel, 0) : go stack' 0 rest
 -- 括弧内の TokSpace や TokNewline はスキップ
-go stack depth (TokSpace _ : rest) =
-  go stack depth rest
 -- go stack depth (TokSpace _ : rest)
 --  | depth > 0 = go stack depth rest
+go stack depth (TokSpace _ : rest) =
+  go stack depth rest
 go stack depth (TokNewline : rest)
-  | depth > 0 = go stack depth rest
+  | depth > 0 = TokSymbol ";" : go stack depth rest
 -- 括弧のネスト制御
--- go stack depth (TokSymbol "(" : rest) =
---  TokSymbol "(" : go stack (depth + 1) rest
--- go stack depth (TokSymbol ")" : rest) =
---  TokSymbol ")" : go stack (max 0 (depth - 1)) rest
+go stack depth (TokSymbol "(" : rest) =
+  TokSymbol "(" : go stack (depth + 1) rest
+go stack depth (TokSymbol ")" : rest) =
+  TokSymbol ")" : go stack (max 0 (depth - 1)) rest
 go stack depth (TokSymbol "[" : rest) =
   TokSymbol "[" : go stack (depth + 1) rest
 go stack depth (TokSymbol "]" : rest) =

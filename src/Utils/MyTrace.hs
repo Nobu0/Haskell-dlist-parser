@@ -15,10 +15,11 @@ setTrace :: Bool -> IO ()
 setTrace b = writeIORef traceEnabled b
 
 myTrace :: String -> Parser ()
-myTrace msg = Parser $ \input -> unsafePerformIO $ do
-  enabled <- readIORef traceEnabled
-  when enabled (putStrLn msg)
-  return (Just ((), input))
+myTrace msg = Parser $ \input ->
+  unsafePerformIO $ do
+    enabled <- readIORef traceEnabled
+    when enabled (putStrLn msg)
+    return (Just ((), input))
 
 myTraceIO :: String -> IO ()
 myTraceIO = traceIO

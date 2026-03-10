@@ -22,11 +22,13 @@ import TypeInference.Error (InferError (..))
 import TypeInference.Subst
 
 -- 型スキーム：forall a b. t
-data Scheme = Forall [String] Type
+data Scheme
+  = Forall [String] Type
   deriving (Show, Eq)
 
 -- 型環境：変数名 → 型スキーム
-newtype TypeEnv = TypeEnv (M.Map String Scheme)
+newtype TypeEnv
+  = TypeEnv (M.Map String Scheme)
   deriving (Show, Eq)
 
 {-}
@@ -56,16 +58,17 @@ freeTypeVarsScheme (Forall vars t) =
 
 -- 型の自由変数を集める
 freeTypeVars :: Type -> [String]
-freeTypeVars t = case t of
-  TVar v -> [v]
-  TCon _ -> []
-  TArrow t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
-  TList t1 -> freeTypeVars t1
-  TApp t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
-  TConstraint cs t1 ->
-    concatMap freeConstraintVars cs ++ freeTypeVars t1
-  TForall vs t1 ->
-    filter (`notElem` vs) (freeTypeVars t1)
+freeTypeVars t = 
+  case t of
+    TVar v -> [v]
+    TCon _ -> []
+    TArrow t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
+    TList t1 -> freeTypeVars t1
+    TApp t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
+    TConstraint cs t1 ->
+      concatMap freeConstraintVars cs ++ freeTypeVars t1
+    TForall vs t1 ->
+      filter (`notElem` vs) (freeTypeVars t1)
 
 freeConstraintVars :: Constraint -> [String]
 freeConstraintVars (Constraint _ ts) =

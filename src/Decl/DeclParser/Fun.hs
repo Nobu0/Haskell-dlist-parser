@@ -48,13 +48,13 @@ funClause = do
   myTrace ("<< funClause: next token=" ++ show t0)
   name <- ident
   args <- many pPattern -- patternParser
-  skipNewlines
-  t <- lookAhead anyToken
-  myTrace ("<< funClause: args=" ++ show args ++ " t = " ++ show t)
-  case t of
-    TokSymbol "=" -> parseSimpleClause name args
-    TokSymbol "|" -> parseGuardedClause name args
-    _ -> parseGuardedClause name args
+  bracesV $ do
+    t <- lookAhead anyToken
+    myTrace ("<< funClause: args=" ++ show args ++ " t = " ++ show t)
+    case t of
+      TokSymbol "=" -> parseSimpleClause name args
+      TokSymbol "|" -> parseGuardedClause name args
+      _ -> parseGuardedClause name args
 
 parseSimpleClause :: Name -> [Pattern] -> Parser (Name, FunClause)
 parseSimpleClause name args = do
@@ -62,20 +62,20 @@ parseSimpleClause name args = do
   t <- lookAhead anyToken
   myTrace ("<< parseSimpleClause: next token=" ++ show t)
   bracesV $ do
-    -- skipSeparators
-    e <- expr -- <|> exprCore
-    w <- optional whereBlock
-    return (name, mkSimpleClause args e w)
+    e <- exprBlock
+    bracesV $ do
+      w <- optional whereBlock
+      return (name, mkSimpleClause args e w)
 
 parseGuardedClause :: Name -> [Pattern] -> Parser (Name, FunClause)
 parseGuardedClause name args = do
   t <- lookAhead anyToken
   myTrace ("<< parseGuardedClause: next token=" ++ show t)
   bracesV $ do
-    skipSeparators
     guards <- guardedRhs
-    w <- optional (whereBlock)
-    return (name, mkGuardedClause args guards w)
+    bracesV $ do
+      w <- optional (whereBlock)
+      return (name, mkGuardedClause args guards w)
 
 funDeclGroup :: Parser Decl
 funDeclGroup = do
@@ -85,69 +85,75 @@ funDeclGroup = do
   rest <- many (try (funClauseWithName name1))
   return (DeclFunGroup name1 (clause1 : rest))
 
+
+exprBlock = try exprCore <|> expr
+
 -- 同じ名前の関数をグループ化する
 funClauseWithName :: Name -> Parser FunClause
 funClauseWithName name = try $ do
-  skipSeparators
   t <- lookAhead anyToken
   myTrace ("<< funClauseWithName: next token=" ++ show t)
   name' <- ident
   guard (name == name')
   args <- many pattern -- patternParser
   -- skipSeparators
-  t <- lookAhead anyToken
-  case t of
-    TokSymbol "=" -> do
-      symbol "="
-      bracesV $ do
-        skipSeparators
-        e <- expr
+  bracesV $ do
+    t <- lookAhead anyToken
+    myTrace("<< funClauseName: args "++ show args++" t "++ show t)
+    case t of
+      TokSymbol "=" -> do
+        symbol "="
+        bracesV $ do
+          e <- exprBlock
+          bracesV $ do
+            w <- optional whereBlock
+            return (mkSimpleClause args e w)
+      TokSymbol "|" -> do
+        guards <- guardedRhs
+        bracesV $ do
+          w <- optional whereBlock
+          return (mkGuardedClause args guards w)
+      _ -> do
+        e <- exprBlock
         -- w <- optional (bracesV (whereBlock))
-        w <- optional whereBlock
-        return (mkSimpleClause args e w)
-    TokSymbol "|" -> do
-      guards <- guardedRhs
-      w <- optional whereBlock
-      return (mkGuardedClause args guards w)
-    _ -> bracesV $ do
-      skipSeparators
-      e <- expr
-      -- w <- optional (bracesV (whereBlock))
-      w <- optional whereBlock
-      return (mkSimpleClause args e w)
+        bracesV $ do
+          w <- optional whereBlock
+          return (mkSimpleClause args e w)
 
 whereBlock :: Parser [Decl]
 whereBlock = do
   t <- lookAhead anyToken
   myTrace ("<< whereBlock: next token " ++ show t)
+  keyword "where"
   bracesV $ do
-    keyword "where"
-    skipSeparators
-    bracesV $ do
-      decls <- many1 $ do
-        funDecl
-      return decls
+    decls <- many1 funDecl
+    return decls
 
 guardedRhsM :: Parser [(Expr, Expr)]
-guardedRhsM = many1 parseGuardLine
+guardedRhsM = do
+  bracesV $ do 
+    xs <- many1 parseGuardLine
+    return xs
 
 parseGuardLine :: Parser (Expr, Expr)
 parseGuardLine = do
   t <- lookAhead anyToken
   myTrace ("<< parseGuardLine: next token=" ++ show t)
   symbol "|"
-  cond <- expr
+  cond <- exprBlock
   symbol "="
-  body <- expr
+  body <- exprBlock
+  skipSeparators
   return (cond, body)
 
 guardedRhs :: Parser [(Expr, Expr)]
 guardedRhs = do
   many1 $ do
-    skipSeparators
     t <- lookAhead anyToken
-    myTrace ("<< guardedRhs: next token = " ++ show t)
-    parseGuardLine
+    e <- parseGuardLine
+    myTrace ("<< guardedRhs: next token = " ++ show t++" e "++show e)
+    skipSeparators
+    return e
 
 funHead :: Parser (Name, [Pattern])
 funHead = do

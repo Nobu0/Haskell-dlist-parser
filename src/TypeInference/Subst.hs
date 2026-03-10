@@ -29,29 +29,30 @@ composeSubst s1 s2 =
 
 -- 型への代入適用
 apply :: Subst -> Type -> Type
-apply s t = case t of
-  TUnit ->
-    TUnit
-  TVar v ->
-    case M.lookup v s of
-      Just t' -> t'
-      Nothing -> TVar v
-  TCon c ->
-    TCon c
-  TArrow t1 t2 ->
-    TArrow (apply s t1) (apply s t2)
-  TList t1 ->
-    TList (apply s t1)
-  TApp t1 t2 ->
-    TApp (apply s t1) (apply s t2)
-  TConstraint cs t1 ->
-    TConstraint (map (applyConstraint s) cs) (apply s t1)
-  TForall vars t1 ->
-    -- Forall の束縛変数には代入を適用しない
-    let s' = foldr M.delete s vars
-     in TForall vars (apply s' t1)
-  TTuple ts ->
-    TTuple (map (apply s) ts)
+apply s t = 
+  case t of
+    TUnit ->
+      TUnit
+    TVar v ->
+      case M.lookup v s of
+        Just t' -> t'
+        Nothing -> TVar v
+    TCon c ->
+      TCon c
+    TArrow t1 t2 ->
+      TArrow (apply s t1) (apply s t2)
+    TList t1 ->
+      TList (apply s t1)
+    TApp t1 t2 ->
+      TApp (apply s t1) (apply s t2)
+    TConstraint cs t1 ->
+      TConstraint (map (applyConstraint s) cs) (apply s t1)
+    TForall vars t1 ->
+      -- Forall の束縛変数には代入を適用しない
+      let s' = foldr M.delete s vars
+      in TForall vars (apply s' t1)
+    TTuple ts ->
+      TTuple (map (apply s) ts)
 
 -- 制約への代入適用
 applyConstraint :: Subst -> Constraint -> Constraint

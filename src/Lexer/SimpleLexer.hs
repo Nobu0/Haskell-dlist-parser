@@ -67,6 +67,7 @@ slexer = go
         'c' : 'a' : 's' : 'e' : r
           | not (null r) && not (isIdentChar (head r)) ->
               TokLambdaCase : go r
+        '\\' : r -> TokOperator "\\" : go r
         _ -> TokSymbol "\\" : go rest
     -- go (c : rest)
     --  | isLetter c =
@@ -85,6 +86,7 @@ slexer = go
     go ('<' : '$' : '>' : rest) = TokOperator "<$>" : go rest
     go ('<' : '?' : '>' : rest) = TokOperator "<?>" : go rest
     go ('<' : '*' : '>' : rest) = TokOperator "<*>" : go rest
+    go ('<' : '+' : '>' : rest) = TokOperator "<+>" : go rest
     go ('>' : '>' : '=' : rest) = TokOperator ">>=" : go rest
     -- go ('<' : '+' : '>' : rest) = TokOperator "<+>" : go rest
     go ('-' : '>' : rest) = TokArrow : go rest
@@ -107,6 +109,8 @@ slexer = go
     go ('.' : '.' : rest) = TokSymbol ".." : go rest
     go ('&' : '&' : rest) = TokOperator "&&" : go rest
     go ('|' : '|' : rest) = TokOperator "||" : go rest
+    go ('\\' : '\\' : rest) = TokSymbol "\\\\" : go rest
+    go ('\\' : rest) = TokSymbol "\\" : go rest
     go ('`' : rest) = TokSymbol "`" : go rest
     go ('.' : rest) = TokOperator "." : go rest
     go (':' : rest) = TokOperator ":" : go rest
@@ -140,7 +144,7 @@ slexer = go
     isIdentChar c = isIdentStart c || isDigit c || c == '\''
 
     -- isSymbolChar x = x `elem` "=(){}[]:;,+-*/<>|&."
-    isSymbolChar x = x `elem` "=(){}[]:;,\\'_|@&"
+    isSymbolChar x = x `elem` "=(){}[]:;,'_|@&"
 
     classifyIdent "sql" = TokKeyword "sql"
     classifyIdent "do" = TokKeyword "do"
