@@ -11,30 +11,31 @@ import Prettyprinter (Pretty (..), parens, pretty, (<+>))
 import Prettyprinter.Render.Terminal (putDoc)
 
 prettyPrintBinOp :: B.BinOp -> String
-prettyPrintBinOp op = case op of
-  B.BinOpAdd -> "+"
-  B.BinOpSub -> "-"
-  B.BinOpMul -> "*"
-  B.BinOpDiv -> "/"
-  B.BinOpEq -> "=="
-  B.BinOpNeq -> "/="
-  B.BinOpLt -> "<"
-  B.BinOpGt -> ">"
-  B.BinOpLe -> "<="
-  B.BinOpGe -> ">="
-  B.BinOpAnd -> "&&"
-  B.BinOpOr -> "||"
-  B.BinOpConcat -> "++"
-  B.BinOpCons -> ":"
-  B.BinOpCompose -> "."
-  B.BinOpThen -> ">>"
-  B.BinOpBind -> ">>="
-  B.BinOpAlt -> "<|>"
-  B.BinOpFmap -> "<$>"
-  B.BinOpApp -> "<*>"
+prettyPrintBinOp op =
+  case op of
+    B.BinOpAdd -> "+"
+    B.BinOpSub -> "-"
+    B.BinOpMul -> "*"
+    B.BinOpDiv -> "/"
+    B.BinOpEq -> "=="
+    B.BinOpNeq -> "/="
+    B.BinOpLt -> "<"
+    B.BinOpGt -> ">"
+    B.BinOpLe -> "<="
+    B.BinOpGe -> ">="
+    B.BinOpAnd -> "&&"
+    B.BinOpOr -> "||"
+    B.BinOpConcat -> "++"
+    B.BinOpCons -> ":"
+    B.BinOpCompose -> "."
+    B.BinOpThen -> ">>"
+    B.BinOpBind -> ">>="
+    B.BinOpAlt -> "<|>"
+    B.BinOpFmap -> "<$>"
+    B.BinOpApp -> "<*>"
 
 instance Pretty Type where
-  pretty ty = 
+  pretty ty =
     case ty of
       TVar v -> pretty v
       TCon c -> pretty c

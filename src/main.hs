@@ -7,7 +7,8 @@ import AST.Type (Type (..))
 import Control.Exception (evaluate)
 -- (pretty, prettyType)
 
-import Control.Monad (zipWithM_)
+import Control.Monad (forM_, zipWithM_)
+import Data.List (intercalate)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.Text.IO as TIO
@@ -22,14 +23,9 @@ import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import System.IO
 import System.IO (readFile)
+import Text.Printf (printf)
 import TypeInference.Pretty
 import Utils.MyTrace
-import Control.Monad (forM_)
-import Data.List (intercalate)
-import Control.Monad (forM_)
-import Data.List (intercalate)
-import Text.Printf (printf)
-
 
 printExpr :: Expr -> String
 printExpr (EVar name) = name
@@ -111,12 +107,11 @@ processFile2 file = do
   printTokensAligned toks3
 
 -- 表示処理
-printTokensInGroups :: Show a => [a] -> IO ()
+printTokensInGroups :: (Show a) => [a] -> IO ()
 printTokensInGroups toks =
-  forM_ (zip [0,5..] (chunksOf 5 toks)) $ \(i, group) -> do
+  forM_ (zip [0, 5 ..] (chunksOf 5 toks)) $ \(i, group) -> do
     let line = "[" ++ show i ++ "] " ++ intercalate ", " (map show group)
     putStrLn line
-
 
 -- 5個ずつ分割
 chunksOf :: Int -> [a] -> [[a]]
@@ -125,6 +120,17 @@ chunksOf n xs =
   let (first, rest) = splitAt n xs
    in first : chunksOf n rest
 
+printTokensAligned :: (Show a) => [a] -> IO ()
+printTokensAligned toks = do
+  let formatToken tok = printf "%-20s" (take 20 (show tok)) -- 最大20文字、左詰め
+      grouped = chunksOf 5 toks
+      totalGroups = length grouped
+      indices = reverse [0 .. totalGroups - 1] -- 末尾からのインデックス
+  forM_ (zip indices grouped) $ \(i, group) -> do
+    let line = "[" ++ show (i * 5) ++ "] " ++ concatMap formatToken group
+    putStrLn line
+
+{-}
 -- 幅をそろえて表示
 printTokensAligned :: Show a => [a] -> IO ()
 printTokensAligned toks = do
@@ -132,3 +138,4 @@ printTokensAligned toks = do
   forM_ (zip [0,5..] (chunksOf 5 toks)) $ \(i, group) -> do
     let line = "[" ++ show i ++ "] " ++ concatMap formatToken group
     putStrLn line
+-}

@@ -2,8 +2,8 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 407 / 801
-Coverage: 50%
+Consumed tokens: 160 / 793
+Coverage: 20%
 
 -- AST----------------------------------
 
@@ -21,26 +21,17 @@ Coverage: 50%
 [10] DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "skipNewlines"]}
 [11] DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [12] DeclTypeSig "parseType" (TApp (TCon "Parser") (TCon "Type"))
-[13] DeclValue (PApp (PVar "parseType") []) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])])
+[13] DeclFunGroup "parseType" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])])) Nothing]
 [14] DeclTypeSig "parseTypeCore" (TApp (TCon "Parser") (TCon "Type"))
-[15] DeclValue (PApp (PVar "parseTypeCore") []) (EDo [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])])
-[16] DeclTypeSig "arrowType" (TApp (TCon "Parser") (TCon "Type"))
-[17] DeclValue (PApp (PVar "arrowType") []) (EDo [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))])
-[18] DeclTypeSig "parensTuple" (TApp (TCon "Parser") (TCon "Type"))
-[19] DeclValue (PApp (PVar "parensTuple") []) (EDo [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))])
-[20] DeclTypeSig "toConstraint" (TFun (TCon "Type") (TCon "Constraint"))
-[21] DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"]))) Nothing]
-[22] DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TCon") [PVar "cls"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList []))) Nothing]
-[23] DeclFunGroup "toConstraint" [FunClause [PVar "other"] Nothing (Just (EVar "error")) Nothing]
-[DeclModule "Parser.Type.TypeParser" (Just [ExportVar "parseType",ExportVar "parseForall",ExportVar "arrowType",ExportVar "typeApp",ExportVar "typeAtom",ExportVar "typeIdent",ExportVar "constraintP",ExportVar "constraintList",ExportVar "typeP",ExportVar "constr"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isPrefixOf"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "skipNewlines"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseType" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "parseType") []) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])]),DeclTypeSig "parseTypeCore" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "parseTypeCore") []) (EDo [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])]),DeclTypeSig "arrowType" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "arrowType") []) (EDo [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))]),DeclTypeSig "parensTuple" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "parensTuple") []) (EDo [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))]),DeclTypeSig "toConstraint" (TFun (TCon "Type") (TCon "Constraint")),DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"]))) Nothing],DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TCon") [PVar "cls"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList []))) Nothing],DeclFunGroup "toConstraint" [FunClause [PVar "other"] Nothing (Just (EVar "error")) Nothing]]
+[DeclModule "Parser.Type.TypeParser" (Just [ExportVar "parseType",ExportVar "parseForall",ExportVar "arrowType",ExportVar "typeApp",ExportVar "typeAtom",ExportVar "typeIdent",ExportVar "constraintP",ExportVar "constraintList",ExportVar "typeP",ExportVar "constr"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isPrefixOf"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "skipNewlines"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseType" (TApp (TCon "Parser") (TCon "Type")),DeclFunGroup "parseType" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])])) Nothing],DeclTypeSig "parseTypeCore" (TApp (TCon "Parser") (TCon "Type"))]
 
 -- Remaining-----------------------------
-[TokOperator "$",TokString "Invalid constraint form: ",TokOperator "++",TokIdent "show",TokIdent "other",TokNewline,TokIdent "typeApp",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeApp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "typeTerm",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "typeTerm",TokSymbol ";",TokKeyword "return",TokOperator "$",TokIdent "foldl",TokTypeIdent "TApp",TokIdent "f",TokIdent "args",TokVRBrace,TokNewline,TokIdent "typeTerm",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeTerm",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "ts",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "foldl1",TokTypeIdent "TApp",TokIdent "ts",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeAtom",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeAtom",TokSymbol "=",TokVLBrace,TokSymbol "(",TokIdent "parens",TokIdent "parseTypeCore",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "tUnitType",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TCon",TokOperator "<$>",TokIdent "typeIdent",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TVar",TokOperator "<$>",TokIdent "ident",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "brackets",TokSymbol "(",TokTypeIdent "TList",TokOperator "<$>",TokIdent "parseTypeCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "parensTuple",TokVRBrace,TokVRBrace,TokNewline,TokIdent "tUnitType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "tUnitType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constrainedType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "constrainedType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "cs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "constraint",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokIdent "keyword",TokString "=>",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "arrowType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "parseForall",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "parseForall",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TForall",TokIdent "vars",TokIdent "body",TokVRBrace,TokNewline,TokIdent "constraint",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraint",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeApp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constraintP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintP",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "className",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "className",TokIdent "args",TokVRBrace,TokNewline,TokIdent "constraintList",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "constraintList",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokSymbol "(",TokIdent "parens",TokSymbol "(",TokIdent "constraintP",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "fmap",TokSymbol "(",TokOperator ":",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokIdent "constraintP",TokVRBrace,TokVRBrace,TokNewline,TokIdent "typeP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeP",TokSymbol "=",TokIdent "try",TokIdent "forallType",TokOperator "<|>",TokIdent "typeAtom",TokNewline,TokIdent "forallType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "forallType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "constrainedType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constr",TokSymbol "=",TokIdent "try",TokIdent "constraintRecord",TokOperator "<|>",TokIdent "constraintP",TokNewline,TokIdent "constraintRecord",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintRecord",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cname",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "fields",TokSymbol "<-",TokIdent "braces",TokSymbol "(",TokIdent "field",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ConstraintRecord",TokIdent "cname",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "field",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Field",TokNewline,TokIdent "field",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "symbol",TokString "::",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Field",TokIdent "name",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline]
+[TokIdent "parseTypeCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "skipMany",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "t1",TokSymbol "<-",TokIdent "arrowType",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< parseTypeCore: ",TokOperator "++",TokIdent "show",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokIdent "rest",TokSymbol "<-",TokIdent "optional",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "token",TokSymbol "(",TokTypeIdent "TokKeyword",TokString "=>",TokSymbol ")",TokSymbol ";",TokIdent "t2",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "t1",TokSymbol ",",TokIdent "t2",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "case",TokIdent "rest",TokKeyword "of",TokSymbol ";",TokTypeIdent "Just",TokSymbol "(",TokTypeIdent "TApp",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ")",TokIdent "arg",TokSymbol ",",TokIdent "body",TokSymbol ")",TokArrow,TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TConstraint",TokSymbol "[",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "arg",TokSymbol "]",TokSymbol "]",TokIdent "body",TokSymbol ";",TokTypeIdent "Just",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ",",TokIdent "body",TokSymbol ")",TokArrow,TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TConstraint",TokSymbol "[",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokSymbol "]",TokSymbol "]",TokIdent "body",TokSymbol ";",TokTypeIdent "Just",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "cs",TokSymbol ",",TokIdent "body",TokSymbol ")",TokArrow,TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TConstraint",TokSymbol "(",TokIdent "map",TokIdent "toConstraint",TokIdent "cs",TokSymbol ")",TokIdent "body",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokIdent "t1",TokSymbol ";",TokIdent "_",TokArrow,TokIdent "empty",TokVRBrace,TokNewline,TokIdent "arrowType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "arrowType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t1",TokSymbol "<-",TokIdent "typeApp",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "rest",TokSymbol "<-",TokIdent "optional",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokArrow",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "parseTypeCore",TokVRBrace,TokNewline,TokVRBrace,TokNewline,TokKeyword "return",TokOperator "$",TokIdent "maybe",TokIdent "t1",TokSymbol "(",TokTypeIdent "TFun",TokIdent "t1",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "parensTuple",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "parensTuple",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "ts",TokSymbol "<-",TokIdent "parseTypeCore",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "toConstraint",TokSymbol "::",TokTypeIdent "Type",TokArrow,TokTypeIdent "Constraint",TokNewline,TokIdent "toConstraint",TokSymbol "(",TokTypeIdent "TApp",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ")",TokIdent "arg",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "arg",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "toConstraint",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "toConstraint",TokIdent "other",TokSymbol "=",TokIdent "error",TokOperator "$",TokString "Invalid constraint form: ",TokOperator "++",TokIdent "show",TokIdent "other",TokNewline,TokIdent "typeApp",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeApp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "typeTerm",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "typeTerm",TokSymbol ";",TokKeyword "return",TokOperator "$",TokIdent "foldl",TokTypeIdent "TApp",TokIdent "f",TokIdent "args",TokVRBrace,TokNewline,TokIdent "typeTerm",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeTerm",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "ts",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "foldl1",TokTypeIdent "TApp",TokIdent "ts",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeAtom",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeAtom",TokSymbol "=",TokSymbol ";",TokSymbol "(",TokIdent "parens",TokIdent "parseTypeCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "tUnitType",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TCon",TokOperator "<$>",TokIdent "typeIdent",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TVar",TokOperator "<$>",TokIdent "ident",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "brackets",TokSymbol "(",TokTypeIdent "TList",TokOperator "<$>",TokIdent "parseTypeCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "parensTuple",TokSymbol ";",TokIdent "tUnitType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "tUnitType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constrainedType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "constrainedType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "cs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "constraint",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokIdent "keyword",TokString "=>",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "arrowType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "parseForall",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "parseForall",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TForall",TokIdent "vars",TokIdent "body",TokVRBrace,TokNewline,TokIdent "constraint",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraint",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeApp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constraintP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintP",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "className",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "className",TokIdent "args",TokVRBrace,TokNewline,TokIdent "constraintList",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "constraintList",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokSymbol "(",TokIdent "parens",TokSymbol "(",TokIdent "constraintP",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "fmap",TokSymbol "(",TokOperator ":",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokIdent "constraintP",TokVRBrace,TokNewline,TokIdent "typeP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeP",TokSymbol "=",TokIdent "try",TokIdent "forallType",TokOperator "<|>",TokIdent "typeAtom",TokNewline,TokIdent "forallType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "forallType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "constrainedType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constr",TokSymbol "=",TokIdent "try",TokIdent "constraintRecord",TokOperator "<|>",TokIdent "constraintP",TokNewline,TokIdent "constraintRecord",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintRecord",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cname",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "fields",TokSymbol "<-",TokIdent "braces",TokSymbol "(",TokIdent "field",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ConstraintRecord",TokIdent "cname",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "field",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Field",TokNewline,TokIdent "field",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "symbol",TokString "::",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Field",TokIdent "name",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline]
 
 -- Parsed AST log --
 << decl next token: TokNewline
 << decl parser called
-<< decl dispatch: TokKeyword "module"
+<< decl dispatch: TokKeyword "module" ct=792
 << exportItem: next token=TokIdent "parseType"
 << exportItem: name "parseType"
 << exportItem: next token=TokIdent "parseForall"
@@ -65,31 +56,31 @@ Coverage: 50%
 >>*declBody: e DeclModule "Parser.Type.TypeParser" (Just [ExportVar "parseType",ExportVar "parseForall",ExportVar "arrowType",ExportVar "typeApp",ExportVar "typeAtom",ExportVar "typeIdent",ExportVar "constraintP",ExportVar "constraintList",ExportVar "typeP",ExportVar "constr"])
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=750
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 >>*declBody: e DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=745
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 >>*declBody: e DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=740
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 >>*declBody: e DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=735
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=730
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 << importIdent: next token TokIdent "isUpper"
@@ -99,7 +90,7 @@ Coverage: 50%
 >>*declBody: e DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=722
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 << importIdent: next token TokIdent "isPrefixOf"
@@ -109,7 +100,7 @@ Coverage: 50%
 >>*declBody: e DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isPrefixOf"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=714
 << importDecl parser called
 << importDecl: TokTypeIdent "Lexer"
 << importIdent: next token TokTypeIdent "Token"
@@ -118,19 +109,19 @@ Coverage: 50%
 >>*declBody: e DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=703
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=696
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=689
 << importDecl parser called
 << importDecl: TokTypeIdent "Parser"
 << importIdent: next token TokIdent "skipNewlines"
@@ -140,19 +131,18 @@ Coverage: 50%
 >>*declBody: e DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "skipNewlines"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=679
 << importDecl parser called
 << importDecl: TokTypeIdent "Utils"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokIdent "parseType"
 << decl parser called
-<< decl dispatch: TokIdent "parseType"
-<< funDecl: next token=TokIdent "parseType"
-<< funClause: next token=TokIdent "parseType"
+<< decl dispatch: TokIdent "parseType" ct=674
+<< funDecl: next token=TokIdent "parseType" ct=674
+<< funClause: next token=TokIdent "parseType" ct=674
 << funClause: args=[] t = TokSymbol "::"
-<< parseGuardedClause: next token=TokSymbol "::"
-<< guardedRhs: next token = TokSymbol "::"
-<< parseGuardLine: next token=TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::" ct=673
+<< parseGuardLine: next token=TokSymbol "::" ct=673
 << typeSigDecl: TokIdent "parseType"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "Parser"
@@ -162,108 +152,106 @@ Coverage: 50%
 >>*declBody: e DeclTypeSig "parseType" (TApp (TCon "Parser") (TCon "Type"))
 << decl next token: TokIdent "parseType"
 << decl parser called
-<< decl dispatch: TokIdent "parseType"
-<< funDecl: next token=TokIdent "parseType"
-<< funClause: next token=TokIdent "parseType"
+<< decl dispatch: TokIdent "parseType" ct=669
+<< funDecl: next token=TokIdent "parseType" ct=669
+<< funClause: next token=TokIdent "parseType" ct=669
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause: next token=TokKeyword "do"
-<< typeSigDecl: TokIdent "parseType"
-<< typeSigDecl:2 TokSymbol "="
-<< valueDecl: TokIdent "parseType"
-<< pConstrOrVar: next token "parseType"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "parseType") []
-<< expr dispatch: TokKeyword "do"
+<< parseSimpleClause: next token=TokKeyword "do" ct=668
+<< expr dispatch: TokKeyword "do" ct=667
 << bindStmt
+<< pattern: ct=665
 << pConstrOrVar: next token "t"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "t") []
-<< expr dispatch: TokIdent "lookAhead"
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=664
+<< expr dispatch: TokIdent "lookAhead" ct=663
 << exprNoLoop: e EApp (EVar "lookAhead") (EVar "anyToken")
-<< expr dispatch: TokSymbol ";"
+<< expr dispatch: TokSymbol ";" ct=661
 << postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "lookAhead") (EVar "anyToken")
 >> infixOp: out 
 << expr: e EApp (EVar "lookAhead") (EVar "anyToken")
 >>*bindStmt pat= PApp (PVar "t") [] e= EApp (EVar "lookAhead") (EVar "anyToken")
 >>*doStmt: rt Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken"))
 << bindStmt
+<< pattern: ct=660
 << pConstrOrVar: next token "myTrace"
+<< pattern: ct=658
 << pConstrOrVar: next token "++"
 << pConstrOrVar: next token "show"
 << pConstrOrVar: next token "t"
 << pattern:
-    (pAs <|> makeCons)PApp (PString "<< parseType dispatch: ") [PConstr "++" [],PVar "show",PVar "t"]
+    (pAs <|> makeCons)PApp (PString "<< parseType dispatch: ") [PConstr "++" [],PVar "show",PVar "t"] ct=654
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< parseType dispatch: ") [PConstr "++" [],PVar "show",PVar "t"]]
-<< expr dispatch: TokIdent "myTrace"
+    (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< parseType dispatch: ") [PConstr "++" [],PVar "show",PVar "t"]] ct=653
+<< expr dispatch: TokIdent "myTrace" ct=660
 << exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))
-<< expr dispatch: TokSymbol ";"
+<< expr dispatch: TokSymbol ";" ct=653
 << postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))
 >> infixOp: out 
 << expr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))
 >>*exprStmt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))
 >>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t"))))
 << bindStmt
-<< expr dispatch: TokKeyword "case"
+<< pattern: ct=652
+<< expr dispatch: TokKeyword "case" ct=652
 << caseExprCore:
+<< pattern: ct=648
 << pConstrOrVar: next token "TokVLBrace"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "TokVLBrace") []
+    (pAs <|> makeCons)PApp (PVar "TokVLBrace") [] ct=647
 << caseAlt: pat PApp (PVar "TokVLBrace") []
 << guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "bracesV"
+<< expr dispatch: TokIdent "bracesV" ct=646
 << exprNoLoop: e EApp (EVar "bracesV") (EVar "parseTypeCore")
-<< expr dispatch: TokSymbol ";"
+<< expr dispatch: TokSymbol ";" ct=644
 << postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "bracesV") (EVar "parseTypeCore")
 >> infixOp: out 
 << expr: e EApp (EVar "bracesV") (EVar "parseTypeCore")
 >>*caseAlt: pat PApp (PVar "TokVLBrace") [] body EApp (EVar "bracesV") (EVar "parseTypeCore")
+<< pattern: ct=643
 << pConstrOrVar: next token "_"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "_") []
+    (pAs <|> makeCons)PApp (PVar "_") [] ct=642
 << caseAlt: pat PApp (PVar "_") []
 << guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "parseTypeCore"
+<< expr dispatch: TokIdent "parseTypeCore" ct=641
 << exprNoLoop: e EVar "parseTypeCore"
-<< expr dispatch: TokVRBrace
+<< expr dispatch: TokVRBrace ct=640
 << postfix: operator = Nothing
-<< infixExpr: e EVar "parseTypeCore"
 >> infixOp: out 
 << expr: e EVar "parseTypeCore"
 >>*caseAlt: pat PApp (PVar "_") [] body EVar "parseTypeCore"
+<< pattern: ct=640
 >>*caseAltBlock: xs [CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")]
 >>*caseExprCore: alts [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")]
 << exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")]
-<< expr dispatch: TokVRBrace
+<< expr dispatch: TokVRBrace ct=640
 << postfix: operator = Nothing
-<< infixExpr: e ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")]
 >> infixOp: out 
 << expr: e ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")]
 >>*exprStmt ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")]
 >>*doStmt: rt ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])
 << bindStmt
-<< expr dispatch: TokVRBrace
+<< pattern: ct=640
+<< expr dispatch: TokVRBrace ct=640
 >>*doBlock: (f:m)[Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])]
 >>*doExprCore: stmts [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])]
 << exprNoLoop: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])]
-<< expr dispatch: TokNewline
+<< expr dispatch: TokNewline ct=639
 << postfix: operator = Nothing
-<< infixExpr: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])]
 >> infixOp: out 
 << expr: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])]
->>*declBody: e DeclValue (PApp (PVar "parseType") []) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])])
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])] ct=639
+<< funClauseWithName: next token=TokNewline ct=639
+>>*funDecl name "parseType" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])])) Nothing rest []
+>>*declBody: e DeclFunGroup "parseType" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])])) Nothing]
 << decl next token: TokIdent "parseTypeCore"
 << decl parser called
-<< decl dispatch: TokIdent "parseTypeCore"
-<< funDecl: next token=TokIdent "parseTypeCore"
-<< funClause: next token=TokIdent "parseTypeCore"
+<< decl dispatch: TokIdent "parseTypeCore" ct=638
+<< funDecl: next token=TokIdent "parseTypeCore" ct=638
+<< funClause: next token=TokIdent "parseTypeCore" ct=638
 << funClause: args=[] t = TokSymbol "::"
-<< parseGuardedClause: next token=TokSymbol "::"
-<< guardedRhs: next token = TokSymbol "::"
-<< parseGuardLine: next token=TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::" ct=637
+<< parseGuardLine: next token=TokSymbol "::" ct=637
 << typeSigDecl: TokIdent "parseTypeCore"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "Parser"
@@ -273,599 +261,69 @@ Coverage: 50%
 >>*declBody: e DeclTypeSig "parseTypeCore" (TApp (TCon "Parser") (TCon "Type"))
 << decl next token: TokIdent "parseTypeCore"
 << decl parser called
-<< decl dispatch: TokIdent "parseTypeCore"
-<< funDecl: next token=TokIdent "parseTypeCore"
-<< funClause: next token=TokIdent "parseTypeCore"
+<< decl dispatch: TokIdent "parseTypeCore" ct=633
+<< funDecl: next token=TokIdent "parseTypeCore" ct=633
+<< funClause: next token=TokIdent "parseTypeCore" ct=633
 << funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause: next token=TokKeyword "do"
-<< typeSigDecl: TokIdent "parseTypeCore"
-<< typeSigDecl:2 TokSymbol "="
-<< valueDecl: TokIdent "parseTypeCore"
-<< pConstrOrVar: next token "parseTypeCore"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "parseTypeCore") []
-<< expr dispatch: TokKeyword "do"
+<< parseSimpleClause: next token=TokKeyword "do" ct=632
+<< expr dispatch: TokKeyword "do" ct=631
 << bindStmt
+<< pattern: ct=629
 << pConstrOrVar: next token "skipMany"
+<< pattern: ct=627
 << pConstrOrVar: next token "symbol"
 << pConstrOrVar: next token "<|>"
 << pConstrOrVar: next token "newline"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "symbol") [PString ";",PConstr "<|>" [],PVar "newline"]
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString ";",PConstr "<|>" [],PVar "newline"] ct=623
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "skipMany") [PApp (PVar "symbol") [PString ";",PConstr "<|>" [],PVar "newline"]]
-<< expr dispatch: TokIdent "skipMany"
+    (pAs <|> makeCons)PApp (PVar "skipMany") [PApp (PVar "symbol") [PString ";",PConstr "<|>" [],PVar "newline"]] ct=622
+<< expr dispatch: TokIdent "skipMany" ct=629
 << exprNoLoop: e EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
-<< expr dispatch: TokSymbol ";"
+<< expr dispatch: TokSymbol ";" ct=622
 << postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
 >> infixOp: out 
 << expr: e EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
 >>*exprStmt EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
 >>*doStmt: rt ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))
 << bindStmt
-<< pConstrOrVar: next token "t1"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "t1") []
-<< expr dispatch: TokIdent "arrowType"
-<< exprNoLoop: e EVar "arrowType"
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EVar "arrowType"
->> infixOp: out 
-<< expr: e EVar "arrowType"
->>*bindStmt pat= PApp (PVar "t1") [] e= EVar "arrowType"
->>*doStmt: rt Bind (PApp (PVar "t1") []) (EVar "arrowType")
-<< bindStmt
-<< pConstrOrVar: next token "myTrace"
-<< pConstrOrVar: next token "++"
-<< pConstrOrVar: next token "show"
-<< pConstrOrVar: next token "t1"
-<< pattern:
-    (pAs <|> makeCons)PApp (PString "<< parseTypeCore: ") [PConstr "++" [],PVar "show",PVar "t1"]
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "myTrace") [PApp (PString "<< parseTypeCore: ") [PConstr "++" [],PVar "show",PVar "t1"]]
-<< expr dispatch: TokIdent "myTrace"
-<< exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))
->> infixOp: out 
-<< expr: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))
->>*exprStmt EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))
->>*doStmt: rt ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1"))))
-<< bindStmt
-<< pConstrOrVar: next token "rest"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "rest") []
-<< expr dispatch: TokIdent "optional"
-<< exprNoLoop: e EVar "optional"
-<< expr dispatch: TokOperator "$"
-<< postfix: operator = Just "$"
-<< postfix: operator = $
-<< expr dispatch: TokKeyword "do"
-<< bindStmt
-<< pConstrOrVar: next token "token"
-<< pConstrOrVar: next token "TokKeyword"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TokKeyword") [PString "=>"]
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "token") [PApp (PVar "TokKeyword") [PString "=>"]]
-<< expr dispatch: TokIdent "token"
-<< exprNoLoop: e EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))
->> infixOp: out 
-<< expr: e EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))
->>*exprStmt EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))
->>*doStmt: rt ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>")))
-<< bindStmt
-<< pConstrOrVar: next token "t2"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "t2") []
-<< expr dispatch: TokIdent "parseTypeCore"
-<< exprNoLoop: e EVar "parseTypeCore"
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EVar "parseTypeCore"
->> infixOp: out 
-<< expr: e EVar "parseTypeCore"
->>*bindStmt pat= PApp (PVar "t2") [] e= EVar "parseTypeCore"
->>*doStmt: rt Bind (PApp (PVar "t2") []) (EVar "parseTypeCore")
-<< bindStmt
-<< expr dispatch: TokKeyword "return"
-<< returnWithDollar
->>*return atom: ETuple [EVar "t1",EVar "t2"]
-<< exprNoLoop: e EReturn (ETuple [EVar "t1",EVar "t2"])
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EReturn (ETuple [EVar "t1",EVar "t2"])
->> infixOp: out 
-<< expr: e EReturn (ETuple [EVar "t1",EVar "t2"])
->>*exprStmt EReturn (ETuple [EVar "t1",EVar "t2"])
->>*doStmt: rt ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))
-<< bindStmt
-<< expr dispatch: TokVRBrace
->>*doBlock: (f:m)[ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))]
->>*doExprCore: stmts [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))]
-<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))]
-<< expr dispatch: TokNewline
-<< postfix: operator = Nothing
-<< infixExpr: e EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))]
->> infixOp: out 
-<< expr: e EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))]
->> postfix: out rhs = EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))]
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])
->>*bindStmt pat= PApp (PVar "rest") [] e= EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])
->>*doStmt: rt Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))]))
-<< bindStmt
-<< expr dispatch: TokKeyword "case"
-<< caseExprCore:
-<< pConstrOrVar: next token "Just"
-<< pConstrOrVar: next token "TApp"
-<< pConstrOrVar: next token "TCon"
-<< pConstrOrVar: next token "cls"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "cls"]
-<< pConstrOrVar: next token "arg"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]
-<< pConstrOrVar: next token "body"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "body") []
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]
-<< caseAlt: pat PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "return"
-<< returnWithDollar
-<< expr dispatch: TokTypeIdent "TConstraint"
-<< exprNoLoop: e EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body")
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body")
->> infixOp: out 
-<< expr: e EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body")
->>*return $: EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body")
-<< exprNoLoop: e EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))
->> infixOp: out 
-<< expr: e EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))
->>*caseAlt: pat PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]] body EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))
-<< pConstrOrVar: next token "Just"
-<< pConstrOrVar: next token "TCon"
-<< pConstrOrVar: next token "cls"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "cls"]
-<< pConstrOrVar: next token "body"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "body") []
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]
-<< caseAlt: pat PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "return"
-<< returnWithDollar
-<< expr dispatch: TokTypeIdent "TConstraint"
-<< exprNoLoop: e EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body")
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body")
->> infixOp: out 
-<< expr: e EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body")
->>*return $: EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body")
-<< exprNoLoop: e EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))
->> infixOp: out 
-<< expr: e EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))
->>*caseAlt: pat PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]] body EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))
-<< pConstrOrVar: next token "Just"
-<< pConstrOrVar: next token "TTuple"
-<< pConstrOrVar: next token "cs"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TTuple") [PVar "cs"]
-<< pConstrOrVar: next token "body"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "body") []
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]
-<< caseAlt: pat PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "return"
-<< returnWithDollar
-<< expr dispatch: TokTypeIdent "TConstraint"
-<< exprNoLoop: e EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body")
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body")
->> infixOp: out 
-<< expr: e EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body")
->>*return $: EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body")
-<< exprNoLoop: e EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))
->> infixOp: out 
-<< expr: e EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))
->>*caseAlt: pat PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]] body EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))
-<< pConstrOrVar: next token "Nothing"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "Nothing") []
-<< caseAlt: pat PApp (PVar "Nothing") []
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "return"
-<< returnWithDollar
->>*return atom: EVar "t1"
-<< exprNoLoop: e EReturn (EVar "t1")
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EReturn (EVar "t1")
->> infixOp: out 
-<< expr: e EReturn (EVar "t1")
->>*caseAlt: pat PApp (PVar "Nothing") [] body EReturn (EVar "t1")
-<< pConstrOrVar: next token "_"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "_") []
-<< caseAlt: pat PApp (PVar "_") []
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "empty"
-<< exprNoLoop: e EVar "empty"
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EVar "empty"
->> infixOp: out 
-<< expr: e EVar "empty"
->>*caseAlt: pat PApp (PVar "_") [] body EVar "empty"
->>*caseAltBlock: xs [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")]
->>*caseExprCore: alts [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")]
-<< exprNoLoop: e ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")]
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")]
->> infixOp: out 
-<< expr: e ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")]
->>*exprStmt ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")]
->>*doStmt: rt ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])
-<< bindStmt
-<< expr dispatch: TokVRBrace
->>*doBlock: (f:m)[ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])]
->>*doExprCore: stmts [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])]
-<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])]
-<< expr dispatch: TokNewline
-<< postfix: operator = Nothing
-<< infixExpr: e EDo [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])]
->> infixOp: out 
-<< expr: e EDo [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])]
->>*declBody: e DeclValue (PApp (PVar "parseTypeCore") []) (EDo [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])])
-<< decl next token: TokIdent "arrowType"
-<< decl parser called
-<< decl dispatch: TokIdent "arrowType"
-<< funDecl: next token=TokIdent "arrowType"
-<< funClause: next token=TokIdent "arrowType"
-<< funClause: args=[] t = TokSymbol "::"
-<< parseGuardedClause: next token=TokSymbol "::"
-<< guardedRhs: next token = TokSymbol "::"
-<< parseGuardLine: next token=TokSymbol "::"
-<< typeSigDecl: TokIdent "arrowType"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "Parser"
-<< parseTypeCore: TApp (TCon "Parser") (TCon "Type")
-<< parsed type signature: arrowType :: TApp (TCon "Parser") (TCon "Type")
-<< returning DeclTypeSig: DeclTypeSig "arrowType" (TApp (TCon "Parser") (TCon "Type"))
->>*declBody: e DeclTypeSig "arrowType" (TApp (TCon "Parser") (TCon "Type"))
-<< decl next token: TokIdent "arrowType"
-<< decl parser called
-<< decl dispatch: TokIdent "arrowType"
-<< funDecl: next token=TokIdent "arrowType"
-<< funClause: next token=TokIdent "arrowType"
-<< funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause: next token=TokKeyword "do"
-<< typeSigDecl: TokIdent "arrowType"
+<< pattern: ct=620
+<< expr dispatch: TokSymbol ";" ct=620
+>>*doBlock: (f:m)[ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))]
+>>*doExprCore: stmts [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))]
+<< typeSigDecl: TokIdent "parseTypeCore"
 << typeSigDecl:2 TokSymbol "="
-<< valueDecl: TokIdent "arrowType"
-<< pConstrOrVar: next token "arrowType"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "arrowType") []
-<< expr dispatch: TokKeyword "do"
-<< bindStmt
-<< pConstrOrVar: next token "t1"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "t1") []
-<< expr dispatch: TokIdent "typeApp"
-<< exprNoLoop: e EVar "typeApp"
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EVar "typeApp"
->> infixOp: out 
-<< expr: e EVar "typeApp"
->>*bindStmt pat= PApp (PVar "t1") [] e= EVar "typeApp"
->>*doStmt: rt Bind (PApp (PVar "t1") []) (EVar "typeApp")
-<< bindStmt
-<< pConstrOrVar: next token "rest"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "rest") []
-<< expr dispatch: TokIdent "optional"
-<< exprNoLoop: e EVar "optional"
-<< expr dispatch: TokOperator "$"
-<< postfix: operator = Just "$"
-<< postfix: operator = $
-<< expr dispatch: TokKeyword "do"
-<< bindStmt
-<< pConstrOrVar: next token "token"
-<< pConstrOrVar: next token "TokArrow"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "token") [PVar "TokArrow"]
-<< expr dispatch: TokIdent "token"
-<< exprNoLoop: e EApp (EVar "token") (EVarType "TokArrow")
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "token") (EVarType "TokArrow")
->> infixOp: out 
-<< expr: e EApp (EVar "token") (EVarType "TokArrow")
->>*exprStmt EApp (EVar "token") (EVarType "TokArrow")
->>*doStmt: rt ExprStmt (EApp (EVar "token") (EVarType "TokArrow"))
-<< bindStmt
-<< pConstrOrVar: next token "bracesV"
-<< pConstrOrVar: next token "$"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "bracesV") [PConstr "$" []]
-<< expr dispatch: TokIdent "bracesV"
-<< exprNoLoop: e EVar "bracesV"
-<< expr dispatch: TokOperator "$"
-<< postfix: operator = Just "$"
-<< postfix: operator = $
-<< expr dispatch: TokKeyword "do"
-<< bindStmt
+<< valueDecl: TokIdent "parseTypeCore"
+<< pattern: ct=633
 << pConstrOrVar: next token "parseTypeCore"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "parseTypeCore") []
-<< expr dispatch: TokIdent "parseTypeCore"
-<< exprNoLoop: e EVar "parseTypeCore"
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EVar "parseTypeCore"
->> infixOp: out 
-<< expr: e EVar "parseTypeCore"
->>*exprStmt EVar "parseTypeCore"
->>*doStmt: rt ExprStmt (EVar "parseTypeCore")
+    (pAs <|> makeCons)PApp (PVar "parseTypeCore") [] ct=632
+<< expr dispatch: TokKeyword "do" ct=631
 << bindStmt
-<< expr dispatch: TokVRBrace
->>*doBlock: (f:m)[ExprStmt (EVar "parseTypeCore")]
->>*doExprCore: stmts [ExprStmt (EVar "parseTypeCore")]
-<< exprNoLoop: e EDo [ExprStmt (EVar "parseTypeCore")]
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EDo [ExprStmt (EVar "parseTypeCore")]
->> infixOp: out 
-<< expr: e EDo [ExprStmt (EVar "parseTypeCore")]
->> postfix: out rhs = EDo [ExprStmt (EVar "parseTypeCore")]
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")])
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")])
->>*exprStmt EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")])
->>*doStmt: rt ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))
-<< bindStmt
-<< expr dispatch: TokVRBrace
->>*doBlock: (f:m)[ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))]
->>*doExprCore: stmts [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))]
-<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))]
-<< expr dispatch: TokNewline
-<< postfix: operator = Nothing
-<< infixExpr: e EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))]
->> infixOp: out 
-<< expr: e EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))]
->> postfix: out rhs = EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))]
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])
->>*bindStmt pat= PApp (PVar "rest") [] e= EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])
->>*doStmt: rt Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))]))
-<< bindStmt
-<< expr dispatch: TokKeyword "return"
-<< returnWithDollar
-<< expr dispatch: TokIdent "maybe"
-<< exprNoLoop: e EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")
->> infixOp: out 
-<< expr: e EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")
->>*return $: EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")
-<< exprNoLoop: e EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest"))
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest"))
->> infixOp: out 
-<< expr: e EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest"))
->>*exprStmt EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest"))
->>*doStmt: rt ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))
-<< bindStmt
-<< expr dispatch: TokVRBrace
->>*doBlock: (f:m)[Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))]
->>*doExprCore: stmts [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))]
-<< expr dispatch: TokNewline
-<< postfix: operator = Nothing
-<< infixExpr: e EDo [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))]
->> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))]
->>*declBody: e DeclValue (PApp (PVar "arrowType") []) (EDo [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))])
-<< decl next token: TokIdent "parensTuple"
-<< decl parser called
-<< decl dispatch: TokIdent "parensTuple"
-<< funDecl: next token=TokIdent "parensTuple"
-<< funClause: next token=TokIdent "parensTuple"
-<< funClause: args=[] t = TokSymbol "::"
-<< parseGuardedClause: next token=TokSymbol "::"
-<< guardedRhs: next token = TokSymbol "::"
-<< parseGuardLine: next token=TokSymbol "::"
-<< typeSigDecl: TokIdent "parensTuple"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "Parser"
-<< parseTypeCore: TApp (TCon "Parser") (TCon "Type")
-<< parsed type signature: parensTuple :: TApp (TCon "Parser") (TCon "Type")
-<< returning DeclTypeSig: DeclTypeSig "parensTuple" (TApp (TCon "Parser") (TCon "Type"))
->>*declBody: e DeclTypeSig "parensTuple" (TApp (TCon "Parser") (TCon "Type"))
-<< decl next token: TokIdent "parensTuple"
-<< decl parser called
-<< decl dispatch: TokIdent "parensTuple"
-<< funDecl: next token=TokIdent "parensTuple"
-<< funClause: next token=TokIdent "parensTuple"
-<< funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause: next token=TokKeyword "do"
-<< typeSigDecl: TokIdent "parensTuple"
-<< typeSigDecl:2 TokSymbol "="
-<< valueDecl: TokIdent "parensTuple"
-<< pConstrOrVar: next token "parensTuple"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "parensTuple") []
-<< expr dispatch: TokKeyword "do"
-<< bindStmt
+<< pattern: ct=629
+<< pConstrOrVar: next token "skipMany"
+<< pattern: ct=627
 << pConstrOrVar: next token "symbol"
+<< pConstrOrVar: next token "<|>"
+<< pConstrOrVar: next token "newline"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "symbol") [PString "("]
-<< expr dispatch: TokIdent "symbol"
-<< exprNoLoop: e EApp (EVar "symbol") (EString "(")
-<< expr dispatch: TokSymbol ";"
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString ";",PConstr "<|>" [],PVar "newline"] ct=623
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "skipMany") [PApp (PVar "symbol") [PString ";",PConstr "<|>" [],PVar "newline"]] ct=622
+<< expr dispatch: TokIdent "skipMany" ct=629
+<< exprNoLoop: e EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
+<< expr dispatch: TokSymbol ";" ct=622
 << postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "symbol") (EString "(")
 >> infixOp: out 
-<< expr: e EApp (EVar "symbol") (EString "(")
->>*exprStmt EApp (EVar "symbol") (EString "(")
->>*doStmt: rt ExprStmt (EApp (EVar "symbol") (EString "("))
+<< expr: e EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
+>>*exprStmt EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))
+>>*doStmt: rt ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))
 << bindStmt
-<< pConstrOrVar: next token "ts"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "ts") []
-<< expr dispatch: TokIdent "parseTypeCore"
-<< exprNoLoop: e EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")
->> infixOp: out 
-<< expr: e EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")
->>*bindStmt pat= PApp (PVar "ts") [] e= EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")
->>*doStmt: rt Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ","))
-<< bindStmt
-<< pConstrOrVar: next token "symbol"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "symbol") [PString ")"]
-<< expr dispatch: TokIdent "symbol"
-<< exprNoLoop: e EApp (EVar "symbol") (EString ")")
-<< expr dispatch: TokSymbol ";"
-<< postfix: operator = Nothing
-<< infixExpr: e EApp (EVar "symbol") (EString ")")
->> infixOp: out 
-<< expr: e EApp (EVar "symbol") (EString ")")
->>*exprStmt EApp (EVar "symbol") (EString ")")
->>*doStmt: rt ExprStmt (EApp (EVar "symbol") (EString ")"))
-<< bindStmt
-<< expr dispatch: TokKeyword "return"
-<< returnWithDollar
->>*return atom: EApp (EVarType "TTuple") (EVar "ts")
-<< exprNoLoop: e EReturn (EApp (EVarType "TTuple") (EVar "ts"))
-<< expr dispatch: TokVRBrace
-<< postfix: operator = Nothing
-<< infixExpr: e EReturn (EApp (EVarType "TTuple") (EVar "ts"))
->> infixOp: out 
-<< expr: e EReturn (EApp (EVarType "TTuple") (EVar "ts"))
->>*exprStmt EReturn (EApp (EVarType "TTuple") (EVar "ts"))
->>*doStmt: rt ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))
-<< bindStmt
-<< expr dispatch: TokVRBrace
->>*doBlock: (f:m)[ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))]
->>*doExprCore: stmts [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))]
-<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))]
-<< expr dispatch: TokNewline
-<< postfix: operator = Nothing
-<< infixExpr: e EDo [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))]
->> infixOp: out 
-<< expr: e EDo [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))]
->>*declBody: e DeclValue (PApp (PVar "parensTuple") []) (EDo [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))])
-<< decl next token: TokIdent "toConstraint"
-<< decl parser called
-<< decl dispatch: TokIdent "toConstraint"
-<< funDecl: next token=TokIdent "toConstraint"
-<< funClause: next token=TokIdent "toConstraint"
-<< funClause: args=[] t = TokSymbol "::"
-<< parseGuardedClause: next token=TokSymbol "::"
-<< guardedRhs: next token = TokSymbol "::"
-<< parseGuardLine: next token=TokSymbol "::"
-<< typeSigDecl: TokIdent "toConstraint"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "Type"
-<< parseTypeCore: TCon "Constraint"
-<< parseTypeCore: TFun (TCon "Type") (TCon "Constraint")
-<< parsed type signature: toConstraint :: TFun (TCon "Type") (TCon "Constraint")
-<< returning DeclTypeSig: DeclTypeSig "toConstraint" (TFun (TCon "Type") (TCon "Constraint"))
->>*declBody: e DeclTypeSig "toConstraint" (TFun (TCon "Type") (TCon "Constraint"))
-<< decl next token: TokIdent "toConstraint"
-<< decl parser called
-<< decl dispatch: TokIdent "toConstraint"
-<< funDecl: next token=TokIdent "toConstraint"
-<< funClause: next token=TokIdent "toConstraint"
-<< pConstrOrVar: next token "TApp"
-<< pConstrOrVar: next token "TCon"
-<< pConstrOrVar: next token "cls"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "cls"]
-<< pConstrOrVar: next token "arg"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]
-<< pPattern:
-    prased PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]
-<< funClause: args=[PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]] t = TokSymbol "="
-<< parseSimpleClause: next token=TokSymbol "("
-<< whereBlock: next token TokNewline
-<< funClauseWithName: next token=TokNewline
->>*funDecl name "toConstraint" clause1 FunClause [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"]))) Nothing rest []
->>*declBody: e DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"]))) Nothing]
-<< decl next token: TokIdent "toConstraint"
-<< decl parser called
-<< decl dispatch: TokIdent "toConstraint"
-<< funDecl: next token=TokIdent "toConstraint"
-<< funClause: next token=TokIdent "toConstraint"
-<< pConstrOrVar: next token "TCon"
-<< pConstrOrVar: next token "cls"
-<< pattern:
-    (pAs <|> makeCons)PApp (PVar "TCon") [PVar "cls"]
-<< pPattern:
-    prased PApp (PVar "TCon") [PVar "cls"]
-<< funClause: args=[PApp (PVar "TCon") [PVar "cls"]] t = TokSymbol "="
-<< parseSimpleClause: next token=TokSymbol "("
-<< whereBlock: next token TokNewline
-<< funClauseWithName: next token=TokNewline
->>*funDecl name "toConstraint" clause1 FunClause [PApp (PVar "TCon") [PVar "cls"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList []))) Nothing rest []
->>*declBody: e DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TCon") [PVar "cls"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList []))) Nothing]
-<< decl next token: TokIdent "toConstraint"
-<< decl parser called
-<< decl dispatch: TokIdent "toConstraint"
-<< funDecl: next token=TokIdent "toConstraint"
-<< funClause: next token=TokIdent "toConstraint"
-<< pConstrOrVar: next token "other"
-<< pPattern:
-    prased PVar "other"
-<< funClause: args=[PVar "other"] t = TokSymbol "="
-<< parseSimpleClause: next token=TokIdent "error"
-<< whereBlock: next token TokOperator "$"
-<< funClauseWithName: next token=TokOperator "$"
->>*funDecl name "toConstraint" clause1 FunClause [PVar "other"] Nothing (Just (EVar "error")) Nothing rest []
->>*declBody: e DeclFunGroup "toConstraint" [FunClause [PVar "other"] Nothing (Just (EVar "error")) Nothing]
-<< decl next token: TokOperator "$"
-<< decl parser called
-<< decl dispatch: TokOperator "$"
-<< unknown token in decl: TokOperator "$"
-Just ([DeclModule "Parser.Type.TypeParser" (Just [ExportVar "parseType",ExportVar "parseForall",ExportVar "arrowType",ExportVar "typeApp",ExportVar "typeAtom",ExportVar "typeIdent",ExportVar "constraintP",ExportVar "constraintList",ExportVar "typeP",ExportVar "constr"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isPrefixOf"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "skipNewlines"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseType" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "parseType") []) (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])]),DeclTypeSig "parseTypeCore" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "parseTypeCore") []) (EDo [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline"))),Bind (PApp (PVar "t1") []) (EVar "arrowType"),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseTypeCore: ") (EApp (EVar "show") (EVar "t1")))),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EApp (EVarType "TokKeyword") (EString "=>"))),Bind (PApp (PVar "t2") []) (EVar "parseTypeCore"),ExprStmt (EReturn (ETuple [EVar "t1",EVar "t2"]))])),ExprStmt (ECase (EVar "rest") [CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TCon") [PVar "cls"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EList [EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [])])) (EVar "body"))),CaseAlt (PApp (PVar "Just") [PTuple [PApp (PVar "TTuple") [PVar "cs"],PApp (PVar "body") []]]) (EReturn (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EVar "toConstraint")) (EVar "cs"))) (EVar "body"))),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EVar "t1")),CaseAlt (PApp (PVar "_") []) (EVar "empty")])]),DeclTypeSig "arrowType" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "arrowType") []) (EDo [Bind (PApp (PVar "t1") []) (EVar "typeApp"),Bind (PApp (PVar "rest") []) (EApp (EApp (EVar "$") (EVar "optional")) (EDo [ExprStmt (EApp (EVar "token") (EVarType "TokArrow")),ExprStmt (EApp (EApp (EVar "$") (EVar "bracesV")) (EDo [ExprStmt (EVar "parseTypeCore")]))])),ExprStmt (EReturn (EApp (EApp (EApp (EVar "maybe") (EVar "t1")) (EApp (EVarType "TFun") (EVar "t1"))) (EVar "rest")))]),DeclTypeSig "parensTuple" (TApp (TCon "Parser") (TCon "Type")),DeclValue (PApp (PVar "parensTuple") []) (EDo [ExprStmt (EApp (EVar "symbol") (EString "(")),Bind (PApp (PVar "ts") []) (EApp (EApp (EApp (EVar "parseTypeCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EApp (EVar "symbol") (EString ")")),ExprStmt (EReturn (EApp (EVarType "TTuple") (EVar "ts")))]),DeclTypeSig "toConstraint" (TFun (TCon "Type") (TCon "Constraint")),DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TApp") [PApp (PVar "TCon") [PVar "cls"],PVar "arg"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList [EVar "arg"]))) Nothing],DeclFunGroup "toConstraint" [FunClause [PApp (PVar "TCon") [PVar "cls"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EList []))) Nothing],DeclFunGroup "toConstraint" [FunClause [PVar "other"] Nothing (Just (EVar "error")) Nothing]],[TokOperator "$",TokString "Invalid constraint form: ",TokOperator "++",TokIdent "show",TokIdent "other",TokNewline,TokIdent "typeApp",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeApp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "typeTerm",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "typeTerm",TokSymbol ";",TokKeyword "return",TokOperator "$",TokIdent "foldl",TokTypeIdent "TApp",TokIdent "f",TokIdent "args",TokVRBrace,TokNewline,TokIdent "typeTerm",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeTerm",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "ts",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "foldl1",TokTypeIdent "TApp",TokIdent "ts",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeAtom",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeAtom",TokSymbol "=",TokVLBrace,TokSymbol "(",TokIdent "parens",TokIdent "parseTypeCore",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "tUnitType",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TCon",TokOperator "<$>",TokIdent "typeIdent",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TVar",TokOperator "<$>",TokIdent "ident",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "brackets",TokSymbol "(",TokTypeIdent "TList",TokOperator "<$>",TokIdent "parseTypeCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "parensTuple",TokVRBrace,TokVRBrace,TokNewline,TokIdent "tUnitType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "tUnitType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constrainedType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "constrainedType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "cs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "constraint",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokIdent "keyword",TokString "=>",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "arrowType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "parseForall",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "parseForall",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TForall",TokIdent "vars",TokIdent "body",TokVRBrace,TokNewline,TokIdent "constraint",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraint",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeApp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constraintP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintP",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "className",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "className",TokIdent "args",TokVRBrace,TokNewline,TokIdent "constraintList",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "constraintList",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokSymbol "(",TokIdent "parens",TokSymbol "(",TokIdent "constraintP",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokVLBrace,TokOperator "<|>",TokIdent "fmap",TokSymbol "(",TokOperator ":",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokIdent "constraintP",TokVRBrace,TokVRBrace,TokNewline,TokIdent "typeP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeP",TokSymbol "=",TokIdent "try",TokIdent "forallType",TokOperator "<|>",TokIdent "typeAtom",TokNewline,TokIdent "forallType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "forallType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "constrainedType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constr",TokSymbol "=",TokIdent "try",TokIdent "constraintRecord",TokOperator "<|>",TokIdent "constraintP",TokNewline,TokIdent "constraintRecord",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintRecord",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cname",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "fields",TokSymbol "<-",TokIdent "braces",TokSymbol "(",TokIdent "field",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ConstraintRecord",TokIdent "cname",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "field",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Field",TokNewline,TokIdent "field",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "symbol",TokString "::",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Field",TokIdent "name",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline])
+<< pattern: ct=620
+<< expr dispatch: TokSymbol ";" ct=620
+>>*doBlock: (f:m)[ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))]
+>>*doExprCore: stmts [ExprStmt (EApp (EVar "skipMany") (EBinOp BinOpAlt (EApp (EVar "symbol") (EString ";")) (EVar "newline")))]
+Just ([DeclModule "Parser.Type.TypeParser" (Just [ExportVar "parseType",ExportVar "parseForall",ExportVar "arrowType",ExportVar "typeApp",ExportVar "typeAtom",ExportVar "typeIdent",ExportVar "constraintP",ExportVar "constraintList",ExportVar "typeP",ExportVar "constr"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isPrefixOf"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "skipNewlines"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseType" (TApp (TCon "Parser") (TCon "Type")),DeclFunGroup "parseType" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< parseType dispatch: ") (EApp (EVar "show") (EVar "t")))),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PVar "TokVLBrace") []) (EApp (EVar "bracesV") (EVar "parseTypeCore")),CaseAlt (PApp (PVar "_") []) (EVar "parseTypeCore")])])) Nothing],DeclTypeSig "parseTypeCore" (TApp (TCon "Parser") (TCon "Type"))],[TokIdent "parseTypeCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "skipMany",TokSymbol "(",TokIdent "symbol",TokString ";",TokOperator "<|>",TokIdent "newline",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "t1",TokSymbol "<-",TokIdent "arrowType",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< parseTypeCore: ",TokOperator "++",TokIdent "show",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokIdent "rest",TokSymbol "<-",TokIdent "optional",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "token",TokSymbol "(",TokTypeIdent "TokKeyword",TokString "=>",TokSymbol ")",TokSymbol ";",TokIdent "t2",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "t1",TokSymbol ",",TokIdent "t2",TokSymbol ")",TokVRBrace,TokNewline,TokKeyword "case",TokIdent "rest",TokKeyword "of",TokSymbol ";",TokTypeIdent "Just",TokSymbol "(",TokTypeIdent "TApp",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ")",TokIdent "arg",TokSymbol ",",TokIdent "body",TokSymbol ")",TokArrow,TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TConstraint",TokSymbol "[",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "arg",TokSymbol "]",TokSymbol "]",TokIdent "body",TokSymbol ";",TokTypeIdent "Just",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ",",TokIdent "body",TokSymbol ")",TokArrow,TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TConstraint",TokSymbol "[",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokSymbol "]",TokSymbol "]",TokIdent "body",TokSymbol ";",TokTypeIdent "Just",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "cs",TokSymbol ",",TokIdent "body",TokSymbol ")",TokArrow,TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TConstraint",TokSymbol "(",TokIdent "map",TokIdent "toConstraint",TokIdent "cs",TokSymbol ")",TokIdent "body",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokIdent "t1",TokSymbol ";",TokIdent "_",TokArrow,TokIdent "empty",TokVRBrace,TokNewline,TokIdent "arrowType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "arrowType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t1",TokSymbol "<-",TokIdent "typeApp",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokIdent "rest",TokSymbol "<-",TokIdent "optional",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokArrow",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "parseTypeCore",TokVRBrace,TokNewline,TokVRBrace,TokNewline,TokKeyword "return",TokOperator "$",TokIdent "maybe",TokIdent "t1",TokSymbol "(",TokTypeIdent "TFun",TokIdent "t1",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "parensTuple",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "parensTuple",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "ts",TokSymbol "<-",TokIdent "parseTypeCore",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "toConstraint",TokSymbol "::",TokTypeIdent "Type",TokArrow,TokTypeIdent "Constraint",TokNewline,TokIdent "toConstraint",TokSymbol "(",TokTypeIdent "TApp",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ")",TokIdent "arg",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "arg",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "toConstraint",TokSymbol "(",TokTypeIdent "TCon",TokIdent "cls",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "toConstraint",TokIdent "other",TokSymbol "=",TokIdent "error",TokOperator "$",TokString "Invalid constraint form: ",TokOperator "++",TokIdent "show",TokIdent "other",TokNewline,TokIdent "typeApp",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeApp",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "typeTerm",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "typeTerm",TokSymbol ";",TokKeyword "return",TokOperator "$",TokIdent "foldl",TokTypeIdent "TApp",TokIdent "f",TokIdent "args",TokVRBrace,TokNewline,TokIdent "typeTerm",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeTerm",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "ts",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "foldl1",TokTypeIdent "TApp",TokIdent "ts",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "typeAtom",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeAtom",TokSymbol "=",TokSymbol ";",TokSymbol "(",TokIdent "parens",TokIdent "parseTypeCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "tUnitType",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TCon",TokOperator "<$>",TokIdent "typeIdent",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "TVar",TokOperator "<$>",TokIdent "ident",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "brackets",TokSymbol "(",TokTypeIdent "TList",TokOperator "<$>",TokIdent "parseTypeCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "parensTuple",TokSymbol ";",TokIdent "tUnitType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "tUnitType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constrainedType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "constrainedType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "cs",TokSymbol "<-",TokIdent "sepBy1",TokIdent "constraint",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokIdent "keyword",TokString "=>",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "arrowType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "parseForall",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "parseForall",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "body",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "TForall",TokIdent "vars",TokIdent "body",TokVRBrace,TokNewline,TokIdent "constraint",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraint",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cls",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "typeApp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "[",TokIdent "ty",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constraintP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintP",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "className",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "some",TokIdent "typeAtom",TokSymbol ";",TokKeyword "return",TokOperator "$",TokTypeIdent "Constraint",TokIdent "className",TokIdent "args",TokVRBrace,TokNewline,TokIdent "constraintList",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokNewline,TokIdent "constraintList",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokSymbol "(",TokIdent "parens",TokSymbol "(",TokIdent "constraintP",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "fmap",TokSymbol "(",TokOperator ":",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokIdent "constraintP",TokVRBrace,TokNewline,TokIdent "typeP",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "typeP",TokSymbol "=",TokIdent "try",TokIdent "forallType",TokOperator "<|>",TokIdent "typeAtom",TokNewline,TokIdent "forallType",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Type",TokNewline,TokIdent "forallType",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "token",TokTypeIdent "TokForall",TokSymbol ";",TokIdent "vars",TokSymbol "<-",TokIdent "some",TokIdent "ident",TokSymbol ";",TokIdent "token",TokSymbol "(",TokTypeIdent "TokOperator",TokString ".",TokSymbol ")",TokSymbol ";",TokIdent "t",TokSymbol "<-",TokIdent "constrainedType",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "constr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constr",TokSymbol "=",TokIdent "try",TokIdent "constraintRecord",TokOperator "<|>",TokIdent "constraintP",TokNewline,TokIdent "constraintRecord",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Constraint",TokNewline,TokIdent "constraintRecord",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "cname",TokSymbol "<-",TokIdent "typeIdent",TokSymbol ";",TokIdent "fields",TokSymbol "<-",TokIdent "braces",TokSymbol "(",TokIdent "field",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ConstraintRecord",TokIdent "cname",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "field",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Field",TokNewline,TokIdent "field",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "symbol",TokString "::",TokSymbol ";",TokIdent "ty",TokSymbol "<-",TokIdent "parseTypeCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "Field",TokIdent "name",TokIdent "ty",TokSymbol ")",TokVRBrace,TokNewline])
 
 -- src code --
 {-# LANGUAGE LambdaCase #-}
@@ -1041,164 +499,162 @@ field = do
 
 
 -- token --
-[0] TokNewline          TokKeyword "module" TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Type" 
-[5] TokOperator "."     TokTypeIdent "TypePaTokVLBrace          TokSymbol "("       TokIdent "parseType"
-[10] TokSymbol ","       TokSymbol ";"       TokIdent "parseForalTokSymbol ","       TokSymbol ";"       
-[15] TokIdent "arrowType"TokSymbol ","       TokSymbol ";"       TokIdent "typeApp"  TokSymbol ","       
-[20] TokSymbol ";"       TokIdent "typeAtom" TokSymbol ","       TokSymbol ";"       TokIdent "typeIdent"
-[25] TokSymbol ","       TokSymbol ";"       TokIdent "constraintTokSymbol ","       TokSymbol ";"       
-[30] TokIdent "constraintTokSymbol ","       TokSymbol ";"       TokIdent "typeP"    TokSymbol ","       
-[35] TokSymbol ";"       TokIdent "constr"   TokSymbol ","       TokSymbol ";"       TokSymbol ")"       
-[40] TokVRBrace          TokNewline          TokKeyword "where"  TokNewline          TokKeyword "import" 
-[45] TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Decl" TokNewline          TokKeyword "import" 
-[50] TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Expr" TokNewline          TokKeyword "import" 
-[55] TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Type" TokNewline          TokKeyword "import" 
-[60] TokTypeIdent "ControTokOperator "."     TokTypeIdent "ApplicTokNewline          TokKeyword "import" 
-[65] TokTypeIdent "Data" TokOperator "."     TokTypeIdent "Char" TokSymbol "("       TokIdent "isUpper"  
-[70] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "Data" TokOperator "."     
-[75] TokTypeIdent "List" TokSymbol "("       TokIdent "isPrefixOfTokSymbol ")"       TokNewline          
-[80] TokKeyword "import" TokTypeIdent "Lexer"TokOperator "."     TokTypeIdent "Token"TokSymbol "("       
-[85] TokTypeIdent "Token"TokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       
-[90] TokNewline          TokKeyword "import" TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Core" 
-[95] TokOperator "."     TokTypeIdent "CombinTokNewline          TokKeyword "import" TokTypeIdent "Parser
-[100] TokOperator "."     TokTypeIdent "Core" TokOperator "."     TokTypeIdent "TokenPTokNewline          
-[105] TokKeyword "import" TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Core" TokOperator "."     
-[110] TokTypeIdent "TokenPTokSymbol "("       TokIdent "skipNewlinTokSymbol ")"       TokNewline          
-[115] TokKeyword "import" TokTypeIdent "Utils"TokOperator "."     TokTypeIdent "MyTracTokNewline          
-[120] TokIdent "parseType"TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          
-[125] TokIdent "parseType"TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t"        
-[130] TokSymbol "<-"      TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  
-[135] TokSymbol "("       TokString "<< parseTTokOperator "++"    TokIdent "show"     TokIdent "t"        
-[140] TokSymbol ")"       TokSymbol ";"       TokKeyword "case"   TokIdent "t"        TokKeyword "of"     
-[145] TokVLBrace          TokTypeIdent "TokVLBTokArrow            TokIdent "bracesV"  TokIdent "parseTypeC
-[150] TokSymbol ";"       TokIdent "_"        TokArrow            TokIdent "parseTypeCTokVRBrace          
-[155] TokVRBrace          TokNewline          TokIdent "parseTypeCTokSymbol "::"      TokTypeIdent "Parser
-[160] TokTypeIdent "Type" TokNewline          TokIdent "parseTypeCTokSymbol "="       TokKeyword "do"     
-[165] TokVLBrace          TokIdent "skipMany" TokSymbol "("       TokIdent "symbol"   TokString ";"       
-[170] TokOperator "<|>"   TokIdent "newline"  TokSymbol ")"       TokSymbol ";"       TokSymbol ";"       
-[175] TokSymbol ";"       TokIdent "t1"       TokSymbol "<-"      TokIdent "arrowType"TokSymbol ";"       
-[180] TokIdent "myTrace"  TokSymbol "("       TokString "<< parseTTokOperator "++"    TokIdent "show"     
-[185] TokIdent "t1"       TokSymbol ")"       TokSymbol ";"       TokIdent "rest"     TokSymbol "<-"      
-[190] TokIdent "optional" TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "token"    
-[195] TokSymbol "("       TokTypeIdent "TokKeyTokString "=>"      TokSymbol ")"       TokSymbol ";"       
-[200] TokIdent "t2"       TokSymbol "<-"      TokIdent "parseTypeCTokSymbol ";"       TokKeyword "return" 
-[205] TokSymbol "("       TokIdent "t1"       TokSymbol ","       TokIdent "t2"       TokSymbol ")"       
-[210] TokVRBrace          TokNewline          TokKeyword "case"   TokIdent "rest"     TokKeyword "of"     
-[215] TokVLBrace          TokTypeIdent "Just" TokSymbol "("       TokTypeIdent "TApp" TokSymbol "("       
-[220] TokTypeIdent "TCon" TokIdent "cls"      TokSymbol ")"       TokIdent "arg"      TokSymbol ","       
-[225] TokIdent "body"     TokSymbol ")"       TokArrow            TokVLBrace          TokKeyword "return" 
-[230] TokOperator "$"     TokTypeIdent "TConstTokSymbol "["       TokTypeIdent "ConstrTokIdent "cls"      
-[235] TokSymbol "["       TokIdent "arg"      TokSymbol "]"       TokSymbol "]"       TokIdent "body"     
-[240] TokVRBrace          TokNewline          TokTypeIdent "Just" TokSymbol "("       TokTypeIdent "TCon" 
-[245] TokIdent "cls"      TokSymbol ","       TokIdent "body"     TokSymbol ")"       TokArrow            
-[250] TokVLBrace          TokKeyword "return" TokOperator "$"     TokTypeIdent "TConstTokSymbol "["       
-[255] TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "["       TokSymbol "]"       TokSymbol "]"       
-[260] TokIdent "body"     TokVRBrace          TokNewline          TokTypeIdent "Just" TokSymbol "("       
-[265] TokTypeIdent "TTupleTokIdent "cs"       TokSymbol ","       TokIdent "body"     TokSymbol ")"       
-[270] TokArrow            TokVLBrace          TokKeyword "return" TokOperator "$"     TokTypeIdent "TConst
-[275] TokSymbol "("       TokIdent "map"      TokIdent "toConstraiTokIdent "cs"       TokSymbol ")"       
-[280] TokIdent "body"     TokVRBrace          TokNewline          TokTypeIdent "NothinTokArrow            
-[285] TokKeyword "return" TokIdent "t1"       TokSymbol ";"       TokIdent "_"        TokArrow            
-[290] TokIdent "empty"    TokVRBrace          TokVRBrace          TokNewline          TokIdent "arrowType"
-[295] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "arrowType"
-[300] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t1"       TokSymbol "<-"      
-[305] TokIdent "typeApp"  TokSymbol ";"       TokSymbol ";"       TokSymbol ";"       TokIdent "rest"     
-[310] TokSymbol "<-"      TokIdent "optional" TokOperator "$"     TokKeyword "do"     TokVLBrace          
-[315] TokIdent "token"    TokTypeIdent "TokArrTokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     
-[320] TokKeyword "do"     TokVLBrace          TokIdent "parseTypeCTokVRBrace          TokVRBrace          
-[325] TokNewline          TokKeyword "return" TokOperator "$"     TokIdent "maybe"    TokIdent "t1"       
-[330] TokSymbol "("       TokTypeIdent "TFun" TokIdent "t1"       TokSymbol ")"       TokIdent "rest"     
-[335] TokVRBrace          TokNewline          TokIdent "parensTuplTokSymbol "::"      TokTypeIdent "Parser
-[340] TokTypeIdent "Type" TokNewline          TokIdent "parensTuplTokSymbol "="       TokKeyword "do"     
-[345] TokVLBrace          TokIdent "symbol"   TokString "("       TokSymbol ";"       TokIdent "ts"       
-[350] TokSymbol "<-"      TokIdent "parseTypeCTokIdent "sepBy1"   TokIdent "symbol"   TokString ","       
-[355] TokSymbol ";"       TokIdent "symbol"   TokString ")"       TokSymbol ";"       TokKeyword "return" 
-[360] TokSymbol "("       TokTypeIdent "TTupleTokIdent "ts"       TokSymbol ")"       TokVRBrace          
-[365] TokNewline          TokIdent "toConstraiTokSymbol "::"      TokTypeIdent "Type" TokArrow            
-[370] TokTypeIdent "ConstrTokNewline          TokIdent "toConstraiTokSymbol "("       TokTypeIdent "TApp" 
-[375] TokSymbol "("       TokTypeIdent "TCon" TokIdent "cls"      TokSymbol ")"       TokIdent "arg"      
-[380] TokSymbol ")"       TokSymbol "="       TokSymbol "("       TokTypeIdent "ConstrTokIdent "cls"      
-[385] TokSymbol "["       TokIdent "arg"      TokSymbol "]"       TokSymbol ")"       TokNewline          
-[390] TokIdent "toConstraiTokSymbol "("       TokTypeIdent "TCon" TokIdent "cls"      TokSymbol ")"       
-[395] TokSymbol "="       TokSymbol "("       TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "["       
-[400] TokSymbol "]"       TokSymbol ")"       TokNewline          TokIdent "toConstraiTokIdent "other"    
-[405] TokSymbol "="       TokIdent "error"    TokOperator "$"     TokString "Invalid cTokOperator "++"    
-[410] TokIdent "show"     TokIdent "other"    TokNewline          TokIdent "typeApp"  TokSymbol "::"      
-[415] TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "typeApp"  TokSymbol "="       
-[420] TokKeyword "do"     TokVLBrace          TokIdent "f"        TokSymbol "<-"      TokIdent "typeTerm" 
-[425] TokSymbol ";"       TokIdent "args"     TokSymbol "<-"      TokIdent "many"     TokIdent "typeTerm" 
-[430] TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokIdent "foldl"    TokTypeIdent "TApp" 
-[435] TokIdent "f"        TokIdent "args"     TokVRBrace          TokNewline          TokIdent "typeTerm" 
-[440] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "typeTerm" 
-[445] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "ts"       TokSymbol "<-"      
-[450] TokIdent "some"     TokIdent "typeAtom" TokSymbol ";"       TokKeyword "return" TokSymbol "("       
-[455] TokIdent "foldl1"   TokTypeIdent "TApp" TokIdent "ts"       TokSymbol ")"       TokVRBrace          
-[460] TokNewline          TokIdent "typeAtom" TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" 
-[465] TokNewline          TokIdent "typeAtom" TokSymbol "="       TokVLBrace          TokSymbol "("       
-[470] TokIdent "parens"   TokIdent "parseTypeCTokSymbol ")"       TokVLBrace          TokOperator "<|>"   
-[475] TokIdent "tUnitType"TokSymbol ";"       TokOperator "<|>"   TokSymbol "("       TokTypeIdent "TCon" 
-[480] TokOperator "<$>"   TokIdent "typeIdent"TokSymbol ")"       TokSymbol ";"       TokOperator "<|>"   
-[485] TokSymbol "("       TokTypeIdent "TVar" TokOperator "<$>"   TokIdent "ident"    TokSymbol ")"       
-[490] TokSymbol ";"       TokOperator "<|>"   TokIdent "brackets" TokSymbol "("       TokTypeIdent "TList"
-[495] TokOperator "<$>"   TokIdent "parseTypeCTokSymbol ")"       TokSymbol ";"       TokOperator "<|>"   
-[500] TokIdent "parensTuplTokVRBrace          TokVRBrace          TokNewline          TokIdent "tUnitType"
-[505] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "tUnitType"
-[510] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "symbol"   TokString "("       
-[515] TokSymbol ";"       TokIdent "symbol"   TokString ")"       TokSymbol ";"       TokKeyword "return" 
-[520] TokSymbol "("       TokTypeIdent "TUnit"TokSymbol ")"       TokVRBrace          TokNewline          
-[525] TokIdent "constraineTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          
-[530] TokIdent "constraineTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "symbol"   
-[535] TokString "("       TokSymbol ";"       TokIdent "cs"       TokSymbol "<-"      TokIdent "sepBy1"   
-[540] TokIdent "constraintTokSymbol "("       TokIdent "symbol"   TokString ","       TokSymbol ")"       
-[545] TokSymbol ";"       TokIdent "symbol"   TokString ")"       TokSymbol ";"       TokIdent "keyword"  
-[550] TokString "=>"      TokSymbol ";"       TokIdent "ty"       TokSymbol "<-"      TokIdent "arrowType"
-[555] TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "TConstTokIdent "cs"       
-[560] TokIdent "ty"       TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "parseForal
-[565] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "parseForal
-[570] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "token"    TokTypeIdent "TokFor
-[575] TokSymbol ";"       TokIdent "vars"     TokSymbol "<-"      TokIdent "some"     TokIdent "ident"    
-[580] TokSymbol ";"       TokIdent "token"    TokSymbol "("       TokTypeIdent "TokOpeTokString "."       
-[585] TokSymbol ")"       TokSymbol ";"       TokIdent "body"     TokSymbol "<-"      TokIdent "parseTypeC
-[590] TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokTypeIdent "TForalTokIdent "vars"     
-[595] TokIdent "body"     TokVRBrace          TokNewline          TokIdent "constraintTokSymbol "::"      
-[600] TokTypeIdent "ParserTokTypeIdent "ConstrTokNewline          TokIdent "constraintTokSymbol "="       
-[605] TokKeyword "do"     TokVLBrace          TokIdent "cls"      TokSymbol "<-"      TokIdent "ident"    
-[610] TokSymbol ";"       TokIdent "ty"       TokSymbol "<-"      TokIdent "typeApp"  TokSymbol ";"       
-[615] TokKeyword "return" TokSymbol "("       TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "["       
-[620] TokIdent "ty"       TokSymbol "]"       TokSymbol ")"       TokVRBrace          TokNewline          
-[625] TokIdent "constraintTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "ConstrTokNewline          
-[630] TokIdent "constraintTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "className"
-[635] TokSymbol "<-"      TokIdent "typeIdent"TokSymbol ";"       TokIdent "args"     TokSymbol "<-"      
-[640] TokIdent "some"     TokIdent "typeAtom" TokSymbol ";"       TokKeyword "return" TokOperator "$"     
-[645] TokTypeIdent "ConstrTokIdent "className"TokIdent "args"     TokVRBrace          TokNewline          
-[650] TokIdent "constraintTokSymbol "::"      TokTypeIdent "ParserTokSymbol "["       TokTypeIdent "Constr
-[655] TokSymbol "]"       TokNewline          TokIdent "constraintTokSymbol "="       TokKeyword "do"     
-[660] TokVLBrace          TokIdent "try"      TokSymbol "("       TokIdent "parens"   TokSymbol "("       
-[665] TokIdent "constraintTokIdent "sepBy1"   TokIdent "symbol"   TokString ","       TokSymbol ")"       
-[670] TokSymbol ")"       TokVLBrace          TokOperator "<|>"   TokIdent "fmap"     TokSymbol "("       
-[675] TokOperator ":"     TokSymbol "["       TokSymbol "]"       TokSymbol ")"       TokIdent "constraint
-[680] TokVRBrace          TokVRBrace          TokNewline          TokIdent "typeP"    TokSymbol "::"      
-[685] TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "typeP"    TokSymbol "="       
-[690] TokIdent "try"      TokIdent "forallTypeTokOperator "<|>"   TokIdent "typeAtom" TokNewline          
-[695] TokIdent "forallTypeTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          
-[700] TokIdent "forallTypeTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "token"    
-[705] TokTypeIdent "TokForTokSymbol ";"       TokIdent "vars"     TokSymbol "<-"      TokIdent "some"     
-[710] TokIdent "ident"    TokSymbol ";"       TokIdent "token"    TokSymbol "("       TokTypeIdent "TokOpe
-[715] TokString "."       TokSymbol ")"       TokSymbol ";"       TokIdent "t"        TokSymbol "<-"      
-[720] TokIdent "constraineTokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "TForal
-[725] TokIdent "vars"     TokIdent "t"        TokSymbol ")"       TokVRBrace          TokNewline          
-[730] TokIdent "constr"   TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "ConstrTokNewline          
-[735] TokIdent "constr"   TokSymbol "="       TokIdent "try"      TokIdent "constraintTokOperator "<|>"   
-[740] TokIdent "constraintTokNewline          TokIdent "constraintTokSymbol "::"      TokTypeIdent "Parser
-[745] TokTypeIdent "ConstrTokNewline          TokIdent "constraintTokSymbol "="       TokKeyword "do"     
-[750] TokVLBrace          TokIdent "cname"    TokSymbol "<-"      TokIdent "typeIdent"TokSymbol ";"       
-[755] TokIdent "fields"   TokSymbol "<-"      TokIdent "braces"   TokSymbol "("       TokIdent "field"    
-[760] TokIdent "sepBy1"   TokIdent "symbol"   TokString ","       TokSymbol ")"       TokSymbol ";"       
-[765] TokKeyword "return" TokSymbol "("       TokTypeIdent "ConstrTokIdent "cname"    TokIdent "fields"   
-[770] TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "field"    TokSymbol "::"      
-[775] TokTypeIdent "ParserTokTypeIdent "Field"TokNewline          TokIdent "field"    TokSymbol "="       
-[780] TokKeyword "do"     TokVLBrace          TokIdent "name"     TokSymbol "<-"      TokIdent "ident"    
-[785] TokSymbol ";"       TokIdent "symbol"   TokString "::"      TokSymbol ";"       TokIdent "ty"       
-[790] TokSymbol "<-"      TokIdent "parseTypeCTokSymbol ";"       TokKeyword "return" TokSymbol "("       
-[795] TokTypeIdent "Field"TokIdent "name"     TokIdent "ty"       TokSymbol ")"       TokVRBrace          
-[800] TokNewline          
+[790] TokNewline          TokKeyword "module" TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Type" 
+[785] TokOperator "."     TokTypeIdent "TypePaTokSymbol ";"       TokSymbol "("       TokIdent "parseType"
+[780] TokSymbol ","       TokSymbol ";"       TokIdent "parseForalTokSymbol ","       TokSymbol ";"       
+[775] TokIdent "arrowType"TokSymbol ","       TokSymbol ";"       TokIdent "typeApp"  TokSymbol ","       
+[770] TokSymbol ";"       TokIdent "typeAtom" TokSymbol ","       TokSymbol ";"       TokIdent "typeIdent"
+[765] TokSymbol ","       TokSymbol ";"       TokIdent "constraintTokSymbol ","       TokSymbol ";"       
+[760] TokIdent "constraintTokSymbol ","       TokSymbol ";"       TokIdent "typeP"    TokSymbol ","       
+[755] TokSymbol ";"       TokIdent "constr"   TokSymbol ","       TokSymbol ";"       TokSymbol ")"       
+[750] TokSymbol ";"       TokKeyword "where"  TokNewline          TokKeyword "import" TokTypeIdent "AST"  
+[745] TokOperator "."     TokTypeIdent "Decl" TokNewline          TokKeyword "import" TokTypeIdent "AST"  
+[740] TokOperator "."     TokTypeIdent "Expr" TokNewline          TokKeyword "import" TokTypeIdent "AST"  
+[735] TokOperator "."     TokTypeIdent "Type" TokNewline          TokKeyword "import" TokTypeIdent "Contro
+[730] TokOperator "."     TokTypeIdent "ApplicTokNewline          TokKeyword "import" TokTypeIdent "Data" 
+[725] TokOperator "."     TokTypeIdent "Char" TokSymbol "("       TokIdent "isUpper"  TokSymbol ")"       
+[720] TokNewline          TokKeyword "import" TokTypeIdent "Data" TokOperator "."     TokTypeIdent "List" 
+[715] TokSymbol "("       TokIdent "isPrefixOfTokSymbol ")"       TokNewline          TokKeyword "import" 
+[710] TokTypeIdent "Lexer"TokOperator "."     TokTypeIdent "Token"TokSymbol "("       TokTypeIdent "Token"
+[705] TokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       TokNewline          
+[700] TokKeyword "import" TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Core" TokOperator "."     
+[695] TokTypeIdent "CombinTokNewline          TokKeyword "import" TokTypeIdent "ParserTokOperator "."     
+[690] TokTypeIdent "Core" TokOperator "."     TokTypeIdent "TokenPTokNewline          TokKeyword "import" 
+[685] TokTypeIdent "ParserTokOperator "."     TokTypeIdent "Core" TokOperator "."     TokTypeIdent "TokenP
+[680] TokSymbol "("       TokIdent "skipNewlinTokSymbol ")"       TokNewline          TokKeyword "import" 
+[675] TokTypeIdent "Utils"TokOperator "."     TokTypeIdent "MyTracTokNewline          TokIdent "parseType"
+[670] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "parseType"
+[665] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "t"        TokSymbol "<-"      
+[660] TokIdent "lookAhead"TokIdent "anyToken" TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[655] TokString "<< parseTTokOperator "++"    TokIdent "show"     TokIdent "t"        TokSymbol ")"       
+[650] TokSymbol ";"       TokKeyword "case"   TokIdent "t"        TokKeyword "of"     TokSymbol ";"       
+[645] TokTypeIdent "TokVLBTokArrow            TokIdent "bracesV"  TokIdent "parseTypeCTokSymbol ";"       
+[640] TokIdent "_"        TokArrow            TokIdent "parseTypeCTokVRBrace          TokNewline          
+[635] TokIdent "parseTypeCTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          
+[630] TokIdent "parseTypeCTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "skipMany" 
+[625] TokSymbol "("       TokIdent "symbol"   TokString ";"       TokOperator "<|>"   TokIdent "newline"  
+[620] TokSymbol ")"       TokSymbol ";"       TokSymbol ";"       TokSymbol ";"       TokIdent "t1"       
+[615] TokSymbol "<-"      TokIdent "arrowType"TokSymbol ";"       TokIdent "myTrace"  TokSymbol "("       
+[610] TokString "<< parseTTokOperator "++"    TokIdent "show"     TokIdent "t1"       TokSymbol ")"       
+[605] TokSymbol ";"       TokIdent "rest"     TokSymbol "<-"      TokIdent "optional" TokOperator "$"     
+[600] TokKeyword "do"     TokVLBrace          TokIdent "token"    TokSymbol "("       TokTypeIdent "TokKey
+[595] TokString "=>"      TokSymbol ")"       TokSymbol ";"       TokIdent "t2"       TokSymbol "<-"      
+[590] TokIdent "parseTypeCTokSymbol ";"       TokKeyword "return" TokSymbol "("       TokIdent "t1"       
+[585] TokSymbol ","       TokIdent "t2"       TokSymbol ")"       TokVRBrace          TokNewline          
+[580] TokKeyword "case"   TokIdent "rest"     TokKeyword "of"     TokSymbol ";"       TokTypeIdent "Just" 
+[575] TokSymbol "("       TokTypeIdent "TApp" TokSymbol "("       TokTypeIdent "TCon" TokIdent "cls"      
+[570] TokSymbol ")"       TokIdent "arg"      TokSymbol ","       TokIdent "body"     TokSymbol ")"       
+[565] TokArrow            TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokTypeIdent "TConst
+[560] TokSymbol "["       TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "["       TokIdent "arg"      
+[555] TokSymbol "]"       TokSymbol "]"       TokIdent "body"     TokSymbol ";"       TokTypeIdent "Just" 
+[550] TokSymbol "("       TokTypeIdent "TCon" TokIdent "cls"      TokSymbol ","       TokIdent "body"     
+[545] TokSymbol ")"       TokArrow            TokSymbol ";"       TokKeyword "return" TokOperator "$"     
+[540] TokTypeIdent "TConstTokSymbol "["       TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "["       
+[535] TokSymbol "]"       TokSymbol "]"       TokIdent "body"     TokSymbol ";"       TokTypeIdent "Just" 
+[530] TokSymbol "("       TokTypeIdent "TTupleTokIdent "cs"       TokSymbol ","       TokIdent "body"     
+[525] TokSymbol ")"       TokArrow            TokSymbol ";"       TokKeyword "return" TokOperator "$"     
+[520] TokTypeIdent "TConstTokSymbol "("       TokIdent "map"      TokIdent "toConstraiTokIdent "cs"       
+[515] TokSymbol ")"       TokIdent "body"     TokSymbol ";"       TokTypeIdent "NothinTokArrow            
+[510] TokKeyword "return" TokIdent "t1"       TokSymbol ";"       TokIdent "_"        TokArrow            
+[505] TokIdent "empty"    TokVRBrace          TokNewline          TokIdent "arrowType"TokSymbol "::"      
+[500] TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "arrowType"TokSymbol "="       
+[495] TokKeyword "do"     TokVLBrace          TokIdent "t1"       TokSymbol "<-"      TokIdent "typeApp"  
+[490] TokSymbol ";"       TokSymbol ";"       TokSymbol ";"       TokIdent "rest"     TokSymbol "<-"      
+[485] TokIdent "optional" TokOperator "$"     TokKeyword "do"     TokVLBrace          TokIdent "token"    
+[480] TokTypeIdent "TokArrTokSymbol ";"       TokIdent "bracesV"  TokOperator "$"     TokKeyword "do"     
+[475] TokVLBrace          TokIdent "parseTypeCTokVRBrace          TokNewline          TokVRBrace          
+[470] TokNewline          TokKeyword "return" TokOperator "$"     TokIdent "maybe"    TokIdent "t1"       
+[465] TokSymbol "("       TokTypeIdent "TFun" TokIdent "t1"       TokSymbol ")"       TokIdent "rest"     
+[460] TokVRBrace          TokNewline          TokIdent "parensTuplTokSymbol "::"      TokTypeIdent "Parser
+[455] TokTypeIdent "Type" TokNewline          TokIdent "parensTuplTokSymbol "="       TokKeyword "do"     
+[450] TokVLBrace          TokIdent "symbol"   TokString "("       TokSymbol ";"       TokIdent "ts"       
+[445] TokSymbol "<-"      TokIdent "parseTypeCTokIdent "sepBy1"   TokIdent "symbol"   TokString ","       
+[440] TokSymbol ";"       TokIdent "symbol"   TokString ")"       TokSymbol ";"       TokKeyword "return" 
+[435] TokSymbol "("       TokTypeIdent "TTupleTokIdent "ts"       TokSymbol ")"       TokVRBrace          
+[430] TokNewline          TokIdent "toConstraiTokSymbol "::"      TokTypeIdent "Type" TokArrow            
+[425] TokTypeIdent "ConstrTokNewline          TokIdent "toConstraiTokSymbol "("       TokTypeIdent "TApp" 
+[420] TokSymbol "("       TokTypeIdent "TCon" TokIdent "cls"      TokSymbol ")"       TokIdent "arg"      
+[415] TokSymbol ")"       TokSymbol "="       TokSymbol "("       TokTypeIdent "ConstrTokIdent "cls"      
+[410] TokSymbol "["       TokIdent "arg"      TokSymbol "]"       TokSymbol ")"       TokNewline          
+[405] TokIdent "toConstraiTokSymbol "("       TokTypeIdent "TCon" TokIdent "cls"      TokSymbol ")"       
+[400] TokSymbol "="       TokSymbol "("       TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "["       
+[395] TokSymbol "]"       TokSymbol ")"       TokNewline          TokIdent "toConstraiTokIdent "other"    
+[390] TokSymbol "="       TokIdent "error"    TokOperator "$"     TokString "Invalid cTokOperator "++"    
+[385] TokIdent "show"     TokIdent "other"    TokNewline          TokIdent "typeApp"  TokSymbol "::"      
+[380] TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "typeApp"  TokSymbol "="       
+[375] TokKeyword "do"     TokVLBrace          TokIdent "f"        TokSymbol "<-"      TokIdent "typeTerm" 
+[370] TokSymbol ";"       TokIdent "args"     TokSymbol "<-"      TokIdent "many"     TokIdent "typeTerm" 
+[365] TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokIdent "foldl"    TokTypeIdent "TApp" 
+[360] TokIdent "f"        TokIdent "args"     TokVRBrace          TokNewline          TokIdent "typeTerm" 
+[355] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "typeTerm" 
+[350] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "ts"       TokSymbol "<-"      
+[345] TokIdent "some"     TokIdent "typeAtom" TokSymbol ";"       TokKeyword "return" TokSymbol "("       
+[340] TokIdent "foldl1"   TokTypeIdent "TApp" TokIdent "ts"       TokSymbol ")"       TokVRBrace          
+[335] TokNewline          TokIdent "typeAtom" TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" 
+[330] TokNewline          TokIdent "typeAtom" TokSymbol "="       TokSymbol ";"       TokSymbol "("       
+[325] TokIdent "parens"   TokIdent "parseTypeCTokSymbol ")"       TokSymbol ";"       TokOperator "<|>"   
+[320] TokIdent "tUnitType"TokSymbol ";"       TokOperator "<|>"   TokSymbol "("       TokTypeIdent "TCon" 
+[315] TokOperator "<$>"   TokIdent "typeIdent"TokSymbol ")"       TokSymbol ";"       TokOperator "<|>"   
+[310] TokSymbol "("       TokTypeIdent "TVar" TokOperator "<$>"   TokIdent "ident"    TokSymbol ")"       
+[305] TokSymbol ";"       TokOperator "<|>"   TokIdent "brackets" TokSymbol "("       TokTypeIdent "TList"
+[300] TokOperator "<$>"   TokIdent "parseTypeCTokSymbol ")"       TokSymbol ";"       TokOperator "<|>"   
+[295] TokIdent "parensTuplTokSymbol ";"       TokIdent "tUnitType"TokSymbol "::"      TokTypeIdent "Parser
+[290] TokTypeIdent "Type" TokNewline          TokIdent "tUnitType"TokSymbol "="       TokKeyword "do"     
+[285] TokVLBrace          TokIdent "symbol"   TokString "("       TokSymbol ";"       TokIdent "symbol"   
+[280] TokString ")"       TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "TUnit"
+[275] TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "constraineTokSymbol "::"      
+[270] TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          TokIdent "constraineTokSymbol "="       
+[265] TokKeyword "do"     TokVLBrace          TokIdent "symbol"   TokString "("       TokSymbol ";"       
+[260] TokIdent "cs"       TokSymbol "<-"      TokIdent "sepBy1"   TokIdent "constraintTokSymbol "("       
+[255] TokIdent "symbol"   TokString ","       TokSymbol ")"       TokSymbol ";"       TokIdent "symbol"   
+[250] TokString ")"       TokSymbol ";"       TokIdent "keyword"  TokString "=>"      TokSymbol ";"       
+[245] TokIdent "ty"       TokSymbol "<-"      TokIdent "arrowType"TokSymbol ";"       TokKeyword "return" 
+[240] TokSymbol "("       TokTypeIdent "TConstTokIdent "cs"       TokIdent "ty"       TokSymbol ")"       
+[235] TokVRBrace          TokNewline          TokIdent "parseForalTokSymbol "::"      TokTypeIdent "Parser
+[230] TokTypeIdent "Type" TokNewline          TokIdent "parseForalTokSymbol "="       TokKeyword "do"     
+[225] TokVLBrace          TokIdent "token"    TokTypeIdent "TokForTokSymbol ";"       TokIdent "vars"     
+[220] TokSymbol "<-"      TokIdent "some"     TokIdent "ident"    TokSymbol ";"       TokIdent "token"    
+[215] TokSymbol "("       TokTypeIdent "TokOpeTokString "."       TokSymbol ")"       TokSymbol ";"       
+[210] TokIdent "body"     TokSymbol "<-"      TokIdent "parseTypeCTokSymbol ";"       TokKeyword "return" 
+[205] TokOperator "$"     TokTypeIdent "TForalTokIdent "vars"     TokIdent "body"     TokVRBrace          
+[200] TokNewline          TokIdent "constraintTokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Constr
+[195] TokNewline          TokIdent "constraintTokSymbol "="       TokKeyword "do"     TokVLBrace          
+[190] TokIdent "cls"      TokSymbol "<-"      TokIdent "ident"    TokSymbol ";"       TokIdent "ty"       
+[185] TokSymbol "<-"      TokIdent "typeApp"  TokSymbol ";"       TokKeyword "return" TokSymbol "("       
+[180] TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "["       TokIdent "ty"       TokSymbol "]"       
+[175] TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "constraintTokSymbol "::"      
+[170] TokTypeIdent "ParserTokTypeIdent "ConstrTokNewline          TokIdent "constraintTokSymbol "="       
+[165] TokKeyword "do"     TokVLBrace          TokIdent "className"TokSymbol "<-"      TokIdent "typeIdent"
+[160] TokSymbol ";"       TokIdent "args"     TokSymbol "<-"      TokIdent "some"     TokIdent "typeAtom" 
+[155] TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokTypeIdent "ConstrTokIdent "className"
+[150] TokIdent "args"     TokVRBrace          TokNewline          TokIdent "constraintTokSymbol "::"      
+[145] TokTypeIdent "ParserTokSymbol "["       TokTypeIdent "ConstrTokSymbol "]"       TokNewline          
+[140] TokIdent "constraintTokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "try"      
+[135] TokSymbol "("       TokIdent "parens"   TokSymbol "("       TokIdent "constraintTokIdent "sepBy1"   
+[130] TokIdent "symbol"   TokString ","       TokSymbol ")"       TokSymbol ")"       TokSymbol ";"       
+[125] TokOperator "<|>"   TokIdent "fmap"     TokSymbol "("       TokOperator ":"     TokSymbol "["       
+[120] TokSymbol "]"       TokSymbol ")"       TokIdent "constraintTokVRBrace          TokNewline          
+[115] TokIdent "typeP"    TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Type" TokNewline          
+[110] TokIdent "typeP"    TokSymbol "="       TokIdent "try"      TokIdent "forallTypeTokOperator "<|>"   
+[105] TokIdent "typeAtom" TokNewline          TokIdent "forallTypeTokSymbol "::"      TokTypeIdent "Parser
+[100] TokTypeIdent "Type" TokNewline          TokIdent "forallTypeTokSymbol "="       TokKeyword "do"     
+[95] TokVLBrace          TokIdent "token"    TokTypeIdent "TokForTokSymbol ";"       TokIdent "vars"     
+[90] TokSymbol "<-"      TokIdent "some"     TokIdent "ident"    TokSymbol ";"       TokIdent "token"    
+[85] TokSymbol "("       TokTypeIdent "TokOpeTokString "."       TokSymbol ")"       TokSymbol ";"       
+[80] TokIdent "t"        TokSymbol "<-"      TokIdent "constraineTokSymbol ";"       TokKeyword "return" 
+[75] TokSymbol "("       TokTypeIdent "TForalTokIdent "vars"     TokIdent "t"        TokSymbol ")"       
+[70] TokVRBrace          TokNewline          TokIdent "constr"   TokSymbol "::"      TokTypeIdent "Parser
+[65] TokTypeIdent "ConstrTokNewline          TokIdent "constr"   TokSymbol "="       TokIdent "try"      
+[60] TokIdent "constraintTokOperator "<|>"   TokIdent "constraintTokNewline          TokIdent "constraint
+[55] TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "ConstrTokNewline          TokIdent "constraint
+[50] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "cname"    TokSymbol "<-"      
+[45] TokIdent "typeIdent"TokSymbol ";"       TokIdent "fields"   TokSymbol "<-"      TokIdent "braces"   
+[40] TokSymbol "("       TokIdent "field"    TokIdent "sepBy1"   TokIdent "symbol"   TokString ","       
+[35] TokSymbol ")"       TokSymbol ";"       TokKeyword "return" TokSymbol "("       TokTypeIdent "Constr
+[30] TokIdent "cname"    TokIdent "fields"   TokSymbol ")"       TokVRBrace          TokNewline          
+[25] TokIdent "field"    TokSymbol "::"      TokTypeIdent "ParserTokTypeIdent "Field"TokNewline          
+[20] TokIdent "field"    TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "name"     
+[15] TokSymbol "<-"      TokIdent "ident"    TokSymbol ";"       TokIdent "symbol"   TokString "::"      
+[10] TokSymbol ";"       TokIdent "ty"       TokSymbol "<-"      TokIdent "parseTypeCTokSymbol ";"       
+[5] TokKeyword "return" TokSymbol "("       TokTypeIdent "Field"TokIdent "name"     TokIdent "ty"       
+[0] TokSymbol ")"       TokVRBrace          TokNewline          

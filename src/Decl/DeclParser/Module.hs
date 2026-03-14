@@ -25,22 +25,25 @@ moduleDecl :: Parser Decl
 moduleDecl = do
   keyword "module"
   name <- moduleName
-  try (exportWhere name) <|> exportWhere2 name
+  exportWhere name -- <|> exportWhere2 name
 
 exportWhere :: String -> Parser Decl
 exportWhere name = do
-  exports <- optional (bracesV exportList)
-  skipSeparators
+  skipNL
+  exports <- optional exportList
+  skipNL
   keyword "where"
   return (DeclModule name exports)
 
+{-}
 exportWhere2 :: String -> Parser Decl
 exportWhere2 name = do
   bracesV $ do
     exports <- optional exportList
-    skipSeparators
+    skipNL
     keyword "where"
     return (DeclModule name exports)
+-}
 
 exportItem :: Parser Export
 exportItem = do
@@ -59,4 +62,16 @@ exportItem = do
       if isUpper (head name) then ExportType name False else ExportVar name
 
 exportList :: Parser [Export]
-exportList = parens $ sepBy1Skip exportItem (symbol ",")
+exportList = parens exportBlock
+
+exportBlock :: Parser [Export]
+exportBlock = do
+  e <- exportItem
+  optional (symbol ",")
+  skipNL
+  xs <- many $ do
+    x <- exportItem
+    optional (symbol ",")
+    skipNL
+    return x
+  return (e : xs)

@@ -27,8 +27,11 @@ import Utils.MyTrace (myTrace)
 
 pattern :: Parser Pattern
 pattern = do
+  ct <- getRemainingCount
+  myTrace ("<< pattern: ct=" ++ show ct)
   p <- pAs <|> makeCons
-  myTrace ("<< pattern:\n    (pAs <|> makeCons)" ++ show p)
+  ct <- getRemainingCount
+  myTrace ("<< pattern:\n    (pAs <|> makeCons)" ++ show p ++ " ct=" ++ show ct)
   -- stopPattern
   return p
 

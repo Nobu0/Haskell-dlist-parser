@@ -1,5 +1,13 @@
-{-}
-module AST.Expr where
+module AST.Expr
+  ( BinOp (..),
+    Name,
+    Binding,
+    Expr (..),
+    Stmt (..),
+    Qualifier (..),
+    CaseAlt (..),
+  )
+where
 
 import AST.Pattern (Pattern)
 import AST.Type (Type)
@@ -7,8 +15,9 @@ import AST.Type (Type)
 type Name = String
 
 -- Binding
+
 type Binding = (Pattern, Expr)
--}
+
 
 data Import
   = Import

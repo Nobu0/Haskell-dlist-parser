@@ -34,8 +34,10 @@ mkGuardedClause pats guards whereDecls =
 -- 関数宣言
 funDecl :: Parser Decl
 funDecl = do
+  skipSeparators
+  ct <- getRemainingCount
   t <- lookAhead anyToken
-  myTrace ("<< funDecl: next token=" ++ show t)
+  myTrace ("<< funDecl: next token=" ++ show t ++ " ct=" ++ show ct)
   (name, clause1) <- funClause -- funDecl
   rest <- many (try (funClauseWithName name))
   -- optional (token TokVRBrace)
@@ -44,121 +46,127 @@ funDecl = do
 
 funClause :: Parser (Name, FunClause)
 funClause = do
+  ct <- getRemainingCount
   t0 <- lookAhead anyToken
-  myTrace ("<< funClause: next token=" ++ show t0)
+  myTrace ("<< funClause: next token=" ++ show t0 ++ " ct=" ++ show ct)
   name <- ident
   args <- many pPattern -- patternParser
-  bracesV $ do
-    t <- lookAhead anyToken
-    myTrace ("<< funClause: args=" ++ show args ++ " t = " ++ show t)
-    case t of
-      TokSymbol "=" -> parseSimpleClause name args
-      TokSymbol "|" -> parseGuardedClause name args
-      _ -> parseGuardedClause name args
+  skipNL
+  t <- lookAhead anyToken
+  myTrace ("<< funClause: args=" ++ show args ++ " t = " ++ show t)
+  case t of
+    TokSymbol "=" -> parseSimpleClause name args
+    TokSymbol "|" -> parseGuardedClause name args
+    _ -> parseGuardedClause name args
 
 parseSimpleClause :: Name -> [Pattern] -> Parser (Name, FunClause)
 parseSimpleClause name args = do
+  ct <- getRemainingCount
   symbol "="
+  skipNL
   t <- lookAhead anyToken
-  myTrace ("<< parseSimpleClause: next token=" ++ show t)
-  bracesV $ do
-    e <- exprBlock
-    bracesV $ do
-      w <- optional whereBlock
-      return (name, mkSimpleClause args e w)
+  myTrace ("<< parseSimpleClause: next token=" ++ show t ++ " ct=" ++ show ct)
+  e <- exprBlock
+  ct <- getRemainingCount
+  myTrace ("<< parseSimpleClause: e " ++ show e ++ " ct=" ++ show ct)
+  w <- optional whereBlock
+  return (name, mkSimpleClause args e w)
 
 parseGuardedClause :: Name -> [Pattern] -> Parser (Name, FunClause)
 parseGuardedClause name args = do
+  ct <- getRemainingCount
   t <- lookAhead anyToken
-  myTrace ("<< parseGuardedClause: next token=" ++ show t)
-  bracesV $ do
-    guards <- guardedRhs
-    bracesV $ do
-      w <- optional (whereBlock)
-      return (name, mkGuardedClause args guards w)
+  myTrace ("<< parseGuardedClause: next token=" ++ show t ++ " ct=" ++ show ct)
+  guards <- guardedRhs
+  w <- optional (whereBlock)
+  return (name, mkGuardedClause args guards w)
 
 funDeclGroup :: Parser Decl
 funDeclGroup = do
+  ct <- getRemainingCount
   t <- lookAhead anyToken
-  myTrace ("<< funDeclGroup: next token=" ++ show t)
+  myTrace ("<< funDeclGroup: next token=" ++ show t ++ " ct=" ++ show ct)
   (name1, clause1) <- funClause
   rest <- many (try (funClauseWithName name1))
   return (DeclFunGroup name1 (clause1 : rest))
 
-
-exprBlock = try exprCore <|> expr
+exprBlock = do
+  expr
 
 -- 同じ名前の関数をグループ化する
 funClauseWithName :: Name -> Parser FunClause
 funClauseWithName name = try $ do
+  ct <- getRemainingCount
   t <- lookAhead anyToken
-  myTrace ("<< funClauseWithName: next token=" ++ show t)
+  myTrace ("<< funClauseWithName: next token=" ++ show t ++ " ct=" ++ show ct)
   name' <- ident
   guard (name == name')
   args <- many pattern -- patternParser
-  -- skipSeparators
-  bracesV $ do
-    t <- lookAhead anyToken
-    myTrace("<< funClauseName: args "++ show args++" t "++ show t)
-    case t of
-      TokSymbol "=" -> do
-        symbol "="
-        bracesV $ do
-          e <- exprBlock
-          bracesV $ do
-            w <- optional whereBlock
-            return (mkSimpleClause args e w)
-      TokSymbol "|" -> do
-        guards <- guardedRhs
-        bracesV $ do
-          w <- optional whereBlock
-          return (mkGuardedClause args guards w)
-      _ -> do
-        e <- exprBlock
-        -- w <- optional (bracesV (whereBlock))
-        bracesV $ do
-          w <- optional whereBlock
-          return (mkSimpleClause args e w)
+  skipNL
+  t <- lookAhead anyToken
+  myTrace ("<< funClauseName: args " ++ show args ++ " t " ++ show t)
+  case t of
+    TokSymbol "=" -> do
+      symbol "="
+      skipNL
+      e <- exprBlock
+      w <- optional whereBlock
+      return (mkSimpleClause args e w)
+    TokSymbol "|" -> do
+      guards <- guardedRhs
+      w <- optional whereBlock
+      return (mkGuardedClause args guards w)
+    _ -> do
+      e <- exprBlock
+      w <- optional whereBlock
+      return (mkSimpleClause args e w)
 
 whereBlock :: Parser [Decl]
 whereBlock = do
-  t <- lookAhead anyToken
-  myTrace ("<< whereBlock: next token " ++ show t)
+  skipSeparators
   keyword "where"
   bracesV $ do
+    ct <- getRemainingCount
+    t <- lookAhead anyToken
+    myTrace ("<< whereBlock(decl): next token " ++ show t ++ " ct=" ++ show ct)
     decls <- many1 funDecl
     return decls
 
 guardedRhsM :: Parser [(Expr, Expr)]
 guardedRhsM = do
-  bracesV $ do 
-    xs <- many1 parseGuardLine
-    return xs
+  ct <- getRemainingCount
+  xs <- many1 parseGuardLine
+  return xs
 
 parseGuardLine :: Parser (Expr, Expr)
 parseGuardLine = do
+  skipNL
+  ct <- getRemainingCount
   t <- lookAhead anyToken
-  myTrace ("<< parseGuardLine: next token=" ++ show t)
+  myTrace ("<< parseGuardLine: next token=" ++ show t ++ " ct=" ++ show ct)
   symbol "|"
   cond <- exprBlock
   symbol "="
   body <- exprBlock
-  skipSeparators
   return (cond, body)
 
 guardedRhs :: Parser [(Expr, Expr)]
 guardedRhs = do
   many1 $ do
+    skipNL
+    ct <- getRemainingCount
     t <- lookAhead anyToken
     e <- parseGuardLine
-    myTrace ("<< guardedRhs: next token = " ++ show t++" e "++show e)
-    skipSeparators
+    myTrace ("<< guardedRhs: next token = " ++ show t ++ " e " ++ show e ++ " ct=" ++ show ct)
     return e
 
 funHead :: Parser (Name, [Pattern])
 funHead = do
+  skipNL
+  ct <- getRemainingCount
   p <- pattern
-  myTrace ("<< funHead pattern: " ++ show p)
+  skipNL
+  myTrace ("<< funHead pattern: " ++ show p ++ " ct=" ++ show ct)
   case p of
     PVar name -> do
       args <- many pattern

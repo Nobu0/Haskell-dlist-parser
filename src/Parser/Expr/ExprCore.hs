@@ -232,6 +232,7 @@ atomBaseCore =
   do
     EVar <$> ident
     <|> EInt <$> int
+    <|> emptyListExpr
     <|> tunitExpr
     <|> EVarType <$> typeIdent
     <|> (ellipsis >> return EPlaceholder)
@@ -240,7 +241,6 @@ atomBaseCore =
     <|> EChar <$> charLiteralExpr
     <|> pRecordExpr
     <|> operatorVar
-    <|> emptyListExpr
 
 operatorVar :: Parser Expr
 operatorVar = do

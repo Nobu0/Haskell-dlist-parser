@@ -153,7 +153,9 @@ testCasesDo =
     ("call ", "do { let f = x (not . (elms ['a','\\n']))}"),
     -- ("call ","do { let f = x (not . (elms ['a','\\n']))\n  y = x 1}"),
     ("temp", "filter (not . (`elem` [' ', '\\n', '\\t']))"),
-    ("temp", "do { let f = filter (not . (`elem` [' ', '\\n', '\\t']))}")
+    ("temp", "do { let f = filter (not . (`elem` [' ', '\\n', '\\t']))}"),
+    ("func[]", "z [] where z [] = []"),
+    ("func[]", "z [] where z arg; | [] = [] ;| _ = []")
   ]
 
 {-}

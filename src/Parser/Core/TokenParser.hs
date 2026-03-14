@@ -25,7 +25,9 @@ module Parser.Core.TokenParser
     skipNewlines,
     newline,
     skipSeparators,
-    skipVNl,
+    -- skipVNl,
+    skipNL,
+    skipVNL,
     -- skipVLBrace,
     name,
     operator,
@@ -80,12 +82,14 @@ bracesVO p = try (bracesv p) <|> p
 bracesB :: Parser a -> Parser a
 bracesB p = try (braces p) <|> p
 
+bracesV :: Parser b -> Parser b
 bracesV p = do
   mtok <- optional (lookAhead anyToken)
   case mtok of
     Just TokVLBrace -> do
       token TokVLBrace
       x <- p
+      optional (token TokNewline)
       token TokVRBrace
       return x
     Just (TokSymbol "{") -> braces p
@@ -101,6 +105,7 @@ parens :: Parser a -> Parser a
 parens p = do
   symbol "("
   x <- p
+  optional (symbol ";")
   symbol ")"
   return x
 
@@ -220,6 +225,29 @@ skipVNl = do
     isSep TokVNl = Just ()
     isSep _ = Nothing
 
+skipVNL :: Parser ()
+skipVNL = do
+  _ <- optional (symbol ";" <|> newline)
+  _ <- optional (symbol ";" <|> newline)
+  return ()
+
+{-}
+skipNL :: Parser ()
+skipNL = do
+  _ <- optional (symbol ";")
+  _ <- optional (symbol ";")
+  _ <- optional (symbol ";")
+  return ()
+-}
+
+skipNL :: Parser ()
+skipNL = do
+  _ <- many $ tokenIs isSep
+  return ()
+  where
+    isSep (TokSymbol ";") = Just ()
+    isSep _ = Nothing
+
 skipSeparators :: Parser ()
 skipSeparators = do
   _ <- many (tokenIs isSep)
@@ -294,10 +322,10 @@ parseBinOp s = case s of
   "<$>" -> Just BinOpFmap
   "$" -> Just BinOpApp
   _ -> Nothing
-  -- その他（必要に応じて追加）
-  -- "$" は構文的に扱うならここには入れない
-  -- "<?>" -> Just TryAlt
 
+-- その他（必要に応じて追加）
+-- "$" は構文的に扱うならここには入れない
+-- "<?>" -> Just TryAlt
 
 operator :: Parser String
 operator = choice (map (\s -> symbol s >> return s) allOps)

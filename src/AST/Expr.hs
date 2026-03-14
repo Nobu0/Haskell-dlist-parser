@@ -72,3 +72,10 @@ data Expr
   | ELambdaCase [CaseAlt] -- [(Pattern, Expr)]
   | ESQL String [Expr]
   deriving (Eq, Show)
+
+-- \| EWhere Expr [EDecl]
+
+data EDecl
+  = EDeclFun Name [Pattern] Expr
+  | EDeclTypeSig Name Type
+  deriving (Eq, Show)

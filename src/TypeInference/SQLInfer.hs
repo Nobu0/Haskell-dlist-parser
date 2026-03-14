@@ -9,17 +9,17 @@ import TypeInference.Subst
 import TypeInference.TypeEnv
 
 data SQLInfo = SQLInfo
-  { sqlText  :: String
-  , sqlVars  :: [String]
-  , sqlExprs :: [Expr]
+  { sqlText :: String,
+    sqlVars :: [String],
+    sqlExprs :: [Expr]
   }
 
 inferSQL :: String -> [Expr] -> SQLInfo
 inferSQL sql args =
   SQLInfo
-    { sqlText  = sql
-    , sqlVars  = map getVarName args
-    , sqlExprs = args
+    { sqlText = sql,
+      sqlVars = map getVarName args,
+      sqlExprs = args
     }
 
 getVarName :: Expr -> String

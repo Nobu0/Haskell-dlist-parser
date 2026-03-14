@@ -26,28 +26,41 @@ dataDecl = do
   keyword "data"
   typeName <- identI
   typeVars <- many identI
-  bracesV $ do
-    symbol "="
-    constrs <- sepBy1 (dataConstr) (symbol "|")
-    derivs <- option [] derivingClause
-    skipSeparators
-    return $ DeclData typeName typeVars constrs derivs
+  skipNL
+  symbol "="
+  skipNL
+  constrs <- dataConstrBlock
+  skipNL
+  derivs <- option [] derivingClause
+  return $ DeclData typeName typeVars constrs derivs
+
+dataConstrBlock :: Parser [Constraint]
+dataConstrBlock = do
+  e <- dataConstr
+  xs <- many dataConstr
+  return (e : xs)
 
 dataConstr :: Parser Constraint
-dataConstr = try dataConstrRecord <|> dataConstrNormal
+dataConstr = do
+  skipNL
+  optional (symbol "|")
+  e <- try dataConstrRecord <|> dataConstrNormal
+  return e
 
 dataConstrNormal :: Parser Constraint
 dataConstrNormal = do
+  skipNL
   name <- identI
+  skipNL
   args <- many typeAtom
   myTrace ("<< dataConstrNormal: " ++ show name ++ " " ++ show args)
-  optional (symbol ";")
   return $ Constraint name args
 
 dataConstrRecord :: Parser Constraint
 dataConstrRecord = do
+  skipNL
   name <- identI
-  skipBlk
+  skipNL
   t <- lookAhead anyToken
   myTrace ("<< dataConstrRecord: " ++ show t)
   case t of
@@ -66,13 +79,13 @@ fieldDef = do
 
 fieldDefs :: Parser [Field]
 fieldDefs = do
+  skipNL
   symbol "{"
-  skipBlk
+  skipNL
   fields <- sepBy1Skip fieldDef (symbol ",")
   -- fields <- getTypeDefs []
-  skipBlk
+  skipNL
   symbol "}"
-  skipBlk
   return (reverse fields)
 
 getTypeDefs :: [Field] -> Parser [Field]
@@ -86,14 +99,14 @@ getTypeDefs acc = do
       name <- identI
       symbol "::"
       ty <- typeExpr
-      skipBlk
+      skipNL
       t <- lookAhead anyToken
       myTrace ("<< typeDef:2 next token " ++ show t ++ " " ++ show name ++ " " ++ show ty)
       case t of
         TokSymbol "," -> do
           symbol ","
-          skipBlk
-          optional (symbol ";")
+          skipNL
+          -- optional (symbol ";")
           getTypeDefs (Field name ty : acc)
         TokSymbol ";" -> do
           symbol ";"

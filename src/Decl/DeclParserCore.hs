@@ -22,7 +22,7 @@ import Decl.DeclParser.Util
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Parser.Core.TokenParser (operator)
+import Parser.Core.TokenParser (operator, skipNewlines, skipSeparators)
 import Parser.Expr.ExprExtensions (expr, skipNewlines)
 import Parser.Expr.PatternParser (pattern)
 import Parser.Type.TypeParser (constraintList, parseType, typeAtom, typeIdent, typeP)
@@ -51,17 +51,17 @@ decl = do
 
 declBody :: Parser Decl
 declBody = do
-  skipNewlines
+  skipVNL
   d <- declDispatch
-  -- skipSeparators
-  optional (newline)
+  skipVNL
   myTrace (">>*declBody: e " ++ show d)
   return d
 
 declDispatch :: Parser Decl
 declDispatch = do
+  ct <- getRemainingCount
   t <- lookAhead anyToken
-  myTrace ("<< decl dispatch: " ++ show t)
+  myTrace ("<< decl dispatch: " ++ show t ++ " ct=" ++ show ct)
   case t of
     TokKeyword "data" -> dataDecl
     TokKeyword "newtype" -> newtypeDecl

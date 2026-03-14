@@ -7,15 +7,15 @@ import Control.Applicative (empty, many, optional, (<|>))
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Parser.Expr.ExprCore (exprCore)
+import Parser.Expr.ExprCore -- (exprCore)
 import Parser.Expr.PatternParser
 import Utils.MyTrace
 
 doExprCore :: Parser Expr -> Parser Expr
 doExprCore expr = do
   keyword "do"
+  skipNL
   bracesV $ do
-    skipSeparators
     stmts <- doBlock expr
     myTrace (">>*doExprCore: stmts " ++ show stmts)
     return (EDo stmts)
@@ -33,7 +33,6 @@ doBlock expr = do
 
 doStmt :: Parser Expr -> Parser Stmt
 doStmt expr = do
-  skipSeparators
   rt <-
     try (bindStmt expr)
       <|> try (letStmt expr)
@@ -43,31 +42,26 @@ doStmt expr = do
 
 exprStmt :: Parser Expr -> Parser Stmt
 exprStmt expr = do
+  skipVNL
   e <- expr
   myTrace (">>*exprStmt " ++ show e)
   return (ExprStmt e)
 
 bindStmt :: Parser Expr -> Parser Stmt
-bindStmt expr = try $ do
+bindStmt expr = do
   myTrace ("<< bindStmt")
-  skipSeparators
   -- まず、次のトークン列に "<-" が含まれるか確認
-  {-}
-  lookAhead $ do
-    _ <- pattern
-    symbol "<-"
-    return ()
-  -}
-  -- 実際に読む
+  skipVNL
   pat <- pattern
   symbol "<-"
-  -- bracesV $ do
+  skipNL
   e <- expr
   myTrace (">>*bindStmt pat= " ++ show pat ++ " e= " ++ show e)
   return (Bind pat e)
 
 letStmt :: Parser Expr -> Parser Stmt
 letStmt expr = do
+  skipVNL
   keyword "let"
   myTrace ("<< letStmt")
   binds <- bindings -- sepBy1 binding (symbol ";")
@@ -81,15 +75,14 @@ letStmt expr = do
     bindings = do
       b <- binding
       myTrace ("<< letStmt: b " ++ show b)
-      bracesV $ do
-        bs <- many binding
-        return (b : bs)
-    binding = do
-      skipSeparators
       -- bracesV $ do
+      bs <- many binding
+      return (b : bs)
+    binding = do
+      skipNL
       pat <- pattern
       symbol "="
-      -- X bracesV $ do
+      -- skipNL
       e <- expr
       return (pat, e)
 

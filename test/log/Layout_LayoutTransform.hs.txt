@@ -2,8 +2,8 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 47 / 172
-Coverage: 27%
+Consumed tokens: 382 / 565
+Coverage: 67%
 
 -- AST----------------------------------
 
@@ -11,36 +11,44 @@ Coverage: 27%
 [0] DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"])
 [1] DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [2] DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token")))
-[3] DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing]
-[4] DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token")))
-[5] DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]
-[DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing],DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]]
+[3] DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EApp (EVar "go") (EList [])) (EVar "toks"))) Nothing]
+[4] DeclData "LayoutContext" [] [Constraint "InDo" [],Constraint "InCase" [],Constraint "InLet" [],Constraint "InWhere" []] ["Eq","Show","Ord"]
+[5] DeclTypeAlias "LayoutStack" [] (TList (TTuple [TCon "LayoutContext",TCon "Int"]))
+[6] DeclTypeSig "go" (TFun (TCon "LayoutStack") (TFun (TList (TCon "Token")) (TList (TCon "Token"))))
+[7] DeclFunGroup "go" [FunClause [PVar "_",PConstr "[]" []] Nothing (Just (EList [])) Nothing]
+[8] DeclFunGroup "go" [FunClause [PConstr "[]" [],PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpAnd (EBinOp BinOpEq (EVar "x") (EVar "y")) (EBinOp BinOpEq (EVar "x") (EInt 0)),EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest"))]) Nothing Nothing]
+[9] DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+[10] DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+[11] DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+[12] DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+[13] DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack")),EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest"))]) Nothing Nothing]
+[DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EApp (EVar "go") (EList [])) (EVar "toks"))) Nothing],DeclData "LayoutContext" [] [Constraint "InDo" [],Constraint "InCase" [],Constraint "InLet" [],Constraint "InWhere" []] ["Eq","Show","Ord"],DeclTypeAlias "LayoutStack" [] (TList (TTuple [TCon "LayoutContext",TCon "Int"])),DeclTypeSig "go" (TFun (TCon "LayoutStack") (TFun (TList (TCon "Token")) (TList (TCon "Token")))),DeclFunGroup "go" [FunClause [PVar "_",PConstr "[]" []] Nothing (Just (EList [])) Nothing],DeclFunGroup "go" [FunClause [PConstr "[]" [],PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpAnd (EBinOp BinOpEq (EVar "x") (EVar "y")) (EBinOp BinOpEq (EVar "x") (EInt 0)),EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest"))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack")),EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest"))]) Nothing Nothing]]
 
 -- Remaining-----------------------------
-[TokIdent "go",TokSymbol "(",TokTypeIdent "TokVNewline",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator "==",TokNumber 0,TokOperator "&&",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "<",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVLBrace",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "go",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "closeBlocks",TokSymbol "::",TokSymbol "(",TokTypeIdent "Int",TokSymbol ",",TokTypeIdent "Int",TokSymbol ")",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVRBrace",TokOperator ":",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokOperator "-",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline]
+[TokSymbol "|",TokIdent "y",TokOperator "<",TokIdent "currentIndent",TokIdent "stack",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokSymbol "(",TokIdent "braces",TokSymbol ",",TokIdent "newStack",TokSymbol ")",TokSymbol "=",TokIdent "popBraces",TokIdent "y",TokIdent "stack",TokSymbol ";",TokKeyword "in",TokIdent "braces",TokOperator "++",TokIdent "go",TokIdent "newStack",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "stack",TokIdent "rest",TokSymbol ";",TokIdent "go",TokIdent "ctx",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "ctx",TokIdent "rest",TokSymbol ";",TokIdent "currentIndent",TokSymbol "::",TokTypeIdent "LayoutStack",TokArrow,TokTypeIdent "Int",TokNewline,TokIdent "currentIndent",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokNumber 0,TokNewline,TokIdent "currentIndent",TokSymbol "(",TokSymbol "(",TokIdent "_",TokSymbol ",",TokIdent "i",TokSymbol ")",TokOperator ":",TokIdent "_",TokSymbol ")",TokSymbol "=",TokIdent "i",TokNewline,TokIdent "headContext",TokSymbol "::",TokTypeIdent "LayoutStack",TokArrow,TokTypeIdent "LayoutContext",TokNewline,TokIdent "headContext",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "InDo",TokNewline,TokIdent "headContext",TokSymbol "(",TokSymbol "(",TokIdent "ctx",TokSymbol ",",TokIdent "_",TokSymbol ")",TokOperator ":",TokIdent "_",TokSymbol ")",TokSymbol "=",TokIdent "ctx",TokNewline,TokIdent "popBraces",TokSymbol "::",TokTypeIdent "Int",TokArrow,TokTypeIdent "LayoutStack",TokArrow,TokSymbol "(",TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokSymbol ",",TokTypeIdent "LayoutStack",TokSymbol ")",TokNewline,TokIdent "popBraces",TokIdent "y",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokSymbol "(",TokSymbol "[",TokSymbol "]",TokSymbol ",",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "popBraces",TokIdent "y",TokSymbol "(",TokSymbol "(",TokIdent "ctx",TokSymbol ",",TokIdent "i",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "y",TokOperator "<",TokIdent "i",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokSymbol "(",TokIdent "braces",TokSymbol ",",TokIdent "newStack",TokSymbol ")",TokSymbol "=",TokIdent "popBraces",TokIdent "y",TokIdent "rest",TokSymbol ";",TokKeyword "in",TokSymbol "(",TokTypeIdent "TokVRBrace",TokOperator ":",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "braces",TokSymbol ",",TokIdent "newStack",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokSymbol "(",TokSymbol "[",TokSymbol "]",TokSymbol ",",TokSymbol "(",TokIdent "ctx",TokSymbol ",",TokIdent "i",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol ";"]
 
 -- Parsed AST log --
 << decl next token: TokKeyword "module"
 << decl parser called
-<< decl dispatch: TokKeyword "module"
+<< decl dispatch: TokKeyword "module" ct=565
 << exportItem: next token=TokIdent "layoutTransform"
 << exportItem: name "layoutTransform"
+<< exportItem: next token=TokSymbol ")"
 >>*declBody: e DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"])
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import"
+<< decl dispatch: TokKeyword "import" ct=556
 << importDecl parser called
 << importDecl: TokTypeIdent "Lexer"
 >>*declBody: e DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokIdent "layoutTransform"
 << decl parser called
-<< decl dispatch: TokIdent "layoutTransform"
-<< funDecl: next token=TokIdent "layoutTransform"
-<< funClause: next token=TokIdent "layoutTransform"
+<< decl dispatch: TokIdent "layoutTransform" ct=551
+<< funDecl: next token=TokIdent "layoutTransform" ct=551
+<< funClause: next token=TokIdent "layoutTransform" ct=551
 << funClause: args=[] t = TokSymbol "::"
-<< parseGuardedClause: next token=TokSymbol "::"
-<< guardedRhs: next token = TokSymbol "::"
-<< parseGuardLine: next token=TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::" ct=550
+<< parseGuardLine: next token=TokSymbol "::" ct=550
 << typeSigDecl: TokIdent "layoutTransform"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokSymbol "["
@@ -53,90 +61,450 @@ Coverage: 27%
 >>*declBody: e DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token")))
 << decl next token: TokIdent "layoutTransform"
 << decl parser called
-<< decl dispatch: TokIdent "layoutTransform"
-<< funDecl: next token=TokIdent "layoutTransform"
-<< funClause: next token=TokIdent "layoutTransform"
+<< decl dispatch: TokIdent "layoutTransform" ct=541
+<< funDecl: next token=TokIdent "layoutTransform" ct=541
+<< funClause: next token=TokIdent "layoutTransform" ct=541
 << pConstrOrVar: next token "toks"
 << pPattern:
     prased PVar "toks"
 << funClause: args=[PVar "toks"] t = TokSymbol "="
-<< parseSimpleClause: next token=TokIdent "go"
-<< whereBlock: next token TokNewline
-<< funClauseWithName: next token=TokNewline
->>*funDecl name "layoutTransform" clause1 FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing rest []
->>*declBody: e DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing]
+<< parseSimpleClause: next token=TokIdent "go" ct=539
+<< expr dispatch: TokIdent "go" ct=538
+<< exprNoLoop: e EApp (EApp (EVar "go") (EList [])) (EVar "toks")
+<< expr dispatch: TokNewline ct=534
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "go") (EList [])) (EVar "toks")
+<< parseSimpleClause: e EApp (EApp (EVar "go") (EList [])) (EVar "toks") ct=534
+<< funClauseWithName: next token=TokNewline ct=534
+>>*funDecl name "layoutTransform" clause1 FunClause [PVar "toks"] Nothing (Just (EApp (EApp (EVar "go") (EList [])) (EVar "toks"))) Nothing rest []
+>>*declBody: e DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EApp (EVar "go") (EList [])) (EVar "toks"))) Nothing]
+<< decl next token: TokKeyword "data"
+<< decl parser called
+<< decl dispatch: TokKeyword "data" ct=533
+<< dataConstrRecord: TokSymbol "|"
+<< dataConstrNormal: "InDo" []
+<< dataConstrRecord: TokSymbol "|"
+<< dataConstrNormal: "InCase" []
+<< dataConstrRecord: TokSymbol "|"
+<< dataConstrNormal: "InLet" []
+<< dataConstrRecord: TokKeyword "deriving"
+<< dataConstrNormal: "InWhere" []
+>>*declBody: e DeclData "LayoutContext" [] [Constraint "InDo" [],Constraint "InCase" [],Constraint "InLet" [],Constraint "InWhere" []] ["Eq","Show","Ord"]
+<< decl next token: TokKeyword "type"
+<< decl parser called
+<< decl dispatch: TokKeyword "type" ct=509
+<< typeDecl name "LayoutStack" vars []
+<< parseTypeCore: TCon "LayoutContext"
+<< parseTypeCore: TCon "LayoutContext"
+<< parseTypeCore: TCon "Int"
+<< parseTypeCore: TTuple [TCon "LayoutContext",TCon "Int"]
+>>*typeDecl typ TList (TTuple [TCon "LayoutContext",TCon "Int"])
+>>*declBody: e DeclTypeAlias "LayoutStack" [] (TList (TTuple [TCon "LayoutContext",TCon "Int"]))
 << decl next token: TokIdent "go"
 << decl parser called
-<< decl dispatch: TokIdent "go"
-<< funDecl: next token=TokIdent "go"
-<< funClause: next token=TokIdent "go"
+<< decl dispatch: TokIdent "go" ct=498
+<< funDecl: next token=TokIdent "go" ct=498
+<< funClause: next token=TokIdent "go" ct=498
 << funClause: args=[] t = TokSymbol "::"
-<< parseGuardedClause: next token=TokSymbol "::"
-<< guardedRhs: next token = TokSymbol "::"
-<< parseGuardLine: next token=TokSymbol "::"
+<< parseGuardedClause: next token=TokSymbol "::" ct=497
+<< parseGuardLine: next token=TokSymbol "::" ct=497
 << typeSigDecl: TokIdent "go"
 << typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokSymbol "["
+<< parseType dispatch: TokTypeIdent "LayoutStack"
 << parseTypeCore: TCon "Token"
 << parseTypeCore: TCon "Token"
 << parseTypeCore: TList (TCon "Token")
 << parseTypeCore: TFun (TList (TCon "Token")) (TList (TCon "Token"))
-<< parsed type signature: go :: TFun (TList (TCon "Token")) (TList (TCon "Token"))
-<< returning DeclTypeSig: DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token")))
->>*declBody: e DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token")))
+<< parseTypeCore: TFun (TCon "LayoutStack") (TFun (TList (TCon "Token")) (TList (TCon "Token")))
+<< parsed type signature: go :: TFun (TCon "LayoutStack") (TFun (TList (TCon "Token")) (TList (TCon "Token")))
+<< returning DeclTypeSig: DeclTypeSig "go" (TFun (TCon "LayoutStack") (TFun (TList (TCon "Token")) (TList (TCon "Token"))))
+>>*declBody: e DeclTypeSig "go" (TFun (TCon "LayoutStack") (TFun (TList (TCon "Token")) (TList (TCon "Token"))))
 << decl next token: TokIdent "go"
 << decl parser called
-<< decl dispatch: TokIdent "go"
-<< funDecl: next token=TokIdent "go"
-<< funClause: next token=TokIdent "go"
+<< decl dispatch: TokIdent "go" ct=486
+<< funDecl: next token=TokIdent "go" ct=486
+<< funClause: next token=TokIdent "go" ct=486
+<< pConstrOrVar: next token "_"
+<< pPattern:
+    prased PVar "_"
 << pPattern:
     prased PConstr "[]" []
-<< funClause: args=[PConstr "[]" []] t = TokSymbol "="
-<< parseSimpleClause: next token=TokSymbol "["
-<< whereBlock: next token TokNewline
-<< funClauseWithName: next token=TokNewline
->>*funDecl name "go" clause1 FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing rest []
->>*declBody: e DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]
+<< funClause: args=[PVar "_",PConstr "[]" []] t = TokSymbol "="
+<< parseSimpleClause: next token=TokSymbol "[" ct=482
+<< expr dispatch: TokSymbol "[" ct=481
+<< expr dispatch: TokSymbol "]" ct=480
+<< expr dispatch: TokSymbol "]" ct=480
+<< expr dispatch: TokSymbol "]" ct=480
+<< expr dispatch: TokSymbol "]" ct=480
+<< exprNoLoop: e EList []
+<< expr dispatch: TokNewline ct=479
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EList []
+<< parseSimpleClause: e EList [] ct=479
+<< funClauseWithName: next token=TokNewline ct=479
+>>*funDecl name "go" clause1 FunClause [PVar "_",PConstr "[]" []] Nothing (Just (EList [])) Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PVar "_",PConstr "[]" []] Nothing (Just (EList [])) Nothing]
 << decl next token: TokIdent "go"
 << decl parser called
-<< decl dispatch: TokIdent "go"
-<< funDecl: next token=TokIdent "go"
-<< funClause: next token=TokIdent "go"
+<< decl dispatch: TokIdent "go" ct=478
+<< funDecl: next token=TokIdent "go" ct=478
+<< funClause: next token=TokIdent "go" ct=478
+<< pPattern:
+    prased PConstr "[]" []
+<< pattern: ct=474
 << pConstrOrVar: next token "TokVNewline"
+<< pattern: ct=472
 << pConstrOrVar: next token "x"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "x") []
+    (pAs <|> makeCons)PApp (PVar "x") [] ct=471
+<< pattern: ct=470
 << pConstrOrVar: next token "y"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "y") []
+    (pAs <|> makeCons)PApp (PVar "y") [] ct=469
 << pConstrOrVar: next token ":"
 << pConstrOrVar: next token "rest"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+    (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"] ct=466
 << pPattern:
     prased PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
-<< funClause: args=[PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokVLBrace
-<< parseGuardedClause: next token=TokVLBrace
-<< guardedRhs: next token = TokSymbol "|"
-<< parseGuardLine: next token=TokSymbol "|"
-<< typeSigDecl: TokIdent "go"
-<< typeSigDecl:2 TokSymbol "("
-<< valueDecl: TokIdent "go"
-<< pConstrOrVar: next token "go"
+<< funClause: args=[PConstr "[]" [],PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokSymbol "|"
+<< parseGuardedClause: next token=TokSymbol "|" ct=464
+<< parseGuardLine: next token=TokSymbol "|" ct=464
+<< expr dispatch: TokIdent "x" ct=463
+<< exprNoLoop: e EBinOp BinOpEq (EVar "x") (EVar "y")
+<< expr dispatch: TokOperator "&&" ct=460
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAnd
+<< expr dispatch: TokIdent "x" ct=459
+<< exprNoLoop: e EBinOp BinOpEq (EVar "x") (EInt 0)
+<< expr dispatch: TokSymbol "=" ct=456
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpAnd (EBinOp BinOpEq (EVar "x") (EVar "y")) (EBinOp BinOpEq (EVar "x") (EInt 0))
+<< expr dispatch: TokTypeIdent "TokNewline" ct=455
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")
+<< expr dispatch: TokSymbol ";" ct=449
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpAnd (EBinOp BinOpEq (EVar "x") (EVar "y")) (EBinOp BinOpEq (EVar "x") (EInt 0)),EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")) ct=464
+<< parseGuardLine: next token=TokSymbol "|" ct=448
+<< expr dispatch: TokIdent "otherwise" ct=447
+<< exprNoLoop: e EVar "otherwise"
+<< expr dispatch: TokSymbol "=" ct=446
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "otherwise"
+<< expr dispatch: TokTypeIdent "TokSymbol" ct=445
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")
+<< expr dispatch: TokSymbol ";" ct=438
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")
+<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")) ct=448
+<< parseGuardLine: next token=TokIdent "go" ct=437
+<< funClauseWithName: next token=TokSymbol ";" ct=438
+>>*funDecl name "go" clause1 FunClause [PConstr "[]" [],PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpAnd (EBinOp BinOpEq (EVar "x") (EVar "y")) (EBinOp BinOpEq (EVar "x") (EInt 0)),EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest"))]) Nothing Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PConstr "[]" [],PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpAnd (EBinOp BinOpEq (EVar "x") (EVar "y")) (EBinOp BinOpEq (EVar "x") (EInt 0)),EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest"))]) Nothing Nothing]
+<< decl next token: TokIdent "go"
+<< decl parser called
+<< decl dispatch: TokIdent "go" ct=437
+<< funDecl: next token=TokIdent "go" ct=437
+<< funClause: next token=TokIdent "go" ct=437
+<< pConstrOrVar: next token "stack"
+<< pPattern:
+    prased PVar "stack"
+<< pattern: ct=434
+<< pConstrOrVar: next token "TokKeyword"
+<< pConstrOrVar: next token ":"
 << pConstrOrVar: next token "TokVNewline"
+<< pattern: ct=429
 << pConstrOrVar: next token "x"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "x") []
+    (pAs <|> makeCons)PApp (PVar "x") [] ct=428
+<< pattern: ct=427
 << pConstrOrVar: next token "y"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "y") []
+    (pAs <|> makeCons)PApp (PVar "y") [] ct=426
 << pConstrOrVar: next token ":"
 << pConstrOrVar: next token "rest"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+    (pAs <|> makeCons)PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"] ct=423
+<< pPattern:
+    prased PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< funClause: args=[PVar "stack",PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokSymbol "|"
+<< parseGuardedClause: next token=TokSymbol "|" ct=421
+<< parseGuardLine: next token=TokSymbol "|" ct=421
+<< expr dispatch: TokIdent "y" ct=420
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokSymbol "=" ct=417
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=416
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< expr dispatch: TokSymbol ";" ct=400
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")) ct=421
+<< parseGuardLine: next token=TokSymbol "|" ct=399
+<< expr dispatch: TokIdent "otherwise" ct=398
+<< exprNoLoop: e EVar "otherwise"
+<< expr dispatch: TokSymbol "=" ct=397
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "otherwise"
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=396
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< expr dispatch: TokSymbol ";" ct=381
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))) ct=399
+<< parseGuardLine: next token=TokIdent "go" ct=380
+<< funClauseWithName: next token=TokSymbol ";" ct=381
+>>*funDecl name "go" clause1 FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+<< decl next token: TokIdent "go"
+<< decl parser called
+<< decl dispatch: TokIdent "go" ct=380
+<< funDecl: next token=TokIdent "go" ct=380
+<< funClause: next token=TokIdent "go" ct=380
+<< pConstrOrVar: next token "stack"
+<< pPattern:
+    prased PVar "stack"
+<< pattern: ct=377
+<< pConstrOrVar: next token "TokKeyword"
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "TokVNewline"
+<< pattern: ct=372
+<< pConstrOrVar: next token "x"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "go") [PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]]
-Just ([DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EVar "go") (EVar "toks"))) Nothing],DeclTypeSig "go" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "go" [FunClause [PConstr "[]" []] Nothing (Just (EList [])) Nothing]],[TokIdent "go",TokSymbol "(",TokTypeIdent "TokVNewline",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator "==",TokNumber 0,TokOperator "&&",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "==",TokIdent "y",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator "<",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVLBrace",TokOperator ":",TokIdent "go",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "go",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokVLBrace,TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline,TokIdent "closeBlocks",TokSymbol "::",TokSymbol "(",TokTypeIdent "Int",TokSymbol ",",TokTypeIdent "Int",TokSymbol ")",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokNewline,TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokVLBrace,TokSymbol "|",TokIdent "x",TokOperator ">",TokIdent "y",TokSymbol "=",TokTypeIdent "TokVRBrace",TokOperator ":",TokIdent "closeBlocks",TokSymbol "(",TokIdent "x",TokOperator "-",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol ")",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "go",TokIdent "rest",TokVRBrace,TokNewline])
+    (pAs <|> makeCons)PApp (PVar "x") [] ct=371
+<< pattern: ct=370
+<< pConstrOrVar: next token "y"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "y") [] ct=369
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "rest"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"] ct=366
+<< pPattern:
+    prased PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< funClause: args=[PVar "stack",PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokSymbol "|"
+<< parseGuardedClause: next token=TokSymbol "|" ct=364
+<< parseGuardLine: next token=TokSymbol "|" ct=364
+<< expr dispatch: TokIdent "y" ct=363
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokSymbol "=" ct=360
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=359
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< expr dispatch: TokSymbol ";" ct=343
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")) ct=364
+<< parseGuardLine: next token=TokSymbol "|" ct=342
+<< expr dispatch: TokIdent "otherwise" ct=341
+<< exprNoLoop: e EVar "otherwise"
+<< expr dispatch: TokSymbol "=" ct=340
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "otherwise"
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=339
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< expr dispatch: TokSymbol ";" ct=324
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))) ct=342
+<< parseGuardLine: next token=TokIdent "go" ct=323
+<< funClauseWithName: next token=TokSymbol ";" ct=324
+>>*funDecl name "go" clause1 FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+<< decl next token: TokIdent "go"
+<< decl parser called
+<< decl dispatch: TokIdent "go" ct=323
+<< funDecl: next token=TokIdent "go" ct=323
+<< funClause: next token=TokIdent "go" ct=323
+<< pConstrOrVar: next token "stack"
+<< pPattern:
+    prased PVar "stack"
+<< pattern: ct=320
+<< pConstrOrVar: next token "TokKeyword"
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "TokVNewline"
+<< pattern: ct=315
+<< pConstrOrVar: next token "x"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "x") [] ct=314
+<< pattern: ct=313
+<< pConstrOrVar: next token "y"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "y") [] ct=312
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "rest"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"] ct=309
+<< pPattern:
+    prased PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< funClause: args=[PVar "stack",PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokSymbol "|"
+<< parseGuardedClause: next token=TokSymbol "|" ct=307
+<< parseGuardLine: next token=TokSymbol "|" ct=307
+<< expr dispatch: TokIdent "y" ct=306
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokSymbol "=" ct=303
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=302
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< expr dispatch: TokSymbol ";" ct=286
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")) ct=307
+<< parseGuardLine: next token=TokSymbol "|" ct=285
+<< expr dispatch: TokIdent "otherwise" ct=284
+<< exprNoLoop: e EVar "otherwise"
+<< expr dispatch: TokSymbol "=" ct=283
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "otherwise"
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=282
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< expr dispatch: TokSymbol ";" ct=267
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))) ct=285
+<< parseGuardLine: next token=TokIdent "go" ct=266
+<< funClauseWithName: next token=TokSymbol ";" ct=267
+>>*funDecl name "go" clause1 FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+<< decl next token: TokIdent "go"
+<< decl parser called
+<< decl dispatch: TokIdent "go" ct=266
+<< funDecl: next token=TokIdent "go" ct=266
+<< funClause: next token=TokIdent "go" ct=266
+<< pConstrOrVar: next token "stack"
+<< pPattern:
+    prased PVar "stack"
+<< pattern: ct=263
+<< pConstrOrVar: next token "TokKeyword"
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "TokVNewline"
+<< pattern: ct=258
+<< pConstrOrVar: next token "x"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "x") [] ct=257
+<< pattern: ct=256
+<< pConstrOrVar: next token "y"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "y") [] ct=255
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "rest"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"] ct=252
+<< pPattern:
+    prased PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< funClause: args=[PVar "stack",PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokSymbol "|"
+<< parseGuardedClause: next token=TokSymbol "|" ct=250
+<< parseGuardLine: next token=TokSymbol "|" ct=250
+<< expr dispatch: TokIdent "y" ct=249
+<< exprNoLoop: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokSymbol "=" ct=246
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpGt (EVar "y") (EVar "x")
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=245
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< expr dispatch: TokSymbol ";" ct=229
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")) ct=250
+<< parseGuardLine: next token=TokSymbol "|" ct=228
+<< expr dispatch: TokIdent "otherwise" ct=227
+<< exprNoLoop: e EVar "otherwise"
+<< expr dispatch: TokSymbol "=" ct=226
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "otherwise"
+<< expr dispatch: TokTypeIdent "TokKeyword" ct=225
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< expr dispatch: TokSymbol ";" ct=210
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))
+<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest"))) ct=228
+<< parseGuardLine: next token=TokIdent "go" ct=209
+<< funClauseWithName: next token=TokSymbol ";" ct=210
+>>*funDecl name "go" clause1 FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing]
+<< decl next token: TokIdent "go"
+<< decl parser called
+<< decl dispatch: TokIdent "go" ct=209
+<< funDecl: next token=TokIdent "go" ct=209
+<< funClause: next token=TokIdent "go" ct=209
+<< pConstrOrVar: next token "stack"
+<< pPattern:
+    prased PVar "stack"
+<< pattern: ct=206
+<< pConstrOrVar: next token "TokVNewline"
+<< pattern: ct=204
+<< pConstrOrVar: next token "x"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "x") [] ct=203
+<< pattern: ct=202
+<< pConstrOrVar: next token "y"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "y") [] ct=201
+<< pConstrOrVar: next token ":"
+<< pConstrOrVar: next token "rest"
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"] ct=198
+<< pPattern:
+    prased PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]
+<< funClause: args=[PVar "stack",PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] t = TokSymbol "|"
+<< parseGuardedClause: next token=TokSymbol "|" ct=196
+<< parseGuardLine: next token=TokSymbol "|" ct=196
+<< expr dispatch: TokIdent "y" ct=195
+<< exprNoLoop: e EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack"))
+<< expr dispatch: TokSymbol "=" ct=191
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack"))
+<< expr dispatch: TokTypeIdent "TokSymbol" ct=190
+<< exprNoLoop: e EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest")
+<< expr dispatch: TokSymbol ";" ct=184
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest")
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack")),EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest")) ct=196
+<< parseGuardLine: next token=TokSymbol "|" ct=183
+<< expr dispatch: TokIdent "y" ct=182
+<< exprNoLoop: e EBinOp BinOpLt (EVar "y") (EApp (EVar "currentIndent") (EVar "stack"))
+<< expr dispatch: TokSymbol "=" ct=178
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpLt (EVar "y") (EApp (EVar "currentIndent") (EVar "stack"))
+<< expr dispatch: TokSymbol ";" ct=177
+<< funClauseWithName: next token=TokSymbol ";" ct=184
+>>*funDecl name "go" clause1 FunClause [PVar "stack",PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack")),EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest"))]) Nothing Nothing rest []
+>>*declBody: e DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack")),EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest"))]) Nothing Nothing]
+<< decl next token: TokSymbol "|"
+<< decl parser called
+<< decl dispatch: TokSymbol "|" ct=183
+<< unknown token in decl: TokSymbol "|"
+Just ([DeclModule "Layout.LayoutTransform" (Just [ExportVar "layoutTransform"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "layoutTransform" (TFun (TList (TCon "Token")) (TList (TCon "Token"))),DeclFunGroup "layoutTransform" [FunClause [PVar "toks"] Nothing (Just (EApp (EApp (EVar "go") (EList [])) (EVar "toks"))) Nothing],DeclData "LayoutContext" [] [Constraint "InDo" [],Constraint "InCase" [],Constraint "InLet" [],Constraint "InWhere" []] ["Eq","Show","Ord"],DeclTypeAlias "LayoutStack" [] (TList (TTuple [TCon "LayoutContext",TCon "Int"])),DeclTypeSig "go" (TFun (TCon "LayoutStack") (TFun (TList (TCon "Token")) (TList (TCon "Token")))),DeclFunGroup "go" [FunClause [PVar "_",PConstr "[]" []] Nothing (Just (EList [])) Nothing],DeclFunGroup "go" [FunClause [PConstr "[]" [],PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpAnd (EBinOp BinOpEq (EVar "x") (EVar "y")) (EBinOp BinOpEq (EVar "x") (EInt 0)),EApp (EApp (EApp (EApp (EVarType "TokNewline") (EVar ":")) (EVar "go")) (EList [])) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EList [])) (EVar "rest"))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "do",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InDo",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "do")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "case",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InCase",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "case")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "let",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InLet",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "let")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokKeyword") [PString "where",PConstr ":" [],PVar "TokVNewline",PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpGt (EVar "y") (EVar "x"),EApp (EApp (EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVarType "TokVLBrace")) (EVar ":")) (EVar "go")) (EApp (EApp (ETuple [EVarType "InWhere",EVar "y"]) (EVar ":")) (EVar "stack"))) (EVar "rest")),(EVar "otherwise",EApp (EApp (EApp (EApp (EApp (EVarType "TokKeyword") (EString "where")) (EVar ":")) (EVar "go")) (EVar "stack")) (EApp (EApp (EApp (EVarType "TokVNewline") (ETuple [EVar "x",EVar "y"])) (EVar ":")) (EVar "rest")))]) Nothing Nothing],DeclFunGroup "go" [FunClause [PVar "stack",PApp (PVar "TokVNewline") [PTuple [PApp (PVar "x") [],PApp (PVar "y") []],PConstr ":" [],PVar "rest"]] (Just [(EBinOp BinOpEq (EVar "y") (EApp (EVar "currentIndent") (EVar "stack")),EApp (EApp (EApp (EApp (EApp (EVarType "TokSymbol") (EString ";")) (EVar ":")) (EVar "go")) (EVar "stack")) (EVar "rest"))]) Nothing Nothing]],[TokSymbol "|",TokIdent "y",TokOperator "<",TokIdent "currentIndent",TokIdent "stack",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokSymbol "(",TokIdent "braces",TokSymbol ",",TokIdent "newStack",TokSymbol ")",TokSymbol "=",TokIdent "popBraces",TokIdent "y",TokIdent "stack",TokSymbol ";",TokKeyword "in",TokIdent "braces",TokOperator "++",TokIdent "go",TokIdent "newStack",TokIdent "rest",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "TokSymbol",TokString ";",TokOperator ":",TokIdent "go",TokIdent "stack",TokIdent "rest",TokSymbol ";",TokIdent "go",TokIdent "ctx",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "t",TokOperator ":",TokIdent "go",TokIdent "ctx",TokIdent "rest",TokSymbol ";",TokIdent "currentIndent",TokSymbol "::",TokTypeIdent "LayoutStack",TokArrow,TokTypeIdent "Int",TokNewline,TokIdent "currentIndent",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokNumber 0,TokNewline,TokIdent "currentIndent",TokSymbol "(",TokSymbol "(",TokIdent "_",TokSymbol ",",TokIdent "i",TokSymbol ")",TokOperator ":",TokIdent "_",TokSymbol ")",TokSymbol "=",TokIdent "i",TokNewline,TokIdent "headContext",TokSymbol "::",TokTypeIdent "LayoutStack",TokArrow,TokTypeIdent "LayoutContext",TokNewline,TokIdent "headContext",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "InDo",TokNewline,TokIdent "headContext",TokSymbol "(",TokSymbol "(",TokIdent "ctx",TokSymbol ",",TokIdent "_",TokSymbol ")",TokOperator ":",TokIdent "_",TokSymbol ")",TokSymbol "=",TokIdent "ctx",TokNewline,TokIdent "popBraces",TokSymbol "::",TokTypeIdent "Int",TokArrow,TokTypeIdent "LayoutStack",TokArrow,TokSymbol "(",TokSymbol "[",TokTypeIdent "Token",TokSymbol "]",TokSymbol ",",TokTypeIdent "LayoutStack",TokSymbol ")",TokNewline,TokIdent "popBraces",TokIdent "y",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokSymbol "(",TokSymbol "[",TokSymbol "]",TokSymbol ",",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "popBraces",TokIdent "y",TokSymbol "(",TokSymbol "(",TokIdent "ctx",TokSymbol ",",TokIdent "i",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "y",TokOperator "<",TokIdent "i",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokSymbol "(",TokIdent "braces",TokSymbol ",",TokIdent "newStack",TokSymbol ")",TokSymbol "=",TokIdent "popBraces",TokIdent "y",TokIdent "rest",TokSymbol ";",TokKeyword "in",TokSymbol "(",TokTypeIdent "TokVRBrace",TokOperator ":",TokTypeIdent "TokNewline",TokOperator ":",TokIdent "braces",TokSymbol ",",TokIdent "newStack",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokSymbol "(",TokSymbol "[",TokSymbol "]",TokSymbol ",",TokSymbol "(",TokIdent "ctx",TokSymbol ",",TokIdent "i",TokSymbol ")",TokOperator ":",TokIdent "rest",TokSymbol ")",TokSymbol ";"])
 
 -- src code --
 module Layout.LayoutTransform (layoutTransform) where
@@ -144,11 +512,129 @@ module Layout.LayoutTransform (layoutTransform) where
 import Lexer.Token
 
 layoutTransform :: [Token] -> [Token]
-layoutTransform toks = go toks
+layoutTransform toks = go [] toks
 
 -- go (TokVNewline (x, y) : TokVNewline (x2, y2) : rest) =
 --   | x == y && x1 == y2 && x == x1 = TokSymbol ";" : go rest
 -- \| x == y = TokVNl : go rest
+data LayoutContext
+  = InDo
+  | InCase
+  | InLet
+  | InWhere
+  deriving (Eq, Show, Ord)
+
+type LayoutStack = [(LayoutContext, Int)] -- [(InDo, indentLevel)]
+
+go :: LayoutStack -> [Token] -> [Token]
+go _ [] = []
+go [] (TokVNewline (x, y) : rest)
+  | x == y && x == 0 = TokNewline : go [] rest -- 文脈が空なら単なる改行として扱う
+  | otherwise = TokSymbol ";" : go [] rest
+go stack (TokKeyword "do" : TokVNewline (x, y) : rest)
+  | y > x = TokKeyword "do" : TokVLBrace : go ((InDo, y) : stack) rest
+  | otherwise = TokKeyword "do" : go stack (TokVNewline (x, y) : rest)
+go stack (TokKeyword "case" : TokVNewline (x, y) : rest)
+  | y > x = TokKeyword "case" : TokVLBrace : go ((InCase, y) : stack) rest
+  | otherwise = TokKeyword "case" : go stack (TokVNewline (x, y) : rest)
+go stack (TokKeyword "let" : TokVNewline (x, y) : rest)
+  | y > x = TokKeyword "let" : TokVLBrace : go ((InLet, y) : stack) rest
+  | otherwise = TokKeyword "let" : go stack (TokVNewline (x, y) : rest)
+go stack (TokKeyword "where" : TokVNewline (x, y) : rest)
+  | y > x = TokKeyword "where" : TokVLBrace : go ((InWhere, y) : stack) rest
+  | otherwise = TokKeyword "where" : go stack (TokVNewline (x, y) : rest)
+go stack (TokVNewline (x, y) : rest)
+  | y == currentIndent stack = TokSymbol ";" : go stack rest
+  | y < currentIndent stack =
+      let (braces, newStack) = popBraces y stack
+       in braces ++ go newStack rest
+  | otherwise = TokSymbol ";" : go stack rest -- y > currentIndent → すでに VLBrace 済み
+go ctx (t : rest) =
+  t : go ctx rest
+
+-- 現在のインデントを取得（スタックが空なら0）
+currentIndent :: LayoutStack -> Int
+currentIndent [] = 0
+currentIndent ((_, i) : _) = i
+
+-- 現在の文脈（スタックトップ）を取得（空ならデフォルト）
+headContext :: LayoutStack -> LayoutContext
+headContext [] = InDo -- 適当なデフォルト（使われない前提）
+headContext ((ctx, _) : _) = ctx
+
+-- 複数のVRBraceを挿入しつつスタックを更新
+popBraces :: Int -> LayoutStack -> ([Token], LayoutStack)
+popBraces y [] = ([], [])
+popBraces y ((ctx, i) : rest)
+  | y < i =
+      let (braces, newStack) = popBraces y rest
+       in (TokVRBrace : TokNewline : braces, newStack)
+  | otherwise = ([], (ctx, i) : rest)
+
+{-}
+go stack (TokVNewline (x, y) : rest) =
+  let (braces, newStack) = popBraces y stack
+   in if y > currentIndent stack
+        then TokVLBrace : go ((headContext stack, y) : newStack) rest
+        else
+          if y == currentIndent stack
+            then TokSymbol ";" : go newStack rest
+            else braces ++ go newStack rest
+go :: LayoutStack -> [Token] -> [Token]
+go stack (TokKeyword "do" : TokVNewline (_, y) : rest) =
+  TokKeyword "do" : TokVNewline (y, y) : go ((InDo, y) : stack) rest
+go stack (TokKeyword "case" : TokVNewline (_, y) : rest) =
+  TokKeyword "case" : TokVNewline (y, y) : go ((InCase, y) : stack) rest
+go stack (TokKeyword "let" : TokVNewline (_, y) : rest) =
+  TokKeyword "let" : TokVNewline (y, y) : go ((InLet, y) : stack) rest
+go stack (TokKeyword "where" : TokVNewline (_, y) : rest) =
+  TokKeyword "where" : TokVNewline (y, y) : go ((InWhere, y) : stack) rest
+go ((ctxTop, indentTop) : stack) (TokVNewline (x, y) : rest)
+  | y > indentTop = TokVLBrace : go ((ctxTop, y) : stack) rest
+  | y == indentTop = TokSymbol ";" : go ((ctxTop, indentTop) : stack) rest
+  | y < indentTop = TokVRBrace : go (popUntil y stack) rest
+go ctx (t : rest) =
+  t : go ctx rest
+
+popUntil :: Ord b => b -> [(a, b)] -> [(a, b)]
+popUntil y [] = []
+popUntil y ((ctx, i) : rest)
+  | y < i = popUntil y rest
+  | otherwise = (ctx, i) : rest
+
+go :: [LayoutContext] -> [Token] -> [Token]
+go _ [] = []
+go ctx (TokKeyword "do" : rest) =
+  TokKeyword "do" : go (InDo : ctx) rest
+go ctx (TokKeyword "case" : rest) =
+  TokKeyword "case" : go (InCase : ctx) rest
+go ctx (TokKeyword "let" : rest) =
+  TokKeyword "let" : go (InLet : ctx) rest
+go ctx (TokKeyword "where" : rest) =
+  TokKeyword "where" : go (InWhere : ctx) rest
+go (InDo : ctx) (TokVNewline (x, y) : rest)
+  | x < y = TokVLBrace : go ctx rest
+  | x == y = TokSymbol ";" : go (InDo : ctx) rest
+  | x > y = TokVRBrace : go ctx rest
+go (InCase : ctx) (TokVNewline (x, y) : rest)
+  | x < y = TokVLBrace : go ctx rest
+  | x == y = TokSymbol ";" : go (InCase : ctx) rest
+  | x > y = TokVRBrace : go ctx rest
+go (InLet : ctx) (TokVNewline (x, y) : rest)
+  | x < y = TokVLBrace : go ctx rest
+  | x == y = TokSymbol ";" : go (InLet : ctx) rest
+  | x > y = TokVRBrace : go ctx rest
+go (InWhere : ctx) (TokVNewline (x, y) : rest)
+  | x < y = TokVLBrace : go ctx rest
+  | x == y = TokSymbol ";" : go (InWhere : ctx) rest
+  | x > y = TokVRBrace : go ctx rest
+go ctx (t : rest) =
+  t : go ctx rest
+
+closeBlocks :: [LayoutContext] -> (Int, Int) -> [Token] -> [Token]
+closeBlocks ctx (x, y) rest
+  | x > y = TokVRBrace : closeBlocks ctx (x - 1, y) rest
+  | otherwise = TokNewline : go ctx rest
 
 go :: [Token] -> [Token]
 go [] = []
@@ -164,41 +650,119 @@ closeBlocks :: (Int, Int) -> [Token] -> [Token]
 closeBlocks (x, y) rest
   | x > y = TokVRBrace : closeBlocks (x - 1, y) rest
   | otherwise = TokNewline : go rest
-
+-}
 
 -- token --
-[0] TokKeyword "module" TokTypeIdent "LayoutTokOperator "."     TokTypeIdent "LayoutTokSymbol "("       
-[5] TokIdent "layoutTranTokSymbol ")"       TokKeyword "where"  TokNewline          TokKeyword "import" 
-[10] TokTypeIdent "Lexer"TokOperator "."     TokTypeIdent "Token"TokNewline          TokIdent "layoutTran
-[15] TokSymbol "::"      TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokArrow            
-[20] TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokNewline          TokIdent "layoutTran
-[25] TokIdent "toks"     TokSymbol "="       TokIdent "go"       TokIdent "toks"     TokNewline          
-[30] TokIdent "go"       TokSymbol "::"      TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       
-[35] TokArrow            TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokNewline          
-[40] TokIdent "go"       TokSymbol "["       TokSymbol "]"       TokSymbol "="       TokSymbol "["       
-[45] TokSymbol "]"       TokNewline          TokIdent "go"       TokSymbol "("       TokTypeIdent "TokVNe
-[50] TokSymbol "("       TokIdent "x"        TokSymbol ","       TokIdent "y"        TokSymbol ")"       
-[55] TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokVLBrace          TokSymbol "|"       
-[60] TokIdent "x"        TokOperator "=="    TokNumber 0         TokOperator "&&"    TokIdent "x"        
-[65] TokOperator "=="    TokIdent "y"        TokSymbol "="       TokTypeIdent "TokNewTokOperator ":"     
-[70] TokIdent "go"       TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       TokIdent "x"        
-[75] TokOperator "=="    TokIdent "y"        TokSymbol "="       TokTypeIdent "TokSymTokString ";"       
-[80] TokOperator ":"     TokIdent "go"       TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       
-[85] TokIdent "x"        TokOperator "<"     TokIdent "y"        TokSymbol "="       TokTypeIdent "TokVLB
-[90] TokOperator ":"     TokIdent "go"       TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       
-[95] TokIdent "x"        TokOperator ">"     TokIdent "y"        TokSymbol "="       TokIdent "closeBlock
-[100] TokSymbol "("       TokIdent "x"        TokSymbol ","       TokIdent "y"        TokSymbol ")"       
-[105] TokIdent "rest"     TokVRBrace          TokNewline          TokIdent "go"       TokSymbol "("       
-[110] TokIdent "t"        TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol "="       
-[115] TokVLBrace          TokIdent "t"        TokOperator ":"     TokIdent "go"       TokIdent "rest"     
-[120] TokVRBrace          TokNewline          TokIdent "closeBlockTokSymbol "::"      TokSymbol "("       
-[125] TokTypeIdent "Int"  TokSymbol ","       TokTypeIdent "Int"  TokSymbol ")"       TokArrow            
-[130] TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokArrow            TokSymbol "["       
-[135] TokTypeIdent "Token"TokSymbol "]"       TokNewline          TokIdent "closeBlockTokSymbol "("       
-[140] TokIdent "x"        TokSymbol ","       TokIdent "y"        TokSymbol ")"       TokIdent "rest"     
-[145] TokVLBrace          TokSymbol "|"       TokIdent "x"        TokOperator ">"     TokIdent "y"        
-[150] TokSymbol "="       TokTypeIdent "TokVRBTokOperator ":"     TokIdent "closeBlockTokSymbol "("       
-[155] TokIdent "x"        TokOperator "-"     TokNumber 1         TokSymbol ","       TokIdent "y"        
-[160] TokSymbol ")"       TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"
-[165] TokSymbol "="       TokTypeIdent "TokNewTokOperator ":"     TokIdent "go"       TokIdent "rest"     
-[170] TokVRBrace          TokNewline          
+[560] TokKeyword "module" TokTypeIdent "LayoutTokOperator "."     TokTypeIdent "LayoutTokSymbol "("       
+[555] TokIdent "layoutTranTokSymbol ")"       TokKeyword "where"  TokNewline          TokKeyword "import" 
+[550] TokTypeIdent "Lexer"TokOperator "."     TokTypeIdent "Token"TokNewline          TokIdent "layoutTran
+[545] TokSymbol "::"      TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokArrow            
+[540] TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokNewline          TokIdent "layoutTran
+[535] TokIdent "toks"     TokSymbol "="       TokIdent "go"       TokSymbol "["       TokSymbol "]"       
+[530] TokIdent "toks"     TokNewline          TokKeyword "data"   TokTypeIdent "LayoutTokSymbol ";"       
+[525] TokSymbol "="       TokTypeIdent "InDo" TokSymbol ";"       TokSymbol "|"       TokTypeIdent "InCase
+[520] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "InLet"TokSymbol ";"       TokSymbol "|"       
+[515] TokTypeIdent "InWherTokSymbol ";"       TokKeyword "derivingTokSymbol "("       TokTypeIdent "Eq"   
+[510] TokSymbol ","       TokTypeIdent "Show" TokSymbol ","       TokTypeIdent "Ord"  TokSymbol ")"       
+[505] TokSymbol ";"       TokKeyword "type"   TokTypeIdent "LayoutTokSymbol "="       TokSymbol "["       
+[500] TokSymbol "("       TokTypeIdent "LayoutTokSymbol ","       TokTypeIdent "Int"  TokSymbol ")"       
+[495] TokSymbol "]"       TokNewline          TokIdent "go"       TokSymbol "::"      TokTypeIdent "Layout
+[490] TokArrow            TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokArrow            
+[485] TokSymbol "["       TokTypeIdent "Token"TokSymbol "]"       TokNewline          TokIdent "go"       
+[480] TokIdent "_"        TokSymbol "["       TokSymbol "]"       TokSymbol "="       TokSymbol "["       
+[475] TokSymbol "]"       TokNewline          TokIdent "go"       TokSymbol "["       TokSymbol "]"       
+[470] TokSymbol "("       TokTypeIdent "TokVNeTokSymbol "("       TokIdent "x"        TokSymbol ","       
+[465] TokIdent "y"        TokSymbol ")"       TokOperator ":"     TokIdent "rest"     TokSymbol ")"       
+[460] TokSymbol ";"       TokSymbol "|"       TokIdent "x"        TokOperator "=="    TokIdent "y"        
+[455] TokOperator "&&"    TokIdent "x"        TokOperator "=="    TokNumber 0         TokSymbol "="       
+[450] TokTypeIdent "TokNewTokOperator ":"     TokIdent "go"       TokSymbol "["       TokSymbol "]"       
+[445] TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       
+[440] TokTypeIdent "TokSymTokString ";"       TokOperator ":"     TokIdent "go"       TokSymbol "["       
+[435] TokSymbol "]"       TokIdent "rest"     TokSymbol ";"       TokIdent "go"       TokIdent "stack"    
+[430] TokSymbol "("       TokTypeIdent "TokKeyTokString "do"      TokOperator ":"     TokTypeIdent "TokVNe
+[425] TokSymbol "("       TokIdent "x"        TokSymbol ","       TokIdent "y"        TokSymbol ")"       
+[420] TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       
+[415] TokIdent "y"        TokOperator ">"     TokIdent "x"        TokSymbol "="       TokTypeIdent "TokKey
+[410] TokString "do"      TokOperator ":"     TokTypeIdent "TokVLBTokOperator ":"     TokIdent "go"       
+[405] TokSymbol "("       TokSymbol "("       TokTypeIdent "InDo" TokSymbol ","       TokIdent "y"        
+[400] TokSymbol ")"       TokOperator ":"     TokIdent "stack"    TokSymbol ")"       TokIdent "rest"     
+[395] TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       TokTypeIdent "TokKey
+[390] TokString "do"      TokOperator ":"     TokIdent "go"       TokIdent "stack"    TokSymbol "("       
+[385] TokTypeIdent "TokVNeTokSymbol "("       TokIdent "x"        TokSymbol ","       TokIdent "y"        
+[380] TokSymbol ")"       TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol ";"       
+[375] TokIdent "go"       TokIdent "stack"    TokSymbol "("       TokTypeIdent "TokKeyTokString "case"    
+[370] TokOperator ":"     TokTypeIdent "TokVNeTokSymbol "("       TokIdent "x"        TokSymbol ","       
+[365] TokIdent "y"        TokSymbol ")"       TokOperator ":"     TokIdent "rest"     TokSymbol ")"       
+[360] TokSymbol ";"       TokSymbol "|"       TokIdent "y"        TokOperator ">"     TokIdent "x"        
+[355] TokSymbol "="       TokTypeIdent "TokKeyTokString "case"    TokOperator ":"     TokTypeIdent "TokVLB
+[350] TokOperator ":"     TokIdent "go"       TokSymbol "("       TokSymbol "("       TokTypeIdent "InCase
+[345] TokSymbol ","       TokIdent "y"        TokSymbol ")"       TokOperator ":"     TokIdent "stack"    
+[340] TokSymbol ")"       TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"
+[335] TokSymbol "="       TokTypeIdent "TokKeyTokString "case"    TokOperator ":"     TokIdent "go"       
+[330] TokIdent "stack"    TokSymbol "("       TokTypeIdent "TokVNeTokSymbol "("       TokIdent "x"        
+[325] TokSymbol ","       TokIdent "y"        TokSymbol ")"       TokOperator ":"     TokIdent "rest"     
+[320] TokSymbol ")"       TokSymbol ";"       TokIdent "go"       TokIdent "stack"    TokSymbol "("       
+[315] TokTypeIdent "TokKeyTokString "let"     TokOperator ":"     TokTypeIdent "TokVNeTokSymbol "("       
+[310] TokIdent "x"        TokSymbol ","       TokIdent "y"        TokSymbol ")"       TokOperator ":"     
+[305] TokIdent "rest"     TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       TokIdent "y"        
+[300] TokOperator ">"     TokIdent "x"        TokSymbol "="       TokTypeIdent "TokKeyTokString "let"     
+[295] TokOperator ":"     TokTypeIdent "TokVLBTokOperator ":"     TokIdent "go"       TokSymbol "("       
+[290] TokSymbol "("       TokTypeIdent "InLet"TokSymbol ","       TokIdent "y"        TokSymbol ")"       
+[285] TokOperator ":"     TokIdent "stack"    TokSymbol ")"       TokIdent "rest"     TokSymbol ";"       
+[280] TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       TokTypeIdent "TokKeyTokString "let"     
+[275] TokOperator ":"     TokIdent "go"       TokIdent "stack"    TokSymbol "("       TokTypeIdent "TokVNe
+[270] TokSymbol "("       TokIdent "x"        TokSymbol ","       TokIdent "y"        TokSymbol ")"       
+[265] TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol ";"       TokIdent "go"       
+[260] TokIdent "stack"    TokSymbol "("       TokTypeIdent "TokKeyTokString "where"   TokOperator ":"     
+[255] TokTypeIdent "TokVNeTokSymbol "("       TokIdent "x"        TokSymbol ","       TokIdent "y"        
+[250] TokSymbol ")"       TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol ";"       
+[245] TokSymbol "|"       TokIdent "y"        TokOperator ">"     TokIdent "x"        TokSymbol "="       
+[240] TokTypeIdent "TokKeyTokString "where"   TokOperator ":"     TokTypeIdent "TokVLBTokOperator ":"     
+[235] TokIdent "go"       TokSymbol "("       TokSymbol "("       TokTypeIdent "InWherTokSymbol ","       
+[230] TokIdent "y"        TokSymbol ")"       TokOperator ":"     TokIdent "stack"    TokSymbol ")"       
+[225] TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       
+[220] TokTypeIdent "TokKeyTokString "where"   TokOperator ":"     TokIdent "go"       TokIdent "stack"    
+[215] TokSymbol "("       TokTypeIdent "TokVNeTokSymbol "("       TokIdent "x"        TokSymbol ","       
+[210] TokIdent "y"        TokSymbol ")"       TokOperator ":"     TokIdent "rest"     TokSymbol ")"       
+[205] TokSymbol ";"       TokIdent "go"       TokIdent "stack"    TokSymbol "("       TokTypeIdent "TokVNe
+[200] TokSymbol "("       TokIdent "x"        TokSymbol ","       TokIdent "y"        TokSymbol ")"       
+[195] TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       
+[190] TokIdent "y"        TokOperator "=="    TokIdent "currentIndTokIdent "stack"    TokSymbol "="       
+[185] TokTypeIdent "TokSymTokString ";"       TokOperator ":"     TokIdent "go"       TokIdent "stack"    
+[180] TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       TokIdent "y"        TokOperator "<"     
+[175] TokIdent "currentIndTokIdent "stack"    TokSymbol "="       TokSymbol ";"       TokKeyword "let"    
+[170] TokSymbol "("       TokIdent "braces"   TokSymbol ","       TokIdent "newStack" TokSymbol ")"       
+[165] TokSymbol "="       TokIdent "popBraces"TokIdent "y"        TokIdent "stack"    TokSymbol ";"       
+[160] TokKeyword "in"     TokIdent "braces"   TokOperator "++"    TokIdent "go"       TokIdent "newStack" 
+[155] TokIdent "rest"     TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       
+[150] TokTypeIdent "TokSymTokString ";"       TokOperator ":"     TokIdent "go"       TokIdent "stack"    
+[145] TokIdent "rest"     TokSymbol ";"       TokIdent "go"       TokIdent "ctx"      TokSymbol "("       
+[140] TokIdent "t"        TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol "="       
+[135] TokSymbol ";"       TokIdent "t"        TokOperator ":"     TokIdent "go"       TokIdent "ctx"      
+[130] TokIdent "rest"     TokSymbol ";"       TokIdent "currentIndTokSymbol "::"      TokTypeIdent "Layout
+[125] TokArrow            TokTypeIdent "Int"  TokNewline          TokIdent "currentIndTokSymbol "["       
+[120] TokSymbol "]"       TokSymbol "="       TokNumber 0         TokNewline          TokIdent "currentInd
+[115] TokSymbol "("       TokSymbol "("       TokIdent "_"        TokSymbol ","       TokIdent "i"        
+[110] TokSymbol ")"       TokOperator ":"     TokIdent "_"        TokSymbol ")"       TokSymbol "="       
+[105] TokIdent "i"        TokNewline          TokIdent "headContexTokSymbol "::"      TokTypeIdent "Layout
+[100] TokArrow            TokTypeIdent "LayoutTokNewline          TokIdent "headContexTokSymbol "["       
+[95] TokSymbol "]"       TokSymbol "="       TokTypeIdent "InDo" TokNewline          TokIdent "headContex
+[90] TokSymbol "("       TokSymbol "("       TokIdent "ctx"      TokSymbol ","       TokIdent "_"        
+[85] TokSymbol ")"       TokOperator ":"     TokIdent "_"        TokSymbol ")"       TokSymbol "="       
+[80] TokIdent "ctx"      TokNewline          TokIdent "popBraces"TokSymbol "::"      TokTypeIdent "Int"  
+[75] TokArrow            TokTypeIdent "LayoutTokArrow            TokSymbol "("       TokSymbol "["       
+[70] TokTypeIdent "Token"TokSymbol "]"       TokSymbol ","       TokTypeIdent "LayoutTokSymbol ")"       
+[65] TokNewline          TokIdent "popBraces"TokIdent "y"        TokSymbol "["       TokSymbol "]"       
+[60] TokSymbol "="       TokSymbol "("       TokSymbol "["       TokSymbol "]"       TokSymbol ","       
+[55] TokSymbol "["       TokSymbol "]"       TokSymbol ")"       TokNewline          TokIdent "popBraces"
+[50] TokIdent "y"        TokSymbol "("       TokSymbol "("       TokIdent "ctx"      TokSymbol ","       
+[45] TokIdent "i"        TokSymbol ")"       TokOperator ":"     TokIdent "rest"     TokSymbol ")"       
+[40] TokSymbol ";"       TokSymbol "|"       TokIdent "y"        TokOperator "<"     TokIdent "i"        
+[35] TokSymbol "="       TokSymbol ";"       TokKeyword "let"    TokSymbol "("       TokIdent "braces"   
+[30] TokSymbol ","       TokIdent "newStack" TokSymbol ")"       TokSymbol "="       TokIdent "popBraces"
+[25] TokIdent "y"        TokIdent "rest"     TokSymbol ";"       TokKeyword "in"     TokSymbol "("       
+[20] TokTypeIdent "TokVRBTokOperator ":"     TokTypeIdent "TokNewTokOperator ":"     TokIdent "braces"   
+[15] TokSymbol ","       TokIdent "newStack" TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       
+[10] TokIdent "otherwise"TokSymbol "="       TokSymbol "("       TokSymbol "["       TokSymbol "]"       
+[5] TokSymbol ","       TokSymbol "("       TokIdent "ctx"      TokSymbol ","       TokIdent "i"        
+[0] TokSymbol ")"       TokOperator ":"     TokIdent "rest"     TokSymbol ")"       TokSymbol ";"       

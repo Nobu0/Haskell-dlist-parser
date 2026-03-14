@@ -22,14 +22,10 @@ import TypeInference.Error (InferError (..))
 import TypeInference.Subst
 
 -- 型スキーム：forall a b. t
-data Scheme
-  = Forall [String] Type
-  deriving (Show, Eq)
+data Scheme = Forall [String] Type deriving (Show, Eq)
 
 -- 型環境：変数名 → 型スキーム
-newtype TypeEnv
-  = TypeEnv (M.Map String Scheme)
-  deriving (Show, Eq)
+newtype TypeEnv = TypeEnv (M.Map String Scheme) deriving (Show, Eq)
 
 {-}
 emptyEnv :: TypeEnv
@@ -58,7 +54,7 @@ freeTypeVarsScheme (Forall vars t) =
 
 -- 型の自由変数を集める
 freeTypeVars :: Type -> [String]
-freeTypeVars t = 
+freeTypeVars t =
   case t of
     TVar v -> [v]
     TCon _ -> []

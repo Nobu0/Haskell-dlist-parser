@@ -3,6 +3,8 @@
 module Parser.Core.Combinator
   ( Parser (..),
     runParser,
+    runWithDebug,
+    getRemainingCount,
     satisfy,
     satisfyMap,
     token,
@@ -68,9 +70,17 @@ instance Alternative Parser where
   p1 <|> p2 = Parser $ \input ->
     runParser p1 input <|> runParser p2 input
 
+getRemainingCount :: Parser Int
+getRemainingCount = Parser $ \tokens -> Just (length tokens, tokens)
+
+runWithDebug :: Parser a -> [Token] -> IO ()
+runWithDebug (Parser p) tokens = case p tokens of
+  Just (result, _) -> putStrLn "Parse succeeded!"
+  Nothing -> putStrLn $ "Parse failed. Remaining tokens: " ++ show (length tokens)
+
 -- 補助関数
 satisfy :: (Token -> Bool) -> Parser Token
-satisfy f = Parser $ \tokens -> 
+satisfy f = Parser $ \tokens ->
   case tokens of
     (t : ts) | f t -> Just (t, ts)
     _ -> Nothing
@@ -159,12 +169,7 @@ many1 p = (:) <$> p <*> many p
 manyTill :: Parser a -> Parser end -> Parser [a]
 manyTill p end = go
   where
-    go =
-      end
-        *> pure []
-          <|> (:)
-        <$> p
-        <*> go
+    go = end *> pure [] <|> (:) <$> p <*> go
 
 choice1 :: Parser a -> Parser a -> Parser a
 choice1 p q = Parser $ \input ->
