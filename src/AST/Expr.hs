@@ -6,6 +6,7 @@ module AST.Expr
     Stmt (..),
     Qualifier (..),
     CaseAlt (..),
+    SQLInfo(..),
   )
 where
 
@@ -55,6 +56,7 @@ data Expr
   | ECase Expr [CaseAlt]
   | EList [Expr]
   | ETuple [Expr]
+  | ERecordConstr Name [(Name, Expr)]  
   | ERange Expr Expr
   | ERangeStep Expr Expr Expr
   | EListComp Expr [Qualifier]
@@ -72,6 +74,12 @@ data Expr
   | ELambdaCase [CaseAlt] -- [(Pattern, Expr)]
   | ESQL String [Expr]
   deriving (Eq, Show)
+
+data SQLInfo = SQLInfo
+  { sqlText :: String,
+    sqlVars :: [String],
+    sqlExprs :: [Expr]
+  }
 
 -- \| EWhere Expr [EDecl]
 

@@ -2,8 +2,8 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 42 / 282
-Coverage: 14%
+Consumed tokens: 92 / 282
+Coverage: 32%
 
 -- AST----------------------------------
 
@@ -11,11 +11,17 @@ Coverage: 14%
 [0] DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"])
 [1] DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [2] DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
-[3] DeclTypeAlias "Subst" [] (TCon "M")
-[DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TCon "M")]
+[3] DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type"))
+[4] DeclTypeSig "emptySubst" (TCon "Subst")
+[5] DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing]
+[6] DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst")))
+[7] DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing]
+[8] DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst")))
+[9] DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")))) Nothing]
+[DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type")),DeclTypeSig "emptySubst" (TCon "Subst"),DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing],DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))),DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing],DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))),DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")))) Nothing]]
 
 -- Remaining-----------------------------
-[TokOperator ".",TokTypeIdent "Map",TokTypeIdent "String",TokTypeIdent "Type",TokNewline,TokIdent "emptySubst",TokSymbol "::",TokTypeIdent "Subst",TokNewline,TokIdent "emptySubst",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "empty",TokNewline,TokIdent "singletonSubst",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Subst",TokNewline,TokIdent "singletonSubst",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "singleton",TokNewline,TokIdent "composeSubst",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Subst",TokArrow,TokTypeIdent "Subst",TokNewline,TokIdent "composeSubst",TokIdent "s1",TokIdent "s2",TokSymbol "=",TokSymbol ";",TokTypeIdent "M",TokOperator ".",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "s2",TokSymbol "`",TokTypeIdent "M",TokOperator ".",TokIdent "union",TokSymbol "`",TokIdent "s1",TokSymbol ";",TokIdent "apply",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Type",TokNewline,TokIdent "apply",TokIdent "s",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokSymbol ";",TokTypeIdent "TUnit",TokSymbol ";",TokTypeIdent "TVar",TokIdent "v",TokArrow,TokSymbol ";",TokKeyword "case",TokTypeIdent "M",TokOperator ".",TokIdent "lookup",TokIdent "v",TokIdent "s",TokKeyword "of",TokSymbol ";",TokTypeIdent "Just",TokIdent "t'",TokArrow,TokIdent "t'",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokTypeIdent "TVar",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokArrow,TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TArrow",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TList",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TApp",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TConstraint",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s",TokSymbol ")",TokIdent "cs",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t1",TokArrow,TokSymbol ";",TokSymbol ";",TokKeyword "let",TokIdent "s'",TokSymbol "=",TokIdent "foldr",TokTypeIdent "M",TokOperator ".",TokIdent "delete",TokIdent "s",TokIdent "vars",TokSymbol ";",TokKeyword "in",TokTypeIdent "TForall",TokIdent "vars",TokSymbol "(",TokIdent "apply",TokIdent "s'",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokSymbol ";",TokTypeIdent "TTuple",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";",TokIdent "applyConstraint",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Constraint",TokNewline,TokIdent "applyConstraint",TokIdent "s",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";"]
+[TokSymbol "`",TokTypeIdent "M",TokOperator ".",TokIdent "union",TokSymbol "`",TokIdent "s1",TokSymbol ";",TokIdent "apply",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Type",TokNewline,TokIdent "apply",TokIdent "s",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokSymbol ";",TokTypeIdent "TUnit",TokSymbol ";",TokTypeIdent "TVar",TokIdent "v",TokArrow,TokSymbol ";",TokKeyword "case",TokTypeIdent "M",TokOperator ".",TokIdent "lookup",TokIdent "v",TokIdent "s",TokKeyword "of",TokSymbol ";",TokTypeIdent "Just",TokIdent "t'",TokArrow,TokIdent "t'",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokTypeIdent "TVar",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokArrow,TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TArrow",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TList",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TApp",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TConstraint",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s",TokSymbol ")",TokIdent "cs",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t1",TokArrow,TokSymbol ";",TokSymbol ";",TokKeyword "let",TokIdent "s'",TokSymbol "=",TokIdent "foldr",TokTypeIdent "M",TokOperator ".",TokIdent "delete",TokIdent "s",TokIdent "vars",TokSymbol ";",TokKeyword "in",TokTypeIdent "TForall",TokIdent "vars",TokSymbol "(",TokIdent "apply",TokIdent "s'",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokSymbol ";",TokTypeIdent "TTuple",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";",TokIdent "applyConstraint",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Constraint",TokNewline,TokIdent "applyConstraint",TokIdent "s",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";"]
 
 -- Parsed AST log --
 << decl next token: TokKeyword "module"
@@ -49,13 +55,159 @@ Coverage: 14%
 << decl parser called
 << decl dispatch: TokKeyword "type" ct=244
 << typeDecl name "Subst" vars []
->>*typeDecl typ TCon "M"
->>*declBody: e DeclTypeAlias "Subst" [] (TCon "M")
-<< decl next token: TokOperator "."
+>>*typeDecl typ TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type")
+>>*declBody: e DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type"))
+<< decl next token: TokIdent "emptySubst"
 << decl parser called
-<< decl dispatch: TokOperator "." ct=240
-<< unknown token in decl: TokOperator "."
-Just ([DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TCon "M")],[TokOperator ".",TokTypeIdent "Map",TokTypeIdent "String",TokTypeIdent "Type",TokNewline,TokIdent "emptySubst",TokSymbol "::",TokTypeIdent "Subst",TokNewline,TokIdent "emptySubst",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "empty",TokNewline,TokIdent "singletonSubst",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Subst",TokNewline,TokIdent "singletonSubst",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "singleton",TokNewline,TokIdent "composeSubst",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Subst",TokArrow,TokTypeIdent "Subst",TokNewline,TokIdent "composeSubst",TokIdent "s1",TokIdent "s2",TokSymbol "=",TokSymbol ";",TokTypeIdent "M",TokOperator ".",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "s2",TokSymbol "`",TokTypeIdent "M",TokOperator ".",TokIdent "union",TokSymbol "`",TokIdent "s1",TokSymbol ";",TokIdent "apply",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Type",TokNewline,TokIdent "apply",TokIdent "s",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokSymbol ";",TokTypeIdent "TUnit",TokSymbol ";",TokTypeIdent "TVar",TokIdent "v",TokArrow,TokSymbol ";",TokKeyword "case",TokTypeIdent "M",TokOperator ".",TokIdent "lookup",TokIdent "v",TokIdent "s",TokKeyword "of",TokSymbol ";",TokTypeIdent "Just",TokIdent "t'",TokArrow,TokIdent "t'",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokTypeIdent "TVar",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokArrow,TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TArrow",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TList",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TApp",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TConstraint",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s",TokSymbol ")",TokIdent "cs",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t1",TokArrow,TokSymbol ";",TokSymbol ";",TokKeyword "let",TokIdent "s'",TokSymbol "=",TokIdent "foldr",TokTypeIdent "M",TokOperator ".",TokIdent "delete",TokIdent "s",TokIdent "vars",TokSymbol ";",TokKeyword "in",TokTypeIdent "TForall",TokIdent "vars",TokSymbol "(",TokIdent "apply",TokIdent "s'",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokSymbol ";",TokTypeIdent "TTuple",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";",TokIdent "applyConstraint",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Constraint",TokNewline,TokIdent "applyConstraint",TokIdent "s",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";"])
+<< decl dispatch: TokIdent "emptySubst" ct=235
+<< funDecl: next token=TokIdent "emptySubst" ct=235
+<< pInfix: ct=234
+<< pPattern:
+    prased PVar "emptySubst"
+<< pattern: ct=234
+<< parseGuardedClause: next token=TokSymbol "::" ct=234
+<< parseGuardLine: next token=TokSymbol "::" ct=234
+<< typeSigDecl: TokIdent "emptySubst"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Subst"
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< parsed type signature: emptySubst :: TCon "Subst"
+<< returning DeclTypeSig: DeclTypeSig "emptySubst" (TCon "Subst")
+>>*declBody: e DeclTypeSig "emptySubst" (TCon "Subst")
+<< decl next token: TokIdent "emptySubst"
+<< decl parser called
+<< decl dispatch: TokIdent "emptySubst" ct=231
+<< funDecl: next token=TokIdent "emptySubst" ct=231
+<< pInfix: ct=230
+<< pPattern:
+    prased PVar "emptySubst"
+<< pattern: ct=230
+<< parseSimpleClause: next token=TokTypeIdent "M" ct=229
+<< expr dispatch: TokTypeIdent "M" ct=229
+<< bracesExpr: nm "M" ct=229
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=228
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "empty" ct=227
+<< exprNoLoop: e EVar "empty"
+<< expr dispatch: TokNewline ct=226
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EVar "empty")
+<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EVar "empty") ct=226
+<< funClauseWithName: next token=TokNewline ct=226
+>>*funDecl name "emptySubst" clause1 FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing rest []
+>>*declBody: e DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing]
+<< decl next token: TokIdent "singletonSubst"
+<< decl parser called
+<< decl dispatch: TokIdent "singletonSubst" ct=225
+<< funDecl: next token=TokIdent "singletonSubst" ct=225
+<< pInfix: ct=224
+<< pPattern:
+    prased PVar "singletonSubst"
+<< pattern: ct=224
+<< parseGuardedClause: next token=TokSymbol "::" ct=224
+<< parseGuardLine: next token=TokSymbol "::" ct=224
+<< typeSigDecl: TokIdent "singletonSubst"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "String"
+<< typeTerm: ts [TCon "String"]
+<< typeTerm: ts [TCon "Type"]
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< parseTypeCore: TFun (TCon "Type") (TCon "Subst")
+<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))
+<< parsed type signature: singletonSubst :: TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))
+<< returning DeclTypeSig: DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst")))
+>>*declBody: e DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst")))
+<< decl next token: TokIdent "singletonSubst"
+<< decl parser called
+<< decl dispatch: TokIdent "singletonSubst" ct=217
+<< funDecl: next token=TokIdent "singletonSubst" ct=217
+<< pInfix: ct=216
+<< pPattern:
+    prased PVar "singletonSubst"
+<< pattern: ct=216
+<< parseSimpleClause: next token=TokTypeIdent "M" ct=215
+<< expr dispatch: TokTypeIdent "M" ct=215
+<< bracesExpr: nm "M" ct=215
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=214
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "singleton" ct=213
+<< exprNoLoop: e EVar "singleton"
+<< expr dispatch: TokNewline ct=212
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EVar "singleton")
+<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EVar "singleton") ct=212
+<< funClauseWithName: next token=TokNewline ct=212
+>>*funDecl name "singletonSubst" clause1 FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing rest []
+>>*declBody: e DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing]
+<< decl next token: TokIdent "composeSubst"
+<< decl parser called
+<< decl dispatch: TokIdent "composeSubst" ct=211
+<< funDecl: next token=TokIdent "composeSubst" ct=211
+<< pInfix: ct=210
+<< pPattern:
+    prased PVar "composeSubst"
+<< pattern: ct=210
+<< parseGuardedClause: next token=TokSymbol "::" ct=210
+<< parseGuardLine: next token=TokSymbol "::" ct=210
+<< typeSigDecl: TokIdent "composeSubst"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Subst"
+<< typeTerm: ts [TCon "Subst"]
+<< typeTerm: ts [TCon "Subst"]
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< parseTypeCore: TFun (TCon "Subst") (TCon "Subst")
+<< parseTypeCore: TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))
+<< parsed type signature: composeSubst :: TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))
+<< returning DeclTypeSig: DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst")))
+>>*declBody: e DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst")))
+<< decl next token: TokIdent "composeSubst"
+<< decl parser called
+<< decl dispatch: TokIdent "composeSubst" ct=203
+<< funDecl: next token=TokIdent "composeSubst" ct=203
+<< pInfix: ct=202
+<< pPattern:
+    prased PVar "composeSubst"
+<< pInfix: ct=201
+<< pPattern:
+    prased PVar "s1"
+<< pInfix: ct=200
+<< pPattern:
+    prased PVar "s2"
+<< pattern: ct=200
+<< parseSimpleClause: next token=TokTypeIdent "M" ct=198
+<< expr dispatch: TokTypeIdent "M" ct=198
+<< bracesExpr: nm "M" ct=198
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=197
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "map" ct=196
+<< exprNoLoop: e EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")
+<< expr dispatch: TokSymbol "`" ct=190
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2"))
+<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) ct=190
+<< funClauseWithName: next token=TokSymbol "`" ct=190
+>>*funDecl name "composeSubst" clause1 FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")))) Nothing rest []
+>>*declBody: e DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")))) Nothing]
+<< decl next token: TokSymbol "`"
+<< decl parser called
+<< decl dispatch: TokSymbol "`" ct=190
+<< unknown token in decl: TokSymbol "`"
+Just ([DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type")),DeclTypeSig "emptySubst" (TCon "Subst"),DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing],DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))),DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing],DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))),DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")))) Nothing]],[TokSymbol "`",TokTypeIdent "M",TokOperator ".",TokIdent "union",TokSymbol "`",TokIdent "s1",TokSymbol ";",TokIdent "apply",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Type",TokNewline,TokIdent "apply",TokIdent "s",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokSymbol ";",TokTypeIdent "TUnit",TokSymbol ";",TokTypeIdent "TVar",TokIdent "v",TokArrow,TokSymbol ";",TokKeyword "case",TokTypeIdent "M",TokOperator ".",TokIdent "lookup",TokIdent "v",TokIdent "s",TokKeyword "of",TokSymbol ";",TokTypeIdent "Just",TokIdent "t'",TokArrow,TokIdent "t'",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokTypeIdent "TVar",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokArrow,TokSymbol ";",TokTypeIdent "TCon",TokIdent "c",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TArrow",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TList",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokSymbol ";",TokTypeIdent "TApp",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokSymbol ";",TokTypeIdent "TConstraint",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s",TokSymbol ")",TokIdent "cs",TokSymbol ")",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vars",TokIdent "t1",TokArrow,TokSymbol ";",TokSymbol ";",TokKeyword "let",TokIdent "s'",TokSymbol "=",TokIdent "foldr",TokTypeIdent "M",TokOperator ".",TokIdent "delete",TokIdent "s",TokIdent "vars",TokSymbol ";",TokKeyword "in",TokTypeIdent "TForall",TokIdent "vars",TokSymbol "(",TokIdent "apply",TokIdent "s'",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokSymbol ";",TokTypeIdent "TTuple",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";",TokIdent "applyConstraint",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Constraint",TokNewline,TokIdent "applyConstraint",TokIdent "s",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "cls",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "Constraint",TokIdent "cls",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s",TokSymbol ")",TokIdent "ts",TokSymbol ")",TokSymbol ";"])
 
 -- src code --
 module TypeInference.Subst

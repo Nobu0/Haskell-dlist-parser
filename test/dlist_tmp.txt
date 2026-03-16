@@ -1,10 +1,10 @@
 Build profile: -w ghc-9.6.7 -O1
 In order, the following will be built (use -v for more details):
- - dlist-parser-0.1.0.0 (exe:dlist) (file src\Decl\DeclParser\Module.hs changed)
+ - dlist-parser-0.1.0.0 (exe:dlist) (file src\Parser\Expr\ExprExtensions.hs changed)
 Preprocessing executable 'dlist' for dlist-parser-0.1.0.0...
 Building executable 'dlist' for dlist-parser-0.1.0.0...
-[27 of 33] Compiling Decl.DeclParser.Module ( src\Decl\DeclParser\Module.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Decl\DeclParser\Module.o ) [Source file changed]
-[31 of 33] Compiling Decl.DeclParserCore ( src\Decl\DeclParserCore.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Decl\DeclParserCore.o ) [Decl.DeclParser.Module changed]
+[ 9 of 33] Compiling Lexer.LayoutLexer ( src\Lexer\LayoutLexer.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Lexer\LayoutLexer.o ) [Source file changed]
+[23 of 33] Compiling Parser.Expr.ExprExtensions ( src\Parser\Expr\ExprExtensions.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Parser\Expr\ExprExtensions.o ) [Source file changed]
 [34 of 34] Linking C:\\Users\\blue3\\haskell\\dlist-parser\\dist-newstyle\\build\\x86_64-windows\\ghc-9.6.7\\dlist-parser-0.1.0.0\\x\\dlist\\build\\dlist\\dlist.exe [Objects changed]
 === Running Parser Test Suite ===
 
@@ -46,7 +46,7 @@ Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],EApp (EInt 1) (EReturn (EVar "x"
 -- Do in case --
 -- Input: case v of Just x -> do { let y = x + 1; return y }; Nothing -> return 0
 Tokens: [TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "x",TokArrow,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokNumber 0]
-Parser: Just (ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "x"]) (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]),CaseAlt (PApp (PVar "Nothing") []) (EReturn (EInt 0))])
+Parser: Just (ECase (EVar "v") [CaseAlt (PApp (PConstr "Just" []) [PVar "x"]) (EDo [LetStmt [(PApp (PVar "y") [],EBinOp BinOpAdd (EVar "x") (EInt 1))],ExprStmt (EReturn (EVar "y"))]),CaseAlt (PApp (PConstr "Nothing" []) []) (EReturn (EInt 0))])
 
 -- Empty do --
 -- Input: do { }
@@ -59,15 +59,19 @@ Tokens: [TokKeyword "case",TokIdent "v",TokKeyword "of",TokIdent "x",TokSymbol "
 XX Parser failed! Re-running with trace:
 << expr dispatch: TokKeyword "case" ct=16
 << caseExprCore:
+<< expr dispatch: TokIdent "v" ct=15
+<< exprNoLoop: e EVar "v"
+<< expr dispatch: TokKeyword "of" ct=14
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "v"
 << pattern: ct=13
 << pattern: ct=10
-<< pConstrOrVar: next token "Just"
-<< pConstrOrVar: next token "y"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "Just") [PVar "y"] ct=8
+    (pAs <|> makeCons)PApp (PConstr "Just" []) [PVar "y"] ct=8
 << pattern:
-    (pAs <|> makeCons)PAs "x" (PApp (PVar "Just") [PVar "y"]) ct=7
-<< caseAlt: pat PAs "x" (PApp (PVar "Just") [PVar "y"])
+    (pAs <|> makeCons)PAs "x" (PApp (PConstr "Just" []) [PVar "y"]) ct=7
+<< caseAlt: pat PAs "x" (PApp (PConstr "Just" []) [PVar "y"])
 << guardExpr next token: TokArrow
 << expr dispatch: TokKeyword "return" ct=6
 << returnWithDollar
@@ -79,15 +83,15 @@ XX Parser failed! Re-running with trace:
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EReturn (EVar "x")) (EVar "_")
->>*caseAlt: pat PAs "x" (PApp (PVar "Just") [PVar "y"]) body EApp (EReturn (EVar "x")) (EVar "_")
+>>*caseAlt: pat PAs "x" (PApp (PConstr "Just" []) [PVar "y"]) body EApp (EReturn (EVar "x")) (EVar "_")
 << pattern: ct=3
 >>*caseAltBlock: xs []
->>*caseExprCore: alts [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))]
-<< exprNoLoop: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))]
+>>*caseExprCore: alts [CaseAlt (PAs "x" (PApp (PConstr "Just" []) [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))]
+<< exprNoLoop: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PConstr "Just" []) [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))]
 << expr dispatch: TokArrow ct=3
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PVar "Just") [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))]
+<< expr: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PConstr "Just" []) [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))]
 << expr dispatch: TokArrow ct=3
 Parser: Nothing
 
@@ -99,7 +103,7 @@ Parser: Just (ESeq [EVar "x",EVar "y",EVar "z"])
 -- Let with case --
 -- Input: do { let x = case v of Just n -> n; Nothing -> 0; return x }
 Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokArrow,TokIdent "n",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokNumber 0,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}"]
-Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PVar "Just") [PVar "n"]) (EVar "n"),CaseAlt (PApp (PVar "Nothing") []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))])
+Parser: Just (EDo [LetStmt [(PApp (PVar "x") [],ECase (EVar "v") [CaseAlt (PApp (PConstr "Just" []) [PVar "n"]) (EVar "n"),CaseAlt (PApp (PConstr "Nothing" []) []) (EInt 0)])],ExprStmt (EReturn (EVar "x"))])
 
 -- simple --
 -- Input: { x = 1 }
@@ -268,7 +272,7 @@ Parser: Just (EListComp (EVar "x") [QLet [(PApp (PVar "y") [],EApp (EVar "f") (E
 -- list6 --
 -- Input: [x | Just x <- xs]
 Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]"]
-Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")])
+Parser: Just (EListComp (EVar "x") [QGenerator (PApp (PConstr "Just" []) [PVar "x"]) (EVar "xs")])
 
 -- list7 --
 -- Input: do { let xs = [x | x <- ys]; return xs }
@@ -534,7 +538,7 @@ Parser: Just (EWhere (EBinOp BinOpAdd (EVar "x") (EVar "y")) [(PApp (PVar "z") [
 -- func2 --
 -- Input: case x of Just n | n > 0 -> n   | n < 1 -> 2  where m = 10
 Tokens: [TokKeyword "case",TokIdent "x",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 1,TokArrow,TokNumber 2,TokKeyword "where",TokIdent "m",TokSymbol "=",TokNumber 10]
-Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PVar "Just") [PVar "n"]) [(EBinOp BinOpGt (EVar "n") (EInt 0),EVar "n"),(EBinOp BinOpLt (EVar "n") (EInt 1),EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)])]])
+Parser: Just (ECase (EVar "x") [CaseAltGuard (PApp (PConstr "Just" []) [PVar "n"]) [(EBinOp BinOpGt (EVar "n") (EInt 0),EVar "n"),(EBinOp BinOpLt (EVar "n") (EInt 1),EWhere (EInt 2) [(PApp (PVar "m") [],EInt 10)])]])
 
 -- func3 --
 -- Input: do { x <- foo;  y <- bar;  x + y} where foo = 1; bar = 2
@@ -544,7 +548,7 @@ Parser: Just (EWhere (EDo [Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PV
 -- func4 --
 -- Input: [x | Just x <- xs] where xs = [1..10]
 Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokKeyword "where",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]"]
-Parser: Just (EWhere (EListComp (EVar "x") [QGenerator (PApp (PVar "Just") [PVar "x"]) (EVar "xs")]) [(PApp (PVar "xs") [],ERange (EInt 1) (EInt 10))])
+Parser: Just (EWhere (EListComp (EVar "x") [QGenerator (PApp (PConstr "Just" []) [PVar "x"]) (EVar "xs")]) [(PApp (PVar "xs") [],ERange (EInt 1) (EInt 10))])
 
 -- func5 --
 -- Input: let  f x = x + 1;  g y = f y * 2 in g 10
@@ -691,17 +695,17 @@ Parser: Just (EIf (EVar "cond") (EReturn (EInt 1)) (EReturn (EInt 0)))
 -- case1 --
 -- Input: do { case tk of {(t : ts) -> pure (); [] -> Nothing}}
 Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "case",TokIdent "tk",TokKeyword "of",TokSymbol "{",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "ts",TokSymbol ")",TokArrow,TokIdent "pure",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokSymbol "[",TokSymbol "]",TokArrow,TokTypeIdent "Nothing",TokSymbol "}",TokSymbol "}"]
-Parser: Just (EDo [ExprStmt (ECase (EVar "tk") [CaseAlt (PApp (PApp (PVar "t") [PConstr ":" [],PVar "ts"]) []) (EApp (EVar "pure") EUnit),CaseAlt (PApp (PConstr "[]" []) []) (EVarType "Nothing")])])
+Parser: Just (EDo [ExprStmt (ECase (EVar "tk") [CaseAlt (PApp (PCons (PApp (PVar "t") []) (PApp (PVar "ts") [])) []) (EApp (EVar "pure") EUnit),CaseAlt (PApp (PConstr "[]" []) []) (EVarType "Nothing")])])
 
 -- case2 --
 -- Input: case tk of (t : ts) -> pure (); [] -> Nothing
 Tokens: [TokKeyword "case",TokIdent "tk",TokKeyword "of",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "ts",TokSymbol ")",TokArrow,TokIdent "pure",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokSymbol "[",TokSymbol "]",TokArrow,TokTypeIdent "Nothing"]
-Parser: Just (ECase (EVar "tk") [CaseAlt (PApp (PApp (PVar "t") [PConstr ":" [],PVar "ts"]) []) (EApp (EVar "pure") EUnit),CaseAlt (PApp (PConstr "[]" []) []) (EVarType "Nothing")])
+Parser: Just (ECase (EVar "tk") [CaseAlt (PApp (PCons (PApp (PVar "t") []) (PApp (PVar "ts") [])) []) (EApp (EVar "pure") EUnit),CaseAlt (PApp (PConstr "[]" []) []) (EVarType "Nothing")])
 
 -- case3 --
 -- Input: case tk of (t : ts) -> pure (); _ -> Nothing
 Tokens: [TokKeyword "case",TokIdent "tk",TokKeyword "of",TokSymbol "(",TokIdent "t",TokOperator ":",TokIdent "ts",TokSymbol ")",TokArrow,TokIdent "pure",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing"]
-Parser: Just (ECase (EVar "tk") [CaseAlt (PApp (PApp (PVar "t") [PConstr ":" [],PVar "ts"]) []) (EApp (EVar "pure") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
+Parser: Just (ECase (EVar "tk") [CaseAlt (PApp (PCons (PApp (PVar "t") []) (PApp (PVar "ts") [])) []) (EApp (EVar "pure") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
 
 -- call  --
 -- Input: do { let f = x (not . (elms ['a','\n']))}
@@ -733,14 +737,11 @@ XX Parser failed! Re-running with trace:
 << postfix: operator = Nothing
 << binding: next token TokIdent "z"
 << pattern: ct=15
-<< pConstrOrVar: next token "z"
-<< pConstrOrVar: next token "arg"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "z") [PVar "arg"] ct=13
 << valueBinding: pat PApp (PVar "z") [PVar "arg"]
 << funBinding: name "z" next TokIdent "arg"
 << pattern: ct=14
-<< pConstrOrVar: next token "arg"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "arg") [] ct=13
 << pattern: ct=13

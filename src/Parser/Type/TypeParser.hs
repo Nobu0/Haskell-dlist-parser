@@ -87,12 +87,14 @@ typeApp = do
 typeTerm :: Parser Type
 typeTerm = do
   ts <- some typeAtom
+  myTrace("<< typeTerm: ts "++ show ts)
   return (foldl1 TApp ts)
 
 typeAtom :: Parser Type
 typeAtom =
   (parens parseTypeCore) -- 括弧付き型
     <|> tUnitType -- (symbol "()" *> pure TUnit) -- 単位型
+    <|> (TCon <$> aliasName)
     <|> (TCon <$> typeIdent)
     <|> (TVar <$> ident)
     <|> brackets (TList <$> parseTypeCore)

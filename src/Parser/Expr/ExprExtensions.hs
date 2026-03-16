@@ -144,7 +144,7 @@ operatorB :: Parser String
 operatorB = satisfyToken isOp
   where
     isOp (TokOperator s)
-      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*", "&&", "||", "<|>"] = Just s
+      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*", "&&", "||", "<|>", "<+>", "<>", "\\"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 
@@ -164,22 +164,49 @@ exprDispatch = do
     TokKeyword "return" -> returnExpr
     TokKeyword "sql" -> parseSQL
     TokSymbol "[" -> listExprCore expr <|> exprCore -- NoLoop
-    -- TokSymbol ";" -> exprNoLoop
+    -- TokSymbol ";" -> parensExpr
     -- TokSymbol "(" -> try exprCore <|> parens expr -- <|> exprCore
     TokSymbol "(" -> try (parens expr) <|> try (parens exprCore) <|> exprCore
     -- TokSymbol "(" -> try (parens expr) <|> exprCore
     -- TokVRBrace -> skipVNlExpr -- bracesv expr
-    -- TokSymbol "{" -> braces expr
+    -- TokSymbol "{" -> bracesExpr
     TokSymbol "\\" -> lambdaExpr
     -- TokVNl -> skipVNlExpr
     TokLambdaCase -> lambdaCaseExpr expr -- NoLoop
     -- _ -> try bracesv1Expr <|> exprCore
-    _ -> exprCore <|> listExprCore expr
+    _ -> try bracesExpr <|> try exprCore <|> try (listExprCore expr) -- <|> parensExpr
 
-skipVNlExpr :: Parser Expr
-skipVNlExpr = do
-  token TokVRBrace -- skipVNl
-  empty
+parensExpr :: Parser Expr
+parensExpr = do
+  ct <- getRemainingCount
+  symbol ";"
+  myTrace ("<< parensExpr: ct=" ++ show ct)
+  symbol "("
+  skipNL
+  e <- expr
+  skipNL
+  symbol ")"
+  return e
+
+bracesExpr :: Parser Expr
+bracesExpr = do
+  skipNL
+  ct <- getRemainingCount
+  -- myTrace ("<< bracesExpr: ct="++ show ct)
+  nm <- typeIdent
+  myTrace ("<< bracesExpr: nm " ++ show nm ++ " ct=" ++ show ct)
+  skipNL
+  symbol "{"
+  skipNL
+  xs <- many $ do
+    e <- ident
+    symbol "="
+    x <- expr
+    optional (symbol ",")
+    skipNL
+    return (e, x)
+  symbol "}"
+  return (ERecordConstr nm xs)
 
 whereBlock :: Parser (Maybe [Binding])
 whereBlock = try whereClause <|> emptyClause
@@ -273,6 +300,7 @@ lambdaExpr :: Parser Expr
 lambdaExpr = do
   symbol "\\"
   arg <- pattern
+  skipNL
   myTrace ("<< lambdaExpr arg " ++ show arg)
   tokenIs (\case TokArrow -> Just (); _ -> Nothing)
   skipNL

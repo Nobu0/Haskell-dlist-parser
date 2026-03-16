@@ -44,16 +44,37 @@ funDecl = do
   myTrace (">>*funDecl name " ++ show name ++ " clause1 " ++ show clause1 ++ " rest " ++ show rest)
   return (DeclFunGroup name (clause1 : rest))
 
+{-}
 funClause :: Parser (Name, FunClause)
 funClause = do
   ct <- getRemainingCount
   t0 <- lookAhead anyToken
   myTrace ("<< funClause: next token=" ++ show t0 ++ " ct=" ++ show ct)
-  name <- ident
-  args <- many pPattern -- patternParser
+  -- name <- ident
+  pat <- many pPattern -- <|> (many pattern) -- patternParser
+  let (name : args) = pat
   skipNL
   t <- lookAhead anyToken
-  myTrace ("<< funClause: args=" ++ show args ++ " t = " ++ show t)
+  myTrace ("<< funClause: args(pa)=" ++ show args ++ " t = " ++ show t)
+  case t of
+    TokSymbol "=" -> parseSimpleClause name args
+    TokSymbol "|" -> parseGuardedClause name args
+    _ -> parseGuardedClause name args
+-}
+
+funClause :: Parser (Name, FunClause)
+funClause = do
+  pats <- some pPattern -- 関数名も含めてすべてのパターンを取得
+  let (namePat : args) = pats
+  name <- case namePat of
+    PVar n -> return n
+    PInfix lhs op rhs ->
+      case lhs of
+        PVar n -> return n -- 中置パターンの左辺が関数名
+        _ -> empty
+    _ -> empty
+  skipNL
+  t <- lookAhead anyToken
   case t of
     TokSymbol "=" -> parseSimpleClause name args
     TokSymbol "|" -> parseGuardedClause name args
@@ -61,9 +82,9 @@ funClause = do
 
 parseSimpleClause :: Name -> [Pattern] -> Parser (Name, FunClause)
 parseSimpleClause name args = do
-  ct <- getRemainingCount
   symbol "="
   skipNL
+  ct <- getRemainingCount
   t <- lookAhead anyToken
   myTrace ("<< parseSimpleClause: next token=" ++ show t ++ " ct=" ++ show ct)
   e <- exprBlock
@@ -95,13 +116,13 @@ exprBlock = do
 
 -- 同じ名前の関数をグループ化する
 funClauseWithName :: Name -> Parser FunClause
-funClauseWithName name = try $ do
+funClauseWithName name = do
   ct <- getRemainingCount
   t <- lookAhead anyToken
   myTrace ("<< funClauseWithName: next token=" ++ show t ++ " ct=" ++ show ct)
   name' <- ident
   guard (name == name')
-  args <- many pattern -- patternParser
+  args <- many pPattern -- patternParser
   skipNL
   t <- lookAhead anyToken
   myTrace ("<< funClauseName: args " ++ show args ++ " t " ++ show t)
@@ -146,7 +167,9 @@ parseGuardLine = do
   myTrace ("<< parseGuardLine: next token=" ++ show t ++ " ct=" ++ show ct)
   symbol "|"
   cond <- exprBlock
+  skipNL
   symbol "="
+  skipNL
   body <- exprBlock
   return (cond, body)
 
@@ -160,6 +183,7 @@ guardedRhs = do
     myTrace ("<< guardedRhs: next token = " ++ show t ++ " e " ++ show e ++ " ct=" ++ show ct)
     return e
 
+{-}
 funHead :: Parser (Name, [Pattern])
 funHead = do
   skipNL
@@ -177,3 +201,4 @@ funHead = do
     _ -> do
       myTrace "Function definition must start with a variable name"
       empty
+-}

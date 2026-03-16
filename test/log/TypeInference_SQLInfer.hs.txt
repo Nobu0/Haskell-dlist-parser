@@ -2,34 +2,38 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 105 / 160
-Coverage: 65%
+Consumed tokens: 139 / 139
+Coverage: 100%
 
 -- AST----------------------------------
 
 -- AST (numbered) --
 [0] DeclModule "TypeInference.SQLInfer" Nothing
 [1] DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl"]}
-[2] DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name"]}
+[2] DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name",ImportTypeAll "SQLInfo"]}
 [3] DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]}
 [4] DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]}
 [5] DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]}
 [6] DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [7] DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing}
-[8] DeclData "SQLInfo" [] [ConstraintRecord "SQLInfo" [Field "sqlExprs" (TList (TCon "Expr")),Field "sqlVars" (TList (TCon "String")),Field "sqlText" (TCon "String")],Constraint "inferSQL" []] []
-[DeclModule "TypeInference.SQLInfer" Nothing,DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl"]},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "SQLInfo" [] [ConstraintRecord "SQLInfo" [Field "sqlExprs" (TList (TCon "Expr")),Field "sqlVars" (TList (TCon "String")),Field "sqlText" (TCon "String")],Constraint "inferSQL" []] []]
+[8] DeclTypeSig "inferSQL" (TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo")))
+[9] DeclFunGroup "inferSQL" [FunClause [PVar "sqla",PVar "args"] Nothing (Just (ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")])) Nothing]
+[10] DeclTypeSig "getVarName" (TFun (TCon "Expr") (TCon "String"))
+[11] DeclFunGroup "getVarName" [FunClause [PApp (PConstr "EVar" []) [PVar "name"]] Nothing (Just (EVar "name")) Nothing]
+[12] DeclFunGroup "getVarName" [FunClause [PVar "_"] Nothing (Just (EApp (EVar "error") (EString "SQL arguments must be variables"))) Nothing]
+[DeclModule "TypeInference.SQLInfer" Nothing,DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl"]},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name",ImportTypeAll "SQLInfo"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "inferSQL" (TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo"))),DeclFunGroup "inferSQL" [FunClause [PVar "sqla",PVar "args"] Nothing (Just (ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")])) Nothing],DeclTypeSig "getVarName" (TFun (TCon "Expr") (TCon "String")),DeclFunGroup "getVarName" [FunClause [PApp (PConstr "EVar" []) [PVar "name"]] Nothing (Just (EVar "name")) Nothing],DeclFunGroup "getVarName" [FunClause [PVar "_"] Nothing (Just (EApp (EVar "error") (EString "SQL arguments must be variables"))) Nothing]]
 
 -- Remaining-----------------------------
-[TokSymbol "::",TokTypeIdent "String",TokArrow,TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokArrow,TokTypeIdent "SQLInfo",TokNewline,TokIdent "inferSQL",TokKeyword "sql",TokIdent "args",TokSymbol "=",TokSymbol ";",TokTypeIdent "SQLInfo",TokSymbol ";",TokSymbol "{",TokIdent "sqlText",TokSymbol "=",TokKeyword "sql",TokSymbol ",",TokSymbol ";",TokIdent "sqlVars",TokSymbol "=",TokIdent "map",TokIdent "getVarName",TokIdent "args",TokSymbol ",",TokSymbol ";",TokIdent "sqlExprs",TokSymbol "=",TokIdent "args",TokSymbol ";",TokSymbol "}",TokSymbol ";",TokIdent "getVarName",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "String",TokNewline,TokIdent "getVarName",TokSymbol "(",TokTypeIdent "EVar",TokIdent "name",TokSymbol ")",TokSymbol "=",TokIdent "name",TokNewline,TokIdent "getVarName",TokIdent "_",TokSymbol "=",TokIdent "error",TokString "SQL arguments must be variables",TokNewline]
+[]
 
 -- Parsed AST log --
 << decl next token: TokKeyword "module"
 << decl parser called
-<< decl dispatch: TokKeyword "module" ct=160
+<< decl dispatch: TokKeyword "module" ct=139
 >>*declBody: e DeclModule "TypeInference.SQLInfer" Nothing
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=154
+<< decl dispatch: TokKeyword "import" ct=133
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 << importIdent: next token TokTypeIdent "Decl"
@@ -38,7 +42,7 @@ Coverage: 65%
 >>*declBody: e DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=143
+<< decl dispatch: TokKeyword "import" ct=122
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 << importIdent: next token TokTypeIdent "CaseAlt"
@@ -46,13 +50,15 @@ Coverage: 65%
 << importIdent: next token TokTypeIdent "Expr"
 << importIdent: m Just (ImportTypeAll "Expr")
 << importIdent: next token TokTypeIdent "Name"
-<< getNameList: next token TokSymbol ")"
+<< getNameList: next token TokSymbol ","
 << importIdent: m Nothing
+<< importIdent: next token TokTypeIdent "SQLInfo"
+<< importIdent: m Just (ImportTypeAll "SQLInfo")
 << importIdent: next token TokSymbol ")"
->>*declBody: e DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name"]}
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name",ImportTypeAll "SQLInfo"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=125
+<< decl dispatch: TokKeyword "import" ct=99
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 << importIdent: next token TokTypeIdent "Pattern"
@@ -61,7 +67,7 @@ Coverage: 65%
 >>*declBody: e DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=114
+<< decl dispatch: TokKeyword "import" ct=88
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 << importIdent: next token TokTypeIdent "Type"
@@ -70,7 +76,7 @@ Coverage: 65%
 >>*declBody: e DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=103
+<< decl dispatch: TokKeyword "import" ct=77
 << importDecl parser called
 << importDecl: TokTypeIdent "TypeInference"
 << importIdent: next token TokTypeIdent "InferError"
@@ -79,53 +85,169 @@ Coverage: 65%
 >>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=92
+<< decl dispatch: TokKeyword "import" ct=66
 << importDecl parser called
 << importDecl: TokTypeIdent "TypeInference"
 >>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=87
+<< decl dispatch: TokKeyword "import" ct=61
 << importDecl parser called
 << importDecl: TokTypeIdent "TypeInference"
 >>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing}
-<< decl next token: TokKeyword "data"
+<< decl next token: TokIdent "inferSQL"
 << decl parser called
-<< decl dispatch: TokKeyword "data" ct=82
-<< dataConstrRecord: TokSymbol "{"
-<< parseTypeCore: TCon "String"
+<< decl dispatch: TokIdent "inferSQL" ct=56
+<< funDecl: next token=TokIdent "inferSQL" ct=56
+<< pInfix: ct=55
+<< pPattern:
+    prased PVar "inferSQL"
+<< pattern: ct=55
+<< parseGuardedClause: next token=TokSymbol "::" ct=55
+<< parseGuardLine: next token=TokSymbol "::" ct=55
+<< typeSigDecl: TokIdent "inferSQL"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "String"
+<< typeTerm: ts [TCon "String"]
+<< typeTerm: ts [TCon "Expr"]
 << parseTypeCore: TCon "Expr"
-<< dataConstrRecord: "SQLInfo" [Field "sqlExprs" (TList (TCon "Expr")),Field "sqlVars" (TList (TCon "String")),Field "sqlText" (TCon "String")]
-<< dataConstrRecord: TokSymbol "::"
-<< dataConstrNormal: "inferSQL" []
->>*declBody: e DeclData "SQLInfo" [] [ConstraintRecord "SQLInfo" [Field "sqlExprs" (TList (TCon "Expr")),Field "sqlVars" (TList (TCon "String")),Field "sqlText" (TCon "String")],Constraint "inferSQL" []] []
-<< decl next token: TokSymbol "::"
+<< typeTerm: ts [TList (TCon "Expr")]
+<< typeTerm: ts [TCon "SQLInfo"]
+<< parseTypeCore: TCon "SQLInfo"
+<< parseTypeCore: TFun (TList (TCon "Expr")) (TCon "SQLInfo")
+<< parseTypeCore: TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo"))
+<< parsed type signature: inferSQL :: TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo"))
+<< returning DeclTypeSig: DeclTypeSig "inferSQL" (TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo")))
+>>*declBody: e DeclTypeSig "inferSQL" (TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo")))
+<< decl next token: TokIdent "inferSQL"
 << decl parser called
-<< decl dispatch: TokSymbol "::" ct=55
-<< unknown token in decl: TokSymbol "::"
-Just ([DeclModule "TypeInference.SQLInfer" Nothing,DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl"]},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "SQLInfo" [] [ConstraintRecord "SQLInfo" [Field "sqlExprs" (TList (TCon "Expr")),Field "sqlVars" (TList (TCon "String")),Field "sqlText" (TCon "String")],Constraint "inferSQL" []] []],[TokSymbol "::",TokTypeIdent "String",TokArrow,TokSymbol "[",TokTypeIdent "Expr",TokSymbol "]",TokArrow,TokTypeIdent "SQLInfo",TokNewline,TokIdent "inferSQL",TokKeyword "sql",TokIdent "args",TokSymbol "=",TokSymbol ";",TokTypeIdent "SQLInfo",TokSymbol ";",TokSymbol "{",TokIdent "sqlText",TokSymbol "=",TokKeyword "sql",TokSymbol ",",TokSymbol ";",TokIdent "sqlVars",TokSymbol "=",TokIdent "map",TokIdent "getVarName",TokIdent "args",TokSymbol ",",TokSymbol ";",TokIdent "sqlExprs",TokSymbol "=",TokIdent "args",TokSymbol ";",TokSymbol "}",TokSymbol ";",TokIdent "getVarName",TokSymbol "::",TokTypeIdent "Expr",TokArrow,TokTypeIdent "String",TokNewline,TokIdent "getVarName",TokSymbol "(",TokTypeIdent "EVar",TokIdent "name",TokSymbol ")",TokSymbol "=",TokIdent "name",TokNewline,TokIdent "getVarName",TokIdent "_",TokSymbol "=",TokIdent "error",TokString "SQL arguments must be variables",TokNewline])
+<< decl dispatch: TokIdent "inferSQL" ct=46
+<< funDecl: next token=TokIdent "inferSQL" ct=46
+<< pInfix: ct=45
+<< pPattern:
+    prased PVar "inferSQL"
+<< pInfix: ct=44
+<< pPattern:
+    prased PVar "sqla"
+<< pInfix: ct=43
+<< pPattern:
+    prased PVar "args"
+<< pattern: ct=43
+<< parseSimpleClause: next token=TokTypeIdent "SQLInfo" ct=41
+<< expr dispatch: TokTypeIdent "SQLInfo" ct=41
+<< bracesExpr: nm "SQLInfo" ct=41
+<< expr dispatch: TokIdent "sqla" ct=36
+<< exprNoLoop: e EVar "sqla"
+<< expr dispatch: TokSymbol "," ct=35
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "sqla"
+<< expr dispatch: TokIdent "map" ct=31
+<< exprNoLoop: e EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")
+<< expr dispatch: TokSymbol "," ct=28
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")
+<< expr dispatch: TokIdent "args" ct=24
+<< exprNoLoop: e EVar "args"
+<< expr dispatch: TokSymbol ";" ct=23
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "args"
+<< exprNoLoop: e ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")]
+<< expr dispatch: TokSymbol ";" ct=21
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")]
+<< parseSimpleClause: e ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")] ct=21
+<< funClauseWithName: next token=TokSymbol ";" ct=21
+>>*funDecl name "inferSQL" clause1 FunClause [PVar "sqla",PVar "args"] Nothing (Just (ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")])) Nothing rest []
+>>*declBody: e DeclFunGroup "inferSQL" [FunClause [PVar "sqla",PVar "args"] Nothing (Just (ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")])) Nothing]
+<< decl next token: TokIdent "getVarName"
+<< decl parser called
+<< decl dispatch: TokIdent "getVarName" ct=20
+<< funDecl: next token=TokIdent "getVarName" ct=20
+<< pInfix: ct=19
+<< pPattern:
+    prased PVar "getVarName"
+<< pattern: ct=19
+<< parseGuardedClause: next token=TokSymbol "::" ct=19
+<< parseGuardLine: next token=TokSymbol "::" ct=19
+<< typeSigDecl: TokIdent "getVarName"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Expr"
+<< typeTerm: ts [TCon "Expr"]
+<< typeTerm: ts [TCon "String"]
+<< parseTypeCore: TCon "String"
+<< parseTypeCore: TFun (TCon "Expr") (TCon "String")
+<< parsed type signature: getVarName :: TFun (TCon "Expr") (TCon "String")
+<< returning DeclTypeSig: DeclTypeSig "getVarName" (TFun (TCon "Expr") (TCon "String"))
+>>*declBody: e DeclTypeSig "getVarName" (TFun (TCon "Expr") (TCon "String"))
+<< decl next token: TokIdent "getVarName"
+<< decl parser called
+<< decl dispatch: TokIdent "getVarName" ct=14
+<< funDecl: next token=TokIdent "getVarName" ct=14
+<< pInfix: ct=13
+<< pPattern:
+    prased PVar "getVarName"
+<< pattern: ct=12
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "EVar" []) [PVar "name"] ct=10
+<< pInfix: ct=9
+<< pPattern:
+    prased PApp (PConstr "EVar" []) [PVar "name"]
+<< pattern: ct=9
+<< parseSimpleClause: next token=TokIdent "name" ct=8
+<< expr dispatch: TokIdent "name" ct=8
+<< exprNoLoop: e EVar "name"
+<< expr dispatch: TokNewline ct=7
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "name"
+<< parseSimpleClause: e EVar "name" ct=7
+<< funClauseWithName: next token=TokNewline ct=7
+>>*funDecl name "getVarName" clause1 FunClause [PApp (PConstr "EVar" []) [PVar "name"]] Nothing (Just (EVar "name")) Nothing rest []
+>>*declBody: e DeclFunGroup "getVarName" [FunClause [PApp (PConstr "EVar" []) [PVar "name"]] Nothing (Just (EVar "name")) Nothing]
+<< decl next token: TokIdent "getVarName"
+<< decl parser called
+<< decl dispatch: TokIdent "getVarName" ct=6
+<< funDecl: next token=TokIdent "getVarName" ct=6
+<< pInfix: ct=5
+<< pPattern:
+    prased PVar "getVarName"
+<< pInfix: ct=4
+<< pPattern:
+    prased PVar "_"
+<< pattern: ct=4
+<< parseSimpleClause: next token=TokIdent "error" ct=3
+<< expr dispatch: TokIdent "error" ct=3
+<< exprNoLoop: e EApp (EVar "error") (EString "SQL arguments must be variables")
+<< expr dispatch: TokNewline ct=1
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "error") (EString "SQL arguments must be variables")
+<< parseSimpleClause: e EApp (EVar "error") (EString "SQL arguments must be variables") ct=1
+<< funClauseWithName: next token=TokNewline ct=1
+>>*funDecl name "getVarName" clause1 FunClause [PVar "_"] Nothing (Just (EApp (EVar "error") (EString "SQL arguments must be variables"))) Nothing rest []
+>>*declBody: e DeclFunGroup "getVarName" [FunClause [PVar "_"] Nothing (Just (EApp (EVar "error") (EString "SQL arguments must be variables"))) Nothing]
+Just ([DeclModule "TypeInference.SQLInfer" Nothing,DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl"]},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportVar "Name",ImportTypeAll "SQLInfo"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "inferSQL" (TFun (TCon "String") (TFun (TList (TCon "Expr")) (TCon "SQLInfo"))),DeclFunGroup "inferSQL" [FunClause [PVar "sqla",PVar "args"] Nothing (Just (ERecordConstr "SQLInfo" [("sqlText",EVar "sqla"),("sqlVars",EApp (EApp (EVar "map") (EVar "getVarName")) (EVar "args")),("sqlExprs",EVar "args")])) Nothing],DeclTypeSig "getVarName" (TFun (TCon "Expr") (TCon "String")),DeclFunGroup "getVarName" [FunClause [PApp (PConstr "EVar" []) [PVar "name"]] Nothing (Just (EVar "name")) Nothing],DeclFunGroup "getVarName" [FunClause [PVar "_"] Nothing (Just (EApp (EVar "error") (EString "SQL arguments must be variables"))) Nothing]],[])
 
 -- src code --
 module TypeInference.SQLInfer where
 
 import AST.Decl (Decl (..))
-import AST.Expr (CaseAlt (..), Expr (..), Name)
+import AST.Expr (CaseAlt (..), Expr (..), Name, SQLInfo(..))
 import AST.Pattern (Pattern (..))
 import AST.Type (Type (..))
 import TypeInference.Error (InferError (..))
 import TypeInference.Subst
 import TypeInference.TypeEnv
 
-data SQLInfo = SQLInfo
-  { sqlText :: String,
-    sqlVars :: [String],
-    sqlExprs :: [Expr]
-  }
 
 inferSQL :: String -> [Expr] -> SQLInfo
-inferSQL sql args =
+inferSQL sqla args =
   SQLInfo
-    { sqlText = sql,
+    { sqlText = sqla,
       sqlVars = map getVarName args,
       sqlExprs = args
     }
@@ -161,35 +283,31 @@ inferSQL env sql args = do
 
 
 -- token --
-[155] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "SQLInfTokKeyword "where"  
-[150] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Decl" 
-[145] TokSymbol "("       TokTypeIdent "Decl" TokSymbol "("       TokSymbol ".."      TokSymbol ")"       
-[140] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     
-[135] TokTypeIdent "Expr" TokSymbol "("       TokTypeIdent "CaseAlTokSymbol "("       TokSymbol ".."      
-[130] TokSymbol ")"       TokSymbol ","       TokTypeIdent "Expr" TokSymbol "("       TokSymbol ".."      
-[125] TokSymbol ")"       TokSymbol ","       TokTypeIdent "Name" TokSymbol ")"       TokNewline          
-[120] TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "PatterTokSymbol "("       
-[115] TokTypeIdent "PatterTokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       
-[110] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Type" 
-[105] TokSymbol "("       TokTypeIdent "Type" TokSymbol "("       TokSymbol ".."      TokSymbol ")"       
-[100] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     
-[95] TokTypeIdent "Error"TokSymbol "("       TokTypeIdent "InferETokSymbol "("       TokSymbol ".."      
-[90] TokSymbol ")"       TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "TypeIn
-[85] TokOperator "."     TokTypeIdent "Subst"TokNewline          TokKeyword "import" TokTypeIdent "TypeIn
-[80] TokOperator "."     TokTypeIdent "TypeEnTokNewline          TokKeyword "data"   TokTypeIdent "SQLInf
-[75] TokSymbol "="       TokTypeIdent "SQLInfTokSymbol ";"       TokSymbol "{"       TokIdent "sqlText"  
-[70] TokSymbol "::"      TokTypeIdent "StringTokSymbol ","       TokSymbol ";"       TokIdent "sqlVars"  
-[65] TokSymbol "::"      TokSymbol "["       TokTypeIdent "StringTokSymbol "]"       TokSymbol ","       
-[60] TokSymbol ";"       TokIdent "sqlExprs" TokSymbol "::"      TokSymbol "["       TokTypeIdent "Expr" 
-[55] TokSymbol "]"       TokSymbol ";"       TokSymbol "}"       TokSymbol ";"       TokIdent "inferSQL" 
-[50] TokSymbol "::"      TokTypeIdent "StringTokArrow            TokSymbol "["       TokTypeIdent "Expr" 
-[45] TokSymbol "]"       TokArrow            TokTypeIdent "SQLInfTokNewline          TokIdent "inferSQL" 
-[40] TokKeyword "sql"    TokIdent "args"     TokSymbol "="       TokSymbol ";"       TokTypeIdent "SQLInf
-[35] TokSymbol ";"       TokSymbol "{"       TokIdent "sqlText"  TokSymbol "="       TokKeyword "sql"    
-[30] TokSymbol ","       TokSymbol ";"       TokIdent "sqlVars"  TokSymbol "="       TokIdent "map"      
-[25] TokIdent "getVarNameTokIdent "args"     TokSymbol ","       TokSymbol ";"       TokIdent "sqlExprs" 
-[20] TokSymbol "="       TokIdent "args"     TokSymbol ";"       TokSymbol "}"       TokSymbol ";"       
-[15] TokIdent "getVarNameTokSymbol "::"      TokTypeIdent "Expr" TokArrow            TokTypeIdent "String
-[10] TokNewline          TokIdent "getVarNameTokSymbol "("       TokTypeIdent "EVar" TokIdent "name"     
-[5] TokSymbol ")"       TokSymbol "="       TokIdent "name"     TokNewline          TokIdent "getVarName
-[0] TokIdent "_"        TokSymbol "="       TokIdent "error"    TokString "SQL argumTokNewline          
+[135] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "SQLInfTokKeyword "where"  
+[130] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Decl" 
+[125] TokSymbol "("       TokTypeIdent "Decl" TokSymbol "("       TokSymbol ".."      TokSymbol ")"       
+[120] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     
+[115] TokTypeIdent "Expr" TokSymbol "("       TokTypeIdent "CaseAlTokSymbol "("       TokSymbol ".."      
+[110] TokSymbol ")"       TokSymbol ","       TokTypeIdent "Expr" TokSymbol "("       TokSymbol ".."      
+[105] TokSymbol ")"       TokSymbol ","       TokTypeIdent "Name" TokSymbol ","       TokTypeIdent "SQLInf
+[100] TokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       TokNewline          
+[95] TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "PatterTokSymbol "("       
+[90] TokTypeIdent "PatterTokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       
+[85] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Type" 
+[80] TokSymbol "("       TokTypeIdent "Type" TokSymbol "("       TokSymbol ".."      TokSymbol ")"       
+[75] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     
+[70] TokTypeIdent "Error"TokSymbol "("       TokTypeIdent "InferETokSymbol "("       TokSymbol ".."      
+[65] TokSymbol ")"       TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "TypeIn
+[60] TokOperator "."     TokTypeIdent "Subst"TokNewline          TokKeyword "import" TokTypeIdent "TypeIn
+[55] TokOperator "."     TokTypeIdent "TypeEnTokNewline          TokIdent "inferSQL" TokSymbol "::"      
+[50] TokTypeIdent "StringTokArrow            TokSymbol "["       TokTypeIdent "Expr" TokSymbol "]"       
+[45] TokArrow            TokTypeIdent "SQLInfTokNewline          TokIdent "inferSQL" TokIdent "sqla"     
+[40] TokIdent "args"     TokSymbol "="       TokSymbol ";"       TokTypeIdent "SQLInfTokSymbol ";"       
+[35] TokSymbol "{"       TokIdent "sqlText"  TokSymbol "="       TokIdent "sqla"     TokSymbol ","       
+[30] TokSymbol ";"       TokIdent "sqlVars"  TokSymbol "="       TokIdent "map"      TokIdent "getVarName
+[25] TokIdent "args"     TokSymbol ","       TokSymbol ";"       TokIdent "sqlExprs" TokSymbol "="       
+[20] TokIdent "args"     TokSymbol ";"       TokSymbol "}"       TokSymbol ";"       TokIdent "getVarName
+[15] TokSymbol "::"      TokTypeIdent "Expr" TokArrow            TokTypeIdent "StringTokNewline          
+[10] TokIdent "getVarNameTokSymbol "("       TokTypeIdent "EVar" TokIdent "name"     TokSymbol ")"       
+[5] TokSymbol "="       TokIdent "name"     TokNewline          TokIdent "getVarNameTokIdent "_"        
+[0] TokSymbol "="       TokIdent "error"    TokString "SQL argumTokNewline          

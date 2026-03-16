@@ -2,8 +2,8 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 136 / 858
-Coverage: 15%
+Consumed tokens: 650 / 858
+Coverage: 75%
 
 -- AST----------------------------------
 
@@ -20,10 +20,42 @@ Coverage: 15%
 [9] DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "typeIdent"]}
 [10] DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [11] DeclTypeSig "exprCore" (TApp (TCon "Parser") (TCon "Expr"))
-[DeclModule "Parser.Expr.ExprCore" (Just [ExportVar "exprCore",ExportVar "appExprCore",ExportVar "atomCore",ExportVar "atomBaseCore",ExportVar "parenExprCore",ExportVar "tupleExprCore",ExportVar "oPsectionCore",ExportVar "pRecordExpr"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "BinOp",ImportTypeAll "Expr"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "typeIdent"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprCore" (TApp (TCon "Parser") (TCon "Expr"))]
+[12] DeclFunGroup "exprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))])) Nothing]
+[13] DeclTypeSig "pRecordExpr" (TApp (TCon "Parser") (TCon "Expr"))
+[14] DeclFunGroup "pRecordExpr" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))])) Nothing]
+[15] DeclTypeSig "field" (TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"]))
+[16] DeclFunGroup "field" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))])) Nothing]
+[17] DeclTypeSig "binOpExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+[18] DeclFunGroup "binOpExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EVar "exprCmpCore")])) Nothing]
+[19] DeclTypeSig "exprCmpCore" (TApp (TCon "Parser") (TCon "Expr"))
+[20] DeclFunGroup "exprCmpCore" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="])))) Nothing]
+[21] DeclTypeSig "exprLevel1Core" (TApp (TCon "Parser") (TCon "Expr"))
+[22] DeclFunGroup "exprLevel1Core" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+[23] DeclTypeSig "exprAddSubCore" (TApp (TCon "Parser") (TCon "Expr"))
+[24] DeclFunGroup "exprAddSubCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+[25] DeclTypeSig "exprLevel3Core" (TApp (TCon "Parser") (TCon "Expr"))
+[26] DeclFunGroup "exprLevel3Core" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))])) Nothing]
+[27] DeclTypeSig "appExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+[28] DeclFunGroup "appExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))])) Nothing]
+[29] DeclTypeSig "atomCore" (TApp (TCon "Parser") (TCon "Expr"))
+[30] DeclFunGroup "atomCore" [FunClause [] Nothing (Just (EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore")))) Nothing]
+[31] DeclTypeSig "atomCorex" (TApp (TCon "Parser") (TCon "Expr"))
+[32] DeclFunGroup "atomCorex" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])])) Nothing]
+[33] DeclTypeSig "badToken" (TApp (TCon "Parser") TUnit)
+[34] DeclFunGroup "badToken" [FunClause [] Nothing (Just (EApp (EVar "choice") (EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))]))) Nothing]
+[35] DeclTypeSig "parenExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+[36] DeclFunGroup "parenExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))])) Nothing]
+[37] DeclTypeSig "tupleExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+[38] DeclFunGroup "tupleExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))])) Nothing]
+[39] DeclTypeSig "oPsectionCore" (TApp (TCon "Parser") (TCon "Expr"))
+[40] DeclFunGroup "oPsectionCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))])) Nothing]
+[41] DeclTypeSig "atomBaseCore" (TApp (TCon "Parser") (TCon "Expr"))
+[42] DeclFunGroup "atomBaseCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))])) Nothing]
+[43] DeclTypeSig "operatorVar" (TApp (TCon "Parser") (TCon "Expr"))
+[DeclModule "Parser.Expr.ExprCore" (Just [ExportVar "exprCore",ExportVar "appExprCore",ExportVar "atomCore",ExportVar "atomBaseCore",ExportVar "parenExprCore",ExportVar "tupleExprCore",ExportVar "oPsectionCore",ExportVar "pRecordExpr"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "BinOp",ImportTypeAll "Expr"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "typeIdent"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))])) Nothing],DeclTypeSig "pRecordExpr" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "pRecordExpr" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))])) Nothing],DeclTypeSig "field" (TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"])),DeclFunGroup "field" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))])) Nothing],DeclTypeSig "binOpExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "binOpExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EVar "exprCmpCore")])) Nothing],DeclTypeSig "exprCmpCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprCmpCore" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="])))) Nothing],DeclTypeSig "exprLevel1Core" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprLevel1Core" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "exprAddSubCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprAddSubCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "exprLevel3Core" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprLevel3Core" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))])) Nothing],DeclTypeSig "appExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "appExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))])) Nothing],DeclTypeSig "atomCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "atomCore" [FunClause [] Nothing (Just (EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore")))) Nothing],DeclTypeSig "atomCorex" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "atomCorex" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])])) Nothing],DeclTypeSig "badToken" (TApp (TCon "Parser") TUnit),DeclFunGroup "badToken" [FunClause [] Nothing (Just (EApp (EVar "choice") (EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))]))) Nothing],DeclTypeSig "parenExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "parenExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))])) Nothing],DeclTypeSig "tupleExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "tupleExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))])) Nothing],DeclTypeSig "oPsectionCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "oPsectionCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))])) Nothing],DeclTypeSig "atomBaseCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "atomBaseCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))])) Nothing],DeclTypeSig "operatorVar" (TApp (TCon "Parser") (TCon "Expr"))]
 
 -- Remaining-----------------------------
-[TokIdent "exprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "rt",TokSymbol "<-",TokSymbol ";",TokIdent "try",TokIdent "lambdaExpr",TokSymbol ";",TokOperator "<|>",TokIdent "try",TokIdent "binOpExprCore",TokSymbol ";",TokOperator "<|>",TokIdent "parseSQL",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "pRecordExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "pRecordExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "{",TokSymbol ";",TokIdent "fields",TokSymbol "<-",TokIdent "sepBy1",TokIdent "field",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "}",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ERecord",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "field",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "String",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokNewline,TokIdent "field",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "value",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "value",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "binOpExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "binOpExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "exprCmpCore",TokVRBrace,TokNewline,TokIdent "exprCmpCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprCmpCore",TokSymbol "=",TokIdent "chainl1",TokIdent "exprLevel1Core",TokSymbol "(",TokIdent "binOp",TokSymbol "[",TokString ">",TokSymbol ",",TokString "<",TokSymbol ",",TokString ">=",TokSymbol ",",TokString "<=",TokSymbol ",",TokString "==",TokSymbol ",",TokString "/=",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "exprLevel1Core",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprLevel1Core",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "chainl1",TokIdent "exprAddSubCore",TokSymbol "(",TokIdent "binOp",TokSymbol "[",TokString "+",TokSymbol ",",TokString "-",TokSymbol ",",TokString "++",TokSymbol ",",TokString ":",TokSymbol ",",TokString "*>",TokSymbol ",",TokString "<$",TokSymbol ",",TokString "<*",TokSymbol ",",TokString "<$>",TokSymbol ",",TokString "<|>",TokSymbol "]",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "exprAddSubCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprAddSubCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "chainl1",TokIdent "exprLevel3Core",TokSymbol "(",TokIdent "binOp",TokSymbol "[",TokString "*",TokSymbol ",",TokString "/",TokSymbol "]",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "exprLevel3Core",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprLevel3Core",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokIdent "lambdaExpr",TokOperator "<|>",TokIdent "appExprCore",TokVRBrace,TokNewline,TokIdent "appExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "appExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "atomCore",TokSymbol ";",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "atomCore",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "foldl",TokTypeIdent "EApp",TokIdent "f",TokIdent "args",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "atomCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "atomCore",TokSymbol "=",TokIdent "notFollowedBy",TokIdent "badToken",TokOperator "*>",TokSymbol "(",TokIdent "parens",TokIdent "parenExprCore",TokOperator "<|>",TokIdent "atomBaseCore",TokSymbol ")",TokNewline,TokIdent "atomCorex",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "atomCorex",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "}",TokArrow,TokIdent "empty",TokSymbol ";",TokTypeIdent "TokSymbol",TokString ";",TokArrow,TokIdent "empty",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "$",TokArrow,TokIdent "empty",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokLambdaCase",TokArrow,TokIdent "empty",TokSymbol ";",TokIdent "_",TokArrow,TokSymbol ";",TokIdent "try",TokSymbol "(",TokIdent "parens",TokIdent "parenExprCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "atomBaseCore",TokVRBrace,TokNewline,TokIdent "badToken",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "badToken",TokSymbol "=",TokSymbol ";",TokIdent "choice",TokSymbol ";",TokSymbol "[",TokIdent "symbol",TokString "}",TokSymbol ",",TokSymbol ";",TokIdent "symbol",TokString ";",TokSymbol ",",TokSymbol ";",TokIdent "symbol",TokString "$",TokSymbol ",",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "case",TokIdent "t",TokKeyword "of",TokTypeIdent "TokLambdaCase",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "case",TokIdent "t",TokKeyword "of",TokTypeIdent "TokVRBrace",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokSymbol "]",TokSymbol ";",TokIdent "parenExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "parenExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokIdent "oPsectionCore",TokSymbol ";",TokOperator "<|>",TokIdent "try",TokIdent "tupleExprCore",TokSymbol ";",TokOperator "<|>",TokIdent "exprCore",TokVRBrace,TokNewline,TokIdent "tupleExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "tupleExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e1",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokIdent "symbol",TokString ",",TokSymbol ";",TokIdent "es",TokSymbol "<-",TokIdent "exprCore",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ETuple",TokSymbol "(",TokIdent "e1",TokOperator ":",TokIdent "es",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "oPsectionCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "oPsectionCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokSymbol "(",TokTypeIdent "EOpSectionL",TokOperator "<$>",TokIdent "operator",TokOperator "<*>",TokIdent "exprCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "EOpSectionR",TokOperator "<$>",TokIdent "exprCore",TokOperator "<*>",TokIdent "operator",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "atomBaseCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "atomBaseCore",TokSymbol "=",TokSymbol ";",TokKeyword "do",TokVLBrace,TokTypeIdent "EVar",TokOperator "<$>",TokIdent "ident",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EInt",TokOperator "<$>",TokIdent "int",TokSymbol ";",TokOperator "<|>",TokIdent "emptyListExpr",TokSymbol ";",TokOperator "<|>",TokIdent "tunitExpr",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EVarType",TokOperator "<$>",TokIdent "typeIdent",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokIdent "ellipsis",TokOperator ">>",TokKeyword "return",TokTypeIdent "EPlaceholder",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "elistExpr",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EString",TokOperator "<$>",TokIdent "stringLiteralExpr",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EChar",TokOperator "<$>",TokIdent "charLiteralExpr",TokSymbol ";",TokOperator "<|>",TokIdent "pRecordExpr",TokSymbol ";",TokOperator "<|>",TokIdent "operatorVar",TokVRBrace,TokNewline,TokIdent "operatorVar",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "operatorVar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "satisfyToken",TokIdent "isOp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "s",TokIdent "elem",TokSymbol "[",TokString ":",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokSymbol ";",TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokVRBrace,TokNewline,TokIdent "tunitExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "tunitExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "elistExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "elistExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "elems",TokSymbol "<-",TokIdent "exprCore",TokIdent "sepBy",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokIdent "elems",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "ellipsis",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "ellipsis",TokSymbol "=",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "if",TokIdent "t",TokOperator "==",TokTypeIdent "TokEllipsis",TokKeyword "then",TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokKeyword "else",TokTypeIdent "Nothing",TokSymbol ")",TokNewline,TokIdent "emptyListExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "emptyListExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< lambdaExpr arg ",TokOperator "++",TokIdent "show",TokIdent "arg",TokSymbol ")",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokVRBrace,TokNewline]
+[TokIdent "operatorVar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "satisfyToken",TokIdent "isOp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "s",TokIdent "elem",TokSymbol "[",TokString ":",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokSymbol ";",TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokVRBrace,TokNewline,TokIdent "tunitExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "tunitExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "elistExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "elistExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "elems",TokSymbol "<-",TokIdent "exprCore",TokIdent "sepBy",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokIdent "elems",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "ellipsis",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "ellipsis",TokSymbol "=",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "if",TokIdent "t",TokOperator "==",TokTypeIdent "TokEllipsis",TokKeyword "then",TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokKeyword "else",TokTypeIdent "Nothing",TokSymbol ")",TokNewline,TokIdent "emptyListExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "emptyListExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< lambdaExpr arg ",TokOperator "++",TokIdent "show",TokIdent "arg",TokSymbol ")",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokVRBrace,TokNewline]
 
 -- Parsed AST log --
 << decl next token: TokNewline
@@ -140,13 +172,16 @@ Coverage: 15%
 << decl parser called
 << decl dispatch: TokIdent "exprCore" ct=727
 << funDecl: next token=TokIdent "exprCore" ct=727
-<< funClause: next token=TokIdent "exprCore" ct=727
-<< funClause: args=[] t = TokSymbol "::"
+<< pInfix: ct=726
+<< pPattern:
+    prased PVar "exprCore"
+<< pattern: ct=726
 << parseGuardedClause: next token=TokSymbol "::" ct=726
 << parseGuardLine: next token=TokSymbol "::" ct=726
 << typeSigDecl: TokIdent "exprCore"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
 << parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
 << parsed type signature: exprCore :: TApp (TCon "Parser") (TCon "Expr")
 << returning DeclTypeSig: DeclTypeSig "exprCore" (TApp (TCon "Parser") (TCon "Expr"))
@@ -155,13 +190,14 @@ Coverage: 15%
 << decl parser called
 << decl dispatch: TokIdent "exprCore" ct=722
 << funDecl: next token=TokIdent "exprCore" ct=722
-<< funClause: next token=TokIdent "exprCore" ct=722
-<< funClause: args=[] t = TokSymbol "="
-<< parseSimpleClause: next token=TokKeyword "do" ct=721
+<< pInfix: ct=721
+<< pPattern:
+    prased PVar "exprCore"
+<< pattern: ct=721
+<< parseSimpleClause: next token=TokKeyword "do" ct=720
 << expr dispatch: TokKeyword "do" ct=720
 << bindStmt
 << pattern: ct=718
-<< pConstrOrVar: next token "rt"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "rt") [] ct=717
 << expr dispatch: TokIdent "try" ct=715
@@ -185,49 +221,1510 @@ Coverage: 15%
 >>*bindStmt pat= PApp (PVar "rt") [] e= EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))
 >>*doStmt: rt Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore")))
 << bindStmt
-<< pattern: ct=704
-<< expr dispatch: TokSymbol ";" ct=704
->>*doBlock: (f:m)[Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore")))]
->>*doExprCore: stmts [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore")))]
-<< typeSigDecl: TokIdent "exprCore"
+<< pattern: ct=703
+<< expr dispatch: TokKeyword "return" ct=703
+<< returnWithDollar
+>>*return atom: EVar "rt"
+<< exprNoLoop: e EReturn (EVar "rt")
+<< expr dispatch: TokVRBrace ct=701
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EVar "rt")
+>>*exprStmt EReturn (EVar "rt")
+>>*doStmt: rt ExprStmt (EReturn (EVar "rt"))
+<< bindStmt
+<< pattern: ct=701
+<< expr dispatch: TokVRBrace ct=701
+>>*doBlock: (f:m)[Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))]
+>>*doExprCore: stmts [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))]
+<< expr dispatch: TokNewline ct=700
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))]
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))] ct=700
+<< funClauseWithName: next token=TokNewline ct=700
+>>*funDecl name "exprCore" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))])) Nothing]
+<< decl next token: TokIdent "pRecordExpr"
+<< decl parser called
+<< decl dispatch: TokIdent "pRecordExpr" ct=699
+<< funDecl: next token=TokIdent "pRecordExpr" ct=699
+<< pInfix: ct=698
+<< pPattern:
+    prased PVar "pRecordExpr"
+<< pattern: ct=698
+<< parseGuardedClause: next token=TokSymbol "::" ct=698
+<< parseGuardLine: next token=TokSymbol "::" ct=698
+<< typeSigDecl: TokIdent "pRecordExpr"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: pRecordExpr :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "pRecordExpr" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "pRecordExpr" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "pRecordExpr"
+<< decl parser called
+<< decl dispatch: TokIdent "pRecordExpr" ct=694
+<< funDecl: next token=TokIdent "pRecordExpr" ct=694
+<< pInfix: ct=693
+<< pPattern:
+    prased PVar "pRecordExpr"
+<< pattern: ct=693
+<< parseSimpleClause: next token=TokKeyword "do" ct=692
+<< expr dispatch: TokKeyword "do" ct=692
+<< bindStmt
+<< pattern: ct=690
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString "{"] ct=688
+<< expr dispatch: TokIdent "symbol" ct=690
+<< exprNoLoop: e EApp (EVar "symbol") (EString "{")
+<< expr dispatch: TokSymbol ";" ct=688
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "{")
+>>*exprStmt EApp (EVar "symbol") (EString "{")
+>>*doStmt: rt ExprStmt (EApp (EVar "symbol") (EString "{"))
+<< bindStmt
+<< pattern: ct=687
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "fields") [] ct=686
+<< expr dispatch: TokIdent "sepBy1" ct=685
+<< exprNoLoop: e EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))
+<< expr dispatch: TokSymbol ";" ct=679
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))
+>>*bindStmt pat= PApp (PVar "fields") [] e= EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))
+>>*doStmt: rt Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ",")))
+<< bindStmt
+<< pattern: ct=678
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString "}"] ct=676
+<< expr dispatch: TokIdent "symbol" ct=678
+<< exprNoLoop: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokSymbol ";" ct=676
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "}")
+>>*exprStmt EApp (EVar "symbol") (EString "}")
+>>*doStmt: rt ExprStmt (EApp (EVar "symbol") (EString "}"))
+<< bindStmt
+<< pattern: ct=675
+<< expr dispatch: TokKeyword "return" ct=675
+<< returnWithDollar
+>>*return atom: EApp (EVarType "ERecord") (EVar "fields")
+<< exprNoLoop: e EReturn (EApp (EVarType "ERecord") (EVar "fields"))
+<< expr dispatch: TokVRBrace ct=670
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EApp (EVarType "ERecord") (EVar "fields"))
+>>*exprStmt EReturn (EApp (EVarType "ERecord") (EVar "fields"))
+>>*doStmt: rt ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))
+<< bindStmt
+<< pattern: ct=670
+<< expr dispatch: TokVRBrace ct=670
+>>*doBlock: (f:m)[ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))]
+>>*doExprCore: stmts [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))]
+<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))]
+<< expr dispatch: TokNewline ct=669
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))]
+<< parseSimpleClause: e EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))] ct=669
+<< funClauseWithName: next token=TokNewline ct=669
+>>*funDecl name "pRecordExpr" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "pRecordExpr" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))])) Nothing]
+<< decl next token: TokIdent "field"
+<< decl parser called
+<< decl dispatch: TokIdent "field" ct=668
+<< funDecl: next token=TokIdent "field" ct=668
+<< pInfix: ct=667
+<< pPattern:
+    prased PVar "field"
+<< pattern: ct=667
+<< parseGuardedClause: next token=TokSymbol "::" ct=667
+<< parseGuardLine: next token=TokSymbol "::" ct=667
+<< typeSigDecl: TokIdent "field"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "String"]
+<< parseTypeCore: TCon "String"
+<< typeTerm: ts [TCon "String"]
+<< parseTypeCore: TCon "String"
+<< typeTerm: ts [TCon "Expr"]
+<< parseTypeCore: TCon "Expr"
+<< typeTerm: ts [TCon "Parser",TTuple [TCon "String",TCon "Expr"]]
+<< parseTypeCore: TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"])
+<< parsed type signature: field :: TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"])
+<< returning DeclTypeSig: DeclTypeSig "field" (TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"]))
+>>*declBody: e DeclTypeSig "field" (TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"]))
+<< decl next token: TokIdent "field"
+<< decl parser called
+<< decl dispatch: TokIdent "field" ct=659
+<< funDecl: next token=TokIdent "field" ct=659
+<< pInfix: ct=658
+<< pPattern:
+    prased PVar "field"
+<< pattern: ct=658
+<< parseSimpleClause: next token=TokKeyword "do" ct=657
+<< expr dispatch: TokKeyword "do" ct=657
+<< bindStmt
+<< pattern: ct=655
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "name") [] ct=654
+<< expr dispatch: TokIdent "ident" ct=653
+<< exprNoLoop: e EVar "ident"
+<< expr dispatch: TokSymbol ";" ct=652
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "ident"
+>>*bindStmt pat= PApp (PVar "name") [] e= EVar "ident"
+>>*doStmt: rt Bind (PApp (PVar "name") []) (EVar "ident")
+<< bindStmt
+<< pattern: ct=651
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString "="] ct=649
+<< expr dispatch: TokIdent "symbol" ct=651
+<< exprNoLoop: e EApp (EVar "symbol") (EString "=")
+<< expr dispatch: TokSymbol ";" ct=649
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "=")
+>>*exprStmt EApp (EVar "symbol") (EString "=")
+>>*doStmt: rt ExprStmt (EApp (EVar "symbol") (EString "="))
+<< bindStmt
+<< pattern: ct=648
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "value") [] ct=647
+<< expr dispatch: TokIdent "exprCore" ct=646
+<< exprNoLoop: e EVar "exprCore"
+<< expr dispatch: TokSymbol ";" ct=645
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "exprCore"
+>>*bindStmt pat= PApp (PVar "value") [] e= EVar "exprCore"
+>>*doStmt: rt Bind (PApp (PVar "value") []) (EVar "exprCore")
+<< bindStmt
+<< pattern: ct=644
+<< expr dispatch: TokKeyword "return" ct=644
+<< returnWithDollar
+>>*return atom: ETuple [EVar "name",EVar "value"]
+<< exprNoLoop: e EReturn (ETuple [EVar "name",EVar "value"])
+<< expr dispatch: TokVRBrace ct=638
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (ETuple [EVar "name",EVar "value"])
+>>*exprStmt EReturn (ETuple [EVar "name",EVar "value"])
+>>*doStmt: rt ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))
+<< bindStmt
+<< pattern: ct=638
+<< expr dispatch: TokVRBrace ct=638
+>>*doBlock: (f:m)[Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))]
+>>*doExprCore: stmts [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))]
+<< expr dispatch: TokNewline ct=637
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))]
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))] ct=637
+<< funClauseWithName: next token=TokNewline ct=637
+>>*funDecl name "field" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))])) Nothing rest []
+>>*declBody: e DeclFunGroup "field" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))])) Nothing]
+<< decl next token: TokIdent "binOpExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "binOpExprCore" ct=636
+<< funDecl: next token=TokIdent "binOpExprCore" ct=636
+<< pInfix: ct=635
+<< pPattern:
+    prased PVar "binOpExprCore"
+<< pattern: ct=635
+<< parseGuardedClause: next token=TokSymbol "::" ct=635
+<< parseGuardLine: next token=TokSymbol "::" ct=635
+<< typeSigDecl: TokIdent "binOpExprCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: binOpExprCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "binOpExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "binOpExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "binOpExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "binOpExprCore" ct=631
+<< funDecl: next token=TokIdent "binOpExprCore" ct=631
+<< pInfix: ct=630
+<< pPattern:
+    prased PVar "binOpExprCore"
+<< pattern: ct=630
+<< parseSimpleClause: next token=TokKeyword "do" ct=629
+<< expr dispatch: TokKeyword "do" ct=629
+<< bindStmt
+<< pattern: ct=627
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "exprCmpCore") [] ct=626
+<< expr dispatch: TokIdent "exprCmpCore" ct=627
+<< exprNoLoop: e EVar "exprCmpCore"
+<< expr dispatch: TokVRBrace ct=626
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "exprCmpCore"
+>>*exprStmt EVar "exprCmpCore"
+>>*doStmt: rt ExprStmt (EVar "exprCmpCore")
+<< bindStmt
+<< pattern: ct=626
+<< expr dispatch: TokVRBrace ct=626
+>>*doBlock: (f:m)[ExprStmt (EVar "exprCmpCore")]
+>>*doExprCore: stmts [ExprStmt (EVar "exprCmpCore")]
+<< exprNoLoop: e EDo [ExprStmt (EVar "exprCmpCore")]
+<< expr dispatch: TokNewline ct=625
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [ExprStmt (EVar "exprCmpCore")]
+<< parseSimpleClause: e EDo [ExprStmt (EVar "exprCmpCore")] ct=625
+<< funClauseWithName: next token=TokNewline ct=625
+>>*funDecl name "binOpExprCore" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EVar "exprCmpCore")])) Nothing rest []
+>>*declBody: e DeclFunGroup "binOpExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EVar "exprCmpCore")])) Nothing]
+<< decl next token: TokIdent "exprCmpCore"
+<< decl parser called
+<< decl dispatch: TokIdent "exprCmpCore" ct=624
+<< funDecl: next token=TokIdent "exprCmpCore" ct=624
+<< pInfix: ct=623
+<< pPattern:
+    prased PVar "exprCmpCore"
+<< pattern: ct=623
+<< parseGuardedClause: next token=TokSymbol "::" ct=623
+<< parseGuardLine: next token=TokSymbol "::" ct=623
+<< typeSigDecl: TokIdent "exprCmpCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: exprCmpCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "exprCmpCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "exprCmpCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "exprCmpCore"
+<< decl parser called
+<< decl dispatch: TokIdent "exprCmpCore" ct=619
+<< funDecl: next token=TokIdent "exprCmpCore" ct=619
+<< pInfix: ct=618
+<< pPattern:
+    prased PVar "exprCmpCore"
+<< pattern: ct=618
+<< parseSimpleClause: next token=TokIdent "chainl1" ct=617
+<< expr dispatch: TokIdent "chainl1" ct=617
+<< exprNoLoop: e EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="]))
+<< expr dispatch: TokNewline ct=599
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="]))
+<< parseSimpleClause: e EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="])) ct=599
+<< funClauseWithName: next token=TokNewline ct=599
+>>*funDecl name "exprCmpCore" clause1 FunClause [] Nothing (Just (EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="])))) Nothing rest []
+>>*declBody: e DeclFunGroup "exprCmpCore" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="])))) Nothing]
+<< decl next token: TokIdent "exprLevel1Core"
+<< decl parser called
+<< decl dispatch: TokIdent "exprLevel1Core" ct=598
+<< funDecl: next token=TokIdent "exprLevel1Core" ct=598
+<< pInfix: ct=597
+<< pPattern:
+    prased PVar "exprLevel1Core"
+<< pattern: ct=597
+<< parseGuardedClause: next token=TokSymbol "::" ct=597
+<< parseGuardLine: next token=TokSymbol "::" ct=597
+<< typeSigDecl: TokIdent "exprLevel1Core"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: exprLevel1Core :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "exprLevel1Core" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "exprLevel1Core" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "exprLevel1Core"
+<< decl parser called
+<< decl dispatch: TokIdent "exprLevel1Core" ct=593
+<< funDecl: next token=TokIdent "exprLevel1Core" ct=593
+<< pInfix: ct=592
+<< pPattern:
+    prased PVar "exprLevel1Core"
+<< pattern: ct=592
+<< parseSimpleClause: next token=TokKeyword "do" ct=591
+<< expr dispatch: TokKeyword "do" ct=591
+<< bindStmt
+<< pattern: ct=589
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "e") [] ct=588
+<< expr dispatch: TokIdent "chainl1" ct=587
+<< exprNoLoop: e EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))
+<< expr dispatch: TokSymbol ";" ct=563
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))
+>>*bindStmt pat= PApp (PVar "e") [] e= EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))
+>>*doStmt: rt Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"])))
+<< bindStmt
+<< pattern: ct=561
+<< expr dispatch: TokKeyword "return" ct=561
+<< returnWithDollar
+>>*return atom: EVar "e"
+<< exprNoLoop: e EReturn (EVar "e")
+<< expr dispatch: TokVRBrace ct=559
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EVar "e")
+>>*exprStmt EReturn (EVar "e")
+>>*doStmt: rt ExprStmt (EReturn (EVar "e"))
+<< bindStmt
+<< pattern: ct=559
+<< expr dispatch: TokVRBrace ct=559
+>>*doBlock: (f:m)[Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))]
+>>*doExprCore: stmts [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))]
+<< expr dispatch: TokNewline ct=558
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))]
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))] ct=558
+<< funClauseWithName: next token=TokNewline ct=558
+>>*funDecl name "exprLevel1Core" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exprLevel1Core" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+<< decl next token: TokIdent "exprAddSubCore"
+<< decl parser called
+<< decl dispatch: TokIdent "exprAddSubCore" ct=557
+<< funDecl: next token=TokIdent "exprAddSubCore" ct=557
+<< pInfix: ct=556
+<< pPattern:
+    prased PVar "exprAddSubCore"
+<< pattern: ct=556
+<< parseGuardedClause: next token=TokSymbol "::" ct=556
+<< parseGuardLine: next token=TokSymbol "::" ct=556
+<< typeSigDecl: TokIdent "exprAddSubCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: exprAddSubCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "exprAddSubCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "exprAddSubCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "exprAddSubCore"
+<< decl parser called
+<< decl dispatch: TokIdent "exprAddSubCore" ct=552
+<< funDecl: next token=TokIdent "exprAddSubCore" ct=552
+<< pInfix: ct=551
+<< pPattern:
+    prased PVar "exprAddSubCore"
+<< pattern: ct=551
+<< parseSimpleClause: next token=TokKeyword "do" ct=550
+<< expr dispatch: TokKeyword "do" ct=550
+<< bindStmt
+<< pattern: ct=548
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "e") [] ct=547
+<< expr dispatch: TokIdent "chainl1" ct=546
+<< exprNoLoop: e EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))
+<< expr dispatch: TokSymbol ";" ct=536
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))
+>>*bindStmt pat= PApp (PVar "e") [] e= EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))
+>>*doStmt: rt Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"])))
+<< bindStmt
+<< pattern: ct=534
+<< expr dispatch: TokKeyword "return" ct=534
+<< returnWithDollar
+>>*return atom: EVar "e"
+<< exprNoLoop: e EReturn (EVar "e")
+<< expr dispatch: TokVRBrace ct=532
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EVar "e")
+>>*exprStmt EReturn (EVar "e")
+>>*doStmt: rt ExprStmt (EReturn (EVar "e"))
+<< bindStmt
+<< pattern: ct=532
+<< expr dispatch: TokVRBrace ct=532
+>>*doBlock: (f:m)[Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))]
+>>*doExprCore: stmts [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))]
+<< expr dispatch: TokNewline ct=531
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))]
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))] ct=531
+<< funClauseWithName: next token=TokNewline ct=531
+>>*funDecl name "exprAddSubCore" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exprAddSubCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))])) Nothing]
+<< decl next token: TokIdent "exprLevel3Core"
+<< decl parser called
+<< decl dispatch: TokIdent "exprLevel3Core" ct=530
+<< funDecl: next token=TokIdent "exprLevel3Core" ct=530
+<< pInfix: ct=529
+<< pPattern:
+    prased PVar "exprLevel3Core"
+<< pattern: ct=529
+<< parseGuardedClause: next token=TokSymbol "::" ct=529
+<< parseGuardLine: next token=TokSymbol "::" ct=529
+<< typeSigDecl: TokIdent "exprLevel3Core"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: exprLevel3Core :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "exprLevel3Core" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "exprLevel3Core" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "exprLevel3Core"
+<< decl parser called
+<< decl dispatch: TokIdent "exprLevel3Core" ct=525
+<< funDecl: next token=TokIdent "exprLevel3Core" ct=525
+<< pInfix: ct=524
+<< pPattern:
+    prased PVar "exprLevel3Core"
+<< pattern: ct=524
+<< parseSimpleClause: next token=TokKeyword "do" ct=523
+<< expr dispatch: TokKeyword "do" ct=523
+<< bindStmt
+<< pattern: ct=521
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "try") [PVar "lambdaExpr"] ct=519
+<< expr dispatch: TokIdent "try" ct=521
+<< exprNoLoop: e EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore")
+<< expr dispatch: TokVRBrace ct=517
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore")
+>>*exprStmt EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore")
+>>*doStmt: rt ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))
+<< bindStmt
+<< pattern: ct=517
+<< expr dispatch: TokVRBrace ct=517
+>>*doBlock: (f:m)[ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))]
+>>*doExprCore: stmts [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))]
+<< exprNoLoop: e EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))]
+<< expr dispatch: TokNewline ct=516
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))]
+<< parseSimpleClause: e EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))] ct=516
+<< funClauseWithName: next token=TokNewline ct=516
+>>*funDecl name "exprLevel3Core" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exprLevel3Core" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))])) Nothing]
+<< decl next token: TokIdent "appExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "appExprCore" ct=515
+<< funDecl: next token=TokIdent "appExprCore" ct=515
+<< pInfix: ct=514
+<< pPattern:
+    prased PVar "appExprCore"
+<< pattern: ct=514
+<< parseGuardedClause: next token=TokSymbol "::" ct=514
+<< parseGuardLine: next token=TokSymbol "::" ct=514
+<< typeSigDecl: TokIdent "appExprCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: appExprCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "appExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "appExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "appExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "appExprCore" ct=510
+<< funDecl: next token=TokIdent "appExprCore" ct=510
+<< pInfix: ct=509
+<< pPattern:
+    prased PVar "appExprCore"
+<< pattern: ct=509
+<< parseSimpleClause: next token=TokKeyword "do" ct=508
+<< expr dispatch: TokKeyword "do" ct=508
+<< bindStmt
+<< pattern: ct=506
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "f") [] ct=505
+<< expr dispatch: TokIdent "atomCore" ct=504
+<< exprNoLoop: e EVar "atomCore"
+<< expr dispatch: TokSymbol ";" ct=503
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "atomCore"
+>>*bindStmt pat= PApp (PVar "f") [] e= EVar "atomCore"
+>>*doStmt: rt Bind (PApp (PVar "f") []) (EVar "atomCore")
+<< bindStmt
+<< pattern: ct=501
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "args") [] ct=500
+<< expr dispatch: TokIdent "many" ct=499
+<< exprNoLoop: e EApp (EVar "many") (EVar "atomCore")
+<< expr dispatch: TokSymbol ";" ct=497
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "many") (EVar "atomCore")
+>>*bindStmt pat= PApp (PVar "args") [] e= EApp (EVar "many") (EVar "atomCore")
+>>*doStmt: rt Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore"))
+<< bindStmt
+<< pattern: ct=495
+<< expr dispatch: TokKeyword "return" ct=495
+<< returnWithDollar
+>>*return atom: EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")
+<< exprNoLoop: e EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args"))
+<< expr dispatch: TokVRBrace ct=488
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args"))
+>>*exprStmt EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args"))
+>>*doStmt: rt ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))
+<< bindStmt
+<< pattern: ct=488
+<< expr dispatch: TokVRBrace ct=488
+>>*doBlock: (f:m)[Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))]
+>>*doExprCore: stmts [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))]
+<< expr dispatch: TokNewline ct=487
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))]
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))] ct=487
+<< funClauseWithName: next token=TokNewline ct=487
+>>*funDecl name "appExprCore" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "appExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))])) Nothing]
+<< decl next token: TokIdent "atomCore"
+<< decl parser called
+<< decl dispatch: TokIdent "atomCore" ct=486
+<< funDecl: next token=TokIdent "atomCore" ct=486
+<< pInfix: ct=485
+<< pPattern:
+    prased PVar "atomCore"
+<< pattern: ct=485
+<< parseGuardedClause: next token=TokSymbol "::" ct=485
+<< parseGuardLine: next token=TokSymbol "::" ct=485
+<< typeSigDecl: TokIdent "atomCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: atomCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "atomCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "atomCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "atomCore"
+<< decl parser called
+<< decl dispatch: TokIdent "atomCore" ct=481
+<< funDecl: next token=TokIdent "atomCore" ct=481
+<< pInfix: ct=480
+<< pPattern:
+    prased PVar "atomCore"
+<< pattern: ct=480
+<< parseSimpleClause: next token=TokIdent "notFollowedBy" ct=479
+<< expr dispatch: TokIdent "notFollowedBy" ct=479
+<< exprNoLoop: e EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore"))
+<< expr dispatch: TokNewline ct=470
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore"))
+<< parseSimpleClause: e EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore")) ct=470
+<< funClauseWithName: next token=TokNewline ct=470
+>>*funDecl name "atomCore" clause1 FunClause [] Nothing (Just (EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore")))) Nothing rest []
+>>*declBody: e DeclFunGroup "atomCore" [FunClause [] Nothing (Just (EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore")))) Nothing]
+<< decl next token: TokIdent "atomCorex"
+<< decl parser called
+<< decl dispatch: TokIdent "atomCorex" ct=469
+<< funDecl: next token=TokIdent "atomCorex" ct=469
+<< pInfix: ct=468
+<< pPattern:
+    prased PVar "atomCorex"
+<< pattern: ct=468
+<< parseGuardedClause: next token=TokSymbol "::" ct=468
+<< parseGuardLine: next token=TokSymbol "::" ct=468
+<< typeSigDecl: TokIdent "atomCorex"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: atomCorex :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "atomCorex" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "atomCorex" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "atomCorex"
+<< decl parser called
+<< decl dispatch: TokIdent "atomCorex" ct=464
+<< funDecl: next token=TokIdent "atomCorex" ct=464
+<< pInfix: ct=463
+<< pPattern:
+    prased PVar "atomCorex"
+<< pattern: ct=463
+<< parseSimpleClause: next token=TokKeyword "do" ct=462
+<< expr dispatch: TokKeyword "do" ct=462
+<< bindStmt
+<< pattern: ct=460
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=459
+<< expr dispatch: TokIdent "lookAhead" ct=458
+<< exprNoLoop: e EApp (EVar "lookAhead") (EVar "anyToken")
+<< expr dispatch: TokSymbol ";" ct=456
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "lookAhead") (EVar "anyToken")
+>>*bindStmt pat= PApp (PVar "t") [] e= EApp (EVar "lookAhead") (EVar "anyToken")
+>>*doStmt: rt Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken"))
+<< bindStmt
+<< pattern: ct=455
+<< expr dispatch: TokKeyword "case" ct=455
+<< caseExprCore:
+<< expr dispatch: TokIdent "t" ct=454
+<< exprNoLoop: e EVar "t"
+<< expr dispatch: TokKeyword "of" ct=453
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "t"
+<< pattern: ct=451
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokSymbol" []) [PString "}"] ct=449
+<< caseAlt: pat PApp (PConstr "TokSymbol" []) [PString "}"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "empty" ct=448
+<< exprNoLoop: e EVar "empty"
+<< expr dispatch: TokSymbol ";" ct=447
+<< bracesExpr: nm "TokSymbol" ct=446
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "empty"
+>>*caseAlt: pat PApp (PConstr "TokSymbol" []) [PString "}"] body EVar "empty"
+<< pattern: ct=446
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokSymbol" []) [PString ";"] ct=444
+<< caseAlt: pat PApp (PConstr "TokSymbol" []) [PString ";"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "empty" ct=443
+<< exprNoLoop: e EVar "empty"
+<< expr dispatch: TokSymbol ";" ct=442
+<< bracesExpr: nm "TokSymbol" ct=441
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "empty"
+>>*caseAlt: pat PApp (PConstr "TokSymbol" []) [PString ";"] body EVar "empty"
+<< pattern: ct=441
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokSymbol" []) [PString "$"] ct=439
+<< caseAlt: pat PApp (PConstr "TokSymbol" []) [PString "$"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "empty" ct=438
+<< exprNoLoop: e EVar "empty"
+<< expr dispatch: TokSymbol ";" ct=437
+<< bracesExpr: nm "TokLambdaCase" ct=435
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "empty"
+>>*caseAlt: pat PApp (PConstr "TokSymbol" []) [PString "$"] body EVar "empty"
+<< pattern: ct=435
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokLambdaCase" []) [] ct=434
+<< caseAlt: pat PApp (PConstr "TokLambdaCase" []) []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "empty" ct=433
+<< exprNoLoop: e EVar "empty"
+<< expr dispatch: TokSymbol ";" ct=432
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "empty"
+>>*caseAlt: pat PApp (PConstr "TokLambdaCase" []) [] body EVar "empty"
+<< pattern: ct=431
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") [] ct=430
+<< caseAlt: pat PApp (PVar "_") []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "try" ct=428
+<< exprNoLoop: e EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))
+<< expr dispatch: TokSymbol ";" ct=423
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "atomBaseCore" ct=421
+<< exprNoLoop: e EVar "atomBaseCore"
+<< expr dispatch: TokVRBrace ct=420
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore")
+>>*caseAlt: pat PApp (PVar "_") [] body EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore")
+<< pattern: ct=420
+>>*caseAltBlock: xs [CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))]
+<< exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))]
+<< expr dispatch: TokVRBrace ct=420
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))]
+>>*exprStmt ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))]
+>>*doStmt: rt ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])
+<< bindStmt
+<< pattern: ct=420
+<< expr dispatch: TokVRBrace ct=420
+>>*doBlock: (f:m)[Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])]
+>>*doExprCore: stmts [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])]
+<< expr dispatch: TokNewline ct=419
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])]
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])] ct=419
+<< funClauseWithName: next token=TokNewline ct=419
+>>*funDecl name "atomCorex" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])])) Nothing rest []
+>>*declBody: e DeclFunGroup "atomCorex" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])])) Nothing]
+<< decl next token: TokIdent "badToken"
+<< decl parser called
+<< decl dispatch: TokIdent "badToken" ct=418
+<< funDecl: next token=TokIdent "badToken" ct=418
+<< pInfix: ct=417
+<< pPattern:
+    prased PVar "badToken"
+<< pattern: ct=417
+<< parseGuardedClause: next token=TokSymbol "::" ct=417
+<< parseGuardLine: next token=TokSymbol "::" ct=417
+<< typeSigDecl: TokIdent "badToken"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TUnit]
+<< parseTypeCore: TApp (TCon "Parser") TUnit
+<< parsed type signature: badToken :: TApp (TCon "Parser") TUnit
+<< returning DeclTypeSig: DeclTypeSig "badToken" (TApp (TCon "Parser") TUnit)
+>>*declBody: e DeclTypeSig "badToken" (TApp (TCon "Parser") TUnit)
+<< decl next token: TokIdent "badToken"
+<< decl parser called
+<< decl dispatch: TokIdent "badToken" ct=412
+<< funDecl: next token=TokIdent "badToken" ct=412
+<< pInfix: ct=411
+<< pPattern:
+    prased PVar "badToken"
+<< pattern: ct=411
+<< parseSimpleClause: next token=TokIdent "choice" ct=409
+<< expr dispatch: TokIdent "choice" ct=409
+<< exprNoLoop: e EVar "choice"
+<< expr dispatch: TokSymbol ";" ct=408
+<< expr dispatch: TokIdent "symbol" ct=406
+<< exprNoLoop: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokSymbol "," ct=404
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokIdent "symbol" ct=406
+<< exprNoLoop: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokSymbol "," ct=404
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokSymbol ";" ct=403
+<< expr dispatch: TokIdent "symbol" ct=406
+<< exprNoLoop: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokSymbol "," ct=404
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokIdent "symbol" ct=406
+<< exprNoLoop: e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokSymbol "," ct=404
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "}")
+<< elmsEXpr ct=404 e EApp (EVar "symbol") (EString "}")
+<< expr dispatch: TokIdent "symbol" ct=402
+<< exprNoLoop: e EApp (EVar "symbol") (EString ";")
+<< expr dispatch: TokSymbol "," ct=400
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString ";")
+<< elmsEXpr ct=400 e EApp (EVar "symbol") (EString ";")
+<< expr dispatch: TokIdent "symbol" ct=398
+<< exprNoLoop: e EApp (EVar "symbol") (EString "$")
+<< expr dispatch: TokSymbol "," ct=396
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString "$")
+<< elmsEXpr ct=396 e EApp (EVar "symbol") (EString "$")
+<< expr dispatch: TokIdent "tokenIs" ct=394
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=390
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=390
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=390
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=390
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=390
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=390
+<< lambdaExpr arg PApp (PVar "t") []
+<< exprNoLoop: e EVar "tokenIs"
+<< expr dispatch: TokSymbol "(" ct=393
+<< expr dispatch: TokSymbol "\\" ct=392
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=390
+<< lambdaExpr arg PApp (PVar "t") []
+<< expr dispatch: TokKeyword "case" ct=389
+<< caseExprCore:
+<< expr dispatch: TokIdent "t" ct=388
+<< exprNoLoop: e EVar "t"
+<< expr dispatch: TokKeyword "of" ct=387
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "t"
+<< pattern: ct=386
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokLambdaCase" []) [] ct=385
+<< caseAlt: pat PApp (PConstr "TokLambdaCase" []) []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokTypeIdent "Just" ct=384
+<< bracesExpr: nm "Just" ct=384
+<< exprNoLoop: e EApp (EVarType "Just") EUnit
+<< expr dispatch: TokSymbol ";" ct=381
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "Just") EUnit
+>>*caseAlt: pat PApp (PConstr "TokLambdaCase" []) [] body EApp (EVarType "Just") EUnit
+<< pattern: ct=380
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") [] ct=379
+<< caseAlt: pat PApp (PVar "_") []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokTypeIdent "Nothing" ct=378
+<< bracesExpr: nm "Nothing" ct=378
+<< exprNoLoop: e EVarType "Nothing"
+<< expr dispatch: TokSymbol ")" ct=377
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVarType "Nothing"
+>>*caseAlt: pat PApp (PVar "_") [] body EVarType "Nothing"
+<< pattern: ct=377
+>>*caseAltBlock: xs [CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+<< exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+<< expr dispatch: TokSymbol ")" ct=377
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+<< exprNoLoop: e ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
+<< expr dispatch: TokSymbol ")" ct=377
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
+<< exprNoLoop: e ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
+<< expr dispatch: TokSymbol "," ct=376
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))
+<< elmsEXpr ct=376 e EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))
+<< expr dispatch: TokIdent "tokenIs" ct=374
+<< pattern: ct=371
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=370
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=371
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=370
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=371
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=370
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=371
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=370
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=371
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=370
+<< lambdaExpr arg PApp (PVar "t") []
+<< pattern: ct=371
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=370
+<< lambdaExpr arg PApp (PVar "t") []
+<< exprNoLoop: e EVar "tokenIs"
+<< expr dispatch: TokSymbol "(" ct=373
+<< expr dispatch: TokSymbol "\\" ct=372
+<< pattern: ct=371
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "t") [] ct=370
+<< lambdaExpr arg PApp (PVar "t") []
+<< expr dispatch: TokKeyword "case" ct=369
+<< caseExprCore:
+<< expr dispatch: TokIdent "t" ct=368
+<< exprNoLoop: e EVar "t"
+<< expr dispatch: TokKeyword "of" ct=367
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "t"
+<< pattern: ct=366
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokVRBrace" []) [] ct=365
+<< caseAlt: pat PApp (PConstr "TokVRBrace" []) []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokTypeIdent "Just" ct=364
+<< bracesExpr: nm "Just" ct=364
+<< exprNoLoop: e EApp (EVarType "Just") EUnit
+<< expr dispatch: TokSymbol ";" ct=361
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "Just") EUnit
+>>*caseAlt: pat PApp (PConstr "TokVRBrace" []) [] body EApp (EVarType "Just") EUnit
+<< pattern: ct=360
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "_") [] ct=359
+<< caseAlt: pat PApp (PVar "_") []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokTypeIdent "Nothing" ct=358
+<< bracesExpr: nm "Nothing" ct=358
+<< exprNoLoop: e EVarType "Nothing"
+<< expr dispatch: TokSymbol ")" ct=357
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVarType "Nothing"
+>>*caseAlt: pat PApp (PVar "_") [] body EVarType "Nothing"
+<< pattern: ct=357
+>>*caseAltBlock: xs [CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+<< exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+<< expr dispatch: TokSymbol ")" ct=357
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]
+<< exprNoLoop: e ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
+<< expr dispatch: TokSymbol ")" ct=357
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
+<< exprNoLoop: e ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])
+<< expr dispatch: TokSymbol ";" ct=356
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))
+<< elmsEXpr ct=356 e EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))
+<< expr dispatch: TokSymbol "]" ct=355
+<< exprNoLoop: e EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))]
+<< expr dispatch: TokSymbol ";" ct=354
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "choice") (EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))])
+<< parseSimpleClause: e EApp (EVar "choice") (EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))]) ct=354
+<< funClauseWithName: next token=TokSymbol ";" ct=354
+>>*funDecl name "badToken" clause1 FunClause [] Nothing (Just (EApp (EVar "choice") (EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))]))) Nothing rest []
+>>*declBody: e DeclFunGroup "badToken" [FunClause [] Nothing (Just (EApp (EVar "choice") (EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))]))) Nothing]
+<< decl next token: TokIdent "parenExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "parenExprCore" ct=353
+<< funDecl: next token=TokIdent "parenExprCore" ct=353
+<< pInfix: ct=352
+<< pPattern:
+    prased PVar "parenExprCore"
+<< pattern: ct=352
+<< parseGuardedClause: next token=TokSymbol "::" ct=352
+<< parseGuardLine: next token=TokSymbol "::" ct=352
+<< typeSigDecl: TokIdent "parenExprCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: parenExprCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "parenExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "parenExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "parenExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "parenExprCore" ct=348
+<< funDecl: next token=TokIdent "parenExprCore" ct=348
+<< pInfix: ct=347
+<< pPattern:
+    prased PVar "parenExprCore"
+<< pattern: ct=347
+<< parseSimpleClause: next token=TokKeyword "do" ct=346
+<< expr dispatch: TokKeyword "do" ct=346
+<< bindStmt
+<< pattern: ct=344
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "try") [PVar "oPsectionCore"] ct=342
+<< expr dispatch: TokIdent "try" ct=344
+<< exprNoLoop: e EApp (EVar "try") (EVar "oPsectionCore")
+<< expr dispatch: TokSymbol ";" ct=342
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "try" ct=340
+<< exprNoLoop: e EApp (EVar "try") (EVar "tupleExprCore")
+<< expr dispatch: TokSymbol ";" ct=338
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "exprCore" ct=336
+<< exprNoLoop: e EVar "exprCore"
+<< expr dispatch: TokVRBrace ct=335
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore"))
+>>*exprStmt EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore"))
+>>*doStmt: rt ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))
+<< bindStmt
+<< pattern: ct=335
+<< expr dispatch: TokVRBrace ct=335
+>>*doBlock: (f:m)[ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))]
+>>*doExprCore: stmts [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))]
+<< exprNoLoop: e EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))]
+<< expr dispatch: TokNewline ct=334
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))]
+<< parseSimpleClause: e EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))] ct=334
+<< funClauseWithName: next token=TokNewline ct=334
+>>*funDecl name "parenExprCore" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "parenExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))])) Nothing]
+<< decl next token: TokIdent "tupleExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "tupleExprCore" ct=333
+<< funDecl: next token=TokIdent "tupleExprCore" ct=333
+<< pInfix: ct=332
+<< pPattern:
+    prased PVar "tupleExprCore"
+<< pattern: ct=332
+<< parseGuardedClause: next token=TokSymbol "::" ct=332
+<< parseGuardLine: next token=TokSymbol "::" ct=332
+<< typeSigDecl: TokIdent "tupleExprCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: tupleExprCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "tupleExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "tupleExprCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "tupleExprCore"
+<< decl parser called
+<< decl dispatch: TokIdent "tupleExprCore" ct=328
+<< funDecl: next token=TokIdent "tupleExprCore" ct=328
+<< pInfix: ct=327
+<< pPattern:
+    prased PVar "tupleExprCore"
+<< pattern: ct=327
+<< parseSimpleClause: next token=TokKeyword "do" ct=326
+<< expr dispatch: TokKeyword "do" ct=326
+<< bindStmt
+<< pattern: ct=324
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "e1") [] ct=323
+<< expr dispatch: TokIdent "exprCore" ct=322
+<< exprNoLoop: e EVar "exprCore"
+<< expr dispatch: TokSymbol ";" ct=321
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "exprCore"
+>>*bindStmt pat= PApp (PVar "e1") [] e= EVar "exprCore"
+>>*doStmt: rt Bind (PApp (PVar "e1") []) (EVar "exprCore")
+<< bindStmt
+<< pattern: ct=320
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString ","] ct=318
+<< expr dispatch: TokIdent "symbol" ct=320
+<< exprNoLoop: e EApp (EVar "symbol") (EString ",")
+<< expr dispatch: TokSymbol ";" ct=318
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "symbol") (EString ",")
+>>*exprStmt EApp (EVar "symbol") (EString ",")
+>>*doStmt: rt ExprStmt (EApp (EVar "symbol") (EString ","))
+<< bindStmt
+<< pattern: ct=317
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "es") [] ct=316
+<< expr dispatch: TokIdent "exprCore" ct=315
+<< exprNoLoop: e EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")
+<< expr dispatch: TokSymbol ";" ct=311
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")
+>>*bindStmt pat= PApp (PVar "es") [] e= EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")
+>>*doStmt: rt Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ","))
+<< bindStmt
+<< pattern: ct=310
+<< expr dispatch: TokKeyword "return" ct=310
+<< returnWithDollar
+>>*return atom: EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))
+<< exprNoLoop: e EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es")))
+<< expr dispatch: TokVRBrace ct=301
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es")))
+>>*exprStmt EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es")))
+>>*doStmt: rt ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))
+<< bindStmt
+<< pattern: ct=301
+<< expr dispatch: TokVRBrace ct=301
+>>*doBlock: (f:m)[Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))]
+>>*doExprCore: stmts [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))]
+<< expr dispatch: TokNewline ct=300
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))]
+<< parseSimpleClause: e EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))] ct=300
+<< funClauseWithName: next token=TokNewline ct=300
+>>*funDecl name "tupleExprCore" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))])) Nothing rest []
+>>*declBody: e DeclFunGroup "tupleExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))])) Nothing]
+<< decl next token: TokIdent "oPsectionCore"
+<< decl parser called
+<< decl dispatch: TokIdent "oPsectionCore" ct=299
+<< funDecl: next token=TokIdent "oPsectionCore" ct=299
+<< pInfix: ct=298
+<< pPattern:
+    prased PVar "oPsectionCore"
+<< pattern: ct=298
+<< parseGuardedClause: next token=TokSymbol "::" ct=298
+<< parseGuardLine: next token=TokSymbol "::" ct=298
+<< typeSigDecl: TokIdent "oPsectionCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: oPsectionCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "oPsectionCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "oPsectionCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "oPsectionCore"
+<< decl parser called
+<< decl dispatch: TokIdent "oPsectionCore" ct=294
+<< funDecl: next token=TokIdent "oPsectionCore" ct=294
+<< pInfix: ct=293
+<< pPattern:
+    prased PVar "oPsectionCore"
+<< pattern: ct=293
+<< parseSimpleClause: next token=TokKeyword "do" ct=292
+<< expr dispatch: TokKeyword "do" ct=292
+<< bindStmt
+<< pattern: ct=290
+<< pattern: ct=288
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "EOpSectionL" []) [] ct=287
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "try") [] ct=289
+<< expr dispatch: TokIdent "try" ct=290
+<< exprNoLoop: e EVar "try"
+<< expr dispatch: TokSymbol "(" ct=289
+<< expr dispatch: TokTypeIdent "EOpSectionL" ct=288
+<< bracesExpr: nm "EOpSectionL" ct=288
+<< exprNoLoop: e EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")
+<< expr dispatch: TokOperator "<*>" ct=285
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpThen
+<< expr dispatch: TokIdent "exprCore" ct=284
+<< exprNoLoop: e EVar "exprCore"
+<< expr dispatch: TokSymbol ")" ct=283
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore")
+<< exprNoLoop: e EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore")
+<< expr dispatch: TokSymbol ";" ct=282
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokSymbol "(" ct=280
+<< expr dispatch: TokTypeIdent "EOpSectionR" ct=279
+<< bracesExpr: nm "EOpSectionR" ct=279
+<< exprNoLoop: e EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")
+<< expr dispatch: TokOperator "<*>" ct=276
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpThen
+<< expr dispatch: TokIdent "operator" ct=275
+<< exprNoLoop: e EVar "operator"
+<< expr dispatch: TokSymbol ")" ct=274
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")
+<< exprNoLoop: e EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")
+<< expr dispatch: TokVRBrace ct=273
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator"))
+>>*exprStmt EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator"))
+>>*doStmt: rt ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))
+<< bindStmt
+<< pattern: ct=273
+<< expr dispatch: TokVRBrace ct=273
+>>*doBlock: (f:m)[ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))]
+>>*doExprCore: stmts [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))]
+<< exprNoLoop: e EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))]
+<< expr dispatch: TokNewline ct=272
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))]
+<< parseSimpleClause: e EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))] ct=272
+<< funClauseWithName: next token=TokNewline ct=272
+>>*funDecl name "oPsectionCore" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "oPsectionCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))])) Nothing]
+<< decl next token: TokIdent "atomBaseCore"
+<< decl parser called
+<< decl dispatch: TokIdent "atomBaseCore" ct=271
+<< funDecl: next token=TokIdent "atomBaseCore" ct=271
+<< pInfix: ct=270
+<< pPattern:
+    prased PVar "atomBaseCore"
+<< pattern: ct=270
+<< parseGuardedClause: next token=TokSymbol "::" ct=270
+<< parseGuardLine: next token=TokSymbol "::" ct=270
+<< typeSigDecl: TokIdent "atomBaseCore"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: atomBaseCore :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "atomBaseCore" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "atomBaseCore" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "atomBaseCore"
+<< decl parser called
+<< decl dispatch: TokIdent "atomBaseCore" ct=266
+<< funDecl: next token=TokIdent "atomBaseCore" ct=266
+<< pInfix: ct=265
+<< pPattern:
+    prased PVar "atomBaseCore"
+<< pattern: ct=265
+<< parseSimpleClause: next token=TokKeyword "do" ct=263
+<< expr dispatch: TokKeyword "do" ct=263
+<< bindStmt
+<< pattern: ct=261
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "EVar" []) [] ct=260
+<< expr dispatch: TokTypeIdent "EVar" ct=261
+<< bracesExpr: nm "EVar" ct=261
+<< exprNoLoop: e EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")
+<< expr dispatch: TokSymbol ";" ct=258
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokTypeIdent "EInt" ct=256
+<< bracesExpr: nm "EInt" ct=256
+<< exprNoLoop: e EBinOp BinOpFmap (EVarType "EInt") (EVar "int")
+<< expr dispatch: TokSymbol ";" ct=253
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "emptyListExpr" ct=251
+<< exprNoLoop: e EVar "emptyListExpr"
+<< expr dispatch: TokSymbol ";" ct=250
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "tunitExpr" ct=248
+<< exprNoLoop: e EVar "tunitExpr"
+<< expr dispatch: TokSymbol ";" ct=247
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokTypeIdent "EVarType" ct=245
+<< bracesExpr: nm "EVarType" ct=245
+<< exprNoLoop: e EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent")
+<< expr dispatch: TokSymbol ";" ct=242
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokSymbol "(" ct=240
+<< expr dispatch: TokIdent "ellipsis" ct=239
+<< exprNoLoop: e EVar "ellipsis"
+<< expr dispatch: TokOperator ">>" ct=238
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpThen
+<< expr dispatch: TokKeyword "return" ct=237
+<< returnWithDollar
+>>*return atom: EVarType "EPlaceholder"
+<< exprNoLoop: e EReturn (EVarType "EPlaceholder")
+<< expr dispatch: TokSymbol ")" ct=235
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder"))
+<< exprNoLoop: e EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder"))
+<< expr dispatch: TokSymbol ";" ct=234
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "elistExpr" ct=232
+<< exprNoLoop: e EVar "elistExpr"
+<< expr dispatch: TokSymbol ";" ct=231
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokTypeIdent "EString" ct=229
+<< bracesExpr: nm "EString" ct=229
+<< exprNoLoop: e EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr")
+<< expr dispatch: TokSymbol ";" ct=226
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokTypeIdent "EChar" ct=224
+<< bracesExpr: nm "EChar" ct=224
+<< exprNoLoop: e EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr")
+<< expr dispatch: TokSymbol ";" ct=221
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "pRecordExpr" ct=219
+<< exprNoLoop: e EVar "pRecordExpr"
+<< expr dispatch: TokSymbol ";" ct=218
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpAlt
+<< expr dispatch: TokIdent "operatorVar" ct=216
+<< exprNoLoop: e EVar "operatorVar"
+<< expr dispatch: TokVRBrace ct=215
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int"))
+>>*exprStmt EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int"))
+>>*doStmt: rt ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))
+<< bindStmt
+<< pattern: ct=215
+<< expr dispatch: TokVRBrace ct=215
+>>*doBlock: (f:m)[ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))]
+>>*doExprCore: stmts [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))]
+<< exprNoLoop: e EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))]
+<< expr dispatch: TokNewline ct=214
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))]
+<< parseSimpleClause: e EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))] ct=214
+<< funClauseWithName: next token=TokNewline ct=214
+>>*funDecl name "atomBaseCore" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "atomBaseCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))])) Nothing]
+<< decl next token: TokIdent "operatorVar"
+<< decl parser called
+<< decl dispatch: TokIdent "operatorVar" ct=213
+<< funDecl: next token=TokIdent "operatorVar" ct=213
+<< pInfix: ct=212
+<< pPattern:
+    prased PVar "operatorVar"
+<< pattern: ct=212
+<< parseGuardedClause: next token=TokSymbol "::" ct=212
+<< parseGuardLine: next token=TokSymbol "::" ct=212
+<< typeSigDecl: TokIdent "operatorVar"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Parser"
+<< typeTerm: ts [TCon "Parser",TCon "Expr"]
+<< parseTypeCore: TApp (TCon "Parser") (TCon "Expr")
+<< parsed type signature: operatorVar :: TApp (TCon "Parser") (TCon "Expr")
+<< returning DeclTypeSig: DeclTypeSig "operatorVar" (TApp (TCon "Parser") (TCon "Expr"))
+>>*declBody: e DeclTypeSig "operatorVar" (TApp (TCon "Parser") (TCon "Expr"))
+<< decl next token: TokIdent "operatorVar"
+<< decl parser called
+<< decl dispatch: TokIdent "operatorVar" ct=208
+<< funDecl: next token=TokIdent "operatorVar" ct=208
+<< pInfix: ct=207
+<< pPattern:
+    prased PVar "operatorVar"
+<< pattern: ct=207
+<< parseSimpleClause: next token=TokKeyword "do" ct=206
+<< expr dispatch: TokKeyword "do" ct=206
+<< bindStmt
+<< pattern: ct=204
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "op") [] ct=203
+<< expr dispatch: TokIdent "satisfyToken" ct=202
+<< exprNoLoop: e EApp (EVar "satisfyToken") (EVar "isOp")
+<< expr dispatch: TokSymbol ";" ct=200
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "satisfyToken") (EVar "isOp")
+>>*bindStmt pat= PApp (PVar "op") [] e= EApp (EVar "satisfyToken") (EVar "isOp")
+>>*doStmt: rt Bind (PApp (PVar "op") []) (EApp (EVar "satisfyToken") (EVar "isOp"))
+<< bindStmt
+<< pattern: ct=199
+<< expr dispatch: TokKeyword "return" ct=199
+<< returnWithDollar
+>>*return atom: EApp (EVarType "EVar") (EVar "op")
+<< exprNoLoop: e EReturn (EApp (EVarType "EVar") (EVar "op"))
+<< expr dispatch: TokSymbol ";" ct=194
+<< postfix: operator = Nothing
+<< binding: next token TokIdent "isOp"
+<< pattern: ct=191
+<< pattern: ct=189
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokOperator" []) [PVar "s"] ct=187
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "isOp") [PApp (PConstr "TokOperator" []) [PVar "s"]] ct=186
+<< valueBinding: pat PApp (PVar "isOp") [PApp (PConstr "TokOperator" []) [PVar "s"]]
+<< funBinding: name "isOp" next TokSymbol "("
+<< pattern: ct=190
+<< pattern: ct=189
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokOperator" []) [PVar "s"] ct=187
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "TokOperator" []) [PVar "s"]) [] ct=186
+<< pattern: ct=186
+<< funBinding: args [PApp (PApp (PConstr "TokOperator" []) [PVar "s"]) []]
+>> infixOp: out 
+<< expr: e EReturn (EApp (EVarType "EVar") (EVar "op"))
+>>*exprStmt EReturn (EApp (EVarType "EVar") (EVar "op"))
+>>*doStmt: rt ExprStmt (EReturn (EApp (EVarType "EVar") (EVar "op")))
+<< bindStmt
+<< pattern: ct=193
+<< expr dispatch: TokKeyword "where" ct=193
+>>*doBlock: (f:m)[Bind (PApp (PVar "op") []) (EApp (EVar "satisfyToken") (EVar "isOp")),ExprStmt (EReturn (EApp (EVarType "EVar") (EVar "op")))]
+>>*doExprCore: stmts [Bind (PApp (PVar "op") []) (EApp (EVar "satisfyToken") (EVar "isOp")),ExprStmt (EReturn (EApp (EVarType "EVar") (EVar "op")))]
+<< typeSigDecl: TokIdent "operatorVar"
 << typeSigDecl:2 TokSymbol "="
-<< valueDecl: TokIdent "exprCore"
-<< pattern: ct=722
-<< pConstrOrVar: next token "exprCore"
+<< valueDecl: TokIdent "operatorVar"
+<< pattern: ct=208
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "exprCore") [] ct=721
-<< expr dispatch: TokKeyword "do" ct=720
+    (pAs <|> makeCons)PApp (PVar "operatorVar") [] ct=207
+<< expr dispatch: TokKeyword "do" ct=206
 << bindStmt
-<< pattern: ct=718
-<< pConstrOrVar: next token "rt"
+<< pattern: ct=204
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "rt") [] ct=717
-<< expr dispatch: TokIdent "try" ct=715
-<< exprNoLoop: e EApp (EVar "try") (EVar "lambdaExpr")
-<< expr dispatch: TokSymbol ";" ct=713
+    (pAs <|> makeCons)PApp (PVar "op") [] ct=203
+<< expr dispatch: TokIdent "satisfyToken" ct=202
+<< exprNoLoop: e EApp (EVar "satisfyToken") (EVar "isOp")
+<< expr dispatch: TokSymbol ";" ct=200
 << postfix: operator = Nothing
 >> infixOp: out 
-<< infixOp: parsed as BinOpAlt
-<< expr dispatch: TokIdent "try" ct=711
-<< exprNoLoop: e EApp (EVar "try") (EVar "binOpExprCore")
-<< expr dispatch: TokSymbol ";" ct=709
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpAlt
-<< expr dispatch: TokIdent "parseSQL" ct=707
-<< exprNoLoop: e EVar "parseSQL"
-<< expr dispatch: TokSymbol ";" ct=706
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))
->>*bindStmt pat= PApp (PVar "rt") [] e= EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))
->>*doStmt: rt Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore")))
+<< expr: e EApp (EVar "satisfyToken") (EVar "isOp")
+>>*bindStmt pat= PApp (PVar "op") [] e= EApp (EVar "satisfyToken") (EVar "isOp")
+>>*doStmt: rt Bind (PApp (PVar "op") []) (EApp (EVar "satisfyToken") (EVar "isOp"))
 << bindStmt
-<< pattern: ct=704
-<< expr dispatch: TokSymbol ";" ct=704
->>*doBlock: (f:m)[Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore")))]
->>*doExprCore: stmts [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore")))]
-Just ([DeclModule "Parser.Expr.ExprCore" (Just [ExportVar "exprCore",ExportVar "appExprCore",ExportVar "atomCore",ExportVar "atomBaseCore",ExportVar "parenExprCore",ExportVar "tupleExprCore",ExportVar "oPsectionCore",ExportVar "pRecordExpr"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "BinOp",ImportTypeAll "Expr"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "typeIdent"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprCore" (TApp (TCon "Parser") (TCon "Expr"))],[TokIdent "exprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "rt",TokSymbol "<-",TokSymbol ";",TokIdent "try",TokIdent "lambdaExpr",TokSymbol ";",TokOperator "<|>",TokIdent "try",TokIdent "binOpExprCore",TokSymbol ";",TokOperator "<|>",TokIdent "parseSQL",TokSymbol ";",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "rt",TokVRBrace,TokNewline,TokIdent "pRecordExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "pRecordExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "{",TokSymbol ";",TokIdent "fields",TokSymbol "<-",TokIdent "sepBy1",TokIdent "field",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "}",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ERecord",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "field",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokTypeIdent "String",TokSymbol ",",TokTypeIdent "Expr",TokSymbol ")",TokNewline,TokIdent "field",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "name",TokSymbol "<-",TokIdent "ident",TokSymbol ";",TokIdent "symbol",TokString "=",TokSymbol ";",TokIdent "value",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "name",TokSymbol ",",TokIdent "value",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "binOpExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "binOpExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "exprCmpCore",TokVRBrace,TokNewline,TokIdent "exprCmpCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprCmpCore",TokSymbol "=",TokIdent "chainl1",TokIdent "exprLevel1Core",TokSymbol "(",TokIdent "binOp",TokSymbol "[",TokString ">",TokSymbol ",",TokString "<",TokSymbol ",",TokString ">=",TokSymbol ",",TokString "<=",TokSymbol ",",TokString "==",TokSymbol ",",TokString "/=",TokSymbol "]",TokSymbol ")",TokNewline,TokIdent "exprLevel1Core",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprLevel1Core",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "chainl1",TokIdent "exprAddSubCore",TokSymbol "(",TokIdent "binOp",TokSymbol "[",TokString "+",TokSymbol ",",TokString "-",TokSymbol ",",TokString "++",TokSymbol ",",TokString ":",TokSymbol ",",TokString "*>",TokSymbol ",",TokString "<$",TokSymbol ",",TokString "<*",TokSymbol ",",TokString "<$>",TokSymbol ",",TokString "<|>",TokSymbol "]",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "exprAddSubCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprAddSubCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "chainl1",TokIdent "exprLevel3Core",TokSymbol "(",TokIdent "binOp",TokSymbol "[",TokString "*",TokSymbol ",",TokString "/",TokSymbol "]",TokSymbol ")",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokIdent "e",TokVRBrace,TokNewline,TokIdent "exprLevel3Core",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "exprLevel3Core",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokIdent "lambdaExpr",TokOperator "<|>",TokIdent "appExprCore",TokVRBrace,TokNewline,TokIdent "appExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "appExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "f",TokSymbol "<-",TokIdent "atomCore",TokSymbol ";",TokSymbol ";",TokIdent "args",TokSymbol "<-",TokIdent "many",TokIdent "atomCore",TokSymbol ";",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "foldl",TokTypeIdent "EApp",TokIdent "f",TokIdent "args",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "atomCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "atomCore",TokSymbol "=",TokIdent "notFollowedBy",TokIdent "badToken",TokOperator "*>",TokSymbol "(",TokIdent "parens",TokIdent "parenExprCore",TokOperator "<|>",TokIdent "atomBaseCore",TokSymbol ")",TokNewline,TokIdent "atomCorex",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "atomCorex",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "t",TokSymbol "<-",TokIdent "lookAhead",TokIdent "anyToken",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "}",TokArrow,TokIdent "empty",TokSymbol ";",TokTypeIdent "TokSymbol",TokString ";",TokArrow,TokIdent "empty",TokSymbol ";",TokTypeIdent "TokSymbol",TokString "$",TokArrow,TokIdent "empty",TokSymbol ";",TokSymbol ";",TokTypeIdent "TokLambdaCase",TokArrow,TokIdent "empty",TokSymbol ";",TokIdent "_",TokArrow,TokSymbol ";",TokIdent "try",TokSymbol "(",TokIdent "parens",TokIdent "parenExprCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "atomBaseCore",TokVRBrace,TokNewline,TokIdent "badToken",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "badToken",TokSymbol "=",TokSymbol ";",TokIdent "choice",TokSymbol ";",TokSymbol "[",TokIdent "symbol",TokString "}",TokSymbol ",",TokSymbol ";",TokIdent "symbol",TokString ";",TokSymbol ",",TokSymbol ";",TokIdent "symbol",TokString "$",TokSymbol ",",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "case",TokIdent "t",TokKeyword "of",TokTypeIdent "TokLambdaCase",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "case",TokIdent "t",TokKeyword "of",TokTypeIdent "TokVRBrace",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokSymbol "]",TokSymbol ";",TokIdent "parenExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "parenExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokIdent "oPsectionCore",TokSymbol ";",TokOperator "<|>",TokIdent "try",TokIdent "tupleExprCore",TokSymbol ";",TokOperator "<|>",TokIdent "exprCore",TokVRBrace,TokNewline,TokIdent "tupleExprCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "tupleExprCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e1",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokIdent "symbol",TokString ",",TokSymbol ";",TokIdent "es",TokSymbol "<-",TokIdent "exprCore",TokIdent "sepBy1",TokIdent "symbol",TokString ",",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ETuple",TokSymbol "(",TokIdent "e1",TokOperator ":",TokIdent "es",TokSymbol ")",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "oPsectionCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "oPsectionCore",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "try",TokSymbol "(",TokTypeIdent "EOpSectionL",TokOperator "<$>",TokIdent "operator",TokOperator "<*>",TokIdent "exprCore",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokTypeIdent "EOpSectionR",TokOperator "<$>",TokIdent "exprCore",TokOperator "<*>",TokIdent "operator",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "atomBaseCore",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "atomBaseCore",TokSymbol "=",TokSymbol ";",TokKeyword "do",TokVLBrace,TokTypeIdent "EVar",TokOperator "<$>",TokIdent "ident",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EInt",TokOperator "<$>",TokIdent "int",TokSymbol ";",TokOperator "<|>",TokIdent "emptyListExpr",TokSymbol ";",TokOperator "<|>",TokIdent "tunitExpr",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EVarType",TokOperator "<$>",TokIdent "typeIdent",TokSymbol ";",TokOperator "<|>",TokSymbol "(",TokIdent "ellipsis",TokOperator ">>",TokKeyword "return",TokTypeIdent "EPlaceholder",TokSymbol ")",TokSymbol ";",TokOperator "<|>",TokIdent "elistExpr",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EString",TokOperator "<$>",TokIdent "stringLiteralExpr",TokSymbol ";",TokOperator "<|>",TokTypeIdent "EChar",TokOperator "<$>",TokIdent "charLiteralExpr",TokSymbol ";",TokOperator "<|>",TokIdent "pRecordExpr",TokSymbol ";",TokOperator "<|>",TokIdent "operatorVar",TokVRBrace,TokNewline,TokIdent "operatorVar",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "operatorVar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "satisfyToken",TokIdent "isOp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "s",TokIdent "elem",TokSymbol "[",TokString ":",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokSymbol ";",TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokVRBrace,TokNewline,TokIdent "tunitExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "tunitExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "elistExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "elistExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "elems",TokSymbol "<-",TokIdent "exprCore",TokIdent "sepBy",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokIdent "elems",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "ellipsis",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "ellipsis",TokSymbol "=",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "if",TokIdent "t",TokOperator "==",TokTypeIdent "TokEllipsis",TokKeyword "then",TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokKeyword "else",TokTypeIdent "Nothing",TokSymbol ")",TokNewline,TokIdent "emptyListExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "emptyListExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< lambdaExpr arg ",TokOperator "++",TokIdent "show",TokIdent "arg",TokSymbol ")",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokVRBrace,TokNewline])
+<< pattern: ct=199
+<< expr dispatch: TokKeyword "return" ct=199
+<< returnWithDollar
+>>*return atom: EApp (EVarType "EVar") (EVar "op")
+<< exprNoLoop: e EReturn (EApp (EVarType "EVar") (EVar "op"))
+<< expr dispatch: TokSymbol ";" ct=194
+<< postfix: operator = Nothing
+<< binding: next token TokIdent "isOp"
+<< pattern: ct=191
+<< pattern: ct=189
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokOperator" []) [PVar "s"] ct=187
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "isOp") [PApp (PConstr "TokOperator" []) [PVar "s"]] ct=186
+<< valueBinding: pat PApp (PVar "isOp") [PApp (PConstr "TokOperator" []) [PVar "s"]]
+<< funBinding: name "isOp" next TokSymbol "("
+<< pattern: ct=190
+<< pattern: ct=189
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TokOperator" []) [PVar "s"] ct=187
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "TokOperator" []) [PVar "s"]) [] ct=186
+<< pattern: ct=186
+<< funBinding: args [PApp (PApp (PConstr "TokOperator" []) [PVar "s"]) []]
+>> infixOp: out 
+<< expr: e EReturn (EApp (EVarType "EVar") (EVar "op"))
+>>*exprStmt EReturn (EApp (EVarType "EVar") (EVar "op"))
+>>*doStmt: rt ExprStmt (EReturn (EApp (EVarType "EVar") (EVar "op")))
+<< bindStmt
+<< pattern: ct=193
+<< expr dispatch: TokKeyword "where" ct=193
+>>*doBlock: (f:m)[Bind (PApp (PVar "op") []) (EApp (EVar "satisfyToken") (EVar "isOp")),ExprStmt (EReturn (EApp (EVarType "EVar") (EVar "op")))]
+>>*doExprCore: stmts [Bind (PApp (PVar "op") []) (EApp (EVar "satisfyToken") (EVar "isOp")),ExprStmt (EReturn (EApp (EVarType "EVar") (EVar "op")))]
+Just ([DeclModule "Parser.Expr.ExprCore" (Just [ExportVar "exprCore",ExportVar "appExprCore",ExportVar "atomCore",ExportVar "atomBaseCore",ExportVar "parenExprCore",ExportVar "tupleExprCore",ExportVar "oPsectionCore",ExportVar "pRecordExpr"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "BinOp",ImportTypeAll "Expr"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Expr.PatternParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "pattern"]},DeclImport {importQualified = False, importModule = "Parser.SQL.SQLParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "typeIdent"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "exprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "rt") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "parseSQL")) (EApp (EVar "try") (EVar "binOpExprCore"))),ExprStmt (EReturn (EVar "rt"))])) Nothing],DeclTypeSig "pRecordExpr" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "pRecordExpr" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "symbol") (EString "{")),Bind (PApp (PVar "fields") []) (EApp (EApp (EVar "sepBy1") (EVar "field")) (EApp (EVar "symbol") (EString ","))),ExprStmt (EApp (EVar "symbol") (EString "}")),ExprStmt (EReturn (EApp (EVarType "ERecord") (EVar "fields")))])) Nothing],DeclTypeSig "field" (TApp (TCon "Parser") (TTuple [TCon "String",TCon "Expr"])),DeclFunGroup "field" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "name") []) (EVar "ident"),ExprStmt (EApp (EVar "symbol") (EString "=")),Bind (PApp (PVar "value") []) (EVar "exprCore"),ExprStmt (EReturn (ETuple [EVar "name",EVar "value"]))])) Nothing],DeclTypeSig "binOpExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "binOpExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EVar "exprCmpCore")])) Nothing],DeclTypeSig "exprCmpCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprCmpCore" [FunClause [] Nothing (Just (EApp (EApp (EVar "chainl1") (EVar "exprLevel1Core")) (EApp (EVar "binOp") (EList [EString ">",EString "<",EString ">=",EString "<=",EString "==",EString "/="])))) Nothing],DeclTypeSig "exprLevel1Core" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprLevel1Core" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprAddSubCore")) (EApp (EVar "binOp") (EList [EString "+",EString "-",EString "++",EString ":",EString "*>",EString "<$",EString "<*",EString "<$>",EString "<|>"]))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "exprAddSubCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprAddSubCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EApp (EApp (EVar "chainl1") (EVar "exprLevel3Core")) (EApp (EVar "binOp") (EList [EString "*",EString "/"]))),ExprStmt (EReturn (EVar "e"))])) Nothing],DeclTypeSig "exprLevel3Core" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "exprLevel3Core" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "lambdaExpr")) (EVar "appExprCore"))])) Nothing],DeclTypeSig "appExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "appExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "f") []) (EVar "atomCore"),Bind (PApp (PVar "args") []) (EApp (EVar "many") (EVar "atomCore")),ExprStmt (EReturn (EApp (EApp (EApp (EVar "foldl") (EVarType "EApp")) (EVar "f")) (EVar "args")))])) Nothing],DeclTypeSig "atomCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "atomCore" [FunClause [] Nothing (Just (EBinOp BinOpThen (EApp (EVar "notFollowedBy") (EVar "badToken")) (EBinOp BinOpAlt (EApp (EVar "parens") (EVar "parenExprCore")) (EVar "atomBaseCore")))) Nothing],DeclTypeSig "atomCorex" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "atomCorex" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokSymbol" []) [PString "}"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString ";"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokSymbol" []) [PString "$"]) (EVar "empty"),CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EVar "empty"),CaseAlt (PApp (PVar "_") []) (EBinOp BinOpAlt (EApp (EVar "try") (EApp (EVar "parens") (EVar "parenExprCore"))) (EVar "atomBaseCore"))])])) Nothing],DeclTypeSig "badToken" (TApp (TCon "Parser") TUnit),DeclFunGroup "badToken" [FunClause [] Nothing (Just (EApp (EVar "choice") (EList [EApp (EVar "symbol") (EString "}"),EApp (EVar "symbol") (EString ";"),EApp (EVar "symbol") (EString "$"),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokLambdaCase" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")])),EApp (EVar "tokenIs") (ELam (PApp (PVar "t") []) (ECase (EVar "t") [CaseAlt (PApp (PConstr "TokVRBrace" []) []) (EApp (EVarType "Just") EUnit),CaseAlt (PApp (PVar "_") []) (EVarType "Nothing")]))]))) Nothing],DeclTypeSig "parenExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "parenExprCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "oPsectionCore")) (EVar "exprCore")) (EApp (EVar "try") (EVar "tupleExprCore")))])) Nothing],DeclTypeSig "tupleExprCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "tupleExprCore" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e1") []) (EVar "exprCore"),ExprStmt (EApp (EVar "symbol") (EString ",")),Bind (PApp (PVar "es") []) (EApp (EApp (EApp (EVar "exprCore") (EVar "sepBy1")) (EVar "symbol")) (EString ",")),ExprStmt (EReturn (EApp (EVarType "ETuple") (EApp (EApp (EVar "e1") (EVar ":")) (EVar "es"))))])) Nothing],DeclTypeSig "oPsectionCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "oPsectionCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EApp (EVar "try") (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionL") (EVar "operator")) (EVar "exprCore"))) (EBinOp BinOpThen (EBinOp BinOpFmap (EVarType "EOpSectionR") (EVar "exprCore")) (EVar "operator")))])) Nothing],DeclTypeSig "atomBaseCore" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "atomBaseCore" [FunClause [] Nothing (Just (EDo [ExprStmt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpFmap (EVarType "EVar") (EVar "ident")) (EVar "operatorVar")) (EVar "pRecordExpr")) (EBinOp BinOpFmap (EVarType "EChar") (EVar "charLiteralExpr"))) (EBinOp BinOpFmap (EVarType "EString") (EVar "stringLiteralExpr"))) (EVar "elistExpr")) (EBinOp BinOpThen (EVar "ellipsis") (EReturn (EVarType "EPlaceholder")))) (EBinOp BinOpFmap (EVarType "EVarType") (EVar "typeIdent"))) (EVar "tunitExpr")) (EVar "emptyListExpr")) (EBinOp BinOpFmap (EVarType "EInt") (EVar "int")))])) Nothing],DeclTypeSig "operatorVar" (TApp (TCon "Parser") (TCon "Expr"))],[TokIdent "operatorVar",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "op",TokSymbol "<-",TokIdent "satisfyToken",TokIdent "isOp",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EVar",TokIdent "op",TokSymbol ")",TokSymbol ";",TokKeyword "where",TokVLBrace,TokIdent "isOp",TokSymbol "(",TokTypeIdent "TokOperator",TokIdent "s",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "s",TokIdent "elem",TokSymbol "[",TokString ":",TokSymbol "]",TokSymbol "=",TokTypeIdent "Just",TokIdent "s",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Nothing",TokSymbol ";",TokIdent "isOp",TokIdent "_",TokSymbol "=",TokTypeIdent "Nothing",TokVRBrace,TokNewline,TokVRBrace,TokNewline,TokIdent "tunitExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "tunitExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "(",TokSymbol ";",TokIdent "symbol",TokString ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EUnit",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "elistExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "elistExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "elems",TokSymbol "<-",TokIdent "exprCore",TokIdent "sepBy",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokIdent "elems",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "ellipsis",TokSymbol "::",TokTypeIdent "Parser",TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "ellipsis",TokSymbol "=",TokIdent "tokenIs",TokSymbol "(",TokSymbol "\\",TokIdent "t",TokArrow,TokKeyword "if",TokIdent "t",TokOperator "==",TokTypeIdent "TokEllipsis",TokKeyword "then",TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokKeyword "else",TokTypeIdent "Nothing",TokSymbol ")",TokNewline,TokIdent "emptyListExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "emptyListExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "[",TokSymbol ";",TokIdent "symbol",TokString "]",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "EList",TokSymbol "[",TokSymbol "]",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "lambdaExpr",TokSymbol "::",TokTypeIdent "Parser",TokTypeIdent "Expr",TokNewline,TokIdent "lambdaExpr",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "symbol",TokString "\\",TokSymbol ";",TokIdent "arg",TokSymbol "<-",TokIdent "pattern",TokSymbol ";",TokIdent "myTrace",TokSymbol "(",TokString "<< lambdaExpr arg ",TokOperator "++",TokIdent "show",TokIdent "arg",TokSymbol ")",TokSymbol ";",TokIdent "tokenIs",TokSymbol "(",TokLambdaCase,TokTypeIdent "TokArrow",TokArrow,TokTypeIdent "Just",TokSymbol "(",TokSymbol ")",TokSymbol ";",TokIdent "_",TokArrow,TokTypeIdent "Nothing",TokSymbol ")",TokSymbol ";",TokIdent "bracesV",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "body",TokSymbol "<-",TokIdent "exprCore",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokTypeIdent "ELam",TokIdent "arg",TokIdent "body",TokSymbol ")",TokVRBrace,TokNewline,TokVRBrace,TokNewline])
 
 -- src code --
 {-# LANGUAGE LambdaCase #-}

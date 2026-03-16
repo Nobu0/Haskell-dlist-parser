@@ -21,11 +21,11 @@ Coverage: 100%
 [10] DeclTypeSig "inferCase" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TFun (TList (TCon "CaseAlt")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))))))
 [11] DeclFunGroup "inferCase" [FunClause [PVar "inferExprFn",PVar "env",PVar "scrut",PVar "branches"] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sScrut") [],PApp (PVar "tScrut") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env")) (EVar "scrut")),Bind (PApp (PVar "results") []) (EApp (EApp (EVar "mapM") (EApp (EApp (EApp (EApp (EVar "inferBranch") (EVar "inferExprFn")) (EVar "env")) (EVar "tScrut")) (EVar "sScrut"))) (EVar "branches")),ExprStmt (EApp (EVar "unifyManyExpr") (EVar "results"))])) Nothing]
 [12] DeclTypeSig "inferBranch" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TFun (TCon "Subst") (TFun (TCon "CaseAlt") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))))))
-[13] DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing]
+[13] DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PConstr "CaseAlt" []) [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing]
 [14] DeclTypeSig "unifyManyExpr" (TFun (TList (TTuple [TCon "Subst",TCon "Type"])) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))
 [15] DeclFunGroup "unifyManyExpr" [FunClause [PConstr "[]" []] Nothing (Just (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "empty case")))) Nothing]
-[16] DeclFunGroup "unifyManyExpr" [FunClause [PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"]] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]
-[DeclModule "TypeInference.Infer.Expr.ExprCase" (Just [ExportVar "inferCase"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]},DeclTypeSig "inferCase" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TFun (TList (TCon "CaseAlt")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))))),DeclFunGroup "inferCase" [FunClause [PVar "inferExprFn",PVar "env",PVar "scrut",PVar "branches"] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sScrut") [],PApp (PVar "tScrut") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env")) (EVar "scrut")),Bind (PApp (PVar "results") []) (EApp (EApp (EVar "mapM") (EApp (EApp (EApp (EApp (EVar "inferBranch") (EVar "inferExprFn")) (EVar "env")) (EVar "tScrut")) (EVar "sScrut"))) (EVar "branches")),ExprStmt (EApp (EVar "unifyManyExpr") (EVar "results"))])) Nothing],DeclTypeSig "inferBranch" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TFun (TCon "Subst") (TFun (TCon "CaseAlt") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))))))),DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing],DeclTypeSig "unifyManyExpr" (TFun (TList (TTuple [TCon "Subst",TCon "Type"])) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))),DeclFunGroup "unifyManyExpr" [FunClause [PConstr "[]" []] Nothing (Just (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "empty case")))) Nothing],DeclFunGroup "unifyManyExpr" [FunClause [PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"]] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]]
+[16] DeclFunGroup "unifyManyExpr" [FunClause [PCons (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) []) (PApp (PVar "xs") [])] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]
+[DeclModule "TypeInference.Infer.Expr.ExprCase" (Just [ExportVar "inferCase"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]},DeclTypeSig "inferCase" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TFun (TList (TCon "CaseAlt")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))))),DeclFunGroup "inferCase" [FunClause [PVar "inferExprFn",PVar "env",PVar "scrut",PVar "branches"] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sScrut") [],PApp (PVar "tScrut") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env")) (EVar "scrut")),Bind (PApp (PVar "results") []) (EApp (EApp (EVar "mapM") (EApp (EApp (EApp (EApp (EVar "inferBranch") (EVar "inferExprFn")) (EVar "env")) (EVar "tScrut")) (EVar "sScrut"))) (EVar "branches")),ExprStmt (EApp (EVar "unifyManyExpr") (EVar "results"))])) Nothing],DeclTypeSig "inferBranch" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TFun (TCon "Subst") (TFun (TCon "CaseAlt") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))))))),DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PConstr "CaseAlt" []) [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing],DeclTypeSig "unifyManyExpr" (TFun (TList (TTuple [TCon "Subst",TCon "Type"])) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))),DeclFunGroup "unifyManyExpr" [FunClause [PConstr "[]" []] Nothing (Just (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "empty case")))) Nothing],DeclFunGroup "unifyManyExpr" [FunClause [PCons (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) []) (PApp (PVar "xs") [])] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]]
 
 -- Remaining-----------------------------
 []
@@ -104,23 +104,40 @@ Coverage: 100%
 << decl parser called
 << decl dispatch: TokIdent "inferCase" ct=302
 << funDecl: next token=TokIdent "inferCase" ct=302
-<< funClause: next token=TokIdent "inferCase" ct=302
-<< funClause: args=[] t = TokSymbol "::"
+<< pInfix: ct=301
+<< pPattern:
+    prased PVar "inferCase"
+<< pattern: ct=301
 << parseGuardedClause: next token=TokSymbol "::" ct=301
 << parseGuardLine: next token=TokSymbol "::" ct=301
 << typeSigDecl: TokIdent "inferCase"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokSymbol ";"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "Expr"]
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
 << parseTypeCore: TCon "Type"
+<< typeTerm: ts [TCon "Either",TCon "InferError",TTuple [TCon "Subst",TCon "Type"]]
 << parseTypeCore: TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])
 << parseTypeCore: TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))
 << parseTypeCore: TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))
+<< typeTerm: ts [TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))]
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "Expr"]
+<< typeTerm: ts [TCon "CaseAlt"]
 << parseTypeCore: TCon "CaseAlt"
+<< typeTerm: ts [TList (TCon "CaseAlt")]
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
 << parseTypeCore: TCon "Type"
+<< typeTerm: ts [TCon "Either",TCon "InferError",TTuple [TCon "Subst",TCon "Type"]]
 << parseTypeCore: TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])
 << parseTypeCore: TFun (TList (TCon "CaseAlt")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))
 << parseTypeCore: TFun (TCon "Expr") (TFun (TList (TCon "CaseAlt")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))
@@ -133,30 +150,30 @@ Coverage: 100%
 << decl parser called
 << decl dispatch: TokIdent "inferCase" ct=265
 << funDecl: next token=TokIdent "inferCase" ct=265
-<< funClause: next token=TokIdent "inferCase" ct=265
-<< pConstrOrVar: next token "inferExprFn"
+<< pInfix: ct=264
+<< pPattern:
+    prased PVar "inferCase"
+<< pInfix: ct=263
 << pPattern:
     prased PVar "inferExprFn"
-<< pConstrOrVar: next token "env"
+<< pInfix: ct=262
 << pPattern:
     prased PVar "env"
-<< pConstrOrVar: next token "scrut"
+<< pInfix: ct=261
 << pPattern:
     prased PVar "scrut"
-<< pConstrOrVar: next token "branches"
+<< pInfix: ct=260
 << pPattern:
     prased PVar "branches"
-<< funClause: args=[PVar "inferExprFn",PVar "env",PVar "scrut",PVar "branches"] t = TokSymbol "="
-<< parseSimpleClause: next token=TokKeyword "do" ct=260
+<< pattern: ct=260
+<< parseSimpleClause: next token=TokKeyword "do" ct=259
 << expr dispatch: TokKeyword "do" ct=259
 << bindStmt
 << pattern: ct=257
 << pattern: ct=256
-<< pConstrOrVar: next token "sScrut"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sScrut") [] ct=255
 << pattern: ct=254
-<< pConstrOrVar: next token "tScrut"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "tScrut") [] ct=253
 << pattern:
@@ -171,7 +188,6 @@ Coverage: 100%
 >>*doStmt: rt Bind (PApp (PTuple [PApp (PVar "sScrut") [],PApp (PVar "tScrut") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env")) (EVar "scrut"))
 << bindStmt
 << pattern: ct=247
-<< pConstrOrVar: next token "results"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "results") [] ct=246
 << expr dispatch: TokIdent "mapM" ct=245
@@ -184,8 +200,6 @@ Coverage: 100%
 >>*doStmt: rt Bind (PApp (PVar "results") []) (EApp (EApp (EVar "mapM") (EApp (EApp (EApp (EApp (EVar "inferBranch") (EVar "inferExprFn")) (EVar "env")) (EVar "tScrut")) (EVar "sScrut"))) (EVar "branches"))
 << bindStmt
 << pattern: ct=235
-<< pConstrOrVar: next token "unifyManyExpr"
-<< pConstrOrVar: next token "results"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "unifyManyExpr") [PVar "results"] ct=233
 << expr dispatch: TokIdent "unifyManyExpr" ct=235
@@ -214,22 +228,39 @@ Coverage: 100%
 << decl parser called
 << decl dispatch: TokIdent "inferBranch" ct=231
 << funDecl: next token=TokIdent "inferBranch" ct=231
-<< funClause: next token=TokIdent "inferBranch" ct=231
-<< funClause: args=[] t = TokSymbol "::"
+<< pInfix: ct=230
+<< pPattern:
+    prased PVar "inferBranch"
+<< pattern: ct=230
 << parseGuardedClause: next token=TokSymbol "::" ct=230
 << parseGuardLine: next token=TokSymbol "::" ct=230
 << typeSigDecl: TokIdent "inferBranch"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokSymbol ";"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "Expr"]
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
 << parseTypeCore: TCon "Type"
+<< typeTerm: ts [TCon "Either",TCon "InferError",TTuple [TCon "Subst",TCon "Type"]]
 << parseTypeCore: TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])
 << parseTypeCore: TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))
 << parseTypeCore: TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))
+<< typeTerm: ts [TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))]
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "Type"]
+<< typeTerm: ts [TCon "Subst"]
+<< typeTerm: ts [TCon "CaseAlt"]
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
 << parseTypeCore: TCon "Type"
+<< typeTerm: ts [TCon "Either",TCon "InferError",TTuple [TCon "Subst",TCon "Type"]]
 << parseTypeCore: TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])
 << parseTypeCore: TFun (TCon "CaseAlt") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))
 << parseTypeCore: TFun (TCon "Subst") (TFun (TCon "CaseAlt") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))
@@ -243,42 +274,39 @@ Coverage: 100%
 << decl parser called
 << decl dispatch: TokIdent "inferBranch" ct=193
 << funDecl: next token=TokIdent "inferBranch" ct=193
-<< funClause: next token=TokIdent "inferBranch" ct=193
-<< pConstrOrVar: next token "inferExprFn"
+<< pInfix: ct=192
+<< pPattern:
+    prased PVar "inferBranch"
+<< pInfix: ct=191
 << pPattern:
     prased PVar "inferExprFn"
-<< pConstrOrVar: next token "env"
+<< pInfix: ct=190
 << pPattern:
     prased PVar "env"
-<< pConstrOrVar: next token "tScrut"
+<< pInfix: ct=189
 << pPattern:
     prased PVar "tScrut"
-<< pConstrOrVar: next token "sScrut"
+<< pInfix: ct=188
 << pPattern:
     prased PVar "sScrut"
 << pattern: ct=187
-<< pConstrOrVar: next token "CaseAlt"
-<< pConstrOrVar: next token "pat"
-<< pConstrOrVar: next token "expr"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"] ct=184
+    (pAs <|> makeCons)PApp (PConstr "CaseAlt" []) [PVar "pat",PVar "expr"] ct=184
+<< pInfix: ct=183
 << pPattern:
-    prased PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"]
-<< funClause: args=[PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"]] t = TokSymbol "="
-<< parseSimpleClause: next token=TokKeyword "do" ct=183
+    prased PApp (PConstr "CaseAlt" []) [PVar "pat",PVar "expr"]
+<< pattern: ct=183
+<< parseSimpleClause: next token=TokKeyword "do" ct=182
 << expr dispatch: TokKeyword "do" ct=182
 << bindStmt
 << pattern: ct=180
 << pattern: ct=179
-<< pConstrOrVar: next token "sPat"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sPat") [] ct=178
 << pattern: ct=177
-<< pConstrOrVar: next token "envPat"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "envPat") [] ct=176
 << pattern: ct=175
-<< pConstrOrVar: next token "tPat"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "tPat") [] ct=174
 << pattern:
@@ -293,54 +321,57 @@ Coverage: 100%
 >>*doStmt: rt Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat"))
 << bindStmt
 << pattern: ct=169
-<< pConstrOrVar: next token "sUnify"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sUnify") [] ct=168
 << expr dispatch: TokKeyword "case" ct=167
 << caseExprCore:
+<< expr dispatch: TokIdent "unify" ct=166
+<< exprNoLoop: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))
+<< expr dispatch: TokKeyword "of" ct=155
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))
 << pattern: ct=153
-<< pConstrOrVar: next token "Left"
-<< pConstrOrVar: next token "uerr"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "Left") [PVar "uerr"] ct=151
-<< caseAlt: pat PApp (PVar "Left") [PVar "uerr"]
+    (pAs <|> makeCons)PApp (PConstr "Left" []) [PVar "uerr"] ct=151
+<< caseAlt: pat PApp (PConstr "Left" []) [PVar "uerr"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "Left" ct=150
+<< bracesExpr: nm "Left" ct=150
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
 << expr dispatch: TokSymbol ";" ct=145
+<< bracesExpr: nm "Right" ct=144
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
->>*caseAlt: pat PApp (PVar "Left") [PVar "uerr"] body EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
+>>*caseAlt: pat PApp (PConstr "Left" []) [PVar "uerr"] body EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
 << pattern: ct=144
-<< pConstrOrVar: next token "Right"
-<< pConstrOrVar: next token "s"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "Right") [PVar "s"] ct=142
-<< caseAlt: pat PApp (PVar "Right") [PVar "s"]
+    (pAs <|> makeCons)PApp (PConstr "Right" []) [PVar "s"] ct=142
+<< caseAlt: pat PApp (PConstr "Right" []) [PVar "s"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "Right" ct=141
+<< bracesExpr: nm "Right" ct=141
 << exprNoLoop: e EApp (EVarType "Right") (EVar "s")
 << expr dispatch: TokSymbol ";" ct=139
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (EVar "s")
->>*caseAlt: pat PApp (PVar "Right") [PVar "s"] body EApp (EVarType "Right") (EVar "s")
+>>*caseAlt: pat PApp (PConstr "Right" []) [PVar "s"] body EApp (EVarType "Right") (EVar "s")
 << pattern: ct=138
->>*caseAltBlock: xs [CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
->>*caseExprCore: alts [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
-<< exprNoLoop: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
+>>*caseAltBlock: xs [CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
+<< exprNoLoop: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
 << expr dispatch: TokSymbol ";" ct=139
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
->>*bindStmt pat= PApp (PVar "sUnify") [] e= ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
->>*doStmt: rt Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))])
+<< expr: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
+>>*bindStmt pat= PApp (PVar "sUnify") [] e= ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]
+>>*doStmt: rt Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))])
 << bindStmt
 << pattern: ct=138
 << letStmt
 << pattern: ct=137
-<< pConstrOrVar: next token "s"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "s") [] ct=136
 << expr dispatch: TokIdent "sUnify" ct=135
@@ -351,38 +382,24 @@ Coverage: 100%
 << expr: e EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut")
 << letStmt: b (PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))
 << pattern: ct=129
-<< pConstrOrVar: next token "inferExprFn"
 << pattern: ct=127
-<< pConstrOrVar: next token "applyEnv"
-<< pConstrOrVar: next token "s"
 << pattern: ct=124
-<< pConstrOrVar: next token "mergeEnvs"
-<< pConstrOrVar: next token "env"
-<< pConstrOrVar: next token "envPat"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "mergeEnvs") [PVar "env",PVar "envPat"] ct=121
 << pattern:
     (pAs <|> makeCons)PApp (PVar "applyEnv") [PVar "s",PApp (PVar "mergeEnvs") [PVar "env",PVar "envPat"]] ct=120
-<< pConstrOrVar: next token "expr"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "inferExprFn") [PApp (PVar "applyEnv") [PVar "s",PApp (PVar "mergeEnvs") [PVar "env",PVar "envPat"]],PVar "expr"] ct=118
 >>*letStmt: binds [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))]
 >>*doStmt: rt LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))]
 << bindStmt
 << pattern: ct=129
-<< pConstrOrVar: next token "inferExprFn"
 << pattern: ct=127
-<< pConstrOrVar: next token "applyEnv"
-<< pConstrOrVar: next token "s"
 << pattern: ct=124
-<< pConstrOrVar: next token "mergeEnvs"
-<< pConstrOrVar: next token "env"
-<< pConstrOrVar: next token "envPat"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "mergeEnvs") [PVar "env",PVar "envPat"] ct=121
 << pattern:
     (pAs <|> makeCons)PApp (PVar "applyEnv") [PVar "s",PApp (PVar "mergeEnvs") [PVar "env",PVar "envPat"]] ct=120
-<< pConstrOrVar: next token "expr"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "inferExprFn") [PApp (PVar "applyEnv") [PVar "s",PApp (PVar "mergeEnvs") [PVar "env",PVar "envPat"]],PVar "expr"] ct=118
 << expr dispatch: TokIdent "inferExprFn" ct=129
@@ -396,35 +413,46 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=118
 << expr dispatch: TokVRBrace ct=118
->>*doBlock: (f:m)[Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
->>*doExprCore: stmts [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
-<< exprNoLoop: e EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
+>>*doBlock: (f:m)[Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
+>>*doExprCore: stmts [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
+<< exprNoLoop: e EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
 << expr dispatch: TokNewline ct=117
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
-<< parseSimpleClause: e EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))] ct=117
+<< expr: e EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))]
+<< parseSimpleClause: e EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))] ct=117
 << funClauseWithName: next token=TokNewline ct=117
->>*funDecl name "inferBranch" clause1 FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing rest []
->>*declBody: e DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing]
+>>*funDecl name "inferBranch" clause1 FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PConstr "CaseAlt" []) [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PConstr "CaseAlt" []) [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing]
 << decl next token: TokIdent "unifyManyExpr"
 << decl parser called
 << decl dispatch: TokIdent "unifyManyExpr" ct=116
 << funDecl: next token=TokIdent "unifyManyExpr" ct=116
-<< funClause: next token=TokIdent "unifyManyExpr" ct=116
-<< funClause: args=[] t = TokSymbol "::"
+<< pInfix: ct=115
+<< pPattern:
+    prased PVar "unifyManyExpr"
+<< pattern: ct=115
 << parseGuardedClause: next token=TokSymbol "::" ct=115
 << parseGuardLine: next token=TokSymbol "::" ct=115
 << typeSigDecl: TokIdent "unifyManyExpr"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokSymbol "["
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
 << parseTypeCore: TCon "Type"
+<< typeTerm: ts [TTuple [TCon "Subst",TCon "Type"]]
 << parseTypeCore: TTuple [TCon "Subst",TCon "Type"]
+<< typeTerm: ts [TList (TTuple [TCon "Subst",TCon "Type"])]
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
 << parseTypeCore: TCon "Type"
+<< typeTerm: ts [TCon "Either",TCon "InferError",TTuple [TCon "Subst",TCon "Type"]]
 << parseTypeCore: TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])
 << parseTypeCore: TFun (TList (TTuple [TCon "Subst",TCon "Type"])) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))
 << parsed type signature: unifyManyExpr :: TFun (TList (TTuple [TCon "Subst",TCon "Type"])) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))
@@ -434,12 +462,16 @@ Coverage: 100%
 << decl parser called
 << decl dispatch: TokIdent "unifyManyExpr" ct=98
 << funDecl: next token=TokIdent "unifyManyExpr" ct=98
-<< funClause: next token=TokIdent "unifyManyExpr" ct=98
+<< pInfix: ct=97
+<< pPattern:
+    prased PVar "unifyManyExpr"
+<< pInfix: ct=95
 << pPattern:
     prased PConstr "[]" []
-<< funClause: args=[PConstr "[]" []] t = TokSymbol "="
-<< parseSimpleClause: next token=TokTypeIdent "Left" ct=95
+<< pattern: ct=95
+<< parseSimpleClause: next token=TokTypeIdent "Left" ct=94
 << expr dispatch: TokTypeIdent "Left" ct=94
+<< bracesExpr: nm "Left" ct=94
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "empty case"))
 << expr dispatch: TokNewline ct=89
 << postfix: operator = Nothing
@@ -453,45 +485,39 @@ Coverage: 100%
 << decl parser called
 << decl dispatch: TokIdent "unifyManyExpr" ct=88
 << funDecl: next token=TokIdent "unifyManyExpr" ct=88
-<< funClause: next token=TokIdent "unifyManyExpr" ct=88
+<< pInfix: ct=87
+<< pPattern:
+    prased PVar "unifyManyExpr"
 << pattern: ct=86
 << pattern: ct=85
-<< pConstrOrVar: next token "s"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "s") [] ct=84
 << pattern: ct=83
-<< pConstrOrVar: next token "t"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "t") [] ct=82
-<< pConstrOrVar: next token ":"
-<< pConstrOrVar: next token "xs"
 << pattern:
-    (pAs <|> makeCons)PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"] ct=79
+    (pAs <|> makeCons)PCons (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) []) (PApp (PVar "xs") []) ct=79
+<< pInfix: ct=78
 << pPattern:
-    prased PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"]
-<< funClause: args=[PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"]] t = TokSymbol "="
-<< parseSimpleClause: next token=TokIdent "foldM" ct=78
+    prased PCons (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) []) (PApp (PVar "xs") [])
+<< pattern: ct=78
+<< parseSimpleClause: next token=TokIdent "foldM" ct=77
 << expr dispatch: TokIdent "foldM" ct=77
 << exprNoLoop: e EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")
 << expr dispatch: TokSymbol ";" ct=69
 << postfix: operator = Nothing
 << binding: next token TokIdent "step"
 << pattern: ct=66
-<< pConstrOrVar: next token "step"
 << pattern: ct=64
-<< pConstrOrVar: next token "sAcc"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sAcc") [] ct=63
 << pattern: ct=62
-<< pConstrOrVar: next token "tAcc"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "tAcc") [] ct=61
 << pattern: ct=59
-<< pConstrOrVar: next token "sNext"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sNext") [] ct=58
 << pattern: ct=57
-<< pConstrOrVar: next token "tNext"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "tNext") [] ct=56
 << pattern:
@@ -500,95 +526,90 @@ Coverage: 100%
 << expr dispatch: TokKeyword "do" ct=54
 << bindStmt
 << pattern: ct=52
-<< pConstrOrVar: next token "sU"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sU") [] ct=51
 << expr dispatch: TokKeyword "case" ct=50
 << caseExprCore:
+<< expr dispatch: TokIdent "unify" ct=49
+<< exprNoLoop: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))
+<< expr dispatch: TokKeyword "of" ct=38
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))
 << pattern: ct=36
-<< pConstrOrVar: next token "Left"
-<< pConstrOrVar: next token "uerr"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "Left") [PVar "uerr"] ct=34
-<< caseAlt: pat PApp (PVar "Left") [PVar "uerr"]
+    (pAs <|> makeCons)PApp (PConstr "Left" []) [PVar "uerr"] ct=34
+<< caseAlt: pat PApp (PConstr "Left" []) [PVar "uerr"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "Left" ct=33
+<< bracesExpr: nm "Left" ct=33
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
 << expr dispatch: TokSymbol ";" ct=28
+<< bracesExpr: nm "Right" ct=27
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
->>*caseAlt: pat PApp (PVar "Left") [PVar "uerr"] body EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
+>>*caseAlt: pat PApp (PConstr "Left" []) [PVar "uerr"] body EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))
 << pattern: ct=27
-<< pConstrOrVar: next token "Right"
-<< pConstrOrVar: next token "su"
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "Right") [PVar "su"] ct=25
-<< caseAlt: pat PApp (PVar "Right") [PVar "su"]
+    (pAs <|> makeCons)PApp (PConstr "Right" []) [PVar "su"] ct=25
+<< caseAlt: pat PApp (PConstr "Right" []) [PVar "su"]
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "Right" ct=24
+<< bracesExpr: nm "Right" ct=24
 << exprNoLoop: e EApp (EVarType "Right") (EVar "su")
 << expr dispatch: TokSymbol ";" ct=22
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (EVar "su")
->>*caseAlt: pat PApp (PVar "Right") [PVar "su"] body EApp (EVarType "Right") (EVar "su")
+>>*caseAlt: pat PApp (PConstr "Right" []) [PVar "su"] body EApp (EVarType "Right") (EVar "su")
 << pattern: ct=21
->>*caseAltBlock: xs [CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
->>*caseExprCore: alts [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
-<< exprNoLoop: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
+>>*caseAltBlock: xs [CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
+<< exprNoLoop: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
 << expr dispatch: TokSymbol ";" ct=22
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
->>*bindStmt pat= PApp (PVar "sU") [] e= ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
->>*doStmt: rt Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))])
+<< expr: e ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
+>>*bindStmt pat= PApp (PVar "sU") [] e= ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]
+>>*doStmt: rt Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))])
 << bindStmt
 << pattern: ct=21
 << letStmt
 << pattern: ct=20
-<< pConstrOrVar: next token "sFinal"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sFinal") [] ct=19
 << expr dispatch: TokIdent "sU" ct=18
 << exprNoLoop: e EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc")
 << expr dispatch: TokSymbol ";" ct=13
+<< bracesExpr: nm "Right" ct=12
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc")
 << letStmt: b (PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))
 << pattern: ct=12
-<< pConstrOrVar: next token "Right"
 << pattern: ct=10
-<< pConstrOrVar: next token "sFinal"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sFinal") [] ct=9
 << pattern: ct=8
-<< pConstrOrVar: next token "apply"
-<< pConstrOrVar: next token "sFinal"
-<< pConstrOrVar: next token "tAcc"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "apply") [PVar "sFinal",PVar "tAcc"] ct=5
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "Right") [PTuple [PApp (PVar "sFinal") [],PApp (PVar "apply") [PVar "sFinal",PVar "tAcc"]]] ct=4
+    (pAs <|> makeCons)PApp (PConstr "Right" []) [PTuple [PApp (PVar "sFinal") [],PApp (PVar "apply") [PVar "sFinal",PVar "tAcc"]]] ct=4
 >>*letStmt: binds [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))]
 >>*doStmt: rt LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))]
 << bindStmt
 << pattern: ct=12
-<< pConstrOrVar: next token "Right"
 << pattern: ct=10
-<< pConstrOrVar: next token "sFinal"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "sFinal") [] ct=9
 << pattern: ct=8
-<< pConstrOrVar: next token "apply"
-<< pConstrOrVar: next token "sFinal"
-<< pConstrOrVar: next token "tAcc"
 << pattern:
     (pAs <|> makeCons)PApp (PVar "apply") [PVar "sFinal",PVar "tAcc"] ct=5
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "Right") [PTuple [PApp (PVar "sFinal") [],PApp (PVar "apply") [PVar "sFinal",PVar "tAcc"]]] ct=4
+    (pAs <|> makeCons)PApp (PConstr "Right" []) [PTuple [PApp (PVar "sFinal") [],PApp (PVar "apply") [PVar "sFinal",PVar "tAcc"]]] ct=4
 << expr dispatch: TokTypeIdent "Right" ct=12
+<< bracesExpr: nm "Right" ct=12
 << exprNoLoop: e EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")])
 << expr dispatch: TokVRBrace ct=4
 << postfix: operator = Nothing
@@ -599,26 +620,26 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=4
 << expr dispatch: TokVRBrace ct=4
->>*doBlock: (f:m)[Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
->>*doExprCore: stmts [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
+>>*doBlock: (f:m)[Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
+>>*doExprCore: stmts [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
+<< exprNoLoop: e EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
 << expr dispatch: TokNewline ct=3
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
->>*valueBinding: next token TokNewline body EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
->>*binding: rt (PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])
+<< expr: e EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
+>>*valueBinding: next token TokNewline body EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))]
+>>*binding: rt (PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])
 << binding: next token TokNewline
 << pattern: ct=2
->>*whereClause (b:bs) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])]
+>>*whereClause (b:bs) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])]
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])]
-<< parseSimpleClause: e EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])] ct=1
+<< expr: e EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])]
+<< parseSimpleClause: e EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])] ct=1
 << funClauseWithName: next token=TokNewline ct=1
->>*funDecl name "unifyManyExpr" clause1 FunClause [PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"]] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing rest []
->>*declBody: e DeclFunGroup "unifyManyExpr" [FunClause [PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"]] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]
-Just ([DeclModule "TypeInference.Infer.Expr.ExprCase" (Just [ExportVar "inferCase"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]},DeclTypeSig "inferCase" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TFun (TList (TCon "CaseAlt")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))))),DeclFunGroup "inferCase" [FunClause [PVar "inferExprFn",PVar "env",PVar "scrut",PVar "branches"] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sScrut") [],PApp (PVar "tScrut") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env")) (EVar "scrut")),Bind (PApp (PVar "results") []) (EApp (EApp (EVar "mapM") (EApp (EApp (EApp (EApp (EVar "inferBranch") (EVar "inferExprFn")) (EVar "env")) (EVar "tScrut")) (EVar "sScrut"))) (EVar "branches")),ExprStmt (EApp (EVar "unifyManyExpr") (EVar "results"))])) Nothing],DeclTypeSig "inferBranch" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TFun (TCon "Subst") (TFun (TCon "CaseAlt") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))))))),DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PVar "CaseAlt") [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing],DeclTypeSig "unifyManyExpr" (TFun (TList (TTuple [TCon "Subst",TCon "Type"])) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))),DeclFunGroup "unifyManyExpr" [FunClause [PConstr "[]" []] Nothing (Just (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "empty case")))) Nothing],DeclFunGroup "unifyManyExpr" [FunClause [PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) [PConstr ":" [],PVar "xs"]] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PVar "Left") [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PVar "Right") [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]],[])
+>>*funDecl name "unifyManyExpr" clause1 FunClause [PCons (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) []) (PApp (PVar "xs") [])] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing rest []
+>>*declBody: e DeclFunGroup "unifyManyExpr" [FunClause [PCons (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) []) (PApp (PVar "xs") [])] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]
+Just ([DeclModule "TypeInference.Infer.Expr.ExprCase" (Just [ExportVar "inferCase"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]},DeclTypeSig "inferCase" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TFun (TList (TCon "CaseAlt")) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))))),DeclFunGroup "inferCase" [FunClause [PVar "inferExprFn",PVar "env",PVar "scrut",PVar "branches"] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sScrut") [],PApp (PVar "tScrut") []]) []) (EApp (EApp (EVar "inferExprFn") (EVar "env")) (EVar "scrut")),Bind (PApp (PVar "results") []) (EApp (EApp (EVar "mapM") (EApp (EApp (EApp (EApp (EVar "inferBranch") (EVar "inferExprFn")) (EVar "env")) (EVar "tScrut")) (EVar "sScrut"))) (EVar "branches")),ExprStmt (EApp (EVar "unifyManyExpr") (EVar "results"))])) Nothing],DeclTypeSig "inferBranch" (TFun (TFun (TCon "TypeEnv") (TFun (TCon "Expr") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"])))) (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TFun (TCon "Subst") (TFun (TCon "CaseAlt") (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))))))),DeclFunGroup "inferBranch" [FunClause [PVar "inferExprFn",PVar "env",PVar "tScrut",PVar "sScrut",PApp (PConstr "CaseAlt" []) [PVar "pat",PVar "expr"]] Nothing (Just (EDo [Bind (PApp (PTuple [PApp (PVar "sPat") [],PApp (PVar "envPat") [],PApp (PVar "tPat") []]) []) (EApp (EVar "inferPattern") (EVar "pat")),Bind (PApp (PVar "sUnify") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tPat"))) (EApp (EApp (EVar "apply") (EVar "sPat")) (EVar "tScrut"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "s"]) (EApp (EVarType "Right") (EVar "s"))]),LetStmt [(PApp (PVar "s") [],EApp (EApp (EApp (EApp (EVar "sUnify") (EVar "composeSubst")) (EVar "sPat")) (EVar "composeSubst")) (EVar "sScrut"))],ExprStmt (EApp (EApp (EVar "inferExprFn") (EApp (EApp (EVar "applyEnv") (EVar "s")) (EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPat")))) (EVar "expr"))])) Nothing],DeclTypeSig "unifyManyExpr" (TFun (TList (TTuple [TCon "Subst",TCon "Type"])) (TApp (TApp (TCon "Either") (TCon "InferError")) (TTuple [TCon "Subst",TCon "Type"]))),DeclFunGroup "unifyManyExpr" [FunClause [PConstr "[]" []] Nothing (Just (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "empty case")))) Nothing],DeclFunGroup "unifyManyExpr" [FunClause [PCons (PApp (PTuple [PApp (PVar "s") [],PApp (PVar "t") []]) []) (PApp (PVar "xs") [])] Nothing (Just (EWhere (EApp (EApp (EApp (EVar "foldM") (EVar "step")) (ETuple [EVar "s",EVar "t"])) (EVar "xs")) [(PApp (PVar "step") [PTuple [PApp (PVar "sAcc") [],PApp (PVar "tAcc") []],PTuple [PApp (PVar "sNext") [],PApp (PVar "tNext") []]],EDo [Bind (PApp (PVar "sU") []) (ECase (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tAcc"))) (EApp (EApp (EVar "apply") (EVar "sAcc")) (EVar "tNext"))) [CaseAlt (PApp (PConstr "Left" []) [PVar "uerr"]) (EApp (EVarType "Left") (EApp (EVarType "InferUnifyError") (EVar "uerr"))),CaseAlt (PApp (PConstr "Right" []) [PVar "su"]) (EApp (EVarType "Right") (EVar "su"))]),LetStmt [(PApp (PVar "sFinal") [],EApp (EApp (EApp (EApp (EVar "sU") (EVar "composeSubst")) (EVar "sNext")) (EVar "composeSubst")) (EVar "sAcc"))],ExprStmt (EApp (EVarType "Right") (ETuple [EVar "sFinal",EApp (EApp (EVar "apply") (EVar "sFinal")) (EVar "tAcc")]))])])) Nothing]],[])
 
 -- src code --
 module TypeInference.Infer.Expr.ExprCase (inferCase) where

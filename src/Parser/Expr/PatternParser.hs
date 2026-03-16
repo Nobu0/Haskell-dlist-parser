@@ -97,7 +97,7 @@ pAtom = do
 
 pPattern :: Parser Pattern
 pPattern = do
-  pat <- pInfix
+  pat <- pInfix <|> pattern
   myTrace ("<< pPattern:\n    prased " ++ show pat)
   return pat
 
@@ -105,8 +105,21 @@ pInfix :: Parser Pattern
 pInfix = chainl1 pAtom infixOp
   where
     infixOp = do
-      op <- operatorIAsName
+      ct <- getRemainingCount
+      myTrace ("<< pInfix: ct=" ++ show ct)
+      op <- try operatorI <|> operatorIAsName
+      myTrace ("<< pInfix: op " ++ show op ++ " ct=" ++ show ct)
       return (\a b -> PInfix a op b)
+
+{-}
+pInfix :: Parser Pattern
+pInfix = do
+  e <- pAtom
+  xs <- do
+      op <- try operatorI <|> operatorIAsName
+      return (\a b -> PInfix a op b)
+  return e
+-}
 
 pAs :: Parser Pattern
 pAs = do
@@ -182,6 +195,7 @@ pChar = do
 pString :: Parser Pattern
 pString = PString <$> stringLiteralExpr
 
+{-}
 pConstrOrVar :: Parser Pattern
 pConstrOrVar = do
   name <- try identI <|> try (parens operatorIAsName) <|> operatorI
@@ -190,3 +204,19 @@ pConstrOrVar = do
     if isSymbolName name
       then PConstr name []
       else PVar name
+-}
+
+pConstrOrVar :: Parser Pattern
+pConstrOrVar = do
+  name <- qualifiedIdent
+  if isUpper (head (last (wordsWhen (== '.') name)))
+    then return (PConstr name [])
+    else return (PVar name)
+
+wordsWhen :: (Char -> Bool) -> String -> [String]
+wordsWhen p s =
+  case dropWhile p s of
+    "" -> []
+    s' -> w : wordsWhen p s''
+      where
+        (w, s'') = break p s'

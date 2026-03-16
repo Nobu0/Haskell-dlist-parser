@@ -28,6 +28,8 @@ module Parser.Core.TokenParser
     -- skipVNl,
     skipNL,
     skipVNL,
+    aliasName,
+    qualifiedIdent,
     -- skipVLBrace,
     name,
     operator,
@@ -55,6 +57,7 @@ import AST.Expr
 import Control.Applicative (empty, many, optional, (<|>))
 import Data.Char (isAlpha)
 import Data.Functor (void)
+import Data.List (intercalate)
 import qualified Data.Set as Set
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
@@ -159,6 +162,12 @@ isSymbolName s =
 isSymbolStart :: Char -> Bool
 isSymbolStart c = c `elem` "!#$%&*+./<=>?@\\^|-~:"
 
+aliasName :: Parser String
+aliasName = intercalate "." <$> sepBy1 typeIdent (token (TokOperator "."))
+
+qualifiedIdent :: Parser String
+qualifiedIdent = intercalate "." <$> sepBy1 identI (token (TokOperator "."))
+
 tokenIs :: (Token -> Maybe a) -> Parser a
 tokenIs f = Parser $ \case
   (t : ts) -> case f t of
@@ -227,11 +236,17 @@ skipVNl = do
 
 skipVNL :: Parser ()
 skipVNL = do
+  _ <- many $ tokenIs isSep
+  return ()
+  where
+    isSep (TokNewline) = Just ()
+    isSep (TokSymbol ";") = Just ()
+    isSep _ = Nothing
+
+{-}
   _ <- optional (symbol ";" <|> newline)
   _ <- optional (symbol ";" <|> newline)
   return ()
-
-{-}
 skipNL :: Parser ()
 skipNL = do
   _ <- optional (symbol ";")
@@ -316,11 +331,14 @@ parseBinOp s = case s of
   "<?>" -> Just BinOpThen
   "<$" -> Just BinOpThen
   "<*>" -> Just BinOpThen
+  "<+>" -> Just BinOpThen
   ">>" -> Just BinOpThen
   ">>=" -> Just BinOpBind
   "<|>" -> Just BinOpAlt
   "<$>" -> Just BinOpFmap
+  "<>" -> Just BinOpAppend
   "$" -> Just BinOpApp
+  "\\" -> Just BinOpListDiff
   _ -> Nothing
 
 -- その他（必要に応じて追加）
@@ -352,7 +370,7 @@ operatorI = satisfyToken isOp
       | s `elem` allowed = Just s
       | otherwise = Nothing
     isOp _ = Nothing
-    allowed = ["::", ":", "++", "<$>", "$", "\\\\", "<*>", ">>=", "<|>", "<?>", "<+>"] -- "$" を含めない！
+    allowed = ["::", ":", "++", "<$>", "\\", "<*>", ">>=", "<|>", "<?>", "<+>"] -- "$" を含めない！
 
 operatorAll :: Parser String
 operatorAll = satisfyToken f

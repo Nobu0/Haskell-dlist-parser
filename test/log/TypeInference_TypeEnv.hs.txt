@@ -2,8 +2,8 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 124 / 668
-Coverage: 18%
+Consumed tokens: 550 / 668
+Coverage: 82%
 
 -- AST----------------------------------
 
@@ -17,10 +17,39 @@ Coverage: 18%
 [6] DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]}
 [7] DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [8] DeclData "Scheme" [] [Constraint "Forall" [TList (TCon "String"),TCon "Type"]] ["Show","Eq"]
-[DeclModule "TypeInference.TypeEnv" (Just [ExportType "Scheme" True,ExportType "TypeEnv" True,ExportVar "emptyEnv",ExportVar "extendEnv",ExportVar "lookupEnv",ExportVar "generalize",ExportVar "instantiate",ExportVar "applyEnv",ExportVar "freeTypeVarsScheme",ExportVar "freeTypeVarsEnv",ExportVar "freeTypeVars"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Name"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "Scheme" [] [Constraint "Forall" [TList (TCon "String"),TCon "Type"]] ["Show","Eq"]]
+[9] DeclNewtype "TypeEnv" [] (Constraint "TypeEnv" [TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Scheme")]) (Just ["Show","Eq"])
+[10] DeclTypeSig "ftv" (TFun (TCon "Type") (TCon "Subst"))
+[11] DeclFunGroup "ftv" [FunClause [PConstr "TUnit" []] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing]
+[12] DeclTypeSig "emptyEnv" (TCon "TypeEnv")
+[13] DeclFunGroup "emptyEnv" [FunClause [] Nothing (Just (EVar "primitiveEnv")) Nothing]
+[14] DeclTypeSig "extendEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv"))))
+[15] DeclFunGroup "extendEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x",PVar "s"] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))))) Nothing]
+[16] DeclTypeSig "lookupEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme"))))
+[17] DeclFunGroup "lookupEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env")))) Nothing]
+[18] DeclTypeSig "freeTypeVarsEnv" (TFun (TCon "TypeEnv") (TList (TCon "Name")))
+[19] DeclFunGroup "freeTypeVarsEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVar "nub") (EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))))) Nothing]
+[20] DeclTypeSig "freeTypeVarsScheme" (TFun (TCon "Scheme") (TList (TCon "Name")))
+[21] DeclFunGroup "freeTypeVarsScheme" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EBinOp BinOpListDiff (EApp (EVar "freeTypeVars") (EVar "t")) (EVar "vars"))) Nothing]
+[22] DeclTypeSig "freeTypeVars" (TFun (TCon "Type") (TList (TCon "String")))
+[23] DeclFunGroup "freeTypeVars" [FunClause [PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))])) Nothing]
+[24] DeclTypeSig "freeConstraintVars" (TFun (TCon "Constraint") (TList (TCon "String")))
+[25] DeclFunGroup "freeConstraintVars" [FunClause [PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts"))) Nothing]
+[26] DeclTypeSig "freeEnvVars" (TFun (TCon "TypeEnv") (TList (TCon "String")))
+[27] DeclFunGroup "freeEnvVars" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))))) Nothing]
+[28] DeclTypeSig "generalize" (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TCon "Scheme")))
+[29] DeclFunGroup "generalize" [FunClause [PVar "env",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")))) Nothing]
+[30] DeclTypeSig "instantiate" (TFun (TCon "Scheme") (TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type")))
+[31] DeclFunGroup "instantiate" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t")))) Nothing]
+[32] DeclTypeSig "freshen" (TFun (TList (TCon "String")) (TFun (TCon "Type") (TCon "Type")))
+[33] DeclFunGroup "freshen" [FunClause [PVar "vars",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")))) Nothing]
+[34] DeclTypeSig "applyEnv" (TFun (TCon "Subst") (TFun (TCon "TypeEnv") (TCon "TypeEnv")))
+[35] DeclFunGroup "applyEnv" [FunClause [PVar "s",PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))))) Nothing]
+[36] DeclTypeSig "primitiveEnv" (TCon "TypeEnv")
+[37] DeclFunGroup "primitiveEnv" [FunClause [] Nothing (Just (EVarType "TypeEnv")) Nothing]
+[DeclModule "TypeInference.TypeEnv" (Just [ExportType "Scheme" True,ExportType "TypeEnv" True,ExportVar "emptyEnv",ExportVar "extendEnv",ExportVar "lookupEnv",ExportVar "generalize",ExportVar "instantiate",ExportVar "applyEnv",ExportVar "freeTypeVarsScheme",ExportVar "freeTypeVarsEnv",ExportVar "freeTypeVars"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Name"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "Scheme" [] [Constraint "Forall" [TList (TCon "String"),TCon "Type"]] ["Show","Eq"],DeclNewtype "TypeEnv" [] (Constraint "TypeEnv" [TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Scheme")]) (Just ["Show","Eq"]),DeclTypeSig "ftv" (TFun (TCon "Type") (TCon "Subst")),DeclFunGroup "ftv" [FunClause [PConstr "TUnit" []] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing],DeclTypeSig "emptyEnv" (TCon "TypeEnv"),DeclFunGroup "emptyEnv" [FunClause [] Nothing (Just (EVar "primitiveEnv")) Nothing],DeclTypeSig "extendEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv")))),DeclFunGroup "extendEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x",PVar "s"] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))))) Nothing],DeclTypeSig "lookupEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme")))),DeclFunGroup "lookupEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env")))) Nothing],DeclTypeSig "freeTypeVarsEnv" (TFun (TCon "TypeEnv") (TList (TCon "Name"))),DeclFunGroup "freeTypeVarsEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVar "nub") (EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))))) Nothing],DeclTypeSig "freeTypeVarsScheme" (TFun (TCon "Scheme") (TList (TCon "Name"))),DeclFunGroup "freeTypeVarsScheme" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EBinOp BinOpListDiff (EApp (EVar "freeTypeVars") (EVar "t")) (EVar "vars"))) Nothing],DeclTypeSig "freeTypeVars" (TFun (TCon "Type") (TList (TCon "String"))),DeclFunGroup "freeTypeVars" [FunClause [PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))])) Nothing],DeclTypeSig "freeConstraintVars" (TFun (TCon "Constraint") (TList (TCon "String"))),DeclFunGroup "freeConstraintVars" [FunClause [PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts"))) Nothing],DeclTypeSig "freeEnvVars" (TFun (TCon "TypeEnv") (TList (TCon "String"))),DeclFunGroup "freeEnvVars" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))))) Nothing],DeclTypeSig "generalize" (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TCon "Scheme"))),DeclFunGroup "generalize" [FunClause [PVar "env",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")))) Nothing],DeclTypeSig "instantiate" (TFun (TCon "Scheme") (TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type"))),DeclFunGroup "instantiate" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t")))) Nothing],DeclTypeSig "freshen" (TFun (TList (TCon "String")) (TFun (TCon "Type") (TCon "Type"))),DeclFunGroup "freshen" [FunClause [PVar "vars",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")))) Nothing],DeclTypeSig "applyEnv" (TFun (TCon "Subst") (TFun (TCon "TypeEnv") (TCon "TypeEnv"))),DeclFunGroup "applyEnv" [FunClause [PVar "s",PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))))) Nothing],DeclTypeSig "primitiveEnv" (TCon "TypeEnv"),DeclFunGroup "primitiveEnv" [FunClause [] Nothing (Just (EVarType "TypeEnv")) Nothing]]
 
 -- Remaining-----------------------------
-[TokKeyword "newtype",TokTypeIdent "TypeEnv",TokSymbol "=",TokTypeIdent "TypeEnv",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokTypeIdent "Map",TokTypeIdent "String",TokTypeIdent "Scheme",TokSymbol ")",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokNewline,TokIdent "ftv",TokSymbol "::",TokTypeIdent "Type",TokArrow,TokTypeIdent "Subst",TokNewline,TokIdent "ftv",TokTypeIdent "TUnit",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "empty",TokNewline,TokIdent "emptyEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokNewline,TokIdent "emptyEnv",TokSymbol "=",TokIdent "primitiveEnv",TokNewline,TokIdent "extendEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "String",TokArrow,TokTypeIdent "Scheme",TokArrow,TokTypeIdent "TypeEnv",TokNewline,TokIdent "extendEnv",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokIdent "x",TokIdent "s",TokSymbol "=",TokTypeIdent "TypeEnv",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "insert",TokIdent "x",TokIdent "s",TokIdent "env",TokSymbol ")",TokNewline,TokIdent "lookupEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "String",TokArrow,TokTypeIdent "Maybe",TokTypeIdent "Scheme",TokNewline,TokIdent "lookupEnv",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokIdent "x",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "lookup",TokIdent "x",TokIdent "env",TokNewline,TokIdent "freeTypeVarsEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokNewline,TokIdent "freeTypeVarsEnv",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "nub",TokSymbol "(",TokIdent "concatMap",TokIdent "freeTypeVarsScheme",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "env",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokIdent "freeTypeVarsScheme",TokSymbol "::",TokTypeIdent "Scheme",TokArrow,TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokNewline,TokIdent "freeTypeVarsScheme",TokSymbol "(",TokTypeIdent "Forall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "freeTypeVars",TokIdent "t",TokOperator "\\",TokIdent "vars",TokSymbol ";",TokIdent "freeTypeVars",TokSymbol "::",TokTypeIdent "Type",TokArrow,TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokNewline,TokIdent "freeTypeVars",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TVar",TokIdent "v",TokArrow,TokSymbol "[",TokIdent "v",TokSymbol "]",TokSymbol ";",TokTypeIdent "TCon",TokIdent "_",TokArrow,TokSymbol "[",TokSymbol "]",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "freeTypeVars",TokIdent "t1",TokOperator "++",TokIdent "freeTypeVars",TokIdent "t2",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokIdent "freeTypeVars",TokIdent "t1",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "freeTypeVars",TokIdent "t1",TokOperator "++",TokIdent "freeTypeVars",TokIdent "t2",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokSymbol ";",TokIdent "concatMap",TokIdent "freeConstraintVars",TokIdent "cs",TokOperator "++",TokIdent "freeTypeVars",TokIdent "t1",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t1",TokArrow,TokSymbol ";",TokIdent "filter",TokSymbol "(",TokIdent "notElem",TokIdent "vs",TokSymbol ")",TokSymbol "(",TokIdent "freeTypeVars",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokIdent "freeConstraintVars",TokSymbol "::",TokTypeIdent "Constraint",TokArrow,TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokNewline,TokIdent "freeConstraintVars",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "_",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "concatMap",TokIdent "freeTypeVars",TokIdent "ts",TokSymbol ";",TokIdent "freeEnvVars",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokNewline,TokIdent "freeEnvVars",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "concatMap",TokSymbol "(",TokSymbol "\\",TokSymbol "(",TokTypeIdent "Forall",TokIdent "_",TokIdent "t",TokSymbol ")",TokArrow,TokIdent "freeTypeVars",TokIdent "t",TokSymbol ")",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "env",TokSymbol ")",TokSymbol ";",TokIdent "generalize",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Scheme",TokNewline,TokIdent "generalize",TokIdent "env",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokIdent "envVars",TokSymbol "=",TokIdent "freeEnvVars",TokIdent "env",TokSymbol ";",TokIdent "typeVars",TokSymbol "=",TokIdent "freeTypeVars",TokIdent "t",TokSymbol ";",TokIdent "vars",TokSymbol "=",TokIdent "filter",TokSymbol "(",TokIdent "notElem",TokIdent "envVars",TokSymbol ")",TokIdent "typeVars",TokSymbol ";",TokKeyword "in",TokTypeIdent "Forall",TokIdent "vars",TokIdent "t",TokSymbol ";",TokIdent "instantiate",TokSymbol "::",TokTypeIdent "Scheme",TokArrow,TokTypeIdent "Either",TokTypeIdent "InferError",TokTypeIdent "Type",TokNewline,TokIdent "instantiate",TokSymbol "(",TokTypeIdent "Forall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "freshen",TokIdent "vars",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "freshen",TokSymbol "::",TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Type",TokNewline,TokIdent "freshen",TokIdent "vars",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokIdent "newVars",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "fromList",TokSymbol "[",TokSymbol "(",TokIdent "v",TokSymbol ",",TokTypeIdent "TVar",TokSymbol "(",TokString "t_",TokOperator "++",TokIdent "v",TokSymbol ")",TokSymbol ")",TokSymbol "|",TokIdent "v",TokSymbol "<-",TokIdent "vars",TokSymbol "]",TokSymbol ";",TokKeyword "in",TokIdent "apply",TokIdent "newVars",TokIdent "t",TokSymbol ";",TokIdent "applyEnv",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "TypeEnv",TokNewline,TokIdent "applyEnv",TokIdent "s",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "TypeEnv",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "map",TokSymbol "(",TokSymbol "\\",TokSymbol "(",TokTypeIdent "Forall",TokIdent "vs",TokIdent "t",TokSymbol ")",TokArrow,TokTypeIdent "Forall",TokIdent "vs",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t",TokSymbol ")",TokSymbol ")",TokIdent "env",TokSymbol ")",TokSymbol ";",TokIdent "primitiveEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokNewline,TokIdent "primitiveEnv",TokSymbol "=",TokSymbol ";",TokTypeIdent "TypeEnv",TokSymbol ";",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "fromList",TokSymbol ";",TokSymbol "[",TokSymbol "(",TokString "+",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "-",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "*",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "==",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokString "a",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Bool",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokSymbol "]",TokSymbol ";",TokSymbol ")",TokSymbol ";"]
+[TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "fromList",TokSymbol ";",TokSymbol "[",TokSymbol "(",TokString "+",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "-",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "*",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "==",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokString "a",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Bool",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokSymbol "]",TokSymbol ";",TokSymbol ")",TokSymbol ";"]
 
 -- Parsed AST log --
 << decl next token: TokKeyword "module"
@@ -113,6 +142,7 @@ Coverage: 18%
 << decl parser called
 << decl dispatch: TokKeyword "data" ct=559
 << dataConstrRecord: TokSymbol "["
+<< typeTerm: ts [TCon "String"]
 << parseTypeCore: TCon "String"
 << dataConstrNormal: "Forall" [TList (TCon "String"),TCon "Type"]
 >>*declBody: e DeclData "Scheme" [] [Constraint "Forall" [TList (TCon "String"),TCon "Type"]] ["Show","Eq"]
@@ -121,9 +151,1048 @@ Coverage: 18%
 << decl dispatch: TokKeyword "newtype" ct=544
 << newtypeDecl parser called
 << newtypeDecl name "TypeEnv" vars []
-<< parseTypeCore: TCon "M"
-<< parseTypeCore: TCon "M"
-Just ([DeclModule "TypeInference.TypeEnv" (Just [ExportType "Scheme" True,ExportType "TypeEnv" True,ExportVar "emptyEnv",ExportVar "extendEnv",ExportVar "lookupEnv",ExportVar "generalize",ExportVar "instantiate",ExportVar "applyEnv",ExportVar "freeTypeVarsScheme",ExportVar "freeTypeVarsEnv",ExportVar "freeTypeVars"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Name"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "Scheme" [] [Constraint "Forall" [TList (TCon "String"),TCon "Type"]] ["Show","Eq"]],[TokKeyword "newtype",TokTypeIdent "TypeEnv",TokSymbol "=",TokTypeIdent "TypeEnv",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokTypeIdent "Map",TokTypeIdent "String",TokTypeIdent "Scheme",TokSymbol ")",TokKeyword "deriving",TokSymbol "(",TokTypeIdent "Show",TokSymbol ",",TokTypeIdent "Eq",TokSymbol ")",TokNewline,TokIdent "ftv",TokSymbol "::",TokTypeIdent "Type",TokArrow,TokTypeIdent "Subst",TokNewline,TokIdent "ftv",TokTypeIdent "TUnit",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "empty",TokNewline,TokIdent "emptyEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokNewline,TokIdent "emptyEnv",TokSymbol "=",TokIdent "primitiveEnv",TokNewline,TokIdent "extendEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "String",TokArrow,TokTypeIdent "Scheme",TokArrow,TokTypeIdent "TypeEnv",TokNewline,TokIdent "extendEnv",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokIdent "x",TokIdent "s",TokSymbol "=",TokTypeIdent "TypeEnv",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "insert",TokIdent "x",TokIdent "s",TokIdent "env",TokSymbol ")",TokNewline,TokIdent "lookupEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "String",TokArrow,TokTypeIdent "Maybe",TokTypeIdent "Scheme",TokNewline,TokIdent "lookupEnv",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokIdent "x",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "lookup",TokIdent "x",TokIdent "env",TokNewline,TokIdent "freeTypeVarsEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokNewline,TokIdent "freeTypeVarsEnv",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "nub",TokSymbol "(",TokIdent "concatMap",TokIdent "freeTypeVarsScheme",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "env",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokIdent "freeTypeVarsScheme",TokSymbol "::",TokTypeIdent "Scheme",TokArrow,TokSymbol "[",TokTypeIdent "Name",TokSymbol "]",TokNewline,TokIdent "freeTypeVarsScheme",TokSymbol "(",TokTypeIdent "Forall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "freeTypeVars",TokIdent "t",TokOperator "\\",TokIdent "vars",TokSymbol ";",TokIdent "freeTypeVars",TokSymbol "::",TokTypeIdent "Type",TokArrow,TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokNewline,TokIdent "freeTypeVars",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "case",TokIdent "t",TokKeyword "of",TokSymbol ";",TokTypeIdent "TVar",TokIdent "v",TokArrow,TokSymbol "[",TokIdent "v",TokSymbol "]",TokSymbol ";",TokTypeIdent "TCon",TokIdent "_",TokArrow,TokSymbol "[",TokSymbol "]",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "freeTypeVars",TokIdent "t1",TokOperator "++",TokIdent "freeTypeVars",TokIdent "t2",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokIdent "freeTypeVars",TokIdent "t1",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "freeTypeVars",TokIdent "t1",TokOperator "++",TokIdent "freeTypeVars",TokIdent "t2",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokSymbol ";",TokIdent "concatMap",TokIdent "freeConstraintVars",TokIdent "cs",TokOperator "++",TokIdent "freeTypeVars",TokIdent "t1",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t1",TokArrow,TokSymbol ";",TokIdent "filter",TokSymbol "(",TokIdent "notElem",TokIdent "vs",TokSymbol ")",TokSymbol "(",TokIdent "freeTypeVars",TokIdent "t1",TokSymbol ")",TokSymbol ";",TokIdent "freeConstraintVars",TokSymbol "::",TokTypeIdent "Constraint",TokArrow,TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokNewline,TokIdent "freeConstraintVars",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "_",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "concatMap",TokIdent "freeTypeVars",TokIdent "ts",TokSymbol ";",TokIdent "freeEnvVars",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokNewline,TokIdent "freeEnvVars",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "concatMap",TokSymbol "(",TokSymbol "\\",TokSymbol "(",TokTypeIdent "Forall",TokIdent "_",TokIdent "t",TokSymbol ")",TokArrow,TokIdent "freeTypeVars",TokIdent "t",TokSymbol ")",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "env",TokSymbol ")",TokSymbol ";",TokIdent "generalize",TokSymbol "::",TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Scheme",TokNewline,TokIdent "generalize",TokIdent "env",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokIdent "envVars",TokSymbol "=",TokIdent "freeEnvVars",TokIdent "env",TokSymbol ";",TokIdent "typeVars",TokSymbol "=",TokIdent "freeTypeVars",TokIdent "t",TokSymbol ";",TokIdent "vars",TokSymbol "=",TokIdent "filter",TokSymbol "(",TokIdent "notElem",TokIdent "envVars",TokSymbol ")",TokIdent "typeVars",TokSymbol ";",TokKeyword "in",TokTypeIdent "Forall",TokIdent "vars",TokIdent "t",TokSymbol ";",TokIdent "instantiate",TokSymbol "::",TokTypeIdent "Scheme",TokArrow,TokTypeIdent "Either",TokTypeIdent "InferError",TokTypeIdent "Type",TokNewline,TokIdent "instantiate",TokSymbol "(",TokTypeIdent "Forall",TokIdent "vars",TokIdent "t",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "freshen",TokIdent "vars",TokIdent "t",TokSymbol ")",TokSymbol ";",TokIdent "freshen",TokSymbol "::",TokSymbol "[",TokTypeIdent "String",TokSymbol "]",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Type",TokNewline,TokIdent "freshen",TokIdent "vars",TokIdent "t",TokSymbol "=",TokSymbol ";",TokKeyword "let",TokIdent "newVars",TokSymbol "=",TokTypeIdent "M",TokOperator ".",TokIdent "fromList",TokSymbol "[",TokSymbol "(",TokIdent "v",TokSymbol ",",TokTypeIdent "TVar",TokSymbol "(",TokString "t_",TokOperator "++",TokIdent "v",TokSymbol ")",TokSymbol ")",TokSymbol "|",TokIdent "v",TokSymbol "<-",TokIdent "vars",TokSymbol "]",TokSymbol ";",TokKeyword "in",TokIdent "apply",TokIdent "newVars",TokIdent "t",TokSymbol ";",TokIdent "applyEnv",TokSymbol "::",TokTypeIdent "Subst",TokArrow,TokTypeIdent "TypeEnv",TokArrow,TokTypeIdent "TypeEnv",TokNewline,TokIdent "applyEnv",TokIdent "s",TokSymbol "(",TokTypeIdent "TypeEnv",TokIdent "env",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokTypeIdent "TypeEnv",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "map",TokSymbol "(",TokSymbol "\\",TokSymbol "(",TokTypeIdent "Forall",TokIdent "vs",TokIdent "t",TokSymbol ")",TokArrow,TokTypeIdent "Forall",TokIdent "vs",TokSymbol "(",TokIdent "apply",TokIdent "s",TokIdent "t",TokSymbol ")",TokSymbol ")",TokIdent "env",TokSymbol ")",TokSymbol ";",TokIdent "primitiveEnv",TokSymbol "::",TokTypeIdent "TypeEnv",TokNewline,TokIdent "primitiveEnv",TokSymbol "=",TokSymbol ";",TokTypeIdent "TypeEnv",TokSymbol ";",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "fromList",TokSymbol ";",TokSymbol "[",TokSymbol "(",TokString "+",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "-",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "*",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "==",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokString "a",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Bool",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokSymbol "]",TokSymbol ";",TokSymbol ")",TokSymbol ";"])
+<< typeTerm: ts [TCon "M.Map",TCon "String",TCon "Scheme"]
+<< parseTypeCore: TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Scheme")
+>>*newtypeDecl con Constraint "TypeEnv" [TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Scheme")] derivs Just ["Show","Eq"]
+>>*declBody: e DeclNewtype "TypeEnv" [] (Constraint "TypeEnv" [TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Scheme")]) (Just ["Show","Eq"])
+<< decl next token: TokIdent "ftv"
+<< decl parser called
+<< decl dispatch: TokIdent "ftv" ct=526
+<< funDecl: next token=TokIdent "ftv" ct=526
+<< pInfix: ct=525
+<< pPattern:
+    prased PVar "ftv"
+<< pattern: ct=525
+<< parseGuardedClause: next token=TokSymbol "::" ct=525
+<< parseGuardLine: next token=TokSymbol "::" ct=525
+<< typeSigDecl: TokIdent "ftv"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Type"
+<< typeTerm: ts [TCon "Type"]
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< parseTypeCore: TFun (TCon "Type") (TCon "Subst")
+<< parsed type signature: ftv :: TFun (TCon "Type") (TCon "Subst")
+<< returning DeclTypeSig: DeclTypeSig "ftv" (TFun (TCon "Type") (TCon "Subst"))
+>>*declBody: e DeclTypeSig "ftv" (TFun (TCon "Type") (TCon "Subst"))
+<< decl next token: TokIdent "ftv"
+<< decl parser called
+<< decl dispatch: TokIdent "ftv" ct=520
+<< funDecl: next token=TokIdent "ftv" ct=520
+<< pInfix: ct=519
+<< pPattern:
+    prased PVar "ftv"
+<< pInfix: ct=518
+<< pPattern:
+    prased PConstr "TUnit" []
+<< pattern: ct=518
+<< parseSimpleClause: next token=TokTypeIdent "M" ct=517
+<< expr dispatch: TokTypeIdent "M" ct=517
+<< bracesExpr: nm "M" ct=517
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=516
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "empty" ct=515
+<< exprNoLoop: e EVar "empty"
+<< expr dispatch: TokNewline ct=514
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EVar "empty")
+<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EVar "empty") ct=514
+<< funClauseWithName: next token=TokNewline ct=514
+>>*funDecl name "ftv" clause1 FunClause [PConstr "TUnit" []] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing rest []
+>>*declBody: e DeclFunGroup "ftv" [FunClause [PConstr "TUnit" []] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing]
+<< decl next token: TokIdent "emptyEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "emptyEnv" ct=513
+<< funDecl: next token=TokIdent "emptyEnv" ct=513
+<< pInfix: ct=512
+<< pPattern:
+    prased PVar "emptyEnv"
+<< pattern: ct=512
+<< parseGuardedClause: next token=TokSymbol "::" ct=512
+<< parseGuardLine: next token=TokSymbol "::" ct=512
+<< typeSigDecl: TokIdent "emptyEnv"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "TypeEnv"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< parseTypeCore: TCon "TypeEnv"
+<< parsed type signature: emptyEnv :: TCon "TypeEnv"
+<< returning DeclTypeSig: DeclTypeSig "emptyEnv" (TCon "TypeEnv")
+>>*declBody: e DeclTypeSig "emptyEnv" (TCon "TypeEnv")
+<< decl next token: TokIdent "emptyEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "emptyEnv" ct=509
+<< funDecl: next token=TokIdent "emptyEnv" ct=509
+<< pInfix: ct=508
+<< pPattern:
+    prased PVar "emptyEnv"
+<< pattern: ct=508
+<< parseSimpleClause: next token=TokIdent "primitiveEnv" ct=507
+<< expr dispatch: TokIdent "primitiveEnv" ct=507
+<< exprNoLoop: e EVar "primitiveEnv"
+<< expr dispatch: TokNewline ct=506
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "primitiveEnv"
+<< parseSimpleClause: e EVar "primitiveEnv" ct=506
+<< funClauseWithName: next token=TokNewline ct=506
+>>*funDecl name "emptyEnv" clause1 FunClause [] Nothing (Just (EVar "primitiveEnv")) Nothing rest []
+>>*declBody: e DeclFunGroup "emptyEnv" [FunClause [] Nothing (Just (EVar "primitiveEnv")) Nothing]
+<< decl next token: TokIdent "extendEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "extendEnv" ct=505
+<< funDecl: next token=TokIdent "extendEnv" ct=505
+<< pInfix: ct=504
+<< pPattern:
+    prased PVar "extendEnv"
+<< pattern: ct=504
+<< parseGuardedClause: next token=TokSymbol "::" ct=504
+<< parseGuardLine: next token=TokSymbol "::" ct=504
+<< typeSigDecl: TokIdent "extendEnv"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "TypeEnv"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "String"]
+<< typeTerm: ts [TCon "Scheme"]
+<< typeTerm: ts [TCon "TypeEnv"]
+<< parseTypeCore: TCon "TypeEnv"
+<< parseTypeCore: TFun (TCon "Scheme") (TCon "TypeEnv")
+<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv"))
+<< parseTypeCore: TFun (TCon "TypeEnv") (TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv")))
+<< parsed type signature: extendEnv :: TFun (TCon "TypeEnv") (TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv")))
+<< returning DeclTypeSig: DeclTypeSig "extendEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv"))))
+>>*declBody: e DeclTypeSig "extendEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv"))))
+<< decl next token: TokIdent "extendEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "extendEnv" ct=495
+<< funDecl: next token=TokIdent "extendEnv" ct=495
+<< pInfix: ct=494
+<< pPattern:
+    prased PVar "extendEnv"
+<< pattern: ct=493
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TypeEnv" []) [PVar "env"] ct=491
+<< pInfix: ct=490
+<< pPattern:
+    prased PApp (PConstr "TypeEnv" []) [PVar "env"]
+<< pInfix: ct=489
+<< pPattern:
+    prased PVar "x"
+<< pInfix: ct=488
+<< pPattern:
+    prased PVar "s"
+<< pattern: ct=488
+<< parseSimpleClause: next token=TokTypeIdent "TypeEnv" ct=487
+<< expr dispatch: TokTypeIdent "TypeEnv" ct=487
+<< bracesExpr: nm "TypeEnv" ct=487
+<< exprNoLoop: e EVarType "TypeEnv"
+<< expr dispatch: TokSymbol "(" ct=486
+<< expr dispatch: TokTypeIdent "M" ct=485
+<< bracesExpr: nm "M" ct=485
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=484
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "insert" ct=483
+<< exprNoLoop: e EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env")
+<< expr dispatch: TokSymbol ")" ct=479
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))
+<< exprNoLoop: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))
+<< expr dispatch: TokNewline ct=478
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env")))
+<< parseSimpleClause: e EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))) ct=478
+<< funClauseWithName: next token=TokNewline ct=478
+>>*funDecl name "extendEnv" clause1 FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x",PVar "s"] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))))) Nothing rest []
+>>*declBody: e DeclFunGroup "extendEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x",PVar "s"] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))))) Nothing]
+<< decl next token: TokIdent "lookupEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "lookupEnv" ct=477
+<< funDecl: next token=TokIdent "lookupEnv" ct=477
+<< pInfix: ct=476
+<< pPattern:
+    prased PVar "lookupEnv"
+<< pattern: ct=476
+<< parseGuardedClause: next token=TokSymbol "::" ct=476
+<< parseGuardLine: next token=TokSymbol "::" ct=476
+<< typeSigDecl: TokIdent "lookupEnv"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "TypeEnv"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "String"]
+<< typeTerm: ts [TCon "Maybe",TCon "Scheme"]
+<< parseTypeCore: TApp (TCon "Maybe") (TCon "Scheme")
+<< parseTypeCore: TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme"))
+<< parseTypeCore: TFun (TCon "TypeEnv") (TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme")))
+<< parsed type signature: lookupEnv :: TFun (TCon "TypeEnv") (TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme")))
+<< returning DeclTypeSig: DeclTypeSig "lookupEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme"))))
+>>*declBody: e DeclTypeSig "lookupEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme"))))
+<< decl next token: TokIdent "lookupEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "lookupEnv" ct=468
+<< funDecl: next token=TokIdent "lookupEnv" ct=468
+<< pInfix: ct=467
+<< pPattern:
+    prased PVar "lookupEnv"
+<< pattern: ct=466
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TypeEnv" []) [PVar "env"] ct=464
+<< pInfix: ct=463
+<< pPattern:
+    prased PApp (PConstr "TypeEnv" []) [PVar "env"]
+<< pInfix: ct=462
+<< pPattern:
+    prased PVar "x"
+<< pattern: ct=462
+<< parseSimpleClause: next token=TokTypeIdent "M" ct=461
+<< expr dispatch: TokTypeIdent "M" ct=461
+<< bracesExpr: nm "M" ct=461
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=460
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "lookup" ct=459
+<< exprNoLoop: e EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env")
+<< expr dispatch: TokNewline ct=456
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env"))
+<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env")) ct=456
+<< funClauseWithName: next token=TokNewline ct=456
+>>*funDecl name "lookupEnv" clause1 FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env")))) Nothing rest []
+>>*declBody: e DeclFunGroup "lookupEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env")))) Nothing]
+<< decl next token: TokIdent "freeTypeVarsEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "freeTypeVarsEnv" ct=455
+<< funDecl: next token=TokIdent "freeTypeVarsEnv" ct=455
+<< pInfix: ct=454
+<< pPattern:
+    prased PVar "freeTypeVarsEnv"
+<< pattern: ct=454
+<< parseGuardedClause: next token=TokSymbol "::" ct=454
+<< parseGuardLine: next token=TokSymbol "::" ct=454
+<< typeSigDecl: TokIdent "freeTypeVarsEnv"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "TypeEnv"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "Name"]
+<< parseTypeCore: TCon "Name"
+<< typeTerm: ts [TList (TCon "Name")]
+<< parseTypeCore: TList (TCon "Name")
+<< parseTypeCore: TFun (TCon "TypeEnv") (TList (TCon "Name"))
+<< parsed type signature: freeTypeVarsEnv :: TFun (TCon "TypeEnv") (TList (TCon "Name"))
+<< returning DeclTypeSig: DeclTypeSig "freeTypeVarsEnv" (TFun (TCon "TypeEnv") (TList (TCon "Name")))
+>>*declBody: e DeclTypeSig "freeTypeVarsEnv" (TFun (TCon "TypeEnv") (TList (TCon "Name")))
+<< decl next token: TokIdent "freeTypeVarsEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "freeTypeVarsEnv" ct=447
+<< funDecl: next token=TokIdent "freeTypeVarsEnv" ct=447
+<< pInfix: ct=446
+<< pPattern:
+    prased PVar "freeTypeVarsEnv"
+<< pattern: ct=445
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TypeEnv" []) [PVar "env"] ct=443
+<< pInfix: ct=442
+<< pPattern:
+    prased PApp (PConstr "TypeEnv" []) [PVar "env"]
+<< pattern: ct=442
+<< parseSimpleClause: next token=TokIdent "nub" ct=440
+<< expr dispatch: TokIdent "nub" ct=440
+<< exprNoLoop: e EVar "nub"
+<< expr dispatch: TokSymbol "(" ct=439
+<< expr dispatch: TokIdent "concatMap" ct=438
+<< exprNoLoop: e EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")
+<< expr dispatch: TokSymbol "(" ct=436
+<< expr dispatch: TokTypeIdent "M" ct=435
+<< bracesExpr: nm "M" ct=435
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=434
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "elems" ct=433
+<< exprNoLoop: e EApp (EVar "elems") (EVar "env")
+<< expr dispatch: TokSymbol ")" ct=431
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))
+<< exprNoLoop: e EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))
+<< expr dispatch: TokSymbol ")" ct=430
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))
+<< exprNoLoop: e EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))
+<< expr dispatch: TokSymbol ";" ct=429
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "nub") (EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))))
+<< parseSimpleClause: e EApp (EVar "nub") (EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))) ct=429
+<< funClauseWithName: next token=TokSymbol ";" ct=429
+>>*funDecl name "freeTypeVarsEnv" clause1 FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVar "nub") (EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))))) Nothing rest []
+>>*declBody: e DeclFunGroup "freeTypeVarsEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVar "nub") (EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))))) Nothing]
+<< decl next token: TokIdent "freeTypeVarsScheme"
+<< decl parser called
+<< decl dispatch: TokIdent "freeTypeVarsScheme" ct=428
+<< funDecl: next token=TokIdent "freeTypeVarsScheme" ct=428
+<< pInfix: ct=427
+<< pPattern:
+    prased PVar "freeTypeVarsScheme"
+<< pattern: ct=427
+<< parseGuardedClause: next token=TokSymbol "::" ct=427
+<< parseGuardLine: next token=TokSymbol "::" ct=427
+<< typeSigDecl: TokIdent "freeTypeVarsScheme"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Scheme"
+<< typeTerm: ts [TCon "Scheme"]
+<< typeTerm: ts [TCon "Name"]
+<< parseTypeCore: TCon "Name"
+<< typeTerm: ts [TList (TCon "Name")]
+<< parseTypeCore: TList (TCon "Name")
+<< parseTypeCore: TFun (TCon "Scheme") (TList (TCon "Name"))
+<< parsed type signature: freeTypeVarsScheme :: TFun (TCon "Scheme") (TList (TCon "Name"))
+<< returning DeclTypeSig: DeclTypeSig "freeTypeVarsScheme" (TFun (TCon "Scheme") (TList (TCon "Name")))
+>>*declBody: e DeclTypeSig "freeTypeVarsScheme" (TFun (TCon "Scheme") (TList (TCon "Name")))
+<< decl next token: TokIdent "freeTypeVarsScheme"
+<< decl parser called
+<< decl dispatch: TokIdent "freeTypeVarsScheme" ct=420
+<< funDecl: next token=TokIdent "freeTypeVarsScheme" ct=420
+<< pInfix: ct=419
+<< pPattern:
+    prased PVar "freeTypeVarsScheme"
+<< pattern: ct=418
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "vars",PVar "t"] ct=415
+<< pInfix: ct=414
+<< pPattern:
+    prased PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]
+<< pattern: ct=414
+<< parseSimpleClause: next token=TokIdent "freeTypeVars" ct=412
+<< expr dispatch: TokIdent "freeTypeVars" ct=412
+<< exprNoLoop: e EApp (EVar "freeTypeVars") (EVar "t")
+<< expr dispatch: TokOperator "\\" ct=410
+<< pattern: ct=409
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "vars") [] ct=408
+<< lambdaExpr arg PApp (PVar "vars") []
+<< pattern: ct=409
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "vars") [] ct=408
+<< lambdaExpr arg PApp (PVar "vars") []
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpListDiff
+<< expr dispatch: TokIdent "vars" ct=409
+<< exprNoLoop: e EVar "vars"
+<< expr dispatch: TokSymbol ";" ct=408
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpListDiff (EApp (EVar "freeTypeVars") (EVar "t")) (EVar "vars")
+<< parseSimpleClause: e EBinOp BinOpListDiff (EApp (EVar "freeTypeVars") (EVar "t")) (EVar "vars") ct=408
+<< funClauseWithName: next token=TokSymbol ";" ct=408
+>>*funDecl name "freeTypeVarsScheme" clause1 FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EBinOp BinOpListDiff (EApp (EVar "freeTypeVars") (EVar "t")) (EVar "vars"))) Nothing rest []
+>>*declBody: e DeclFunGroup "freeTypeVarsScheme" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EBinOp BinOpListDiff (EApp (EVar "freeTypeVars") (EVar "t")) (EVar "vars"))) Nothing]
+<< decl next token: TokIdent "freeTypeVars"
+<< decl parser called
+<< decl dispatch: TokIdent "freeTypeVars" ct=407
+<< funDecl: next token=TokIdent "freeTypeVars" ct=407
+<< pInfix: ct=406
+<< pPattern:
+    prased PVar "freeTypeVars"
+<< pattern: ct=406
+<< parseGuardedClause: next token=TokSymbol "::" ct=406
+<< parseGuardLine: next token=TokSymbol "::" ct=406
+<< typeSigDecl: TokIdent "freeTypeVars"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Type"
+<< typeTerm: ts [TCon "Type"]
+<< typeTerm: ts [TCon "String"]
+<< parseTypeCore: TCon "String"
+<< typeTerm: ts [TList (TCon "String")]
+<< parseTypeCore: TList (TCon "String")
+<< parseTypeCore: TFun (TCon "Type") (TList (TCon "String"))
+<< parsed type signature: freeTypeVars :: TFun (TCon "Type") (TList (TCon "String"))
+<< returning DeclTypeSig: DeclTypeSig "freeTypeVars" (TFun (TCon "Type") (TList (TCon "String")))
+>>*declBody: e DeclTypeSig "freeTypeVars" (TFun (TCon "Type") (TList (TCon "String")))
+<< decl next token: TokIdent "freeTypeVars"
+<< decl parser called
+<< decl dispatch: TokIdent "freeTypeVars" ct=399
+<< funDecl: next token=TokIdent "freeTypeVars" ct=399
+<< pInfix: ct=398
+<< pPattern:
+    prased PVar "freeTypeVars"
+<< pInfix: ct=397
+<< pPattern:
+    prased PVar "t"
+<< pattern: ct=397
+<< parseSimpleClause: next token=TokKeyword "case" ct=395
+<< expr dispatch: TokKeyword "case" ct=395
+<< caseExprCore:
+<< expr dispatch: TokIdent "t" ct=394
+<< exprNoLoop: e EVar "t"
+<< expr dispatch: TokKeyword "of" ct=393
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "t"
+<< pattern: ct=391
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "v"] ct=389
+<< caseAlt: pat PApp (PConstr "TVar" []) [PVar "v"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokSymbol "[" ct=388
+<< expr dispatch: TokIdent "v" ct=387
+<< exprNoLoop: e EVar "v"
+<< expr dispatch: TokSymbol "]" ct=386
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "v"
+<< expr dispatch: TokIdent "v" ct=387
+<< exprNoLoop: e EVar "v"
+<< expr dispatch: TokSymbol "]" ct=386
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "v"
+<< expr dispatch: TokIdent "v" ct=387
+<< exprNoLoop: e EVar "v"
+<< expr dispatch: TokSymbol "]" ct=386
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "v"
+<< expr dispatch: TokIdent "v" ct=387
+<< exprNoLoop: e EVar "v"
+<< expr dispatch: TokSymbol "]" ct=386
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "v"
+<< elmsEXpr ct=386 e EVar "v"
+<< expr dispatch: TokSymbol "]" ct=386
+<< exprNoLoop: e EList [EVar "v"]
+<< expr dispatch: TokSymbol ";" ct=385
+<< bracesExpr: nm "TCon" ct=384
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EList [EVar "v"]
+>>*caseAlt: pat PApp (PConstr "TVar" []) [PVar "v"] body EList [EVar "v"]
+<< pattern: ct=384
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "_"] ct=382
+<< caseAlt: pat PApp (PConstr "TCon" []) [PVar "_"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokSymbol "[" ct=381
+<< expr dispatch: TokSymbol "]" ct=380
+<< expr dispatch: TokSymbol "]" ct=380
+<< expr dispatch: TokSymbol "]" ct=380
+<< expr dispatch: TokSymbol "]" ct=380
+<< exprNoLoop: e EList []
+<< expr dispatch: TokSymbol ";" ct=379
+<< bracesExpr: nm "TArrow" ct=378
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EList []
+>>*caseAlt: pat PApp (PConstr "TCon" []) [PVar "_"] body EList []
+<< pattern: ct=378
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] ct=375
+<< caseAlt: pat PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "freeTypeVars" ct=374
+<< exprNoLoop: e EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))
+<< expr dispatch: TokSymbol ";" ct=369
+<< bracesExpr: nm "TList" ct=368
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))
+>>*caseAlt: pat PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] body EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))
+<< pattern: ct=368
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "t1"] ct=366
+<< caseAlt: pat PApp (PConstr "TList" []) [PVar "t1"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "freeTypeVars" ct=365
+<< exprNoLoop: e EApp (EVar "freeTypeVars") (EVar "t1")
+<< expr dispatch: TokSymbol ";" ct=363
+<< bracesExpr: nm "TApp" ct=362
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "freeTypeVars") (EVar "t1")
+>>*caseAlt: pat PApp (PConstr "TList" []) [PVar "t1"] body EApp (EVar "freeTypeVars") (EVar "t1")
+<< pattern: ct=362
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"] ct=359
+<< caseAlt: pat PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "freeTypeVars" ct=358
+<< exprNoLoop: e EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))
+<< expr dispatch: TokSymbol ";" ct=353
+<< bracesExpr: nm "TConstraint" ct=352
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))
+>>*caseAlt: pat PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"] body EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))
+<< pattern: ct=352
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"] ct=349
+<< caseAlt: pat PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "concatMap" ct=347
+<< exprNoLoop: e EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))
+<< expr dispatch: TokSymbol ";" ct=341
+<< bracesExpr: nm "TForall" ct=340
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))
+>>*caseAlt: pat PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"] body EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))
+<< pattern: ct=340
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"] ct=337
+<< caseAlt: pat PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokIdent "filter" ct=335
+<< exprNoLoop: e EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1"))
+<< expr dispatch: TokSymbol ";" ct=326
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1"))
+>>*caseAlt: pat PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"] body EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1"))
+<< pattern: ct=325
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "freeConstraintVars") [] ct=324
+<< caseAlt: pat PApp (PVar "freeConstraintVars") []
+<< guardExpr next token: TokSymbol "::"
+>>*caseAltBlock: xs [CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))]
+<< exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))]
+<< expr dispatch: TokSymbol ";" ct=326
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))]
+<< parseSimpleClause: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))] ct=326
+<< funClauseWithName: next token=TokSymbol ";" ct=326
+>>*funDecl name "freeTypeVars" clause1 FunClause [PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "freeTypeVars" [FunClause [PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))])) Nothing]
+<< decl next token: TokIdent "freeConstraintVars"
+<< decl parser called
+<< decl dispatch: TokIdent "freeConstraintVars" ct=325
+<< funDecl: next token=TokIdent "freeConstraintVars" ct=325
+<< pInfix: ct=324
+<< pPattern:
+    prased PVar "freeConstraintVars"
+<< pattern: ct=324
+<< parseGuardedClause: next token=TokSymbol "::" ct=324
+<< parseGuardLine: next token=TokSymbol "::" ct=324
+<< typeSigDecl: TokIdent "freeConstraintVars"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Constraint"
+<< typeTerm: ts [TCon "Constraint"]
+<< typeTerm: ts [TCon "String"]
+<< parseTypeCore: TCon "String"
+<< typeTerm: ts [TList (TCon "String")]
+<< parseTypeCore: TList (TCon "String")
+<< parseTypeCore: TFun (TCon "Constraint") (TList (TCon "String"))
+<< parsed type signature: freeConstraintVars :: TFun (TCon "Constraint") (TList (TCon "String"))
+<< returning DeclTypeSig: DeclTypeSig "freeConstraintVars" (TFun (TCon "Constraint") (TList (TCon "String")))
+>>*declBody: e DeclTypeSig "freeConstraintVars" (TFun (TCon "Constraint") (TList (TCon "String")))
+<< decl next token: TokIdent "freeConstraintVars"
+<< decl parser called
+<< decl dispatch: TokIdent "freeConstraintVars" ct=317
+<< funDecl: next token=TokIdent "freeConstraintVars" ct=317
+<< pInfix: ct=316
+<< pPattern:
+    prased PVar "freeConstraintVars"
+<< pattern: ct=315
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"] ct=312
+<< pInfix: ct=311
+<< pPattern:
+    prased PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]
+<< pattern: ct=311
+<< parseSimpleClause: next token=TokIdent "concatMap" ct=309
+<< expr dispatch: TokIdent "concatMap" ct=309
+<< exprNoLoop: e EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts")
+<< expr dispatch: TokSymbol ";" ct=306
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts")
+<< parseSimpleClause: e EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts") ct=306
+<< funClauseWithName: next token=TokSymbol ";" ct=306
+>>*funDecl name "freeConstraintVars" clause1 FunClause [PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts"))) Nothing rest []
+>>*declBody: e DeclFunGroup "freeConstraintVars" [FunClause [PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts"))) Nothing]
+<< decl next token: TokIdent "freeEnvVars"
+<< decl parser called
+<< decl dispatch: TokIdent "freeEnvVars" ct=305
+<< funDecl: next token=TokIdent "freeEnvVars" ct=305
+<< pInfix: ct=304
+<< pPattern:
+    prased PVar "freeEnvVars"
+<< pattern: ct=304
+<< parseGuardedClause: next token=TokSymbol "::" ct=304
+<< parseGuardLine: next token=TokSymbol "::" ct=304
+<< typeSigDecl: TokIdent "freeEnvVars"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "TypeEnv"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "String"]
+<< parseTypeCore: TCon "String"
+<< typeTerm: ts [TList (TCon "String")]
+<< parseTypeCore: TList (TCon "String")
+<< parseTypeCore: TFun (TCon "TypeEnv") (TList (TCon "String"))
+<< parsed type signature: freeEnvVars :: TFun (TCon "TypeEnv") (TList (TCon "String"))
+<< returning DeclTypeSig: DeclTypeSig "freeEnvVars" (TFun (TCon "TypeEnv") (TList (TCon "String")))
+>>*declBody: e DeclTypeSig "freeEnvVars" (TFun (TCon "TypeEnv") (TList (TCon "String")))
+<< decl next token: TokIdent "freeEnvVars"
+<< decl parser called
+<< decl dispatch: TokIdent "freeEnvVars" ct=297
+<< funDecl: next token=TokIdent "freeEnvVars" ct=297
+<< pInfix: ct=296
+<< pPattern:
+    prased PVar "freeEnvVars"
+<< pattern: ct=295
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TypeEnv" []) [PVar "env"] ct=293
+<< pInfix: ct=292
+<< pPattern:
+    prased PApp (PConstr "TypeEnv" []) [PVar "env"]
+<< pattern: ct=292
+<< parseSimpleClause: next token=TokIdent "concatMap" ct=290
+<< expr dispatch: TokIdent "concatMap" ct=290
+<< pattern: ct=287
+<< pattern: ct=286
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "_",PVar "t"] ct=283
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) [] ct=282
+<< lambdaExpr arg PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []
+<< pattern: ct=287
+<< pattern: ct=286
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "_",PVar "t"] ct=283
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) [] ct=282
+<< lambdaExpr arg PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []
+<< pattern: ct=287
+<< pattern: ct=286
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "_",PVar "t"] ct=283
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) [] ct=282
+<< lambdaExpr arg PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []
+<< exprNoLoop: e EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))
+<< expr dispatch: TokSymbol "(" ct=278
+<< expr dispatch: TokTypeIdent "M" ct=277
+<< bracesExpr: nm "M" ct=277
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=276
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "elems" ct=275
+<< exprNoLoop: e EApp (EVar "elems") (EVar "env")
+<< expr dispatch: TokSymbol ")" ct=273
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))
+<< exprNoLoop: e EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))
+<< expr dispatch: TokSymbol ";" ct=272
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))
+<< parseSimpleClause: e EApp (EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))) ct=272
+<< funClauseWithName: next token=TokSymbol ";" ct=272
+>>*funDecl name "freeEnvVars" clause1 FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))))) Nothing rest []
+>>*declBody: e DeclFunGroup "freeEnvVars" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))))) Nothing]
+<< decl next token: TokIdent "generalize"
+<< decl parser called
+<< decl dispatch: TokIdent "generalize" ct=271
+<< funDecl: next token=TokIdent "generalize" ct=271
+<< pInfix: ct=270
+<< pPattern:
+    prased PVar "generalize"
+<< pattern: ct=270
+<< parseGuardedClause: next token=TokSymbol "::" ct=270
+<< parseGuardLine: next token=TokSymbol "::" ct=270
+<< typeSigDecl: TokIdent "generalize"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "TypeEnv"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "Type"]
+<< typeTerm: ts [TCon "Scheme"]
+<< parseTypeCore: TCon "Scheme"
+<< parseTypeCore: TFun (TCon "Type") (TCon "Scheme")
+<< parseTypeCore: TFun (TCon "TypeEnv") (TFun (TCon "Type") (TCon "Scheme"))
+<< parsed type signature: generalize :: TFun (TCon "TypeEnv") (TFun (TCon "Type") (TCon "Scheme"))
+<< returning DeclTypeSig: DeclTypeSig "generalize" (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TCon "Scheme")))
+>>*declBody: e DeclTypeSig "generalize" (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TCon "Scheme")))
+<< decl next token: TokIdent "generalize"
+<< decl parser called
+<< decl dispatch: TokIdent "generalize" ct=263
+<< funDecl: next token=TokIdent "generalize" ct=263
+<< pInfix: ct=262
+<< pPattern:
+    prased PVar "generalize"
+<< pInfix: ct=261
+<< pPattern:
+    prased PVar "env"
+<< pInfix: ct=260
+<< pPattern:
+    prased PVar "t"
+<< pattern: ct=260
+<< parseSimpleClause: next token=TokKeyword "let" ct=258
+<< expr dispatch: TokKeyword "let" ct=258
+<< letBlock: next token TokKeyword "let"
+<< letExpr: next token TokKeyword "let"
+<< bindingBlock: next token TokIdent "envVars"
+<< binding: next token TokIdent "envVars"
+<< pattern: ct=257
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "envVars") [] ct=256
+<< valueBinding: pat PApp (PVar "envVars") []
+<< expr dispatch: TokIdent "freeEnvVars" ct=255
+<< exprNoLoop: e EApp (EVar "freeEnvVars") (EVar "env")
+<< expr dispatch: TokSymbol ";" ct=253
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "freeEnvVars") (EVar "env")
+>>*valueBinding: next token TokSymbol ";" body EApp (EVar "freeEnvVars") (EVar "env")
+>>*binding: rt (PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env"))
+<< binding: next token TokIdent "typeVars"
+<< pattern: ct=252
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "typeVars") [] ct=251
+<< valueBinding: pat PApp (PVar "typeVars") []
+<< expr dispatch: TokIdent "freeTypeVars" ct=250
+<< exprNoLoop: e EApp (EVar "freeTypeVars") (EVar "t")
+<< expr dispatch: TokSymbol ";" ct=248
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "freeTypeVars") (EVar "t")
+>>*valueBinding: next token TokSymbol ";" body EApp (EVar "freeTypeVars") (EVar "t")
+>>*binding: rt (PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t"))
+<< binding: next token TokIdent "vars"
+<< pattern: ct=247
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "vars") [] ct=246
+<< valueBinding: pat PApp (PVar "vars") []
+<< expr dispatch: TokIdent "filter" ct=245
+<< exprNoLoop: e EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars")
+<< expr dispatch: TokSymbol ";" ct=239
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars")
+>>*valueBinding: next token TokSymbol ";" body EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars")
+>>*binding: rt (PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))
+<< binding: next token TokKeyword "in"
+<< pattern: ct=238
+>>*bindingBlock next token TokSymbol ";" rt [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))]
+<< letExpr: next token TokKeyword "in" binds [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))]
+<< expr dispatch: TokTypeIdent "Forall" ct=237
+<< bracesExpr: nm "Forall" ct=237
+<< exprNoLoop: e EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")
+<< expr dispatch: TokSymbol ";" ct=234
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")
+>>*letExpr: in body EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")
+>>*letBlock: rt ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t"))
+<< exprNoLoop: e ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t"))
+<< expr dispatch: TokSymbol ";" ct=234
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t"))
+<< parseSimpleClause: e ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")) ct=234
+<< funClauseWithName: next token=TokSymbol ";" ct=234
+>>*funDecl name "generalize" clause1 FunClause [PVar "env",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")))) Nothing rest []
+>>*declBody: e DeclFunGroup "generalize" [FunClause [PVar "env",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")))) Nothing]
+<< decl next token: TokIdent "instantiate"
+<< decl parser called
+<< decl dispatch: TokIdent "instantiate" ct=233
+<< funDecl: next token=TokIdent "instantiate" ct=233
+<< pInfix: ct=232
+<< pPattern:
+    prased PVar "instantiate"
+<< pattern: ct=232
+<< parseGuardedClause: next token=TokSymbol "::" ct=232
+<< parseGuardLine: next token=TokSymbol "::" ct=232
+<< typeSigDecl: TokIdent "instantiate"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Scheme"
+<< typeTerm: ts [TCon "Scheme"]
+<< typeTerm: ts [TCon "Either",TCon "InferError",TCon "Type"]
+<< parseTypeCore: TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type")
+<< parseTypeCore: TFun (TCon "Scheme") (TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type"))
+<< parsed type signature: instantiate :: TFun (TCon "Scheme") (TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type"))
+<< returning DeclTypeSig: DeclTypeSig "instantiate" (TFun (TCon "Scheme") (TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type")))
+>>*declBody: e DeclTypeSig "instantiate" (TFun (TCon "Scheme") (TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type")))
+<< decl next token: TokIdent "instantiate"
+<< decl parser called
+<< decl dispatch: TokIdent "instantiate" ct=225
+<< funDecl: next token=TokIdent "instantiate" ct=225
+<< pInfix: ct=224
+<< pPattern:
+    prased PVar "instantiate"
+<< pattern: ct=223
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "vars",PVar "t"] ct=220
+<< pInfix: ct=219
+<< pPattern:
+    prased PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]
+<< pattern: ct=219
+<< parseSimpleClause: next token=TokTypeIdent "Right" ct=217
+<< expr dispatch: TokTypeIdent "Right" ct=217
+<< bracesExpr: nm "Right" ct=217
+<< exprNoLoop: e EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t"))
+<< expr dispatch: TokSymbol ";" ct=211
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t"))
+<< parseSimpleClause: e EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t")) ct=211
+<< funClauseWithName: next token=TokSymbol ";" ct=211
+>>*funDecl name "instantiate" clause1 FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t")))) Nothing rest []
+>>*declBody: e DeclFunGroup "instantiate" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t")))) Nothing]
+<< decl next token: TokIdent "freshen"
+<< decl parser called
+<< decl dispatch: TokIdent "freshen" ct=210
+<< funDecl: next token=TokIdent "freshen" ct=210
+<< pInfix: ct=209
+<< pPattern:
+    prased PVar "freshen"
+<< pattern: ct=209
+<< parseGuardedClause: next token=TokSymbol "::" ct=209
+<< parseGuardLine: next token=TokSymbol "::" ct=209
+<< typeSigDecl: TokIdent "freshen"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokSymbol "["
+<< typeTerm: ts [TCon "String"]
+<< parseTypeCore: TCon "String"
+<< typeTerm: ts [TList (TCon "String")]
+<< typeTerm: ts [TCon "Type"]
+<< typeTerm: ts [TCon "Type"]
+<< parseTypeCore: TCon "Type"
+<< parseTypeCore: TFun (TCon "Type") (TCon "Type")
+<< parseTypeCore: TFun (TList (TCon "String")) (TFun (TCon "Type") (TCon "Type"))
+<< parsed type signature: freshen :: TFun (TList (TCon "String")) (TFun (TCon "Type") (TCon "Type"))
+<< returning DeclTypeSig: DeclTypeSig "freshen" (TFun (TList (TCon "String")) (TFun (TCon "Type") (TCon "Type")))
+>>*declBody: e DeclTypeSig "freshen" (TFun (TList (TCon "String")) (TFun (TCon "Type") (TCon "Type")))
+<< decl next token: TokIdent "freshen"
+<< decl parser called
+<< decl dispatch: TokIdent "freshen" ct=200
+<< funDecl: next token=TokIdent "freshen" ct=200
+<< pInfix: ct=199
+<< pPattern:
+    prased PVar "freshen"
+<< pInfix: ct=198
+<< pPattern:
+    prased PVar "vars"
+<< pInfix: ct=197
+<< pPattern:
+    prased PVar "t"
+<< pattern: ct=197
+<< parseSimpleClause: next token=TokKeyword "let" ct=195
+<< expr dispatch: TokKeyword "let" ct=195
+<< letBlock: next token TokKeyword "let"
+<< letExpr: next token TokKeyword "let"
+<< bindingBlock: next token TokIdent "newVars"
+<< binding: next token TokIdent "newVars"
+<< pattern: ct=194
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "newVars") [] ct=193
+<< valueBinding: pat PApp (PVar "newVars") []
+<< expr dispatch: TokTypeIdent "M" ct=192
+<< bracesExpr: nm "M" ct=192
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=191
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "fromList" ct=190
+<< exprNoLoop: e EVar "fromList"
+<< expr dispatch: TokSymbol "[" ct=189
+<< expr dispatch: TokSymbol "(" ct=188
+<< expr dispatch: TokIdent "v" ct=187
+<< exprNoLoop: e EVar "v"
+<< expr dispatch: TokSymbol "," ct=186
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "v"
+<< exprNoLoop: e ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]
+<< expr dispatch: TokSymbol "|" ct=178
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]
+<< pattern: ct=177
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "v") [] ct=176
+<< expr dispatch: TokIdent "vars" ct=175
+<< exprNoLoop: e EVar "vars"
+<< expr dispatch: TokSymbol "]" ct=174
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "vars"
+<< exprNoLoop: e EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")]
+<< expr dispatch: TokSymbol ";" ct=173
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")]))
+>>*valueBinding: next token TokSymbol ";" body EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")]))
+>>*binding: rt (PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))
+<< binding: next token TokKeyword "in"
+<< pattern: ct=172
+>>*bindingBlock next token TokSymbol ";" rt [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))]
+<< letExpr: next token TokKeyword "in" binds [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))]
+<< expr dispatch: TokIdent "apply" ct=171
+<< exprNoLoop: e EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")
+<< expr dispatch: TokSymbol ";" ct=168
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")
+>>*letExpr: in body EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")
+>>*letBlock: rt ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t"))
+<< exprNoLoop: e ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t"))
+<< expr dispatch: TokSymbol ";" ct=168
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t"))
+<< parseSimpleClause: e ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")) ct=168
+<< funClauseWithName: next token=TokSymbol ";" ct=168
+>>*funDecl name "freshen" clause1 FunClause [PVar "vars",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")))) Nothing rest []
+>>*declBody: e DeclFunGroup "freshen" [FunClause [PVar "vars",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")))) Nothing]
+<< decl next token: TokIdent "applyEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "applyEnv" ct=167
+<< funDecl: next token=TokIdent "applyEnv" ct=167
+<< pInfix: ct=166
+<< pPattern:
+    prased PVar "applyEnv"
+<< pattern: ct=166
+<< parseGuardedClause: next token=TokSymbol "::" ct=166
+<< parseGuardLine: next token=TokSymbol "::" ct=166
+<< typeSigDecl: TokIdent "applyEnv"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "Subst"
+<< typeTerm: ts [TCon "Subst"]
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "TypeEnv"]
+<< parseTypeCore: TCon "TypeEnv"
+<< parseTypeCore: TFun (TCon "TypeEnv") (TCon "TypeEnv")
+<< parseTypeCore: TFun (TCon "Subst") (TFun (TCon "TypeEnv") (TCon "TypeEnv"))
+<< parsed type signature: applyEnv :: TFun (TCon "Subst") (TFun (TCon "TypeEnv") (TCon "TypeEnv"))
+<< returning DeclTypeSig: DeclTypeSig "applyEnv" (TFun (TCon "Subst") (TFun (TCon "TypeEnv") (TCon "TypeEnv")))
+>>*declBody: e DeclTypeSig "applyEnv" (TFun (TCon "Subst") (TFun (TCon "TypeEnv") (TCon "TypeEnv")))
+<< decl next token: TokIdent "applyEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "applyEnv" ct=159
+<< funDecl: next token=TokIdent "applyEnv" ct=159
+<< pInfix: ct=158
+<< pPattern:
+    prased PVar "applyEnv"
+<< pInfix: ct=157
+<< pPattern:
+    prased PVar "s"
+<< pattern: ct=156
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TypeEnv" []) [PVar "env"] ct=154
+<< pInfix: ct=153
+<< pPattern:
+    prased PApp (PConstr "TypeEnv" []) [PVar "env"]
+<< pattern: ct=153
+<< parseSimpleClause: next token=TokTypeIdent "TypeEnv" ct=151
+<< expr dispatch: TokTypeIdent "TypeEnv" ct=151
+<< bracesExpr: nm "TypeEnv" ct=151
+<< exprNoLoop: e EVarType "TypeEnv"
+<< expr dispatch: TokSymbol "(" ct=150
+<< expr dispatch: TokTypeIdent "M" ct=149
+<< bracesExpr: nm "M" ct=149
+<< exprNoLoop: e EVarType "M"
+<< expr dispatch: TokOperator "." ct=148
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokIdent "map" ct=147
+<< pattern: ct=144
+<< pattern: ct=143
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "vs",PVar "t"] ct=140
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) [] ct=139
+<< lambdaExpr arg PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []
+<< pattern: ct=144
+<< pattern: ct=143
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "vs",PVar "t"] ct=140
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) [] ct=139
+<< lambdaExpr arg PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []
+<< pattern: ct=144
+<< pattern: ct=143
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Forall" []) [PVar "vs",PVar "t"] ct=140
+<< pattern:
+    (pAs <|> makeCons)PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) [] ct=139
+<< lambdaExpr arg PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []
+<< exprNoLoop: e EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env")
+<< expr dispatch: TokSymbol ")" ct=129
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))
+<< exprNoLoop: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))
+<< expr dispatch: TokSymbol ";" ct=128
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env")))
+<< parseSimpleClause: e EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))) ct=128
+<< funClauseWithName: next token=TokSymbol ";" ct=128
+>>*funDecl name "applyEnv" clause1 FunClause [PVar "s",PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))))) Nothing rest []
+>>*declBody: e DeclFunGroup "applyEnv" [FunClause [PVar "s",PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))))) Nothing]
+<< decl next token: TokIdent "primitiveEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "primitiveEnv" ct=127
+<< funDecl: next token=TokIdent "primitiveEnv" ct=127
+<< pInfix: ct=126
+<< pPattern:
+    prased PVar "primitiveEnv"
+<< pattern: ct=126
+<< parseGuardedClause: next token=TokSymbol "::" ct=126
+<< parseGuardLine: next token=TokSymbol "::" ct=126
+<< typeSigDecl: TokIdent "primitiveEnv"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokTypeIdent "TypeEnv"
+<< typeTerm: ts [TCon "TypeEnv"]
+<< parseTypeCore: TCon "TypeEnv"
+<< parsed type signature: primitiveEnv :: TCon "TypeEnv"
+<< returning DeclTypeSig: DeclTypeSig "primitiveEnv" (TCon "TypeEnv")
+>>*declBody: e DeclTypeSig "primitiveEnv" (TCon "TypeEnv")
+<< decl next token: TokIdent "primitiveEnv"
+<< decl parser called
+<< decl dispatch: TokIdent "primitiveEnv" ct=123
+<< funDecl: next token=TokIdent "primitiveEnv" ct=123
+<< pInfix: ct=122
+<< pPattern:
+    prased PVar "primitiveEnv"
+<< pattern: ct=122
+<< parseSimpleClause: next token=TokTypeIdent "TypeEnv" ct=120
+<< expr dispatch: TokTypeIdent "TypeEnv" ct=120
+<< bracesExpr: nm "TypeEnv" ct=120
+<< exprNoLoop: e EVarType "TypeEnv"
+<< expr dispatch: TokSymbol ";" ct=119
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVarType "TypeEnv"
+<< parseSimpleClause: e EVarType "TypeEnv" ct=119
+<< funClauseWithName: next token=TokSymbol ";" ct=119
+>>*funDecl name "primitiveEnv" clause1 FunClause [] Nothing (Just (EVarType "TypeEnv")) Nothing rest []
+>>*declBody: e DeclFunGroup "primitiveEnv" [FunClause [] Nothing (Just (EVarType "TypeEnv")) Nothing]
+<< decl next token: TokSymbol "("
+<< decl parser called
+<< decl dispatch: TokSymbol "(" ct=118
+<< typeSigDecl: TokSymbol "("
+Just ([DeclModule "TypeInference.TypeEnv" (Just [ExportType "Scheme" True,ExportType "TypeEnv" True,ExportVar "emptyEnv",ExportVar "extendEnv",ExportVar "lookupEnv",ExportVar "generalize",ExportVar "instantiate",ExportVar "applyEnv",ExportVar "freeTypeVarsScheme",ExportVar "freeTypeVarsEnv",ExportVar "freeTypeVars"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Name"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "InferError"]},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "Scheme" [] [Constraint "Forall" [TList (TCon "String"),TCon "Type"]] ["Show","Eq"],DeclNewtype "TypeEnv" [] (Constraint "TypeEnv" [TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Scheme")]) (Just ["Show","Eq"]),DeclTypeSig "ftv" (TFun (TCon "Type") (TCon "Subst")),DeclFunGroup "ftv" [FunClause [PConstr "TUnit" []] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing],DeclTypeSig "emptyEnv" (TCon "TypeEnv"),DeclFunGroup "emptyEnv" [FunClause [] Nothing (Just (EVar "primitiveEnv")) Nothing],DeclTypeSig "extendEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TFun (TCon "Scheme") (TCon "TypeEnv")))),DeclFunGroup "extendEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x",PVar "s"] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EVar "insert") (EVar "x")) (EVar "s")) (EVar "env"))))) Nothing],DeclTypeSig "lookupEnv" (TFun (TCon "TypeEnv") (TFun (TCon "String") (TApp (TCon "Maybe") (TCon "Scheme")))),DeclFunGroup "lookupEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"],PVar "x"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "x")) (EVar "env")))) Nothing],DeclTypeSig "freeTypeVarsEnv" (TFun (TCon "TypeEnv") (TList (TCon "Name"))),DeclFunGroup "freeTypeVarsEnv" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVar "nub") (EApp (EApp (EVar "concatMap") (EVar "freeTypeVarsScheme")) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env")))))) Nothing],DeclTypeSig "freeTypeVarsScheme" (TFun (TCon "Scheme") (TList (TCon "Name"))),DeclFunGroup "freeTypeVarsScheme" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EBinOp BinOpListDiff (EApp (EVar "freeTypeVars") (EVar "t")) (EVar "vars"))) Nothing],DeclTypeSig "freeTypeVars" (TFun (TCon "Type") (TList (TCon "String"))),DeclFunGroup "freeTypeVars" [FunClause [PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (EList [EVar "v"]),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EList []),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVar "freeTypeVars") (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpConcat (EApp (EVar "freeTypeVars") (EVar "t1")) (EApp (EVar "freeTypeVars") (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpConcat (EApp (EApp (EVar "concatMap") (EVar "freeConstraintVars")) (EVar "cs")) (EApp (EVar "freeTypeVars") (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "vs"))) (EApp (EVar "freeTypeVars") (EVar "t1")))])) Nothing],DeclTypeSig "freeConstraintVars" (TFun (TCon "Constraint") (TList (TCon "String"))),DeclFunGroup "freeConstraintVars" [FunClause [PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "concatMap") (EVar "freeTypeVars")) (EVar "ts"))) Nothing],DeclTypeSig "freeEnvVars" (TFun (TCon "TypeEnv") (TList (TCon "String"))),DeclFunGroup "freeEnvVars" [FunClause [PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EApp (EVar "concatMap") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "_",PVar "t"]) []) (EApp (EVar "freeTypeVars") (EVar "t")))) (EBinOp BinOpCompose (EVarType "M") (EApp (EVar "elems") (EVar "env"))))) Nothing],DeclTypeSig "generalize" (TFun (TCon "TypeEnv") (TFun (TCon "Type") (TCon "Scheme"))),DeclFunGroup "generalize" [FunClause [PVar "env",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "envVars") [],EApp (EVar "freeEnvVars") (EVar "env")),(PApp (PVar "typeVars") [],EApp (EVar "freeTypeVars") (EVar "t")),(PApp (PVar "vars") [],EApp (EApp (EVar "filter") (EApp (EVar "notElem") (EVar "envVars"))) (EVar "typeVars"))] (EApp (EApp (EVarType "Forall") (EVar "vars")) (EVar "t")))) Nothing],DeclTypeSig "instantiate" (TFun (TCon "Scheme") (TApp (TApp (TCon "Either") (TCon "InferError")) (TCon "Type"))),DeclFunGroup "instantiate" [FunClause [PApp (PConstr "Forall" []) [PVar "vars",PVar "t"]] Nothing (Just (EApp (EVarType "Right") (EApp (EApp (EVar "freshen") (EVar "vars")) (EVar "t")))) Nothing],DeclTypeSig "freshen" (TFun (TList (TCon "String")) (TFun (TCon "Type") (TCon "Type"))),DeclFunGroup "freshen" [FunClause [PVar "vars",PVar "t"] Nothing (Just (ELetBlock [(PApp (PVar "newVars") [],EBinOp BinOpCompose (EVarType "M") (EApp (EVar "fromList") (EListComp (ETuple [EVar "v",EApp (EVarType "TVar") (EBinOp BinOpConcat (EString "t_") (EVar "v"))]) [QGenerator (PApp (PVar "v") []) (EVar "vars")])))] (EApp (EApp (EVar "apply") (EVar "newVars")) (EVar "t")))) Nothing],DeclTypeSig "applyEnv" (TFun (TCon "Subst") (TFun (TCon "TypeEnv") (TCon "TypeEnv"))),DeclFunGroup "applyEnv" [FunClause [PVar "s",PApp (PConstr "TypeEnv" []) [PVar "env"]] Nothing (Just (EApp (EVarType "TypeEnv") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "map") (ELam (PApp (PApp (PConstr "Forall" []) [PVar "vs",PVar "t"]) []) (EApp (EApp (EVarType "Forall") (EVar "vs")) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t"))))) (EVar "env"))))) Nothing],DeclTypeSig "primitiveEnv" (TCon "TypeEnv"),DeclFunGroup "primitiveEnv" [FunClause [] Nothing (Just (EVarType "TypeEnv")) Nothing]],[TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "fromList",TokSymbol ";",TokSymbol "[",TokSymbol "(",TokString "+",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "-",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "*",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Int",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ",",TokSymbol ";",TokSymbol "(",TokString "==",TokSymbol ",",TokTypeIdent "Forall",TokSymbol "[",TokString "a",TokSymbol "]",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TArrow",TokSymbol "(",TokTypeIdent "TVar",TokString "a",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "Bool",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ")",TokSymbol ";",TokSymbol "]",TokSymbol ";",TokSymbol ")",TokSymbol ";"])
 
 -- src code --
 module TypeInference.TypeEnv

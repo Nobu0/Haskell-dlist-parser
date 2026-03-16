@@ -16,6 +16,7 @@ doExprCore expr = do
   keyword "do"
   skipNL
   bracesV $ do
+    skipNL
     stmts <- doBlock expr
     myTrace (">>*doExprCore: stmts " ++ show stmts)
     return (EDo stmts)

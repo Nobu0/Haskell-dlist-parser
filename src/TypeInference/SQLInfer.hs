@@ -1,23 +1,18 @@
 module TypeInference.SQLInfer where
 
 import AST.Decl (Decl (..))
-import AST.Expr (CaseAlt (..), Expr (..), Name)
+import AST.Expr (CaseAlt (..), Expr (..), Name, SQLInfo(..))
 import AST.Pattern (Pattern (..))
 import AST.Type (Type (..))
 import TypeInference.Error (InferError (..))
 import TypeInference.Subst
 import TypeInference.TypeEnv
 
-data SQLInfo = SQLInfo
-  { sqlText :: String,
-    sqlVars :: [String],
-    sqlExprs :: [Expr]
-  }
 
 inferSQL :: String -> [Expr] -> SQLInfo
-inferSQL sql args =
+inferSQL sqla args =
   SQLInfo
-    { sqlText = sql,
+    { sqlText = sqla,
       sqlVars = map getVarName args,
       sqlExprs = args
     }
