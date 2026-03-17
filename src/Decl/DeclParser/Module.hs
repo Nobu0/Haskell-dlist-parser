@@ -31,7 +31,7 @@ exportWhere :: String -> Parser Decl
 exportWhere name = do
   skipNL
   exports <- optional exportList
-  skipNL
+  skipVNL
   keyword "where"
   return (DeclModule name exports)
 

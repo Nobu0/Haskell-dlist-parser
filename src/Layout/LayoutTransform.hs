@@ -19,12 +19,37 @@ type LayoutStack = [(LayoutContext, Int)] -- [(InDo, indentLevel)]
 
 go :: LayoutStack -> [Token] -> [Token]
 go _ [] = []
+go [] (TokVNewline (x, y) : TokSymbol "`" : rest)
+  | x == y && x == 0 = TokNewline : go [] (TokSymbol "`" : rest)
+  | otherwise = go [] (TokSymbol "`" : rest)
+go [] (TokVNewline (x, y) : TokSymbol "(" : rest)
+  | x == y && x == 0 = TokNewline : go [] (TokSymbol "(" : rest)
+  | otherwise = go [] (TokSymbol "(" : rest)
+go [] (TokNewline : TokSymbol "(" : rest)
+  | otherwise = go [] (TokSymbol "(" : rest)
+-- \| otherwise = go [] (TokSymbol "(" : rest)
+go [] (TokVNewline (x, y) : TokSymbol "[" : rest)
+  | x == y && x == 0 = TokNewline : go [] (TokSymbol "[" : rest)
+  | otherwise = TokSymbol ";" : go [] (TokSymbol "[" : rest)
+-- \| otherwise = go [] (TokSymbol "[" : rest)
+go [] (TokSymbol ";" : TokSymbol "`" : rest)
+  | otherwise = go [] (TokSymbol "`" : rest)
+go [] (TokSymbol ";" : TokSymbol "(" : rest)
+  | otherwise = go [] (TokSymbol "(" : rest)
+go [] (TokSymbol ";" : TokSymbol "[" : rest)
+  | otherwise = go [] (TokSymbol "[" : rest)
 go [] (TokVNewline (x, y) : rest)
-  | x == y && x == 0 = TokNewline : go [] rest -- 文脈が空なら単なる改行として扱う
+  | y == 0 = TokNewline : go [] rest
+  | x == y && x == 0 = TokNewline : go [] rest
   | otherwise = TokSymbol ";" : go [] rest
 go stack (TokKeyword "do" : TokVNewline (x, y) : rest)
   | y > x = TokKeyword "do" : TokVLBrace : go ((InDo, y) : stack) rest
   | otherwise = TokKeyword "do" : go stack (TokVNewline (x, y) : rest)
+go stack (TokKeyword "case" : rest) =
+  TokKeyword "case" : go ((InCase, -1) : stack) rest
+go ((InCase, -1) : stack) (TokVNewline (x, y) : rest)
+  | y > x = TokVLBrace : go ((InCase, y) : stack) rest
+  | otherwise = go stack (TokVNewline (x, y) : rest)
 go stack (TokKeyword "case" : TokVNewline (x, y) : rest)
   | y > x = TokKeyword "case" : TokVLBrace : go ((InCase, y) : stack) rest
   | otherwise = TokKeyword "case" : go stack (TokVNewline (x, y) : rest)
@@ -60,6 +85,7 @@ popBraces y ((ctx, i) : rest)
   | y < i =
       let (braces, newStack) = popBraces y rest
        in (TokVRBrace : TokNewline : braces, newStack)
+  -- \| otherwise = ((TokNewline : []), (ctx, i) : rest)
   | otherwise = ([], (ctx, i) : rest)
 
 {-}

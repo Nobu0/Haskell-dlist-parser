@@ -30,6 +30,7 @@ import Parser.Expr.ExprCore
 import Parser.Expr.ListParserCore (listExprCore)
 import Parser.Expr.PatternParser (pPattern, pattern)
 import Parser.SQL.SQLParser
+import Parser.Type.TypeParser
 import Utils.MyTrace
 
 -- ============================================
@@ -44,11 +45,25 @@ exprTop = do
 exprSep :: Parser ()
 exprSep = skipMany (symbol ";" <|> newline)
 
+{-}
 expr :: Parser Expr
 expr = do
   e <- infixExpr
   myTrace ("<< expr: e " ++ show e)
   return e
+-}
+
+expr :: Parser Expr
+expr = do
+  e <- infixExpr
+  rest <- optional $ do
+    symbol "::"
+    ty <- typeAtom -- parseType
+    return ty
+  myTrace ("<< expr: e " ++ show e ++ " rest " ++ show rest)
+  case rest of
+    Just ty -> return (EAnn e ty)
+    Nothing -> return e
 
 infixExpr :: Parser Expr
 infixExpr = do
@@ -118,18 +133,6 @@ postfix e = do
         Just binds -> postfix (EWhere e binds)
         Nothing -> return e
 
-{-}
-layoutExpr :: Parser Expr
-layoutExpr = do
-  t <- lookAhead anyToken
-  case t of
-    TokVLBrace -> do
-      bracesVO expr
-    TokSymbol "{" -> do
-      braces expr
-    _ -> expr
--}
-
 -- postfixで参照
 operatorA :: Parser String
 operatorA = satisfyToken isOp
@@ -166,7 +169,7 @@ exprDispatch = do
     TokSymbol "[" -> listExprCore expr <|> exprCore -- NoLoop
     -- TokSymbol ";" -> parensExpr
     -- TokSymbol "(" -> try exprCore <|> parens expr -- <|> exprCore
-    TokSymbol "(" -> try (parens expr) <|> try (parens exprCore) <|> exprCore
+    TokSymbol "(" -> try parensExpr <|> try (parens exprCore) <|> exprCore
     -- TokSymbol "(" -> try (parens expr) <|> exprCore
     -- TokVRBrace -> skipVNlExpr -- bracesv expr
     -- TokSymbol "{" -> bracesExpr
@@ -179,7 +182,7 @@ exprDispatch = do
 parensExpr :: Parser Expr
 parensExpr = do
   ct <- getRemainingCount
-  symbol ";"
+  -- skipNL
   myTrace ("<< parensExpr: ct=" ++ show ct)
   symbol "("
   skipNL

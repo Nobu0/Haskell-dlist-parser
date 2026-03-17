@@ -194,7 +194,7 @@ slexer = go
     ------------------------------------------------------------
     -- ブロックコメントスキップ
     ------------------------------------------------------------
-    skipBlockComment :: String -> String
+    -- skipBlockComment :: String -> String
     skipBlockComment [] = []
     skipBlockComment ('-' : '}' : rest) = rest
     skipBlockComment (_ : rest) = skipBlockComment rest
@@ -202,7 +202,7 @@ slexer = go
     ------------------------------------------------------------
     -- 文字列リテラル読み取り
     ------------------------------------------------------------
-    readString :: String -> (String, String)
+    -- readString :: String -> (String, String)
     readString [] = ("", [])
     readString ('"' : rest) = ("", rest)
     readString ('\\' : c : rest) =

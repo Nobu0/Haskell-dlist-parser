@@ -1,11 +1,3 @@
-Build profile: -w ghc-9.6.7 -O1
-In order, the following will be built (use -v for more details):
- - dlist-parser-0.1.0.0 (exe:dlist) (file src\Parser\Expr\ExprExtensions.hs changed)
-Preprocessing executable 'dlist' for dlist-parser-0.1.0.0...
-Building executable 'dlist' for dlist-parser-0.1.0.0...
-[ 9 of 33] Compiling Lexer.LayoutLexer ( src\Lexer\LayoutLexer.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Lexer\LayoutLexer.o ) [Source file changed]
-[23 of 33] Compiling Parser.Expr.ExprExtensions ( src\Parser\Expr\ExprExtensions.hs, C:\Users\blue3\haskell\dlist-parser\dist-newstyle\build\x86_64-windows\ghc-9.6.7\dlist-parser-0.1.0.0\x\dlist\build\dlist\dlist-tmp\Parser\Expr\ExprExtensions.o ) [Source file changed]
-[34 of 34] Linking C:\\Users\\blue3\\haskell\\dlist-parser\\dist-newstyle\\build\\x86_64-windows\\ghc-9.6.7\\dlist-parser-0.1.0.0\\x\\dlist\\build\\dlist\\dlist.exe [Objects changed]
 === Running Parser Test Suite ===
 
 -- Simple let-return --
@@ -64,7 +56,7 @@ XX Parser failed! Re-running with trace:
 << expr dispatch: TokKeyword "of" ct=14
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EVar "v"
+<< expr: e EVar "v" rest Nothing
 << pattern: ct=13
 << pattern: ct=10
 << pattern:
@@ -82,7 +74,7 @@ XX Parser failed! Re-running with trace:
 << expr dispatch: TokArrow ct=3
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EReturn (EVar "x")) (EVar "_")
+<< expr: e EApp (EReturn (EVar "x")) (EVar "_") rest Nothing
 >>*caseAlt: pat PAs "x" (PApp (PConstr "Just" []) [PVar "y"]) body EApp (EReturn (EVar "x")) (EVar "_")
 << pattern: ct=3
 >>*caseAltBlock: xs []
@@ -91,7 +83,7 @@ XX Parser failed! Re-running with trace:
 << expr dispatch: TokArrow ct=3
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PConstr "Just" []) [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))]
+<< expr: e ECase (EVar "v") [CaseAlt (PAs "x" (PApp (PConstr "Just" []) [PVar "y"])) (EApp (EReturn (EVar "x")) (EVar "_"))] rest Nothing
 << expr dispatch: TokArrow ct=3
 Parser: Nothing
 
@@ -361,163 +353,155 @@ Parser: Just (EDo [LetStmt [(PApp (PVar "xs") [],EList [EInt 1,EInt 2,EInt 3])],
 
 -- list1 --
 -- Input: [1 .. 10];    [x .. y];    [0 .. -5];    [a .. b]
-Tokens: [TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol "..",TokIdent "y",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 0,TokSymbol "..",TokNumber 5,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "a",TokSymbol "..",TokIdent "b",TokSymbol "]"]
-Parser: Just (EApp (EApp (EApp (ERange (EInt 1) (EInt 10)) (ERange (EVar "x") (EVar "y"))) (ERange (EInt 0) (EInt 5))) (ERange (EVar "a") (EVar "b")))
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol "[",TokIdent "x",TokSymbol "..",TokIdent "y",TokSymbol "]",TokSymbol "[",TokNumber 0,TokSymbol "..",TokNumber 5,TokSymbol "]",TokSymbol "[",TokIdent "a",TokSymbol "..",TokIdent "b",TokSymbol "]"]
+Parser: Just (EApp (EApp (EApp (ERange (EInt 1) (Just (EInt 10))) (ERange (EVar "x") (Just (EVar "y")))) (ERange (EInt 0) (Just (EInt 5)))) (ERange (EVar "a") (Just (EVar "b"))))
 
 -- list2 --
 -- Input: [1, 3 .. 10]; [10, 8 .. 0]; [x, y .. z]; [0, 0 .. 0]
-Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 3,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 10,TokSymbol ",",TokNumber 8,TokSymbol "..",TokNumber 0,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol "..",TokIdent "z",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 0,TokSymbol ",",TokNumber 0,TokSymbol "..",TokNumber 0,TokSymbol "]"]
-Parser: Just (EApp (EApp (EApp (ERangeStep (EInt 1) (EInt 3) (EInt 10)) (ERangeStep (EInt 10) (EInt 8) (EInt 0))) (ERangeStep (EVar "x") (EVar "y") (EVar "z"))) (ERangeStep (EInt 0) (EInt 0) (EInt 0)))
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 3,TokSymbol "..",TokNumber 10,TokSymbol "]",TokSymbol "[",TokNumber 10,TokSymbol ",",TokNumber 8,TokSymbol "..",TokNumber 0,TokSymbol "]",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol "..",TokIdent "z",TokSymbol "]",TokSymbol "[",TokNumber 0,TokSymbol ",",TokNumber 0,TokSymbol "..",TokNumber 0,TokSymbol "]"]
+Parser: Just (EApp (EApp (EApp (ERangeStep (EInt 1) (EInt 3) (Just (EInt 10))) (ERangeStep (EInt 10) (EInt 8) (Just (EInt 0)))) (ERangeStep (EVar "x") (EVar "y") (Just (EVar "z")))) (ERangeStep (EInt 0) (EInt 0) (Just (EInt 0))))
 
 -- list3 --
 -- Input: [1,2,3]; [x, y, z]; [1, 2, 3,]; []; [   ]
-Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol ",",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokSymbol "]",TokSymbol ";",TokSymbol "[",TokSymbol "]"]
-Parser: Just (ESeq [EApp (EApp (EList [EInt 1,EInt 2,EInt 3]) (EList [EVar "x",EVar "y",EVar "z"])) (EList [EInt 1,EInt 2,EInt 3]),EList [],EList []])
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokSymbol "[",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol "]",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol ",",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]"]
+Parser: Just (EApp (EApp (EApp (EList [EInt 1,EInt 2,EInt 3]) (EList [EVar "x",EVar "y",EVar "z"])) (EList [EInt 1,EInt 2,EInt 3])) (EApp (EList []) (EList [])))
 
 -- list4 --
--- Input: [1, 2 .. 3]; [1 ,2 ..3]; [1 .. 2, 3]     -- should be normal list? or error?（仕様確認
-Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]"]
+-- Input: [1, 5 ..]; [1, 2 .. 3]; [1 ,2 ..3]; [1 .. 2, 3]     -- should be normal list? or error?（仕様確認
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 5,TokSymbol "..",TokSymbol "]",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]"]
 XX Parser failed! Re-running with trace:
-<< expr dispatch: TokSymbol "[" ct=23
-<< expr dispatch: TokNumber 1 ct=22
+<< expr dispatch: TokSymbol "[" ct=27
+<< expr dispatch: TokNumber 1 ct=26
 << exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol "," ct=21
+<< expr dispatch: TokSymbol "," ct=25
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 1 ct=22
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 1 ct=26
 << exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol "," ct=21
+<< expr dispatch: TokSymbol "," ct=25
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 2 ct=20
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 5 ct=24
+<< exprNoLoop: e EInt 5
+<< expr dispatch: TokSymbol ".." ct=23
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EInt 5 rest Nothing
+<< expr dispatch: TokSymbol "]" ct=22
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 5) Nothing
+<< expr dispatch: TokSymbol "[" ct=21
+<< expr dispatch: TokNumber 1 ct=20
+<< exprNoLoop: e EInt 1
+<< expr dispatch: TokSymbol "," ct=19
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 1 ct=20
+<< exprNoLoop: e EInt 1
+<< expr dispatch: TokSymbol "," ct=19
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 2 ct=18
 << exprNoLoop: e EInt 2
-<< expr dispatch: TokSymbol ".." ct=19
+<< expr dispatch: TokSymbol ".." ct=17
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 2
-<< expr dispatch: TokNumber 3 ct=18
+<< expr: e EInt 2 rest Nothing
+<< expr dispatch: TokNumber 3 ct=16
 << exprNoLoop: e EInt 3
-<< expr dispatch: TokSymbol "]" ct=17
+<< expr dispatch: TokSymbol "]" ct=15
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 3
-<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
-<< expr dispatch: TokSymbol ";" ct=16
-<< expr dispatch: TokNumber 1 ct=14
+<< expr: e EInt 3 rest Nothing
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (Just (EInt 3))
+<< expr dispatch: TokSymbol "[" ct=14
+<< expr dispatch: TokNumber 1 ct=13
 << exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol "," ct=13
+<< expr dispatch: TokSymbol "," ct=12
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 1 ct=14
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 1 ct=13
 << exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol "," ct=13
+<< expr dispatch: TokSymbol "," ct=12
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 2 ct=12
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 2 ct=11
 << exprNoLoop: e EInt 2
-<< expr dispatch: TokSymbol ".." ct=11
+<< expr dispatch: TokSymbol ".." ct=10
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 2
-<< expr dispatch: TokNumber 3 ct=10
+<< expr: e EInt 2 rest Nothing
+<< expr dispatch: TokNumber 3 ct=9
 << exprNoLoop: e EInt 3
-<< expr dispatch: TokSymbol "]" ct=9
+<< expr dispatch: TokSymbol "]" ct=8
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 3
-<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (EInt 3)
-<< expr dispatch: TokSymbol ";" ct=8
-<< expr dispatch: TokNumber 1 ct=6
-<< exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol ".." ct=5
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 1 ct=6
-<< exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol ".." ct=5
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 1 ct=6
-<< exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol ".." ct=5
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 2 ct=4
-<< exprNoLoop: e EInt 2
-<< expr dispatch: TokSymbol "," ct=3
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 2
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (ERangeStep (EInt 1) (EInt 2) (EInt 3)) (ERangeStep (EInt 1) (EInt 2) (EInt 3))
+<< expr: e EInt 3 rest Nothing
+<< exprNoLoop: e ERangeStep (EInt 1) (EInt 2) (Just (EInt 3))
 << expr dispatch: TokSymbol "[" ct=7
 << expr dispatch: TokNumber 1 ct=6
 << exprNoLoop: e EInt 1
 << expr dispatch: TokSymbol ".." ct=5
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 1
+<< expr: e EInt 1 rest Nothing
 << expr dispatch: TokNumber 1 ct=6
 << exprNoLoop: e EInt 1
 << expr dispatch: TokSymbol ".." ct=5
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 1
+<< expr: e EInt 1 rest Nothing
 << expr dispatch: TokNumber 1 ct=6
 << exprNoLoop: e EInt 1
 << expr dispatch: TokSymbol ".." ct=5
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 1
+<< expr: e EInt 1 rest Nothing
 << expr dispatch: TokNumber 2 ct=4
 << exprNoLoop: e EInt 2
 << expr dispatch: TokSymbol "," ct=3
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EInt 2
+<< expr: e EInt 2 rest Nothing
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (ERangeStep (EInt 1) (EInt 5) Nothing) (ERangeStep (EInt 1) (EInt 2) (Just (EInt 3)))) (ERangeStep (EInt 1) (EInt 2) (Just (EInt 3))) rest Nothing
+<< expr dispatch: TokSymbol "[" ct=7
+<< expr dispatch: TokNumber 1 ct=6
+<< exprNoLoop: e EInt 1
+<< expr dispatch: TokSymbol ".." ct=5
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 1 ct=6
+<< exprNoLoop: e EInt 1
+<< expr dispatch: TokSymbol ".." ct=5
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 1 ct=6
+<< exprNoLoop: e EInt 1
+<< expr dispatch: TokSymbol ".." ct=5
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EInt 1 rest Nothing
+<< expr dispatch: TokNumber 2 ct=4
+<< exprNoLoop: e EInt 2
+<< expr dispatch: TokSymbol "," ct=3
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EInt 2 rest Nothing
 Parser: Nothing
 
 -- list error1 --
 -- Input: [1 ..]          -- エラーになるべき
 Tokens: [TokSymbol "[",TokNumber 1,TokSymbol "..",TokSymbol "]"]
-XX Parser failed! Re-running with trace:
-<< expr dispatch: TokSymbol "[" ct=4
-<< expr dispatch: TokNumber 1 ct=3
-<< exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol ".." ct=2
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 1 ct=3
-<< exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol ".." ct=2
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokNumber 1 ct=3
-<< exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol ".." ct=2
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 1
-<< expr dispatch: TokSymbol "]" ct=1
-<< expr dispatch: TokNumber 1 ct=3
-<< exprNoLoop: e EInt 1
-<< expr dispatch: TokSymbol ".." ct=2
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EInt 1
-<< elmsEXpr ct=2 e EInt 1
-<< expr dispatch: TokSymbol ".." ct=2
-Parser: Nothing
+Parser: Just (ERange (EInt 1) Nothing)
 
 -- list error2 --
 -- Input: [.. 10]         -- エラーになるべき
@@ -548,7 +532,7 @@ Parser: Just (EWhere (EDo [Bind (PApp (PVar "x") []) (EVar "foo"),Bind (PApp (PV
 -- func4 --
 -- Input: [x | Just x <- xs] where xs = [1..10]
 Tokens: [TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokKeyword "where",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]"]
-Parser: Just (EWhere (EListComp (EVar "x") [QGenerator (PApp (PConstr "Just" []) [PVar "x"]) (EVar "xs")]) [(PApp (PVar "xs") [],ERange (EInt 1) (EInt 10))])
+Parser: Just (EWhere (EListComp (EVar "x") [QGenerator (PApp (PConstr "Just" []) [PVar "x"]) (EVar "xs")]) [(PApp (PVar "xs") [],ERange (EInt 1) (Just (EInt 10)))])
 
 -- func5 --
 -- Input: let  f x = x + 1;  g y = f y * 2 in g 10
@@ -610,17 +594,18 @@ Parser: Just (EDo [Bind (PApp (PVar "x") []) (ESQL "SELECT * FROM t" []),ExprStm
 Tokens: [TokSymbol "(",TokKeyword "sql",TokString "SELECT {a}",TokSymbol ")",TokOperator "+",TokSymbol "(",TokKeyword "sql",TokString "SELECT {b}",TokSymbol ")"]
 XX Parser failed! Re-running with trace:
 << expr dispatch: TokSymbol "(" ct=9
+<< parensExpr: ct=9
 << expr dispatch: TokKeyword "sql" ct=8
 << exprNoLoop: e ESQL "SELECT ?" [EVar "a"]
 << expr dispatch: TokSymbol ")" ct=6
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ESQL "SELECT ?" [EVar "a"]
+<< expr: e ESQL "SELECT ?" [EVar "a"] rest Nothing
 << exprNoLoop: e ESQL "SELECT ?" [EVar "a"]
 << expr dispatch: TokOperator "+" ct=5
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ESQL "SELECT ?" [EVar "a"]
+<< expr: e ESQL "SELECT ?" [EVar "a"] rest Nothing
 << expr dispatch: TokOperator "+" ct=5
 Parser: Nothing
 
@@ -671,7 +656,7 @@ Parser: Just (EDo [ExprStmt (EApp (EVar "print") (EString "test")),ExprStmt (ERe
 
 -- confirm --
 -- Input: [1,2]; [3,4];
-Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "]",TokSymbol ";",TokSymbol "[",TokNumber 3,TokSymbol ",",TokNumber 4,TokSymbol "]",TokSymbol ";"]
+Tokens: [TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "]",TokSymbol "[",TokNumber 3,TokSymbol ",",TokNumber 4,TokSymbol "]",TokSymbol ";"]
 Parser: Just (EApp (EList [EInt 1,EInt 2]) (EList [EInt 3,EInt 4]))
 
 -- do1 --
@@ -689,7 +674,7 @@ Parser: Just (EIf (EVar "cond") (EReturn (EInt 1)) (EReturn (EInt 0)))
   then return 1
   else return 0
 
-Tokens: [TokKeyword "if",TokIdent "cond",TokSymbol ";",TokKeyword "then",TokKeyword "return",TokNumber 1,TokSymbol ";",TokKeyword "else",TokKeyword "return",TokNumber 0,TokSymbol ";"]
+Tokens: [TokKeyword "if",TokIdent "cond",TokSymbol ";",TokKeyword "then",TokKeyword "return",TokNumber 1,TokSymbol ";",TokKeyword "else",TokKeyword "return",TokNumber 0,TokNewline]
 Parser: Just (EIf (EVar "cond") (EReturn (EInt 1)) (EReturn (EInt 0)))
 
 -- case1 --
@@ -714,12 +699,12 @@ Parser: Just (EDo [LetStmt [(PApp (PVar "f") [],EApp (EVar "x") (EBinOp BinOpCom
 
 -- temp --
 -- Input: filter (not . (`elem` [' ', '\n', '\t']))
-Tokens: [TokIdent "filter",TokSymbol "(",TokIdent "not",TokOperator ".",TokSymbol "(",TokIdent "elem",TokSymbol "[",TokChar ' ',TokSymbol ",",TokChar '\n',TokSymbol ",",TokChar '\t',TokSymbol "]",TokSymbol ")",TokSymbol ")"]
+Tokens: [TokIdent "filter",TokSymbol "(",TokIdent "not",TokOperator ".",TokSymbol "(",TokSymbol "`",TokIdent "elem",TokSymbol "`",TokSymbol "[",TokChar ' ',TokSymbol ",",TokChar '\n',TokSymbol ",",TokChar '\t',TokSymbol "]",TokSymbol ")",TokSymbol ")"]
 Parser: Just (EApp (EVar "filter") (EBinOp BinOpCompose (EVar "not") (EApp (EVar "elem") (EList [EChar ' ',EChar '\n',EChar '\t']))))
 
 -- temp --
 -- Input: do { let f = filter (not . (`elem` [' ', '\n', '\t']))}
-Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokIdent "filter",TokSymbol "(",TokIdent "not",TokOperator ".",TokSymbol "(",TokIdent "elem",TokSymbol "[",TokChar ' ',TokSymbol ",",TokChar '\n',TokSymbol ",",TokChar '\t',TokSymbol "]",TokSymbol ")",TokSymbol ")",TokSymbol "}"]
+Tokens: [TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokIdent "filter",TokSymbol "(",TokIdent "not",TokOperator ".",TokSymbol "(",TokSymbol "`",TokIdent "elem",TokSymbol "`",TokSymbol "[",TokChar ' ',TokSymbol ",",TokChar '\n',TokSymbol ",",TokChar '\t',TokSymbol "]",TokSymbol ")",TokSymbol ")",TokSymbol "}"]
 Parser: Just (EDo [LetStmt [(PApp (PVar "f") [],EApp (EVar "filter") (EBinOp BinOpCompose (EVar "not") (EApp (EVar "elem") (EList [EChar ' ',EChar '\n',EChar '\t']))))]])
 
 -- func[] --
@@ -747,6 +732,6 @@ XX Parser failed! Re-running with trace:
 << pattern: ct=13
 << funBinding: args [PApp (PVar "arg") []]
 >> infixOp: out 
-<< expr: e EApp (EVar "z") (EList [])
+<< expr: e EApp (EVar "z") (EList []) rest Nothing
 << expr dispatch: TokKeyword "where" ct=16
 Parser: Nothing

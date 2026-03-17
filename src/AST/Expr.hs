@@ -6,7 +6,7 @@ module AST.Expr
     Stmt (..),
     Qualifier (..),
     CaseAlt (..),
-    SQLInfo(..),
+    SQLInfo (..),
   )
 where
 
@@ -56,9 +56,9 @@ data Expr
   | ECase Expr [CaseAlt]
   | EList [Expr]
   | ETuple [Expr]
-  | ERecordConstr Name [(Name, Expr)]  
-  | ERange Expr Expr
-  | ERangeStep Expr Expr Expr
+  | ERecordConstr Name [(Name, Expr)]
+  | ERange Expr (Maybe Expr)
+  | ERangeStep Expr Expr (Maybe Expr)
   | EListComp Expr [Qualifier]
   | EAnn Expr Type
   | EDo [Stmt]

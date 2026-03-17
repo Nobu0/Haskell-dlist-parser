@@ -144,7 +144,7 @@ funClauseWithName name = do
 
 whereBlock :: Parser [Decl]
 whereBlock = do
-  skipSeparators
+  skipVNL
   keyword "where"
   bracesV $ do
     ct <- getRemainingCount

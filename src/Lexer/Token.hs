@@ -37,9 +37,11 @@ data Token
 data SourcePos = SourcePos
   { line :: Int,
     column :: Int
-  } deriving (Show, Eq, Ord)
+  }
+  deriving (Show, Eq, Ord)
 
 data LocatedToken = LocatedToken
   { tokenPos :: SourcePos,
     token :: Token
-  } deriving (Show, Eq, Ord)
+  }
+  deriving (Show, Eq, Ord)

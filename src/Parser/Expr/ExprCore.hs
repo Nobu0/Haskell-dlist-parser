@@ -15,13 +15,15 @@ where
 import AST.Expr
 import AST.Expr (BinOp (..), Expr (..))
 import Control.Applicative (empty, many, optional, (<|>))
+-- import Text.ParserCombinators.ReadP (skipSpaces)
+
+import Data.List (intercalate)
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
 import Parser.Expr.PatternParser (pattern)
 import Parser.SQL.SQLParser
 import Parser.Type.TypeParser (typeIdent)
--- import Text.ParserCombinators.ReadP (skipSpaces)
 import Utils.MyTrace
 
 {-}
@@ -229,8 +231,7 @@ oPsectionCore = do
 
 atomBaseCore :: Parser Expr
 atomBaseCore =
-  do
-    EVar <$> ident
+  EVar <$> ident
     <|> EInt <$> int
     <|> emptyListExpr
     <|> tunitExpr
@@ -239,13 +240,34 @@ atomBaseCore =
     <|> elistExpr
     <|> EString <$> stringLiteralExpr
     <|> EChar <$> charLiteralExpr
+    <|> operatorIAsExpr
     <|> pRecordExpr
+    <|> parensOperatorVar
     <|> operatorVar
 
-operatorVar :: Parser Expr
-operatorVar = do
-  op <- satisfyToken isOp
+operatorIAsExpr :: Parser Expr
+operatorIAsExpr = do
+  symbol "`"
+  name <- qvarid -- qualified variable identifier, e.g., M.union
+  symbol "`"
+  return (EVar name)
+
+qvarid :: Parser String
+qvarid = do
+  mods <- many (try (identI <* symbol "."))
+  name <- identI
+  return (intercalate "." (mods ++ [name]))
+
+parensOperatorVar :: Parser Expr
+parensOperatorVar = do
+  op <- parens operatorI
   return (EVar op)
+
+operatorVar :: Parser Expr
+operatorVar =
+  do
+    op <- satisfyToken isOp
+    return (EVar op)
   where
     isOp (TokOperator s)
       | s `elem` [":"] = Just s

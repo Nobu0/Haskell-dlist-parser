@@ -28,7 +28,7 @@ stepRangeExpr expr = do
   symbol ","
   step <- expr
   symbol ".."
-  end <- expr
+  end <- optional (try expr)
   return (ERangeStep start step end)
 
 -- [a .. b]
@@ -36,7 +36,7 @@ rangeExpr :: Parser Expr -> Parser Expr
 rangeExpr expr = do
   start <- expr
   symbol ".."
-  end <- expr
+  end <- optional (try expr)
   return (ERange start end)
 
 -- [a, b, c]

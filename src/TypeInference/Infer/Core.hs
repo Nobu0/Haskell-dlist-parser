@@ -90,15 +90,26 @@ groupDecls decls =
   M.fromListWith (++) [(name, [d]) | d@(DeclFun name _ _ _ _) <- decls]
 
 --  M.fromListWith (++) [(name, [d]) | d@(DeclFun name _ _) <- decls]
-
+{-}
 unifyMany :: [Type] -> Either InferError Subst
 unifyMany [] = Right emptySubst
 unifyMany (t : ts) =
   foldM
-    ( \sacc t' ->
-        case unify (apply sacc t) (apply sacc t') of
-          Left _ -> Left (InferMismatch (apply sacc t) (apply sacc t'))
-          Right s -> Right (composeSubst s sacc)
+    ( ( \sacc t' ->
+          case unify (apply sacc t) (apply sacc t') of
+            Left _ -> Left (InferMismatch (apply sacc t) (apply sacc t'))
+            Right s -> Right (composeSubst s sacc)
+      )
+        emptySubst
+        ts
     )
-    emptySubst
-    ts
+-}
+unifyMany :: [Type] -> Either InferError Subst
+unifyMany [] = Right emptySubst
+unifyMany (t : ts) = foldM (unifyStep t) emptySubst ts
+
+unifyStep :: Type -> Subst -> Type -> Either InferError Subst
+unifyStep t sacc t' =
+  case unify (apply sacc t) (apply sacc t') of
+    Left _ -> Left (InferMismatch (apply sacc t) (apply sacc t'))
+    Right s -> Right (composeSubst s sacc)
