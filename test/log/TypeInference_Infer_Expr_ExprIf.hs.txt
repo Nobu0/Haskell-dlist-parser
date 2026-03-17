@@ -449,21 +449,6 @@ inferIf inferExprFn env cond eThen eElse = do
   let s = s4 `composeSubst` s3 `composeSubst` s2 `composeSubst` s1
   Right (s, apply s4 tElse)
 
-{-}
-inferIf inferExprFn env cond eThen eElse = do
-  (s1, tCond) <- inferExprFn env cond
-  sBool <- case unify tCond (TCon "Bool") of
-    Left uerr -> Left (InferUnifyError uerr)
-    Right su -> Right su
-  let env1 = applyEnv (sBool `composeSubst` s1) env
-  (s2, tThen) <- inferExprFn env1 eThen
-  (s3, tElse) <- inferExprFn (applyEnv s2 env1) eElse
-  s4 <- case unify (apply s3 tThen) tElse of
-    Left uerr -> Left (InferUnifyError uerr)
-    Right su -> Right su
-  let s = s4 `composeSubst` s3 `composeSubst` s2 `composeSubst` s1
-  Right (s, apply s4 tElse)
--}
 
 -- token --
 [250] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Infer"TokOperator "."     

@@ -45,14 +45,6 @@ exprTop = do
 exprSep :: Parser ()
 exprSep = skipMany (symbol ";" <|> newline)
 
-{-}
-expr :: Parser Expr
-expr = do
-  e <- infixExpr
-  myTrace ("<< expr: e " ++ show e)
-  return e
--}
-
 expr :: Parser Expr
 expr = do
   e <- infixExpr
@@ -109,8 +101,6 @@ infixOp = do
     Nothing -> do
       empty
 
--- t <- lookAhead anyToken
--- myTrace ("<< postfix: next token " ++ show t)
 postfix :: Expr -> Parser Expr
 postfix e = do
   mop <- optional operatorA
@@ -171,7 +161,6 @@ exprDispatch = do
     -- TokSymbol "(" -> try exprCore <|> parens expr -- <|> exprCore
     TokSymbol "(" -> try parensExpr <|> try (parens exprCore) <|> exprCore
     -- TokSymbol "(" -> try (parens expr) <|> exprCore
-    -- TokVRBrace -> skipVNlExpr -- bracesv expr
     -- TokSymbol "{" -> bracesExpr
     TokSymbol "\\" -> lambdaExpr
     -- TokVNl -> skipVNlExpr
@@ -232,10 +221,7 @@ whereClause = do
 whBindings :: Parser [Binding]
 whBindings = do
   b <- binding
-  -- bs <- many (skipSeparators >> binding)
-  -- X bracesV $ do
   bs <- many binding
-  -- bs <- sepEndBy binding (symbol ";") --exprSep
   myTrace (">>*whereClause (b:bs) " ++ show (b : bs))
   return (b : bs)
 

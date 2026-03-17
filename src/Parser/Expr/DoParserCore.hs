@@ -90,5 +90,3 @@ letStmt expr = do
 doSemi :: Parser ()
 doSemi =
   skipMany1 (try (symbol ";") <|> newline)
-
--- symbol ";"

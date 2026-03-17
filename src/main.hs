@@ -31,20 +31,6 @@ printExpr :: Expr -> String
 printExpr (EVar name) = name
 printExpr (EAnn e ty) = printExpr e ++ " :: " ++ prettyType ty
 
-{-}
-instance Pretty Expr where
-  pretty (EVar name) = pretty name
-  pretty (EInt n) = pretty n
-  pretty (EBinOp op l r) =
-    parens (pretty l <+> pretty op <+> pretty r)
-
-instance Pretty BinOp where
-  pretty BinOpAdd = "+"
-  pretty BinOpSub = "-"
-  pretty BinOpMul = "*"
-  pretty BinOpDiv = "/"
--}
-
 main :: IO ()
 main = do
   args <- getArgs
@@ -129,13 +115,3 @@ printTokensAligned toks = do
   forM_ (zip indices grouped) $ \(i, group) -> do
     let line = "[" ++ show (i * 5) ++ "] " ++ concatMap formatToken group
     putStrLn line
-
-{-}
--- 幅をそろえて表示
-printTokensAligned :: Show a => [a] -> IO ()
-printTokensAligned toks = do
-  let formatToken tok = printf "%-20s" (take 20 (show tok))  -- 最大20文字、左詰め
-  forM_ (zip [0,5..] (chunksOf 5 toks)) $ \(i, group) -> do
-    let line = "[" ++ show i ++ "] " ++ concatMap formatToken group
-    putStrLn line
--}

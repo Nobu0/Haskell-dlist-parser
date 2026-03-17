@@ -44,24 +44,6 @@ funDecl = do
   myTrace (">>*funDecl name " ++ show name ++ " clause1 " ++ show clause1 ++ " rest " ++ show rest)
   return (DeclFunGroup name (clause1 : rest))
 
-{-}
-funClause :: Parser (Name, FunClause)
-funClause = do
-  ct <- getRemainingCount
-  t0 <- lookAhead anyToken
-  myTrace ("<< funClause: next token=" ++ show t0 ++ " ct=" ++ show ct)
-  -- name <- ident
-  pat <- many pPattern -- <|> (many pattern) -- patternParser
-  let (name : args) = pat
-  skipNL
-  t <- lookAhead anyToken
-  myTrace ("<< funClause: args(pa)=" ++ show args ++ " t = " ++ show t)
-  case t of
-    TokSymbol "=" -> parseSimpleClause name args
-    TokSymbol "|" -> parseGuardedClause name args
-    _ -> parseGuardedClause name args
--}
-
 funClause :: Parser (Name, FunClause)
 funClause = do
   pats <- some pPattern -- 関数名も含めてすべてのパターンを取得
@@ -182,23 +164,3 @@ guardedRhs = do
     e <- parseGuardLine
     myTrace ("<< guardedRhs: next token = " ++ show t ++ " e " ++ show e ++ " ct=" ++ show ct)
     return e
-
-{-}
-funHead :: Parser (Name, [Pattern])
-funHead = do
-  skipNL
-  ct <- getRemainingCount
-  p <- pattern
-  skipNL
-  myTrace ("<< funHead pattern: " ++ show p ++ " ct=" ++ show ct)
-  case p of
-    PVar name -> do
-      args <- many pattern
-      return (name, args)
-    PApp (PVar name) args -> do
-      moreArgs <- many pattern
-      return (name, args ++ moreArgs)
-    _ -> do
-      myTrace "Function definition must start with a variable name"
-      empty
--}

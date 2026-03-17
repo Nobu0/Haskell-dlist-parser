@@ -98,12 +98,6 @@ bracesV p = do
     Just (TokSymbol "{") -> braces p
     _ -> p
 
--- 括弧無しでも扱う
--- bracesV3 :: Parser a -> Parser a
--- bracesV3 p = do
-
--- parens :: Parser a -> Parser a
--- parens p = between (symbol "(") (symbol ")") p
 parens :: Parser a -> Parser a
 parens p = do
   symbol "("
@@ -243,18 +237,6 @@ skipVNL = do
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
 
-{-}
-  _ <- optional (symbol ";" <|> newline)
-  _ <- optional (symbol ";" <|> newline)
-  return ()
-skipNL :: Parser ()
-skipNL = do
-  _ <- optional (symbol ";")
-  _ <- optional (symbol ";")
-  _ <- optional (symbol ";")
-  return ()
--}
-
 skipNL :: Parser ()
 skipNL = do
   _ <- many $ tokenIs isSep
@@ -272,9 +254,6 @@ skipSeparators = do
     isSep TokNewline = Just ()
     isSep (TokSymbol ";") = Just ()
     isSep _ = Nothing
-
--- isSep TokVLBrace = Just ()
--- isSep TokVRBrace = Just ()
 
 skipVB :: Parser ()
 skipVB = do
@@ -340,10 +319,6 @@ parseBinOp s = case s of
   "$" -> Just BinOpApp
   "\\" -> Just BinOpListDiff
   _ -> Nothing
-
--- その他（必要に応じて追加）
--- "$" は構文的に扱うならここには入れない
--- "<?>" -> Just TryAlt
 
 operator :: Parser String
 operator = choice (map (\s -> symbol s >> return s) allOps)
@@ -452,18 +427,3 @@ eof = Parser $ \ts ->
   case ts of
     [] -> Just ((), [])
     _ -> Nothing
-
-{-}
-lexIdentOrOperator = do
-  -- 通常の識別子
-  ident <- identifier
-  if ident `elem` keywords
-    then return (TokKeyword ident)
-    else return (TokIdent ident)
-
-lexBacktickIdent = do
-  symbol "`"
-  ident <- identifier
-  symbol "`"
-  return (TokIdent ident)  -- ← バッククォートを除いた形で返す！
--}

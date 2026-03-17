@@ -94,32 +94,3 @@ inferBinding inferExprFn env (pat, expr) = do
   let s = s3 `composeSubst` s2 `composeSubst` s1
   let env' = applyEnv s env2
   return env'
-
--- 同様に inferLetBlock, inferWhere, inferBindings, inferBinding も inferExprFn を引数に取るように変更
-{-}
-inferLet :: TypeEnv -> Pattern -> Expr -> Expr -> Either InferError (Subst, Type)
-inferLet inferExpr env pat e1 e2 = do
-  (sPat, envPat, tPat) <- inferPattern pat
-  (s1, t1) <- inferExpr (applyEnv sPat env) e1
-  s2 <- case unify (apply s1 tPat) t1 of
-    Left uerr -> Left (InferUnifyError uerr)
-    Right su -> Right su
-  let s = s2 `composeSubst` s1 `composeSubst` sPat
-  let env' = mergeEnvs (applyEnv s env) (applyEnv s envPat)
-  (s3, t2) <- inferExpr env' e2
-  let sFinal = s3 `composeSubst` s
-  Right (sFinal, t2)
-
-inferLetBlock :: TypeEnv -> [(Pattern, Expr)] -> Expr -> Either InferError (Subst, Type)
-inferLetBlock inferBindings env binds body = do
-  (sBinds, envBinds) <- inferBindings env binds
-  let env' = mergeEnvs envBinds env
-  let env'' = applyEnv sBinds env'
-  inferExpr env'' body
-
-inferWhere :: TypeEnv -> Expr -> [(Pattern, Expr)] -> Either InferError (Subst, Type)
-inferWhere inferExpr inferBinding env e binds = do
-  (s1, t1) <- inferExpr env e
-  _ <- foldM inferBinding (applyEnv s1 env) binds
-  return (s1, t1)
--}

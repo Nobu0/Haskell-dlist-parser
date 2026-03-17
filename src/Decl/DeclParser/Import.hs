@@ -45,19 +45,6 @@ importList =
       xs <- many importIdent
       return (f : xs)
 
-{-}
-importIdent :: Parser ImportItem
-importIdent = do
-  name <- identI
-  m <-
-    optional $
-      parensI $
-        (ImportTypeAll name <$ symbol "..")
-          <|> (ImportTypeSome name <$> sepBy1 identI (symbol ","))
-  return $ case m of
-    Just x -> x
-    Nothing -> ImportVar name
--}
 importIdent :: Parser ImportItem
 importIdent = do
   t <- lookAhead anyToken
@@ -92,15 +79,3 @@ getNameList = do
       f <- name
       xs <- many1 name
       return (f : xs)
-
-{-}  myTrace ("<< getNameList: next token " ++ show t ++ " " ++ show nm)
-
-operatorI :: Parser Name
-operatorI = do
-  TokOperator op <- token satisfyOperator
-  return op
-
-satisfyOperator :: Token -> Bool
-satisfyOperator (TokOperator _) = True
-satisfyOperator _ = False
--}

@@ -24,6 +24,3 @@ data Constraint
 data Field
   = Field String Type
   deriving (Show, Eq)
-
--- data Constraint = Constraint String [Type]
---  deriving (Eq, Show)

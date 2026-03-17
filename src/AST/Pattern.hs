@@ -1,10 +1,5 @@
 module AST.Pattern where
 
--- import AST.Type (Type)
--- import AST.Module (Name)
--- import AST.Pattern (Pattern)
--- import AST.Expr (Expr)
-
 type Name = String
 
 data Pattern
