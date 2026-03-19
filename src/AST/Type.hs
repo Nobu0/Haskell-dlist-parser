@@ -12,7 +12,6 @@ data Type
   | TForall [String] Type
   | TTuple [Type]
   | TUnit
-  | TFun Type Type
   | TBinOp BinOp Type Type
   deriving (Eq, Show)
 

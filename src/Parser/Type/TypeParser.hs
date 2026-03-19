@@ -64,7 +64,7 @@ arrowType = do
     token TokArrow
     bracesV $ do
       parseTypeCore
-  return $ maybe t1 (TFun t1) rest
+  return $ maybe t1 (TArrow t1) rest
 
 parensTuple :: Parser Type
 parensTuple = do

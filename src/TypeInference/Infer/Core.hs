@@ -8,24 +8,30 @@ module TypeInference.Infer.Core
     unifyMany,
     mergeEnvs,
     freshTypeVar,
+    freshType,
     InferResult,
+    InferM,
+    lift,
+    runInfer,
   )
 where
 
-import AST.Decl (Decl (..))
+import AST.Decl (Decl (..), FunClause (..))
 -- import TypeInference.TypeEnv
 import AST.Expr (CaseAlt (..), Expr (..), Name, Stmt (..))
 import AST.Pattern (Pattern (..))
 import AST.Type (Type (..))
 import qualified Control.Exception as TypeInference
 import Control.Monad (foldM)
+-- import TypeInference.SQLInfer
+
+import Control.Monad.State
 import Data.IORef
 import Data.List (nub, (\\))
 import qualified Data.Map as M
 import Debug.Trace (trace, traceIO, traceShowId)
 import System.IO.Unsafe (unsafePerformIO)
 import TypeInference.Error (InferError (..))
--- import TypeInference.SQLInfer
 import TypeInference.Subst
 import TypeInference.TypeEnv
 import TypeInference.Unify (UnifyError (..), unify)
@@ -33,21 +39,21 @@ import TypeInference.Unify (UnifyError (..), unify)
 -- inferExpr の返り値：型と代入
 type InferResult = (Subst, Type)
 
-freshTypeVar :: Either InferError Type
-freshTypeVar =
-  Right
-    ( TVar
-        ( "t"
-            ++ show
-              ( unsafePerformIO
-                  ( do
-                      n <- readIORef counter
-                      writeIORef counter (n + 1)
-                      return n
-                  )
-              )
-        )
-    )
+-- type Infer a = State Int a
+
+type InferM a = StateT Int (Either InferError) a
+
+runInfer :: InferM a -> Either InferError a
+runInfer m = evalStateT m 0
+
+freshType :: InferM Type
+freshType = freshTypeVar
+
+freshTypeVar :: InferM Type
+freshTypeVar = do
+  n <- get
+  put (n + 1)
+  return (TVar ("t" ++ show n))
 
 counter :: IORef Int
 counter = unsafePerformIO (newIORef 0)
@@ -85,9 +91,31 @@ generalizeInfer env t =
   let vars = nub (freeTypeVars t \\ freeTypeVarsEnv env)
    in Forall vars t
 
-groupDecls :: [Decl] -> M.Map Name [Decl]
+-- groupDecls :: [Decl] -> M.Map Name [Decl]
+-- groupDecls decls =
+--  M.fromListWith (++) [(name, [d]) | d@(DeclFunGroup name _) <- decls]
+{-}
+groupDecls :: [Decl] -> M.Map Name [FunClause]
 groupDecls decls =
-  M.fromListWith (++) [(name, [d]) | d@(DeclFun name _ _ _ _) <- decls]
+  M.fromListWith (++) [(name, clauses) | DeclFunGroup name clauses <- decls]
+-}
+
+groupDecls :: [Decl] -> M.Map Name ([FunClause], Maybe Type)
+groupDecls decls = foldr go M.empty decls
+  where
+    go (DeclFunGroup name clauses) acc =
+      M.insertWith
+        (\(newClauses, _) (oldClauses, oldTy) -> (newClauses ++ oldClauses, oldTy))
+        name
+        (clauses, Nothing)
+        acc
+    go (DeclTypeSig name ty) acc =
+      M.insertWith
+        (\_ (oldClauses, _) -> (oldClauses, Just ty))
+        name
+        ([], Just ty)
+        acc
+    go _ acc = acc -- 他のDeclは無視（必要なら拡張）
 
 --  M.fromListWith (++) [(name, [d]) | d@(DeclFun name _ _) <- decls]
 {-}

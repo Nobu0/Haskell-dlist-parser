@@ -145,9 +145,11 @@ oPsectionCore = do
 
 atomBaseCore :: Parser Expr
 atomBaseCore =
-  EVar <$> ident
+  keywordExpr
+    <|> EVar <$> ident
     <|> EInt <$> int
     <|> emptyListExpr
+    <|> unaryExpr
     <|> tunitExpr
     <|> EVarType <$> typeIdent
     <|> (ellipsis >> return EPlaceholder)
@@ -158,6 +160,26 @@ atomBaseCore =
     <|> pRecordExpr
     <|> parensOperatorVar
     <|> operatorVar
+
+keywordExpr :: Parser Expr
+keywordExpr =
+  keywordExprTrue <|> keywordExprFalse
+
+keywordExprTrue :: Parser Expr
+keywordExprTrue = do
+  token (TokKeyword "True")
+  return (EBool True)
+
+keywordExprFalse :: Parser Expr
+keywordExprFalse = do
+  token (TokKeyword "False")
+  return (EBool False)
+
+unaryExpr :: Parser Expr
+unaryExpr = do
+  symbol "-"
+  e <- atomBaseCore
+  return (EOpSectionL "-" e) -- または EUnaryMinus e
 
 operatorIAsExpr :: Parser Expr
 operatorIAsExpr = do

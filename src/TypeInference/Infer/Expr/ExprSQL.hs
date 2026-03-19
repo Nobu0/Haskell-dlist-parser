@@ -3,16 +3,17 @@ module TypeInference.Infer.Expr.ExprSQL (inferSQL) where
 import AST.Expr
 import AST.Type
 import Control.Monad (foldM)
+import Data.Bifunctor (first)
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Subst
 import TypeInference.TypeEnv
 
 inferSQL ::
-  (TypeEnv -> Expr -> Either InferError (Subst, Type)) ->
+  (TypeEnv -> Expr -> InferM (Subst, Type)) ->
   TypeEnv ->
   [Expr] ->
-  Either InferError (Subst, Type)
+  InferM (Subst, Type)
 inferSQL inferExprFn env params = do
   (s, _) <- foldM step (emptySubst, env) params
   return (s, TUnit)

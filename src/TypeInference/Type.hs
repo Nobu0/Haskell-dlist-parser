@@ -1,5 +1,7 @@
 module TypeInference.Type where
 
+{-# COMPLETE TVar, TCon, TArrow, TList, TApp, TConstraint, TForall, TTuple, TUnit #-}
+
 data Type
   = TVar String
   | TCon String

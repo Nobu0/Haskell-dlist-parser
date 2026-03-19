@@ -9,4 +9,5 @@ data InferError
   | InferMismatch Type Type
   | InferUnifyError UnifyError
   | InferOther String
+  | InferMismatchGroup [Type]
   deriving (Show, Eq)

@@ -1,4 +1,4 @@
-module TypeInference.Pretty (prettyType, prettyPrintBinOp, Pretty (..)) where
+module TypeInference.Pretty (prettyType, prettyPrintBinOp, Pretty (..), prettyScheme) where
 
 -- 必要に応じてインポート
 
@@ -9,6 +9,12 @@ import qualified AST.Type as TI
 import Prettyprinter
 import Prettyprinter (Pretty (..), parens, pretty, (<+>))
 import Prettyprinter.Render.Terminal (putDoc)
+import TypeInference.TypeEnv (Scheme (..)) -- Scheme の定義があるモジュールをインポート
+
+prettyScheme :: Scheme -> String
+prettyScheme (Forall [] ty) = prettyType ty
+prettyScheme (Forall vars ty) =
+  "forall " ++ unwords vars ++ ". " ++ prettyType ty
 
 prettyPrintBinOp :: B.BinOp -> String
 prettyPrintBinOp op =
@@ -54,6 +60,7 @@ instance Pretty Type where
         parens (pretty t1 <+> pretty (prettyPrintBinOp op) <+> pretty t2)
       TConstraint cs t ->
         parens (hsep (punctuate (pretty ",") (map (pretty . show) cs))) <+> pretty "=>" <+> pretty t
+      TArrow a b -> parens (pretty a <+> pretty "->" <+> pretty b)
 
 prettyType :: TI.Type -> String
 prettyType ty = do
@@ -70,5 +77,6 @@ prettyType ty = do
       "(" ++ prettyType t1 ++ " " ++ prettyPrintBinOp op ++ " " ++ prettyType t2 ++ ")"
     TConstraint cs t ->
       "(" ++ commaList (map show cs) ++ ") => " ++ prettyType t
+    TArrow a b -> "(" ++ prettyType a ++ " -> " ++ prettyType b ++ ")"
   where
     commaList = foldr1 (\a b -> a ++ ", " ++ b)

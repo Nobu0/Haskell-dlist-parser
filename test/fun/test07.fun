@@ -1,0 +1,3 @@
+-- 再帰的な関数
+fib :: Int -> Int
+fib n = if n <= 1 then 1 else fib (n - 1) + fib (n - 2)

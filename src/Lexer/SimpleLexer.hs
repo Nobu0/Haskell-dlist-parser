@@ -171,6 +171,8 @@ slexer = go
     classifyIdent "qualified" = TokKeyword "qualified"
     classifyIdent "hiding" = TokKeyword "hiding"
     classifyIdent "deriving" = TokKeyword "deriving"
+    classifyIdent "True" = TokKeyword "True"
+    classifyIdent "False" = TokKeyword "False"
     classifyIdent "=>" = TokKeyword "=>"
     classifyIdent "->" = TokArrow
     -- classifyIdent "..." = TokEllipsis

@@ -2,108 +2,112 @@ module TypeInference.TypeEnv
   ( Scheme (..),
     TypeEnv (..),
     emptyEnv,
+    primitiveEnv,
     extendEnv,
     lookupEnv,
     generalize,
     instantiate,
     applyEnv,
+    freeTypeVars,
     freeTypeVarsScheme,
     freeTypeVarsEnv,
-    freeTypeVars,
   )
 where
 
 import AST.Expr (Name)
-import AST.Type
-import AST.Type (Type (..))
+import AST.Type (Constraint (..), Type (..))
 import Data.List (nub, (\\))
 import qualified Data.Map as M
+import Debug.Trace (trace)
 import TypeInference.Error (InferError (..))
-import TypeInference.Subst
+import TypeInference.Subst (Subst, apply)
+
+-- import Utils.MyTrace -- (myTraceE)
 
 -- 型スキーム：forall a b. t
-data Scheme = Forall [String] Type deriving (Show, Eq)
+data Scheme = Forall [Name] Type
+  deriving (Show, Eq)
 
 -- 型環境：変数名 → 型スキーム
-newtype TypeEnv = TypeEnv (M.Map String Scheme) deriving (Show, Eq)
+newtype TypeEnv = TypeEnv (M.Map Name Scheme)
+  deriving (Show, Eq)
 
-{-}
+-- 空の環境（必要に応じて primitiveEnv を使ってもOK）
 emptyEnv :: TypeEnv
 emptyEnv = TypeEnv M.empty
--}
 
-ftv :: Type -> Subst
-ftv TUnit = M.empty
-
-emptyEnv :: TypeEnv
-emptyEnv = primitiveEnv
-
-extendEnv :: TypeEnv -> String -> Scheme -> TypeEnv
+-- 環境に変数とスキームを追加
+extendEnv :: TypeEnv -> Name -> Scheme -> TypeEnv
 extendEnv (TypeEnv env) x s = TypeEnv (M.insert x s env)
 
-lookupEnv :: TypeEnv -> String -> Maybe Scheme
+-- 環境から変数のスキームを取得
+lookupEnv :: TypeEnv -> Name -> Maybe Scheme
 lookupEnv (TypeEnv env) x = M.lookup x env
 
-freeTypeVarsEnv :: TypeEnv -> [Name]
-freeTypeVarsEnv (TypeEnv env) =
-  nub (concatMap freeTypeVarsScheme (M.elems env))
+{-}
+-- 型の自由型変数を集める
+freeTypeVars :: Type -> [Name]
+freeTypeVars (TVar v) = [v]
+freeTypeVars (TCon _) = []
+freeTypeVars (TArrow t1 t2) = freeTypeVars t1 ++ freeTypeVars t2
+freeTypeVars (TList t) = freeTypeVars t
+freeTypeVars (TApp t1 t2) = freeTypeVars t1 ++ freeTypeVars t2
+freeTypeVars (TConstraint cs t) = concatMap freeConstraintVars cs ++ freeTypeVars t
+freeTypeVars (TForall vs t) = filter (`notElem` vs) (freeTypeVars t)
+freeTypeVars (TTuple ts) = concatMap freeTypeVars ts
+freeTypeVars TUnit = []
+-}
 
-freeTypeVarsScheme :: Scheme -> [Name]
-freeTypeVarsScheme (Forall vars t) =
-  freeTypeVars t \\ vars
-
--- 型の自由変数を集める
-freeTypeVars :: Type -> [String]
-freeTypeVars t =
+freeTypeVars :: Type -> [Name]
+freeTypeVars t = trace (">> freeTypeVars: " ++ show t) $
   case t of
     TVar v -> [v]
     TCon _ -> []
     TArrow t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
-    TList t1 -> freeTypeVars t1
+    TList t' -> freeTypeVars t'
     TApp t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
-    TConstraint cs t1 ->
-      concatMap freeConstraintVars cs ++ freeTypeVars t1
-    TForall vs t1 ->
-      filter (`notElem` vs) (freeTypeVars t1)
+    TConstraint cs t' -> concatMap freeConstraintVars cs ++ freeTypeVars t'
+    TForall vs t' -> filter (`notElem` vs) (freeTypeVars t')
+    TTuple ts -> concatMap freeTypeVars ts
+    TUnit -> []
 
-freeConstraintVars :: Constraint -> [String]
-freeConstraintVars (Constraint _ ts) =
-  concatMap freeTypeVars ts
+-- 制約の中の自由型変数を集める
+freeConstraintVars :: Constraint -> [Name]
+freeConstraintVars (Constraint _ ts) = concatMap freeTypeVars ts
+
+-- スキームの自由型変数
+freeTypeVarsScheme :: Scheme -> [Name]
+freeTypeVarsScheme (Forall vars t) = freeTypeVars t \\ vars
 
 -- 環境の自由型変数
-freeEnvVars :: TypeEnv -> [String]
-freeEnvVars (TypeEnv env) =
-  concatMap (\(Forall _ t) -> freeTypeVars t) (M.elems env)
+freeTypeVarsEnv :: TypeEnv -> [Name]
+freeTypeVarsEnv (TypeEnv env) =
+  nub (concatMap freeTypeVarsScheme (M.elems env))
 
--- 一般化：env の自由変数を除いた型変数を forall で束縛する
+-- 一般化：環境に現れない自由型変数を forall で束縛
 generalize :: TypeEnv -> Type -> Scheme
 generalize env t =
-  let envVars = freeEnvVars env
-      typeVars = freeTypeVars t
-      vars = filter (`notElem` envVars) typeVars
-   in Forall vars t
+  let vars = freeTypeVars t \\ freeTypeVarsEnv env
+   in Forall (nub vars) t
 
 -- 特殊化：forall を外し、新しい型変数に置き換える
-{-}
-instantiate :: Scheme -> Type
-instantiate (Forall vars t) =
-  let fresh v = TVar (v ++ "'") -- 簡易的な新しい型変数
-      s = M.fromList [(v, fresh v) | v <- vars]
-   in apply s t
--}
 instantiate :: Scheme -> Either InferError Type
 instantiate (Forall vars t) =
-  Right (freshen vars t)
+  let s = M.fromList [(v, TVar ("t_" ++ v)) | v <- vars]
+   in Right (apply s t)
 
-freshen :: [String] -> Type -> Type
+-- 型変数を新しい名前に置き換える（簡易版）
+freshen :: [Name] -> Type -> Type
 freshen vars t =
-  let newVars = M.fromList [(v, TVar ("t_" ++ v)) | v <- vars]
-   in apply newVars t
+  let s = M.fromList [(v, TVar ("t_" ++ v)) | v <- vars]
+   in apply s t
 
+-- 環境全体に置換を適用
 applyEnv :: Subst -> TypeEnv -> TypeEnv
 applyEnv s (TypeEnv env) =
   TypeEnv (M.map (\(Forall vs t) -> Forall vs (apply s t)) env)
 
+-- 初期のプリミティブ環境（必要に応じて使う）
 primitiveEnv :: TypeEnv
 primitiveEnv =
   TypeEnv
@@ -111,6 +115,8 @@ primitiveEnv =
         [ ("+", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
           ("-", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
           ("*", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
-          ("==", Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool"))))
+          ("==", Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),
+          ("True", Forall [] (TCon "Bool")),
+          ("False", Forall [] (TCon "Bool"))
         ]
     )

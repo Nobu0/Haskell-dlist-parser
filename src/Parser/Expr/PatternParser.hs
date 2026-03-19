@@ -73,11 +73,20 @@ makeCons = do
       )
         <|> return p
 
+{-}
 makeApp :: Parser Pattern
 makeApp = do
   p <- pAtom
   ps <- many pAtom
   return (PApp p ps)
+-}
+makeApp :: Parser Pattern
+makeApp = do
+  p <- pAtom
+  ps <- many pAtom
+  return $ case ps of
+    [] -> p
+    _ -> PApp p ps
 
 pAtom :: Parser Pattern
 pAtom = do
@@ -110,16 +119,6 @@ pInfix = chainl1 pAtom infixOp
       op <- try operatorI <|> operatorIAsName
       myTrace ("<< pInfix: op " ++ show op ++ " ct=" ++ show ct)
       return (\a b -> PInfix a op b)
-
-{-}
-pInfix :: Parser Pattern
-pInfix = do
-  e <- pAtom
-  xs <- do
-      op <- try operatorI <|> operatorIAsName
-      return (\a b -> PInfix a op b)
-  return e
--}
 
 pAs :: Parser Pattern
 pAs = do

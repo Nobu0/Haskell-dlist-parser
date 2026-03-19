@@ -2,6 +2,7 @@ module TypeInference.Infer.Expr.ExprDo (inferDo, inferStmt) where
 
 import AST.Expr
 import AST.Type
+import Data.Bifunctor (first)
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Infer.Expr.ExprLet (inferBindings)
@@ -11,12 +12,12 @@ import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
 
 inferDo ::
-  (TypeEnv -> Expr -> Either InferError (Subst, Type)) ->
+  (TypeEnv -> Expr -> InferM (Subst, Type)) ->
   TypeEnv ->
   [Stmt] ->
-  Either InferError (Subst, Type)
+  InferM (Subst, Type)
 inferDo inferExprFn env [] =
-  Left (InferOther "Empty do block")
+  lift $ Left (InferOther "Empty do block")
 inferDo inferExprFn env [ExprStmt e] =
   inferExprFn env e
 inferDo inferExprFn env (stmt : rest) = do
@@ -26,10 +27,10 @@ inferDo inferExprFn env (stmt : rest) = do
   return (s2 `composeSubst` s1, t2)
 
 inferStmt ::
-  (TypeEnv -> Expr -> Either InferError (Subst, Type)) ->
+  (TypeEnv -> Expr -> InferM (Subst, Type)) ->
   TypeEnv ->
   Stmt ->
-  Either InferError (Subst, TypeEnv)
+  InferM (Subst, TypeEnv)
 inferStmt inferExprFn env (ExprStmt e) = do
   (s, _) <- inferExprFn env e
   return (s, env)
@@ -38,9 +39,7 @@ inferStmt inferExprFn env (LetStmt binds) =
 inferStmt inferExprFn env (Bind pat e) = do
   (s1, t1) <- inferExprFn env e
   (s2, env2, tPat) <- inferPattern pat
-  s3 <- case unify t1 tPat of
-    Left uerr -> Left (InferUnifyError uerr)
-    Right s -> Right s
+  s3 <- lift $ first InferUnifyError (unify t1 tPat)
   let s = s3 `composeSubst` s2 `composeSubst` s1
   let env' = applyEnv s env2
   return (s, env')
