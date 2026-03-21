@@ -51,10 +51,17 @@ slexer = go
     ------------------------------------------------------------
     -- 数字
     ------------------------------------------------------------
-    go ('-' : c : rest)
-      | isDigit c =
+    {-}
+        go ('-' : c : rest)
+          | isDigit c =
+              let (digits, rest') = span isDigit rest
+               in TokNumber (read (c : digits)) : go rest'
+    -}
+    go ('-' : rest)
+      | not (null rest),
+        isDigit (head rest) =
           let (digits, rest') = span isDigit rest
-           in TokNumber (read (c : digits)) : go rest'
+           in TokNumber (read ('-' : digits)) : go rest'
     go (c : rest)
       | isDigit c =
           let (digits, rest') = span isDigit rest

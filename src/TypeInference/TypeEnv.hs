@@ -14,15 +14,15 @@ module TypeInference.TypeEnv
   )
 where
 
-import AST.Expr (Name)
-import AST.Type (Constraint (..), Type (..))
+-- mport AST.Expr (Name)
 import Data.List (nub, (\\))
 import qualified Data.Map as M
 import Debug.Trace (trace)
 import TypeInference.Error (InferError (..))
 import TypeInference.Subst (Subst, apply)
+import TypeInference.Type
 
--- import Utils.MyTrace -- (myTraceE)
+type Name = String
 
 -- 型スキーム：forall a b. t
 data Scheme = Forall [Name] Type
@@ -32,7 +32,7 @@ data Scheme = Forall [Name] Type
 newtype TypeEnv = TypeEnv (M.Map Name Scheme)
   deriving (Show, Eq)
 
--- 空の環境（必要に応じて primitiveEnv を使ってもOK）
+-- 空の環境
 emptyEnv :: TypeEnv
 emptyEnv = TypeEnv M.empty
 
@@ -44,32 +44,19 @@ extendEnv (TypeEnv env) x s = TypeEnv (M.insert x s env)
 lookupEnv :: TypeEnv -> Name -> Maybe Scheme
 lookupEnv (TypeEnv env) x = M.lookup x env
 
-{-}
 -- 型の自由型変数を集める
 freeTypeVars :: Type -> [Name]
-freeTypeVars (TVar v) = [v]
-freeTypeVars (TCon _) = []
-freeTypeVars (TArrow t1 t2) = freeTypeVars t1 ++ freeTypeVars t2
-freeTypeVars (TList t) = freeTypeVars t
-freeTypeVars (TApp t1 t2) = freeTypeVars t1 ++ freeTypeVars t2
-freeTypeVars (TConstraint cs t) = concatMap freeConstraintVars cs ++ freeTypeVars t
-freeTypeVars (TForall vs t) = filter (`notElem` vs) (freeTypeVars t)
-freeTypeVars (TTuple ts) = concatMap freeTypeVars ts
-freeTypeVars TUnit = []
--}
-
-freeTypeVars :: Type -> [Name]
-freeTypeVars t = trace (">> freeTypeVars: " ++ show t) $
-  case t of
-    TVar v -> [v]
-    TCon _ -> []
-    TArrow t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
-    TList t' -> freeTypeVars t'
-    TApp t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
-    TConstraint cs t' -> concatMap freeConstraintVars cs ++ freeTypeVars t'
-    TForall vs t' -> filter (`notElem` vs) (freeTypeVars t')
-    TTuple ts -> concatMap freeTypeVars ts
-    TUnit -> []
+freeTypeVars t = case t of
+  TVar v -> [v]
+  TCon _ -> []
+  TArrow t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
+  TList t' -> freeTypeVars t'
+  TApp t1 t2 -> freeTypeVars t1 ++ freeTypeVars t2
+  TConstraint cs t' -> concatMap freeConstraintVars cs ++ freeTypeVars t'
+  TForall vs t' -> filter (`notElem` vs) (freeTypeVars t')
+  TTuple ts -> concatMap freeTypeVars ts
+  TUnit -> []
+  TRecord fields -> concatMap freeTypeVars (M.elems fields)
 
 -- 制約の中の自由型変数を集める
 freeConstraintVars :: Constraint -> [Name]
@@ -95,12 +82,6 @@ instantiate :: Scheme -> Either InferError Type
 instantiate (Forall vars t) =
   let s = M.fromList [(v, TVar ("t_" ++ v)) | v <- vars]
    in Right (apply s t)
-
--- 型変数を新しい名前に置き換える（簡易版）
-freshen :: [Name] -> Type -> Type
-freshen vars t =
-  let s = M.fromList [(v, TVar ("t_" ++ v)) | v <- vars]
-   in apply s t
 
 -- 環境全体に置換を適用
 applyEnv :: Subst -> TypeEnv -> TypeEnv

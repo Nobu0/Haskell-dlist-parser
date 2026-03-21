@@ -9,11 +9,12 @@ import AST.Decl (Decl (..))
 -- import TypeInference.TypeEnv
 import AST.Expr (CaseAlt (..), Expr (..), Name, Stmt (..))
 import AST.Pattern (Pattern (..))
-import AST.Type (Type (..))
-import qualified Control.Exception as TypeInference
-import Control.Monad (foldM)
+-- import AST.Type (Type (..))
 -- import TypeInference.SQLInfer
 
+import qualified AST.Type as AST
+import qualified Control.Exception as TypeInference
+import Control.Monad (foldM)
 import Control.Monad.Trans.Class (lift)
 import Data.Bifunctor (first)
 import Data.IORef
@@ -24,6 +25,8 @@ import System.IO.Unsafe (unsafePerformIO)
 import TypeInference.Error (InferError (..))
 import TypeInference.Infer.Core
 import TypeInference.Subst
+import TypeInference.Type
+import qualified TypeInference.Type as TI
 import TypeInference.TypeEnv
 import TypeInference.Unify (UnifyError (..), unify)
 import Utils.MyTrace

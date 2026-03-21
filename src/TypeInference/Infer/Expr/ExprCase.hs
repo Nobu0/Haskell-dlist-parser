@@ -1,13 +1,16 @@
 module TypeInference.Infer.Expr.ExprCase (inferCase) where
 
 import AST.Expr
-import AST.Type
+-- import AST.Type
 import Control.Monad (foldM)
 import Data.Bifunctor (first)
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
+-- import qualified TypeInference.Type as TI
+
+import TypeInference.Type
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
 
@@ -42,6 +45,6 @@ unifyManyExpr ((s, t) : xs) = foldM step (s, t) xs
     step (sAcc, tAcc) (sNext, tNext) = do
       sU <- case unify (apply sAcc tAcc) (apply sAcc tNext) of
         Left uerr -> lift $ Left (InferUnifyError uerr)
-        Right su  -> return su
+        Right su -> return su
       let sFinal = sU `composeSubst` sNext `composeSubst` sAcc
       return (sFinal, apply sFinal tAcc)

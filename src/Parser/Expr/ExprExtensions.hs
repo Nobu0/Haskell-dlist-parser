@@ -123,21 +123,21 @@ postfix e = do
         Just binds -> postfix (EWhere e binds)
         Nothing -> return e
 
--- postfixで参照
+-- postfixで参照後置
 operatorA :: Parser String
 operatorA = satisfyToken isOp
   where
     isOp (TokOperator s)
-      | s `elem` ["<$>", "..", ":", "$"] = Just s
+      | s `elem` ["<$>", "..", "$"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 
--- infixで参照
+-- infixで参照中置
 operatorB :: Parser String
 operatorB = satisfyToken isOp
   where
     isOp (TokOperator s)
-      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*", "&&", "||", "<|>", "<+>", "<>", "\\"] = Just s
+      | s `elem` [".", ">>", "++", "<?>", ">>=", "*>", "<$", "<*>", "<*", "&&", "||", "<|>", "<+>", "<>", "\\", ":", "-"] = Just s
       | otherwise = Nothing
     isOp _ = Nothing
 

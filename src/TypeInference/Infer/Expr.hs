@@ -9,8 +9,10 @@ import AST.Decl (Decl (..), FunClause (..))
 import AST.Expr
 import AST.Expr (CaseAlt (..), Expr (..), Name, Stmt (..))
 import AST.Pattern (Pattern (..))
-import AST.Type
-import AST.Type (Type (..))
+-- import AST.Type
+-- import AST.Type (Type (..))
+
+import qualified AST.Type as AST
 import qualified Control.Exception as TypeInference
 -- (setTrace)
 -- import TypeInference.Types
@@ -27,6 +29,8 @@ import TypeInference.Infer.Expr.ExprDispatch (inferExpr)
 import TypeInference.Infer.Expr.ExprSQL
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
+import TypeInference.Type
+import qualified TypeInference.Type as TI
 import TypeInference.TypeEnv
 import qualified TypeInference.TypeEnv as TypeEnv
 import qualified TypeInference.Types as Types
@@ -40,17 +44,16 @@ inferProgram env decls = do
   let groups = groupDecls decls
   myTraceE ("<< inferProgram: groups " ++ show groups)
   foldM
-    ( \env (name, (clauses, mTy)) -> do
-        (_s, env') <- inferFunGroup env name clauses mTy
-        return env'
-        --     Nothing -> do
-        --       (_s, env') <- inferFunGroup env clauses name mTy
-        --       return env'
+    ( \env (name, (clauses, mTy)) ->
+        let mTy' = fmap convertType mTy
+         in do
+              (_s, env') <- inferFunGroup env name clauses mTy'
+              return env'
     )
     env
     (M.toList groups)
 
-inferFunGroup :: TypeEnv -> String -> [FunClause] -> Maybe Type -> InferM (Subst, TypeEnv)
+inferFunGroup :: TypeEnv -> String -> [FunClause] -> Maybe TI.Type -> InferM (Subst, TypeEnv)
 inferFunGroup env name clauses mTy = do
   myTraceE ("<< inferGroup: clauses " ++ show clauses)
   -- 1. 関数の型（明示 or fresh）を決定
@@ -59,7 +62,8 @@ inferFunGroup env name clauses mTy = do
     Nothing -> freshType
 
   -- 2. 関数名と型スキームを環境に追加（再帰対応！）
-  let scheme = TypeEnv.generalize env ty
+  -- let scheme = TypeEnv.generalize env ty
+  let scheme = Forall [] ty
       env' = extendEnv env name scheme
 
   myTraceE $ "<< inferFunGroup: extended env with " ++ name ++ " :: " ++ show scheme
@@ -78,16 +82,6 @@ inferFunGroup env name clauses mTy = do
 
   return (sFinal, envFinal)
 
-{-}
-inferFunClauses :: TypeEnv -> [FunClause] -> InferM (Subst, Type)
-inferFunClauses env clauses = do
-  myTraceE ("<< inferFunClauses: clauses " ++ show clauses)
-  results <- mapM (inferFunClause env) clauses
-  let (subs, types) = unzip results
-  s <- foldM composeSubstM emptySubst subs
-  t <- unifyManyM types
-  return (s, t)
--}
 inferFunClauses :: TypeEnv -> [FunClause] -> InferM (Subst, Type)
 inferFunClauses env clauses = do
   -- 1. 引数の数を確認
@@ -101,6 +95,7 @@ inferFunClauses env clauses = do
   let expectedType = foldr TArrow retType argTypes
 
   -- 3. 関数名を仮に使うために環境に追加（再帰対応）
+  -- let scheme = Forall [] (convertType (env expectedType))
   let scheme = TypeEnv.generalize env expectedType
       env' = extendEnv env "__self__" scheme -- "__self__" は仮の関数名（必要に応じて変更）
 
@@ -193,7 +188,7 @@ inferDecl env decl = do
   myTraceE ("<< inferDecl: decl " ++ show decl)
   case decl of
     DeclTypeSig name ty ->
-      let scheme = Forall [] ty
+      let scheme = Forall [] (convertType ty)
        in return (extendEnv env name scheme, emptySubst)
     DeclFunGroup name [FunClause pats _guards (Just body) _where] -> do
       (sPats, envPats, argTypes) <- inferPatterns pats
@@ -213,7 +208,7 @@ inferDecl env decl = do
 lookupTypeSig :: Name -> [Decl] -> Maybe Type
 lookupTypeSig name decls =
   case [ty | DeclTypeSig n ty <- decls, n == name] of
-    (ty : _) -> Just ty
+    (ty : _) -> Just (convertType ty)
     [] -> Nothing
 
 generalize :: TypeEnv -> Type -> Scheme
@@ -221,4 +216,18 @@ generalize env t =
   let vars = freeTypeVars t \\ freeTypeVarsEnv env
    in Forall (nub vars) t
 
--- import TypeInference.TypeEnv (freeTypeVars, freeTypeVarsEnv)
+convertType :: AST.Type -> TI.Type
+convertType astTy = case astTy of
+  AST.TVar v -> TI.TVar v
+  AST.TCon c -> TI.TCon c
+  AST.TArrow a b -> TI.TArrow (convertType a) (convertType b)
+  AST.TList t -> TI.TList (convertType t)
+  AST.TApp f x -> TI.TApp (convertType f) (convertType x)
+  AST.TTuple ts -> TI.TTuple (map convertType ts)
+  AST.TUnit -> TI.TUnit
+  AST.TBinOp op a b -> TI.TBinOp op (convertType a) (convertType b)
+  AST.TConstraint cs t -> TI.TConstraint (map convertConstraint cs) (convertType t)
+  AST.TForall vs t -> TI.TForall vs (convertType t)
+
+convertConstraint :: AST.Constraint -> TI.Constraint
+convertConstraint (AST.Constraint cls ts) = TI.Constraint cls (map convertType ts)

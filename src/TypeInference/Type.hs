@@ -1,6 +1,7 @@
 module TypeInference.Type where
 
-{-# COMPLETE TVar, TCon, TArrow, TList, TApp, TConstraint, TForall, TTuple, TUnit #-}
+import AST.BinOp (BinOp (..))
+import qualified Data.Map as Map
 
 data Type
   = TVar String
@@ -12,8 +13,9 @@ data Type
   | TForall [String] Type
   | TTuple [Type]
   | TUnit
+  | TBinOp BinOp Type Type
+  | TRecord (Map.Map String Type)
   deriving (Eq, Show)
 
--- Constraint の定義がまだ無い場合は仮で置く
-data Constraint = Constraint String
+data Constraint = Constraint String [Type]
   deriving (Eq, Show)

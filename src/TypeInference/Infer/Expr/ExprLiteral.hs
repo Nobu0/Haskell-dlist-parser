@@ -8,12 +8,15 @@ module TypeInference.Infer.Expr.ExprLiteral
 where
 
 import AST.Expr
-import AST.Type
+-- import AST.Type
 import Control.Monad (mapM)
 import Data.Bifunctor (first)
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Subst
+-- import qualified TypeInference.Type as TI
+
+import TypeInference.Type
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
 

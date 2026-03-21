@@ -17,7 +17,7 @@ import AST.Expr (BinOp (..), Expr (..))
 import Control.Applicative (empty, many, optional, (<|>))
 -- import Text.ParserCombinators.ReadP (skipSpaces)
 
-import Data.List (intercalate)
+import Data.List (find, intercalate)
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
@@ -26,25 +26,81 @@ import Parser.SQL.SQLParser
 import Parser.Type.TypeParser (typeIdent)
 import Utils.MyTrace
 
--- ============================================
---  exprCore（純粋な式パーサー）
--- ============================================
+data Assoc = LeftAssoc | RightAssoc deriving (Eq, Show)
+
+data BinOpInfo = BinOpInfo
+  { opSymbol :: String,
+    opConstructor :: BinOp,
+    opPrecedence :: Int,
+    opAssoc :: Assoc
+  }
+
+operatorTable :: [BinOpInfo]
+operatorTable =
+  [ BinOpInfo "*" BinOpMul 7 LeftAssoc,
+    BinOpInfo "/" BinOpDiv 7 LeftAssoc,
+    BinOpInfo "+" BinOpAdd 6 LeftAssoc,
+    BinOpInfo "-" BinOpSub 6 LeftAssoc,
+    BinOpInfo ">" BinOpGt 4 LeftAssoc,
+    BinOpInfo "<" BinOpLt 4 LeftAssoc,
+    BinOpInfo ">=" BinOpGe 4 LeftAssoc,
+    BinOpInfo "<=" BinOpLe 4 LeftAssoc,
+    BinOpInfo "==" BinOpEq 4 LeftAssoc,
+    BinOpInfo "/=" BinOpNeq 4 LeftAssoc,
+    BinOpInfo "&&" BinOpAnd 3 RightAssoc,
+    BinOpInfo "||" BinOpOr 2 RightAssoc
+  ]
+
+operatorBinOpInfo :: Parser BinOpInfo
+operatorBinOpInfo = satisfyToken matchOp
+  where
+    matchOp (TokOperator s) = find (\op -> opSymbol op == s) operatorTable
+    matchOp _ = Nothing
+
+opChainPrec ::
+  -- | minimum precedence
+  Int ->
+  Parser BinOpInfo ->
+  (BinOp -> Expr -> Expr -> Expr) ->
+  Expr ->
+  Parser Expr
+opChainPrec minPrec opParser makeExpr lhs = do
+  mOp <- optional opParser
+  case mOp of
+    Just opInfo | opPrecedence opInfo >= minPrec -> do
+      let nextMinPrec = case opAssoc opInfo of
+            LeftAssoc -> opPrecedence opInfo + 1
+            RightAssoc -> opPrecedence opInfo
+      rhs <- exprCore
+      let combined = makeExpr (opConstructor opInfo) lhs rhs
+      opChainPrec minPrec opParser makeExpr combined
+    _ -> return lhs
+
+-- 改造バージョン
 exprCore :: Parser Expr
-exprCore = do
+exprCore = exprCoreWithOp <|> exprCore2 <|> atomCore
+
+exprCoreWithOp :: Parser Expr
+exprCoreWithOp = do
+  base <- appExprCore -- <|> exprCore2
+  -- skipSeparatorsZ
+  opChainPrec 0 operatorBinOpInfo EBinOp base
+
+{-}
+-- 最下層：関数適用やリテラル、変数など
+exprLevel3Core :: Parser Expr
+exprLevel3Core = do
+  try lambdaExpr <|> appExprCore
+-}
+
+exprCore2 :: Parser Expr
+exprCore2 = do
   rt <-
     try lambdaExpr
-      <|> try binOpExprCore
+      -- <|> appExprCore
       <|> parseSQL
-  -- t <- lookAhead anyToken
-  -- myTrace (">>*exprCore: rt " ++ show rt)
+      <|> unaryExpr
   return rt
-
-pRecordExpr :: Parser Expr
-pRecordExpr = do
-  symbol "{"
-  fields <- sepBy1 field (symbol ",")
-  symbol "}"
-  return (ERecord fields)
 
 field :: Parser (String, Expr)
 field = do
@@ -53,35 +109,12 @@ field = do
   value <- exprCore
   return (name, value)
 
--- ===== 演算子階層 =====
-
-binOpExprCore :: Parser Expr
-binOpExprCore = do
-  exprCmpCore
-
--- 比較演算子（左結合）
-exprCmpCore :: Parser Expr
-exprCmpCore = chainl1 exprLevel1Core (binOp [">", "<", ">=", "<=", "==", "/="])
-
--- 加算・連結・Cons（+, -, ++, :）
--- ここは結合性に応じて分けるのがベスト！
-exprLevel1Core :: Parser Expr
-exprLevel1Core = do
-  e <- chainl1 exprAddSubCore (binOp ["+", "-", "++", ":", "*>", "<$", "<*", "<$>", "<|>"])
-  -- chainr1 (return e) (binOp ["++", ":"])
-  return e
-
--- 乗算・除算・関数合成（* / .）
-exprAddSubCore :: Parser Expr
-exprAddSubCore = do
-  e <- chainl1 exprLevel3Core (binOp ["*", "/"])
-  -- chainr1 (return e) (binOp ["."])
-  return e
-
--- 最下層：関数適用やリテラル、変数など
-exprLevel3Core :: Parser Expr
-exprLevel3Core = do
-  try lambdaExpr <|> appExprCore
+pRecordExpr :: Parser Expr
+pRecordExpr = do
+  symbol "{"
+  fields <- sepBy1 field (symbol ",")
+  symbol "}"
+  return (ERecord fields)
 
 -- ============================================
 --  関数適用
@@ -90,9 +123,7 @@ exprLevel3Core = do
 appExprCore :: Parser Expr
 appExprCore = do
   f <- atomCore
-  -- bracesVO $ do
   args <- many atomCore
-  -- myTrace (">>*appExprCore: f= " ++ show f ++ " args= " ++ show args)
   return (foldl EApp f args)
 
 -- ============================================
@@ -100,20 +131,9 @@ appExprCore = do
 -- ============================================
 
 atomCore :: Parser Expr
-atomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
+atomCore = parens parenExprCore <|> atomBaseCore
 
-atomCorex :: Parser Expr
-atomCorex = do
-  t <- lookAhead anyToken
-  case t of
-    TokSymbol "}" -> empty
-    TokSymbol ";" -> empty
-    TokSymbol "$" -> empty
-    -- TokVRBrace -> empty
-    TokLambdaCase -> empty
-    _ ->
-      try (parens parenExprCore)
-        <|> atomBaseCore
+-- atomCore = notFollowedBy badToken *> (parens parenExprCore <|> atomBaseCore)
 
 badToken :: Parser ()
 badToken =
@@ -149,7 +169,6 @@ atomBaseCore =
     <|> EVar <$> ident
     <|> EInt <$> int
     <|> emptyListExpr
-    <|> unaryExpr
     <|> tunitExpr
     <|> EVarType <$> typeIdent
     <|> (ellipsis >> return EPlaceholder)
@@ -159,7 +178,10 @@ atomBaseCore =
     <|> operatorIAsExpr
     <|> pRecordExpr
     <|> parensOperatorVar
-    <|> operatorVar
+
+-- <|> unaryExpr
+
+-- <|> operatorVar
 
 keywordExpr :: Parser Expr
 keywordExpr =
@@ -175,11 +197,18 @@ keywordExprFalse = do
   token (TokKeyword "False")
   return (EBool False)
 
+{-}
 unaryExpr :: Parser Expr
 unaryExpr = do
   symbol "-"
   e <- atomBaseCore
   return (EOpSectionL "-" e) -- または EUnaryMinus e
+-}
+unaryExpr :: Parser Expr
+unaryExpr = do
+  symbol "-"
+  e <- atomBaseCore
+  return (EBinOp BinOpSub (EInt 0) e)
 
 operatorIAsExpr :: Parser Expr
 operatorIAsExpr = do

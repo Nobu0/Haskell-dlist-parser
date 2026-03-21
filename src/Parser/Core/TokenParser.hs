@@ -320,6 +320,7 @@ parseBinOp s = case s of
   "\\" -> Just BinOpListDiff
   _ -> Nothing
 
+{-}
 operator :: Parser String
 operator = choice (map (\s -> symbol s >> return s) allOps)
   where
@@ -336,6 +337,32 @@ operator = choice (map (\s -> symbol s >> return s) allOps)
         "<",
         ":"
       ]
+-}
+{-}
+symbol :: String -> Parser Token
+symbol s =
+  satisfy
+    ( \tok -> case tok of
+        TokSymbol sym -> sym == s
+        _ -> False
+    )
+-}
+operator :: Parser BinOp
+operator =
+  choice
+    [ BinOpAdd <$ symbol "+",
+      BinOpSub <$ symbol "-",
+      BinOpMul <$ symbol "*",
+      BinOpDiv <$ symbol "/",
+      BinOpEq <$ symbol "==",
+      BinOpNeq <$ symbol "/=",
+      BinOpLe <$ symbol "<=",
+      BinOpGe <$ symbol ">=",
+      BinOpLt <$ symbol "<",
+      BinOpGt <$ symbol ">",
+      BinOpAnd <$ symbol "&&",
+      BinOpOr <$ symbol "||"
+    ]
 
 -- importに関係する
 operatorI :: Parser String

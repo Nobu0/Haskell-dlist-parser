@@ -155,7 +155,10 @@ testCasesDo =
     ("temp", "filter (not . (`elem` [' ', '\\n', '\\t']))"),
     ("temp", "do { let f = filter (not . (`elem` [' ', '\\n', '\\t']))}"),
     ("func[]", "z [] where z [] = []"),
-    ("func[]", "z [] where z arg; | [] = [] ;| _ = []")
+    ("", "(* 2) (2 *) (> 3) (3 >)"),
+    ("", "r { f = (1 +) }"),
+    ("", "({ x = 1 } +)"),
+    ("unary ", "{x = -1}")
   ]
 
 {-}

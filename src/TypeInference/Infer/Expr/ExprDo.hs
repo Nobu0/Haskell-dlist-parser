@@ -1,13 +1,16 @@
 module TypeInference.Infer.Expr.ExprDo (inferDo, inferStmt) where
 
 import AST.Expr
-import AST.Type
+-- import AST.Type
 import Data.Bifunctor (first)
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Infer.Expr.ExprLet (inferBindings)
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
+-- import qualified TypeInference.Type as TI
+
+import TypeInference.Type
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
 

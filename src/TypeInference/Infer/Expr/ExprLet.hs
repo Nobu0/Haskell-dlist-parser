@@ -9,7 +9,7 @@ where
 
 import AST.Expr
 import AST.Pattern
-import AST.Type
+-- import AST.Type
 import Control.Monad (foldM)
 import Data.Bifunctor (first)
 import qualified Data.Map as M
@@ -17,6 +17,9 @@ import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
+-- import qualified TypeInference.Type as TI
+
+import TypeInference.Type
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
 

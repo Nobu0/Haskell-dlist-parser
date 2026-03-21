@@ -1,11 +1,13 @@
 module TypeInference.Infer.Expr.ExprApp (inferApp) where
 
 import AST.Expr
-import AST.Type
+-- import AST.Type
 import Data.Bifunctor (first)
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Subst
+import TypeInference.Type
+-- import qualified TypeInference.Type as TI
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
 

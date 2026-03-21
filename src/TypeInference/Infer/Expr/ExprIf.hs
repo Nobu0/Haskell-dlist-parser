@@ -4,8 +4,8 @@ module TypeInference.Infer.Expr.ExprIf
 where
 
 import AST.Expr
-import AST.Pattern
-import AST.Type
+-- import AST.Pattern
+-- import AST.Type
 import Control.Monad (foldM)
 -- import TypeInference.Infer.Expr.CoreExpr (inferExpr)
 -- import TypeInference.Infer.Expr.ExprLet (inferBinding, inferBindings)
@@ -15,6 +15,9 @@ import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
+-- import qualified TypeInference.Type as TI
+
+import TypeInference.Type
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
 

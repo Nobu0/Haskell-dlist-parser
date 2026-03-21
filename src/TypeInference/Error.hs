@@ -1,6 +1,8 @@
 module TypeInference.Error where
 
-import AST.Type (Type (..))
+-- import AST.Type (Type (..))
+
+import TypeInference.Type
 import TypeInference.Unify (UnifyError)
 
 -- 型推論全体で使うエラー型

@@ -4,12 +4,14 @@ module TypeInference.Pretty (prettyType, prettyPrintBinOp, Pretty (..), prettySc
 
 import AST.BinOp (BinOp (..))
 import qualified AST.BinOp as B
-import AST.Type (Type (..))
-import qualified AST.Type as TI
+-- import AST.Type (Type (..))
+import qualified AST.Type as AST
 import Prettyprinter
 import Prettyprinter (Pretty (..), parens, pretty, (<+>))
 import Prettyprinter.Render.Terminal (putDoc)
-import TypeInference.TypeEnv (Scheme (..)) -- Scheme の定義があるモジュールをインポート
+-- Scheme の定義があるモジュールをインポート
+import TypeInference.Type
+import TypeInference.TypeEnv (Scheme (..))
 
 prettyScheme :: Scheme -> String
 prettyScheme (Forall [] ty) = prettyType ty
@@ -56,13 +58,13 @@ instance Pretty Type where
         pretty "forall" <+> hsep (map pretty vs) <> pretty "." <+> pretty t
       TTuple ts ->
         tupled (map pretty ts)
-      TBinOp op t1 t2 ->
-        parens (pretty t1 <+> pretty (prettyPrintBinOp op) <+> pretty t2)
+      -- TBinOp op t1 t2 ->
+      --  parens (pretty t1 <+> pretty (prettyPrintBinOp op) <+> pretty t2)
       TConstraint cs t ->
         parens (hsep (punctuate (pretty ",") (map (pretty . show) cs))) <+> pretty "=>" <+> pretty t
       TArrow a b -> parens (pretty a <+> pretty "->" <+> pretty b)
 
-prettyType :: TI.Type -> String
+prettyType :: Type -> String
 prettyType ty = do
   case ty of
     TVar v -> v
@@ -73,8 +75,8 @@ prettyType ty = do
     TApp a b -> prettyType a ++ " " ++ prettyType b
     TForall vs t -> "forall " ++ unwords vs ++ ". " ++ prettyType t
     TTuple ts -> "(" ++ commaList (map prettyType ts) ++ ")"
-    TBinOp op t1 t2 ->
-      "(" ++ prettyType t1 ++ " " ++ prettyPrintBinOp op ++ " " ++ prettyType t2 ++ ")"
+    -- TBinOp op t1 t2 ->
+    --  "(" ++ prettyType t1 ++ " " ++ prettyPrintBinOp op ++ " " ++ prettyType t2 ++ ")"
     TConstraint cs t ->
       "(" ++ commaList (map show cs) ++ ") => " ++ prettyType t
     TArrow a b -> "(" ++ prettyType a ++ " -> " ++ prettyType b ++ ")"

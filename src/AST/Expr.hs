@@ -67,8 +67,8 @@ data Expr
   | EUnit
   | ERecord [(String, Expr)]
   | ERecordUpdate Expr [(String, Expr)]
-  | EOpSectionL String Expr
-  | EOpSectionR Expr String
+  | EOpSectionL BinOp Expr
+  | EOpSectionR Expr BinOp
   | EPlaceholder
   | EWhere Expr [Binding]
   | ELambdaCase [CaseAlt] -- [(Pattern, Expr)]
