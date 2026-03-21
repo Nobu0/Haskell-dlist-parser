@@ -1,9 +1,7 @@
 module AST.Module where
 
 import AST.Decl (Decl)
-import AST.Type
-
-type Name = String
+import AST.Type (Name, Type)
 
 data Module
   = Module

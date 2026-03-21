@@ -1,6 +1,7 @@
 module AST.Pattern where
 
-type Name = String
+-- type Name = String
+import AST.Type (Name)
 
 data Pattern
   = PVar Name

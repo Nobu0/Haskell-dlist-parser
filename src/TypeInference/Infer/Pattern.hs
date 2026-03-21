@@ -15,6 +15,7 @@ import AST.Pattern (Pattern (..))
 import qualified AST.Type as AST
 import qualified Control.Exception as TypeInference
 import Control.Monad (foldM)
+import Control.Monad.Except (throwError)
 import Control.Monad.Trans.Class (lift)
 import Data.Bifunctor (first)
 import Data.IORef
@@ -29,11 +30,12 @@ import TypeInference.Type
 import qualified TypeInference.Type as TI
 import TypeInference.TypeEnv
 import TypeInference.Unify (UnifyError (..), unify)
+import qualified TypeInference.Unify as Unify
 import Utils.MyTrace
 
 inferPattern :: Pattern -> InferM (Subst, TypeEnv, Type)
 inferPattern pat = do
-  myTraceE ("<< infrePattern: pat " ++ show pat)
+  -- myTraceE ("<< infrePattern: pat " ++ show pat)
   case pat of
     -- 変数パターン
     PVar x -> do
@@ -41,6 +43,24 @@ inferPattern pat = do
       let env = extendEnv emptyEnv x (Forall [] tv)
       return (emptySubst, env, tv)
 
+    -- PApp の一般形（引数あり）
+    PApp fnPat args -> do
+      -- 関数名と引数のパターンを推論
+      (sFn, envFn, fnType) <- inferPattern fnPat
+      (sArgs, envArgs, argTypes) <- inferPatterns args
+
+      -- 関数の型を構築：arg1 -> arg2 -> ... -> retType
+      retType <- freshTypeVar
+      let expectedFnType = foldr TArrow retType argTypes
+
+      -- unify して型を合わせる
+      sUnify <- unifyM (apply sArgs fnType) expectedFnType
+
+      let sAll = sUnify `composeSubst` sArgs `composeSubst` sFn
+          envCombined = mergeEnvs envFn (applyEnv sFn envArgs)
+
+      return (sAll, applyEnv sAll envCombined, apply sAll retType)
+    {-}
     -- 単一変数の PApp パターン
     PApp (PVar x) [] -> do
       tv <- freshTypeVar
@@ -49,6 +69,7 @@ inferPattern pat = do
 
     -- PApp の一般形（引数なし）
     PApp p [] -> inferPattern p
+    -}
     -- 整数リテラル
     PInt _ ->
       return (emptySubst, emptyEnv, TCon "Int")
@@ -106,6 +127,12 @@ inferPattern pat = do
       (s1, env1, t1) <- inferPattern p
       let env2 = extendEnv env1 name (Forall [] t1)
       return (s1, env2, t1)
+
+unifyM :: Type -> Type -> InferM Subst
+unifyM t1 t2 =
+  case Unify.unify t1 t2 of
+    Left err -> throwError (InferUnifyError err)
+    Right s -> return s
 
 inferPatternApp :: Type -> [Pattern] -> InferM (Subst, TypeEnv, Type)
 inferPatternApp tCon [] =

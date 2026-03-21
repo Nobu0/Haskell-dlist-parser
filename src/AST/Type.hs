@@ -2,6 +2,8 @@ module AST.Type where
 
 import AST.BinOp
 
+type Name = String
+
 data Type
   = TVar String
   | TCon String

@@ -12,9 +12,7 @@ where
 
 import AST.BinOp (BinOp (..))
 import AST.Pattern (Pattern)
-import AST.Type (Type)
-
-type Name = String
+import AST.Type (Name, Type)
 
 -- Binding
 type Binding = (Pattern, Expr)

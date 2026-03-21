@@ -22,7 +22,7 @@ import TypeInference.Error (InferError (..))
 import TypeInference.Subst (Subst, apply)
 import TypeInference.Type
 
-type Name = String
+-- type Name = String
 
 -- 型スキーム：forall a b. t
 data Scheme = Forall [Name] Type

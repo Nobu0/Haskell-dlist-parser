@@ -11,17 +11,23 @@ import AST.Expr
 import AST.Pattern
 -- import AST.Type
 import Control.Monad (foldM)
+-- import qualified TypeInference.Type as TI
+
+-- import TypeInference.Types
+
+import Control.Monad.Except (liftEither, throwError)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
 import Data.Bifunctor (first)
 import qualified Data.Map as M
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
--- import qualified TypeInference.Type as TI
-
-import TypeInference.Type
+import TypeInference.Type (Type (..))
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
+import Utils.MyTrace (myTraceE)
 
 inferLet ::
   (TypeEnv -> Expr -> InferM (Subst, Type)) ->
@@ -76,19 +82,95 @@ inferWhere ::
   [(Pattern, Expr)] ->
   InferM (Subst, Type)
 inferWhere inferExprFn env e binds = do
+  myTraceE $ "<< inferWhere:* binds count = " ++ show (length binds)
+
+  -- 1. binds を先に処理して環境に追加！
+  (s1, env') <-
+    foldM
+      ( \(sAcc, envAcc) (pat, expr) -> do
+          -- myTraceE $ "<< inferBinding: pat = " ++ show pat
+          (sNew, envNext) <- inferBinding inferExprFn envAcc (pat, expr)
+          let sCombined = sNew `composeSubst` sAcc
+          return (sCombined, envNext)
+      )
+      (emptySubst, env)
+      binds
+
+  -- 2. 拡張された環境で本体を推論！
+  (s2, t2) <- inferExprFn (applyEnv s1 env') e
+
+  return (s2 `composeSubst` s1, t2)
+
+{-}
+inferWhere inferExprFn env e binds = do
+  myTraceE $ "<< inferWhere:* binds " ++ show binds
+  myTraceE $ "<< inferWhere:* binds count = " ++ show (length binds)
   (s1, t1) <- inferExprFn env e
-  _ <- foldM (inferBinding inferExprFn) (applyEnv s1 env) binds
-  return (s1, t1)
+  -- ここで foldM の結果を使うようにする！
+  (sFinal, env') <-
+    foldM
+      ( \(sAcc, envAcc) (pat, expr) -> do
+          myTraceE $ "<< inferBinding: pat = " ++ show pat
+          (sNew, envNext) <- inferBinding inferExprFn envAcc (pat, expr)
+          let sCombined = sNew `composeSubst` sAcc
+          return (sCombined, envNext)
+      )
+      (s1, applyEnv s1 env)
+      binds
+
+  -- 拡張された環境で再度本体を推論してもよい（必要なら）
+  -- (s2, t2) <- inferExprFn env'
+  -- return (s2 `composeSubst` sFinal, t2)
+
+  -- 今は元の推論結果を返す
+  return (sFinal, t1)
+-}
 
 inferBinding ::
   (TypeEnv -> Expr -> InferM (Subst, Type)) ->
   TypeEnv ->
   (Pattern, Expr) ->
-  InferM TypeEnv
+  InferM (Subst, TypeEnv)
 inferBinding inferExprFn env (pat, expr) = do
-  (s1, t1) <- inferExprFn env expr
-  (s2, env2, tPat) <- inferPattern pat
-  s3 <- lift $ first InferUnifyError (unify t1 tPat)
-  let s = s3 `composeSubst` s2 `composeSubst` s1
-  let env' = applyEnv s env2
-  return env'
+  myTraceE $ "<< inferBinding: pat = " ++ show pat
+
+  -- 1. パターンから型と環境を推論
+  (sPat, envFromPat, patType) <- inferPattern pat
+
+  -- 2. 式を推論
+  (sExpr, exprType) <- inferExprFn (applyEnv sPat envFromPat) expr
+
+  -- 3. パターンの型と式の型を unify
+  -- sUnify <- unify (apply sExpr patType) exprType
+  sUnify <- liftEither (mapLeft InferUnifyError $ unify (apply sExpr patType) exprType)
+
+  -- 4. 環境を構築
+  let sAll = sUnify `composeSubst` sExpr `composeSubst` sPat
+  let finalEnv = applyEnv sAll envFromPat
+  let name = nameFromPat pat
+  let scheme = generalize (applyEnv sAll env) (apply sAll exprType)
+  let env' = extendEnv env name scheme
+
+  -- myTraceE $ ">> binding name = " ++ name ++ ", scheme = " ++ show scheme
+  return (sAll, env')
+
+mapLeft :: (e -> e') -> Either e a -> Either e' a
+mapLeft f (Left e) = Left (f e)
+mapLeft _ (Right x) = Right x
+
+{-}
+nameFromPat :: Pattern -> Name
+nameFromPat (PVar name) = name
+nameFromPat (PApp (PVar name) _) = name
+nameFromPat (PApp (PConstr name _) _) = name
+nameFromPat (PApp pat _) = nameFromPat pat
+nameFromPat (PCons pat1 _) = nameFromPat pat1
+nameFromPat pat = error $ "nameFromPat: unsupported pattern " ++ show pat
+-}
+
+nameFromPat :: Pattern -> Name
+nameFromPat (PVar name) = name
+nameFromPat (PApp (PVar name) _) = name
+nameFromPat (PApp pat _) = nameFromPat pat
+nameFromPat (PCons pat1 _) = nameFromPat pat1
+nameFromPat pat = error $ "nameFromPat: unsupported pattern " ++ show pat

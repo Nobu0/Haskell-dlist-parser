@@ -7,7 +7,7 @@ where
 
 import AST.Decl (Decl (..), FunClause (..))
 import AST.Expr
-import AST.Expr (CaseAlt (..), Expr (..), Name, Stmt (..))
+import AST.Expr (CaseAlt (..), Expr (..), Stmt (..))
 import AST.Pattern (Pattern (..))
 -- import AST.Type
 -- import AST.Type (Type (..))
@@ -29,7 +29,7 @@ import TypeInference.Infer.Expr.ExprDispatch (inferExpr)
 import TypeInference.Infer.Expr.ExprSQL
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
-import TypeInference.Type
+import TypeInference.Type (Type)
 import qualified TypeInference.Type as TI
 import TypeInference.TypeEnv
 import qualified TypeInference.TypeEnv as TypeEnv
@@ -92,7 +92,7 @@ inferFunClauses env clauses = do
   -- 2. 共通の引数型変数を生成
   argTypes <- replicateM arity freshTypeVar
   retType <- freshTypeVar
-  let expectedType = foldr TArrow retType argTypes
+  let expectedType = foldr TI.TArrow retType argTypes
 
   -- 3. 関数名を仮に使うために環境に追加（再帰対応）
   -- let scheme = Forall [] (convertType (env expectedType))
@@ -132,7 +132,7 @@ inferFunClauseWithArgs env argTypes retType (FunClause pats _mbGuards (Just body
   sRet <- lift $ first InferUnifyError $ unify (apply sBody retType) tBody
 
   let s = sRet `composeSubst` sBody `composeSubst` sPats
-      funType = foldr TArrow tBody argTypes
+      funType = foldr TI.TArrow tBody argTypes
 
   return (s, funType)
 inferFunClauseWithArgs _ _ _ (FunClause _ _ Nothing _) =
@@ -177,7 +177,7 @@ inferFunClause env (FunClause pats _mbGuards (Just body) _mbWhere) = do
   -- let env' = mergeEnvs env envPats
   -- (sBody, tBody) <- inferExpr (applyEnv sPats env') body
   let s = composeSubst sBody sPats
-  let funType = foldr TArrow tBody argTypes
+  let funType = foldr TI.TArrow tBody argTypes
   return (s, funType)
 inferFunClause _ (FunClause _ _ Nothing _) =
   lift $ Left (InferOther "Function clause missing body")
@@ -194,7 +194,7 @@ inferDecl env decl = do
       (sPats, envPats, argTypes) <- inferPatterns pats
       let env' = mergeEnvs env envPats
       (sBody, tBody) <- inferExpr (applyEnv sPats env') body
-      let funType = foldr TArrow tBody argTypes
+      let funType = foldr TI.TArrow tBody argTypes
       let s = composeSubst sBody sPats
       let scheme = generalizeInfer env (apply s funType)
       return (extendEnv env name scheme, s)
