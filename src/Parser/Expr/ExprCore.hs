@@ -82,7 +82,7 @@ exprCore = exprCoreWithOp <|> exprCore2 <|> atomCore
 
 exprCoreWithOp :: Parser Expr
 exprCoreWithOp = do
-  base <- appExprCore -- <|> exprCore2
+  base <- try fieldExpr <|> appExprCore
   -- skipSeparatorsZ
   opChainPrec 0 operatorBinOpInfo EBinOp base
 
@@ -125,6 +125,18 @@ appExprCore = do
   f <- atomCore
   args <- many atomCore
   return (foldl EApp f args)
+
+fieldExpr :: Parser Expr
+fieldExpr = do
+  base <- atomCore
+  rest <-
+    many1
+      ( do
+          token (TokOperator ".")
+          field <- ident
+          return field
+      )
+  return (foldl EFieldAccess base rest)
 
 -- ============================================
 --  atom
@@ -178,8 +190,6 @@ atomBaseCore =
     <|> operatorIAsExpr
     <|> pRecordExpr
     <|> parensOperatorVar
-
--- <|> unaryExpr
 
 -- <|> operatorVar
 

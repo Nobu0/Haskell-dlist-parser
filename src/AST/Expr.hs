@@ -55,6 +55,7 @@ data Expr
   | EList [Expr]
   | ETuple [Expr]
   | ERecordConstr Name [(Name, Expr)]
+  | EFieldAccess Expr String
   | ERange Expr (Maybe Expr)
   | ERangeStep Expr Expr (Maybe Expr)
   | EListComp Expr [Qualifier]

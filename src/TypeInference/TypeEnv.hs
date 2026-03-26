@@ -2,6 +2,7 @@ module TypeInference.TypeEnv
   ( Scheme (..),
     TypeEnv (..),
     emptyEnv,
+    -- mergeEnvs,
     primitiveEnv,
     extendEnv,
     lookupEnv,
@@ -11,12 +12,14 @@ module TypeInference.TypeEnv
     freeTypeVars,
     freeTypeVarsScheme,
     freeTypeVarsEnv,
+    fromList,
   )
 where
 
 -- mport AST.Expr (Name)
 import Data.List (nub, (\\))
 import qualified Data.Map as M
+import qualified Data.Map as Map
 import Debug.Trace (trace)
 import TypeInference.Error (InferError (..))
 import TypeInference.Subst (Subst, apply)
@@ -32,6 +35,9 @@ data Scheme = Forall [Name] Type
 newtype TypeEnv = TypeEnv (M.Map Name Scheme)
   deriving (Show, Eq)
 
+fromList :: [(String, Scheme)] -> TypeEnv
+fromList = TypeEnv . Map.fromList
+
 -- 空の環境
 emptyEnv :: TypeEnv
 emptyEnv = TypeEnv M.empty
@@ -41,8 +47,10 @@ extendEnv :: TypeEnv -> Name -> Scheme -> TypeEnv
 extendEnv (TypeEnv env) x s = TypeEnv (M.insert x s env)
 
 -- 環境から変数のスキームを取得
+-- lookupEnv :: TypeEnv -> Name -> Maybe Scheme
+-- lookupEnv (TypeEnv env) x = M.lookup x env
 lookupEnv :: TypeEnv -> Name -> Maybe Scheme
-lookupEnv (TypeEnv env) x = M.lookup x env
+lookupEnv (TypeEnv m) name = Map.lookup name m
 
 -- 型の自由型変数を集める
 freeTypeVars :: Type -> [Name]
@@ -97,7 +105,34 @@ primitiveEnv =
           ("-", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
           ("*", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
           ("==", Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),
+          (">", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),
+          ("$", Forall ["a", "b"] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "b")))),
+          ("print", Forall ["a"] (TArrow (TVar "a") (TCon "Unit"))),
           ("True", Forall [] (TCon "Bool")),
-          ("False", Forall [] (TCon "Bool"))
+          ("False", Forall [] (TCon "Bool")),
+          ("x", Forall [] (TCon "Int")),
+          ("a", Forall [] (TCon "Int")),
+          ("b", Forall [] (TCon "Int")),
+          ("c", Forall [] (TCon "Int")),
+          -- ("y", Forall [] (TCon "Int")),
+          ("z", Forall [] (TCon "Int")),
+          ("v", Forall [] (TApp (TCon "Maybe") (TCon "Int"))),
+          ("cond", Forall [] (TCon "Bool")),
+          ("cond1", Forall [] (TCon "Bool")),
+          ("cond2", Forall [] (TCon "Bool")),
+          ("xs", Forall [] (TList (TCon "Int"))),
+          ("ys", Forall [] (TList (TCon "Int"))),
+          ("zs", Forall [] (TList (TCon "Int"))),
+          ("r", Forall [] rType),
+          ("r2", Forall [] (TArrow (TRecord (Map.fromList [("x", TCon "Int"), ("y", TCon "Int")])) (TCon "Bool"))),
+          ("r3", Forall [] (TArrow (TRecord (Map.fromList [("f", TArrow (TCon "Int") (TCon "Int"))])) (TCon "Bool"))),
+          ("f", Forall [] (TArrow (TCon "Int") (TCon "Bool"))),
+          ("fi", Forall [] (TArrow (TCon "Int") (TCon "Int"))),
+          ("g", Forall [] (TArrow (TCon "Bool") (TCon "Int"))),
+          ("ft", Forall [] (TArrow (TCon "Int") (TTuple [TCon "Int", TCon "Bool"])))
         ]
     )
+
+-- 型定義
+rType :: Type
+rType = TArrow (TRecord (Map.fromList [("x", TCon "Int")])) (TCon "Bool")

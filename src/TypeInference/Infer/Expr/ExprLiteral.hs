@@ -2,6 +2,7 @@ module TypeInference.Infer.Expr.ExprLiteral
   ( inferInt,
     inferBool,
     inferString,
+    inferChar,
     inferTuple,
     inferList,
   )
@@ -28,6 +29,9 @@ inferBool = return (emptySubst, TCon "Bool")
 
 inferString :: InferM (Subst, Type)
 inferString = return (emptySubst, TCon "String")
+
+inferChar :: InferM (Subst, Type)
+inferChar = return (emptySubst, TCon "Char")
 
 inferTuple ::
   (TypeEnv -> Expr -> InferM (Subst, Type)) ->

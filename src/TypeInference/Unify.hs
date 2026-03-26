@@ -1,4 +1,4 @@
-module TypeInference.Unify (Subst, unify, UnifyError) where
+module TypeInference.Unify (Subst, unify, UnifyError, unifyMany) where
 
 import Control.Monad (unless)
 import qualified Data.Map as M

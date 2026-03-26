@@ -65,8 +65,8 @@ listCompExpr expr = do
 
 qualifier :: Parser Expr -> Parser Qualifier
 qualifier expr =
-  try (genQualifier expr) -- ★ 最優先
-    <|> try (letQualifier expr)
+  try (letQualifier expr)
+    <|> try (genQualifier expr)
     <|> guardQualifier expr
 
 genQualifier :: Parser Expr -> Parser Qualifier

@@ -13,6 +13,7 @@ import TypeInference.Subst
 import TypeInference.Type
 import TypeInference.TypeEnv
 import TypeInference.Unify (unify)
+import Utils.MyTrace
 
 inferDo ::
   (TypeEnv -> Expr -> InferM (Subst, Type)) ->
@@ -21,12 +22,35 @@ inferDo ::
   InferM (Subst, Type)
 inferDo inferExprFn env [] =
   lift $ Left (InferOther "Empty do block")
-inferDo inferExprFn env [ExprStmt e] =
+{-}
+inferDo inferExprFn env [ExprStmt e] = do
+  myTraceE ("<< inferDo: env " ++ show env ++ " e " ++ show e)
   inferExprFn env e
 inferDo inferExprFn env (stmt : rest) = do
+  myTraceE ("<< inferDo: env " ++ show env ++ " stmt " ++ show stmt)
   (s1, env1) <- inferStmt inferExprFn env stmt
   let env' = applyEnv s1 env1
   (s2, t2) <- inferDo inferExprFn env' rest
+  return (s2 `composeSubst` s1, t2)
+-}
+inferDo inferExprFn env (Bind pat expr : rest) = do
+  (s1, t1) <- inferExprFn env expr
+  (s2, env') <- inferPattern' pat t1
+  inferDo inferExprFn (mergeEnvs env' env) rest
+inferDo inferExprFn env [ExprStmt e] = do
+  myTraceE ("<< inferDo: [expr] env " ++ show env ++ " e " ++ show e)
+  inferExprFn env e
+inferDo inferExprFn env (LetStmt binds : rest) = do
+  myTraceE ("<< inferDo: let binds " ++ show binds)
+  (s1, env') <- inferBindings inferExprFn env binds
+  let env'' = env `mergeEnvs` (applyEnv s1 env')
+  myTraceE ("<< inferDo: let rest " ++ show rest)
+  (s2, t2) <- inferDo inferExprFn (applyEnv s1 env'') rest
+  return (s2 `composeSubst` s1, t2)
+inferDo inferExprFn env (ExprStmt e : rest) = do
+  myTraceE ("<< inferDo: expr e " ++ show e)
+  (s1, _) <- inferExprFn env e
+  (s2, t2) <- inferDo inferExprFn (applyEnv s1 env) rest
   return (s2 `composeSubst` s1, t2)
 
 inferStmt ::

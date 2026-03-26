@@ -25,6 +25,9 @@ import Decl.DeclParserCore (program)
 import Lexer.Lexer (runLexer)
 import Lexer.Token (Token)
 import Parser.Core.Combinator (Parser (..), runParser, try)
+-- import TypeChecker (emptyEnv, inferExpr, parseExpr, prettyType)
+
+import Parser.Expr.ExprParser (exprTop)
 import Prettyprinter
 import Prettyprinter (Pretty (..), parens, pretty, (<+>))
 import Prettyprinter.Render.Terminal (putDoc)
@@ -33,7 +36,6 @@ import System.Exit (exitFailure)
 import System.IO
 import System.IO (readFile)
 import Text.Printf (printf)
--- import TypeChecker (emptyEnv, inferExpr, parseExpr, prettyType)
 import TypeInference.Error (InferError)
 import TypeInference.Infer.Core
 import TypeInference.Infer.Expr
@@ -44,6 +46,17 @@ import Utils.MyTrace
 
 main :: IO ()
 main = do
+  let file = "./test/fun/test99.fun"
+  handle <- openFile file ReadMode
+  hSetEncoding handle utf8
+  content <- TIO.hGetContents handle
+
+  let blocks = splitBlocks (T.lines content) -- インデント保持！
+  let numbered = zip [1 ..] blocks
+  results <- mapM runDeclBlock numbered
+  putStrLn ""
+  putStrLn $ "Ran " ++ show (length results) ++ " tests."
+
   let file = "./test/fun/test14.fun"
   handle <- openFile file ReadMode
   hSetEncoding handle utf8
@@ -51,7 +64,7 @@ main = do
 
   let blocks = splitBlocks (T.lines content) -- インデント保持！
   let numbered = zip [1 ..] blocks
-  results <- mapM runTestBlock numbered
+  results <- mapM runExprTest numbered
   putStrLn ""
   putStrLn $ "Ran " ++ show (length results) ++ " tests."
 
@@ -63,8 +76,41 @@ splitBlocks = filter (not . null) . foldr step [[]]
       | otherwise = (line : b) : bs
     step _ [] = error "unreachable"
 
-runTestBlock :: (Int, [T.Text]) -> IO (Int, Bool)
-runTestBlock (n, lines) = do
+runExprTest :: (Int, [T.Text]) -> IO (Int, Bool)
+runExprTest (n, lines) = do
+  let source = T.unpack (T.unlines lines)
+  putStrLn $ "[" ++ show n ++ "]\n" ++ source
+
+  let toks = runLexer source
+  putStrLn $ "\n-- Token list --\n" ++ show toks
+  case toks of
+    [newline] -> return (n, True)
+    _ -> do
+      setTrace False
+      let toks1 = tail toks
+      putStrLn "\n-- Parsed Expr --"
+      case runParser exprTop toks1 of
+        Just (ast, []) -> do
+          putStrLn $ " AST " ++ show ast
+          putStrLn "\n-- Type Inference ------------------------"
+          setTrace True
+          case runInfer (inferExpr primitiveEnv ast) of
+            Left err -> do
+              putStrLn "Type inference failed:"
+              print err
+              exitFailure
+              return (n, False)
+            Right (subst, ty) -> do
+              putStrLn "Type inference succeeded!"
+              putStrLn $ "Type: " ++ show ty
+              return (n, True)
+        _ -> do
+          putStrLn "\n-- Expr Parse Error"
+          exitFailure
+          return (n, False)
+
+runDeclBlock :: (Int, [T.Text]) -> IO (Int, Bool)
+runDeclBlock (n, lines) = do
   let source = T.unpack (T.unlines lines)
   putStrLn $ "[" ++ show n ++ "]\n" ++ source
 

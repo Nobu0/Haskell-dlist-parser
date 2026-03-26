@@ -32,7 +32,7 @@ import TypeInference.Error (InferError (..))
 import TypeInference.Subst
 import qualified TypeInference.Type as TI
 import TypeInference.TypeEnv
-import TypeInference.Unify (UnifyError (..), unify)
+import TypeInference.Unify (UnifyError (..), unify, unifyMany)
 
 -- 型推論の返り値：代入と型
 type InferResult = (Subst, TI.Type)
@@ -104,9 +104,11 @@ groupDecls decls = foldr go M.empty decls
         acc
     go _ acc = acc -- 他のDeclは無視（必要なら拡張）
 
+{-}
 unifyMany :: [TI.Type] -> Either InferError Subst
 unifyMany [] = Right emptySubst
 unifyMany (t : ts) = foldM (unifyStep t) emptySubst ts
+-}
 
 unifyStep :: TI.Type -> Subst -> TI.Type -> Either InferError Subst
 unifyStep t sacc t' =

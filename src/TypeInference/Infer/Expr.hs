@@ -26,6 +26,7 @@ import Debug.Trace (trace, traceIO, traceShowId)
 import TypeInference.Error
 import TypeInference.Infer.Core
 import TypeInference.Infer.Expr.ExprDispatch (inferExpr)
+import TypeInference.Infer.Expr.ExprFun
 import TypeInference.Infer.Expr.ExprSQL
 import TypeInference.Infer.Pattern
 import TypeInference.Subst
@@ -47,6 +48,7 @@ inferProgram env decls = do
     ( \env (name, (clauses, mTy)) ->
         let mTy' = fmap convertType mTy
          in do
+              myTraceE ("<< inferProgram: env " ++ show env)
               (_s, env') <- inferFunGroup env name clauses mTy'
               return env'
     )
@@ -105,13 +107,6 @@ inferFunClauses env clauses = do
   s <- foldM composeSubstM emptySubst subs
   return (s, apply s expectedType)
 
-unifyManyM :: [Type] -> InferM Type
-unifyManyM [] = lift $ Left (InferOther "Cannot unify empty type list")
-unifyManyM (t : ts) =
-  if all (== t) ts
-    then return t
-    else lift $ Left (InferMismatchGroup (t : ts))
-
 inferFunClauseWithArgs :: TypeEnv -> [Type] -> Type -> FunClause -> InferM (Subst, Type)
 inferFunClauseWithArgs env argTypes retType (FunClause pats _mbGuards (Just body) _mbWhere) = do
   -- 引数の数とパターンの数が一致しているか確認
@@ -150,8 +145,8 @@ composeSubstM s1 s2 = return (composeSubst s1 s2)
 
 inferClause :: TypeEnv -> Decl -> InferM (Subst, Type)
 inferClause env (DeclFunGroup _ clauses) = do
-  myTraceE ("<< inferClause: env " ++ show env)
-  results <- mapM (inferFunClause env) clauses
+  -- myTraceE ("<< inferClause: env " ++ show env)
+  results <- mapM (inferFunClause inferExpr env) clauses
   myTraceE ("<< inferClause: results " ++ show results)
   let (substs, types) = unzip results
   myTraceE ("<< inferClause: substs " ++ show substs)
@@ -167,21 +162,6 @@ inferClause env (DeclFunGroup _ clauses) = do
 inferClause _ decl =
   lift $ Left (InferOther ("Unsupported declaration: " ++ show decl))
 
-inferFunClause :: TypeEnv -> FunClause -> InferM (Subst, Type)
-inferFunClause env (FunClause pats _mbGuards (Just body) _mbWhere) = do
-  (sPats, envPats, argTypes) <- inferPatterns pats
-  let envPatApplied = applyEnv sPats envPats
-  let env'' = mergeEnvs env envPatApplied
-  (sBody, tBody) <- inferExpr env'' body
-  myTraceE ("<< inferFunClause: sBody " ++ show sBody ++ " tBody " ++ show tBody)
-  -- let env' = mergeEnvs env envPats
-  -- (sBody, tBody) <- inferExpr (applyEnv sPats env') body
-  let s = composeSubst sBody sPats
-  let funType = foldr TI.TArrow tBody argTypes
-  return (s, funType)
-inferFunClause _ (FunClause _ _ Nothing _) =
-  lift $ Left (InferOther "Function clause missing body")
-
 -- 宣言の型推論（まだ骨格だけ）
 inferDecl :: TypeEnv -> Decl -> InferM (TypeEnv, Subst)
 inferDecl env decl = do
@@ -191,9 +171,10 @@ inferDecl env decl = do
       let scheme = Forall [] (convertType ty)
        in return (extendEnv env name scheme, emptySubst)
     DeclFunGroup name [FunClause pats _guards (Just body) _where] -> do
-      (sPats, envPats, argTypes) <- inferPatterns pats
+      (sPats, envPats, patTypes) <- inferPatterns pats
       let env' = mergeEnvs env envPats
       (sBody, tBody) <- inferExpr (applyEnv sPats env') body
+      let argTypes = map snd patTypes
       let funType = foldr TI.TArrow tBody argTypes
       let s = composeSubst sBody sPats
       let scheme = generalizeInfer env (apply s funType)
@@ -211,10 +192,12 @@ lookupTypeSig name decls =
     (ty : _) -> Just (convertType ty)
     [] -> Nothing
 
+{-}
 generalize :: TypeEnv -> Type -> Scheme
 generalize env t =
   let vars = freeTypeVars t \\ freeTypeVarsEnv env
    in Forall (nub vars) t
+-}
 
 convertType :: AST.Type -> TI.Type
 convertType astTy = case astTy of
