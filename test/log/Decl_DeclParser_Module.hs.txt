@@ -2,8 +2,8 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 334 / 334
-Coverage: 100%
+Consumed tokens: 288 / 334
+Coverage: 86%
 
 -- AST----------------------------------
 
@@ -23,19 +23,18 @@ Coverage: 100%
 [12] DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [13] DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [14] DeclTypeSig "moduleDecl" (TApp (TCon "Parser") (TCon "Decl"))
-[15] DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing]
-[16] DeclTypeSig "exportWhere" (TFun (TCon "String") (TApp (TCon "Parser") (TCon "Decl")))
-[17] DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing]
+[15] DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing]
+[16] DeclTypeSig "exportWhere" (TArrow (TCon "String") (TApp (TCon "Parser") (TCon "Decl")))
+[17] DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing]
 [18] DeclTypeSig "exportItem" (TApp (TCon "Parser") (TCon "Export"))
-[19] DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing]
+[19] DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing]
 [20] DeclTypeSig "exportList" (TApp (TCon "Parser") (TList (TCon "Export")))
 [21] DeclFunGroup "exportList" [FunClause [] Nothing (Just (EApp (EVar "parens") (EVar "exportBlock"))) Nothing]
 [22] DeclTypeSig "exportBlock" (TApp (TCon "Parser") (TList (TCon "Export")))
-[23] DeclFunGroup "exportBlock" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))])) Nothing]
-[DeclModule "Decl.DeclParser.Module" (Just [ExportVar "moduleDecl"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "moduleDecl" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing],DeclTypeSig "exportWhere" (TFun (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))),DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing],DeclTypeSig "exportItem" (TApp (TCon "Parser") (TCon "Export")),DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing],DeclTypeSig "exportList" (TApp (TCon "Parser") (TList (TCon "Export"))),DeclFunGroup "exportList" [FunClause [] Nothing (Just (EApp (EVar "parens") (EVar "exportBlock"))) Nothing],DeclTypeSig "exportBlock" (TApp (TCon "Parser") (TList (TCon "Export"))),DeclFunGroup "exportBlock" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))])) Nothing]]
+[DeclModule "Decl.DeclParser.Module" (Just [ExportVar "moduleDecl"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "moduleDecl" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing],DeclTypeSig "exportWhere" (TArrow (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))),DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing],DeclTypeSig "exportItem" (TApp (TCon "Parser") (TCon "Export")),DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing],DeclTypeSig "exportList" (TApp (TCon "Parser") (TList (TCon "Export"))),DeclFunGroup "exportList" [FunClause [] Nothing (Just (EApp (EVar "parens") (EVar "exportBlock"))) Nothing],DeclTypeSig "exportBlock" (TApp (TCon "Parser") (TList (TCon "Export")))]
 
 -- Remaining-----------------------------
-[]
+[TokIdent "exportBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "exportItem",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "skipNL",TokSymbol ";",TokIdent "xs",TokSymbol "<-",TokIdent "many",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "x",TokSymbol "<-",TokIdent "exportItem",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "skipNL",TokSymbol ";",TokKeyword "return",TokIdent "x",TokVRBrace,TokNewline,TokKeyword "return",TokSymbol "(",TokIdent "e",TokOperator ":",TokIdent "xs",TokSymbol ")",TokVRBrace,TokNewline]
 
 -- Parsed AST log --
 << decl next token: TokNewline
@@ -201,15 +200,15 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=195
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "name") [] ct=194
+    (pAs <|> makeCons)PVar "name" ct=194
 << expr dispatch: TokIdent "moduleName" ct=193
 << exprNoLoop: e EVar "moduleName"
 << expr dispatch: TokSymbol ";" ct=192
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "moduleName" rest Nothing
->>*bindStmt pat= PApp (PVar "name") [] e= EVar "moduleName"
->>*doStmt: rt Bind (PApp (PVar "name") []) (EVar "moduleName")
+>>*bindStmt pat= PVar "name" e= EVar "moduleName"
+>>*doStmt: rt Bind (PVar "name") (EVar "moduleName")
 << bindStmt
 << pattern: ct=191
 << pattern:
@@ -225,17 +224,17 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=189
 << expr dispatch: TokVRBrace ct=189
->>*doBlock: (f:m)[ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))]
->>*doExprCore: stmts [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))]
-<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))]
+>>*doBlock: (f:m)[ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))]
+>>*doExprCore: stmts [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))]
+<< exprNoLoop: e EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))]
 << expr dispatch: TokNewline ct=188
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))] rest Nothing
-<< parseSimpleClause: e EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))] ct=188
+<< expr: e EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))] rest Nothing
+<< parseSimpleClause: e EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))] ct=188
 << funClauseWithName: next token=TokNewline ct=188
->>*funDecl name "moduleDecl" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing rest []
->>*declBody: e DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing]
+>>*funDecl name "moduleDecl" clause1 FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing rest []
+>>*declBody: e DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing]
 << decl next token: TokIdent "exportWhere"
 << decl parser called
 << decl dispatch: TokIdent "exportWhere" ct=187
@@ -252,10 +251,10 @@ Coverage: 100%
 << typeTerm: ts [TCon "String"]
 << typeTerm: ts [TCon "Parser",TCon "Decl"]
 << parseTypeCore: TApp (TCon "Parser") (TCon "Decl")
-<< parseTypeCore: TFun (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))
-<< parsed type signature: exportWhere :: TFun (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))
-<< returning DeclTypeSig: DeclTypeSig "exportWhere" (TFun (TCon "String") (TApp (TCon "Parser") (TCon "Decl")))
->>*declBody: e DeclTypeSig "exportWhere" (TFun (TCon "String") (TApp (TCon "Parser") (TCon "Decl")))
+<< parseTypeCore: TArrow (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))
+<< parsed type signature: exportWhere :: TArrow (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))
+<< returning DeclTypeSig: DeclTypeSig "exportWhere" (TArrow (TCon "String") (TApp (TCon "Parser") (TCon "Decl")))
+>>*declBody: e DeclTypeSig "exportWhere" (TArrow (TCon "String") (TApp (TCon "Parser") (TCon "Decl")))
 << decl next token: TokIdent "exportWhere"
 << decl parser called
 << decl dispatch: TokIdent "exportWhere" ct=180
@@ -272,7 +271,7 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=175
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "skipNL") [] ct=174
+    (pAs <|> makeCons)PVar "skipNL" ct=174
 << expr dispatch: TokIdent "skipNL" ct=175
 << exprNoLoop: e EVar "skipNL"
 << expr dispatch: TokSymbol ";" ct=174
@@ -284,19 +283,19 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=173
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "exports") [] ct=172
+    (pAs <|> makeCons)PVar "exports" ct=172
 << expr dispatch: TokIdent "optional" ct=171
 << exprNoLoop: e EApp (EVar "optional") (EVar "exportList")
 << expr dispatch: TokSymbol ";" ct=169
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVar "optional") (EVar "exportList") rest Nothing
->>*bindStmt pat= PApp (PVar "exports") [] e= EApp (EVar "optional") (EVar "exportList")
->>*doStmt: rt Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList"))
+>>*bindStmt pat= PVar "exports" e= EApp (EVar "optional") (EVar "exportList")
+>>*doStmt: rt Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList"))
 << bindStmt
 << pattern: ct=168
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "skipVNL") [] ct=167
+    (pAs <|> makeCons)PVar "skipVNL" ct=167
 << expr dispatch: TokIdent "skipVNL" ct=168
 << exprNoLoop: e EVar "skipVNL"
 << expr dispatch: TokSymbol ";" ct=167
@@ -332,17 +331,17 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=157
 << expr dispatch: TokVRBrace ct=157
->>*doBlock: (f:m)[ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))]
->>*doExprCore: stmts [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))]
-<< exprNoLoop: e EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))]
+>>*doBlock: (f:m)[ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))]
+>>*doExprCore: stmts [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))]
+<< exprNoLoop: e EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))]
 << expr dispatch: TokNewline ct=156
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))] rest Nothing
-<< parseSimpleClause: e EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))] ct=156
+<< expr: e EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))] rest Nothing
+<< parseSimpleClause: e EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))] ct=156
 << funClauseWithName: next token=TokNewline ct=156
->>*funDecl name "exportWhere" clause1 FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing rest []
->>*declBody: e DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing]
+>>*funDecl name "exportWhere" clause1 FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing]
 << decl next token: TokIdent "exportItem"
 << decl parser called
 << decl dispatch: TokIdent "exportItem" ct=155
@@ -374,24 +373,39 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=146
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "t") [] ct=145
+    (pAs <|> makeCons)PVar "t" ct=145
 << expr dispatch: TokIdent "lookAhead" ct=144
 << exprNoLoop: e EApp (EVar "lookAhead") (EVar "anyToken")
 << expr dispatch: TokSymbol ";" ct=142
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVar "lookAhead") (EVar "anyToken") rest Nothing
->>*bindStmt pat= PApp (PVar "t") [] e= EApp (EVar "lookAhead") (EVar "anyToken")
->>*doStmt: rt Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken"))
+>>*bindStmt pat= PVar "t" e= EApp (EVar "lookAhead") (EVar "anyToken")
+>>*doStmt: rt Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken"))
 << bindStmt
 << pattern: ct=141
 << pattern: ct=139
 << pattern:
-    (pAs <|> makeCons)PApp (PString "<< exportItem: next token=") [] ct=138
+    (pAs <|> makeCons)PString "<< exportItem: next token=" ct=138
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "myTrace") [] ct=140
+    (pAs <|> makeCons)PVar "myTrace" ct=140
 << expr dispatch: TokIdent "myTrace" ct=141
-<< exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))
+<< exprNoLoop: e EVar "myTrace"
+<< expr dispatch: TokSymbol "(" ct=140
+<< parensExpr: ct=140
+<< expr dispatch: TokString "<< exportItem: next token=" ct=139
+<< exprNoLoop: e EString "<< exportItem: next token="
+<< expr dispatch: TokOperator "++" ct=138
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokIdent "show" ct=137
+<< exprNoLoop: e EApp (EVar "show") (EVar "t")
+<< expr dispatch: TokSymbol ")" ct=135
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")) rest Nothing
+<< exprNoLoop: e EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t"))
 << expr dispatch: TokSymbol ";" ct=134
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -401,7 +415,7 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=133
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "name") [] ct=132
+    (pAs <|> makeCons)PVar "name" ct=132
 << expr dispatch: TokIdent "try" ct=130
 << exprNoLoop: e EApp (EVar "try") (EVar "typeIdent")
 << expr dispatch: TokSymbol ";" ct=128
@@ -426,17 +440,32 @@ Coverage: 100%
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident")) rest Nothing
->>*bindStmt pat= PApp (PVar "name") [] e= EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))
->>*doStmt: rt Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident")))
+>>*bindStmt pat= PVar "name" e= EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))
+>>*doStmt: rt Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident")))
 << bindStmt
 << pattern: ct=117
 << pattern: ct=115
 << pattern:
-    (pAs <|> makeCons)PApp (PString "<< exportItem: name ") [] ct=114
+    (pAs <|> makeCons)PString "<< exportItem: name " ct=114
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "myTrace") [] ct=116
+    (pAs <|> makeCons)PVar "myTrace" ct=116
 << expr dispatch: TokIdent "myTrace" ct=117
-<< exprNoLoop: e EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))
+<< exprNoLoop: e EVar "myTrace"
+<< expr dispatch: TokSymbol "(" ct=116
+<< parensExpr: ct=116
+<< expr dispatch: TokString "<< exportItem: name " ct=115
+<< exprNoLoop: e EString "<< exportItem: name "
+<< expr dispatch: TokOperator "++" ct=114
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokIdent "show" ct=113
+<< exprNoLoop: e EApp (EVar "show") (EVar "name")
+<< expr dispatch: TokSymbol ")" ct=111
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")) rest Nothing
+<< exprNoLoop: e EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name"))
 << expr dispatch: TokSymbol ";" ct=110
 << postfix: operator = Nothing
 >> infixOp: out 
@@ -446,15 +475,15 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=109
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "hasAll") [] ct=108
+    (pAs <|> makeCons)PVar "hasAll" ct=108
 << expr dispatch: TokIdent "optional" ct=107
 << exprNoLoop: e EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))
 << expr dispatch: TokSymbol ";" ct=99
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString ".."))) rest Nothing
->>*bindStmt pat= PApp (PVar "hasAll") [] e= EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))
->>*doStmt: rt Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString ".."))))
+>>*bindStmt pat= PVar "hasAll" e= EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))
+>>*doStmt: rt Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString ".."))))
 << bindStmt
 << pattern: ct=98
 << expr dispatch: TokKeyword "return" ct=98
@@ -474,17 +503,17 @@ Coverage: 100%
 << guardExpr next token: TokArrow
 << expr dispatch: TokTypeIdent "ExportType" ct=89
 << bracesExpr: nm "ExportType" ct=89
-<< exprNoLoop: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")
+<< exprNoLoop: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)
 << expr dispatch: TokSymbol ";" ct=86
 << bracesExpr: nm "Nothing" ct=85
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True") rest Nothing
->>*caseAlt: pat PApp (PConstr "Just" []) [PVar "_"] body EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")
+<< expr: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True) rest Nothing
+>>*caseAlt: pat PApp (PConstr "Just" []) [PVar "_"] body EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)
 << pattern: ct=85
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "Nothing" []) [] ct=84
-<< caseAlt: pat PApp (PConstr "Nothing" []) []
+    (pAs <|> makeCons)PConstr "Nothing" [] ct=84
+<< caseAlt: pat PConstr "Nothing" []
 << guardExpr next token: TokArrow
 << expr dispatch: TokKeyword "if" ct=82
 << ifExpr
@@ -497,12 +526,12 @@ Coverage: 100%
 << ifExpr cond EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))
 << expr dispatch: TokTypeIdent "ExportType" ct=75
 << bracesExpr: nm "ExportType" ct=75
-<< exprNoLoop: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")
+<< exprNoLoop: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)
 << expr dispatch: TokKeyword "else" ct=72
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False") rest Nothing
-<< ifExpr th EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")
+<< expr: e EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False) rest Nothing
+<< ifExpr th EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)
 << expr dispatch: TokTypeIdent "ExportVar" ct=71
 << bracesExpr: nm "ExportVar" ct=71
 << exprNoLoop: e EApp (EVarType "ExportVar") (EVar "name")
@@ -511,42 +540,42 @@ Coverage: 100%
 >> infixOp: out 
 << expr: e EApp (EVarType "ExportVar") (EVar "name") rest Nothing
 << ifExpr el EApp (EVarType "ExportVar") (EVar "name")
-<< exprNoLoop: e EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name"))
+<< exprNoLoop: e EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name"))
 << expr dispatch: TokVRBrace ct=69
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")) rest Nothing
->>*caseAlt: pat PApp (PConstr "Nothing" []) [] body EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name"))
+<< expr: e EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")) rest Nothing
+>>*caseAlt: pat PConstr "Nothing" [] body EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name"))
 << pattern: ct=69
->>*caseAltBlock: xs [CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]
->>*caseExprCore: alts [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]
-<< exprNoLoop: e ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]
+>>*caseAltBlock: xs [CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]
+<< exprNoLoop: e ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]
 << expr dispatch: TokNewline ct=68
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))] rest Nothing
->>*return $: ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]
-<< exprNoLoop: e EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))])
+<< expr: e ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))] rest Nothing
+>>*return $: ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]
+<< exprNoLoop: e EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))])
 << expr dispatch: TokNewline ct=68
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]) rest Nothing
->>*exprStmt EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))])
->>*doStmt: rt ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))
+<< expr: e EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]) rest Nothing
+>>*exprStmt EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))])
+>>*doStmt: rt ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))
 << bindStmt
 << pattern: ct=67
 << expr dispatch: TokVRBrace ct=67
->>*doBlock: (f:m)[Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))]
->>*doExprCore: stmts [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))]
+>>*doBlock: (f:m)[Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))]
+>>*doExprCore: stmts [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))]
+<< exprNoLoop: e EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))]
 << expr dispatch: TokNewline ct=66
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))] rest Nothing
-<< parseSimpleClause: e EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))] ct=66
+<< expr: e EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))] rest Nothing
+<< parseSimpleClause: e EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))] ct=66
 << funClauseWithName: next token=TokNewline ct=66
->>*funDecl name "exportItem" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing rest []
->>*declBody: e DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing]
+>>*funDecl name "exportItem" clause1 FunClause [] Nothing (Just (EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing rest []
+>>*declBody: e DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing]
 << decl next token: TokIdent "exportList"
 << decl parser called
 << decl dispatch: TokIdent "exportList" ct=65
@@ -619,15 +648,15 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=42
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "e") [] ct=41
+    (pAs <|> makeCons)PVar "e" ct=41
 << expr dispatch: TokIdent "exportItem" ct=40
 << exprNoLoop: e EVar "exportItem"
 << expr dispatch: TokSymbol ";" ct=39
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "exportItem" rest Nothing
->>*bindStmt pat= PApp (PVar "e") [] e= EVar "exportItem"
->>*doStmt: rt Bind (PApp (PVar "e") []) (EVar "exportItem")
+>>*bindStmt pat= PVar "e" e= EVar "exportItem"
+>>*doStmt: rt Bind (PVar "e") (EVar "exportItem")
 << bindStmt
 << pattern: ct=38
 << pattern: ct=36
@@ -646,7 +675,7 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=32
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "skipNL") [] ct=31
+    (pAs <|> makeCons)PVar "skipNL" ct=31
 << expr dispatch: TokIdent "skipNL" ct=32
 << exprNoLoop: e EVar "skipNL"
 << expr dispatch: TokSymbol ";" ct=31
@@ -658,7 +687,7 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=30
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "xs") [] ct=29
+    (pAs <|> makeCons)PVar "xs" ct=29
 << expr dispatch: TokIdent "many" ct=28
 << exprNoLoop: e EVar "many"
 << expr dispatch: TokOperator "$" ct=27
@@ -668,15 +697,15 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=24
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "x") [] ct=23
+    (pAs <|> makeCons)PVar "x" ct=23
 << expr dispatch: TokIdent "exportItem" ct=22
 << exprNoLoop: e EVar "exportItem"
 << expr dispatch: TokSymbol ";" ct=21
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "exportItem" rest Nothing
->>*bindStmt pat= PApp (PVar "x") [] e= EVar "exportItem"
->>*doStmt: rt Bind (PApp (PVar "x") []) (EVar "exportItem")
+>>*bindStmt pat= PVar "x" e= EVar "exportItem"
+>>*doStmt: rt Bind (PVar "x") (EVar "exportItem")
 << bindStmt
 << pattern: ct=20
 << pattern: ct=18
@@ -695,7 +724,7 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=14
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "skipNL") [] ct=13
+    (pAs <|> makeCons)PVar "skipNL" ct=13
 << expr dispatch: TokIdent "skipNL" ct=14
 << exprNoLoop: e EVar "skipNL"
 << expr dispatch: TokSymbol ";" ct=13
@@ -719,46 +748,155 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=10
 << expr dispatch: TokVRBrace ct=10
->>*doBlock: (f:m)[Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
->>*doExprCore: stmts [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+>>*doBlock: (f:m)[Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+>>*doExprCore: stmts [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
 << expr dispatch: TokNewline ct=9
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))] rest Nothing
->> postfix: out rhs = EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+<< expr: e EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))] rest Nothing
+>> postfix: out rhs = EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]) rest Nothing
->>*bindStmt pat= PApp (PVar "xs") [] e= EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])
->>*doStmt: rt Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]))
+<< expr: e EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]) rest Nothing
+>>*bindStmt pat= PVar "xs" e= EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])
+>>*doStmt: rt Bind (PVar "xs") (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]))
 << bindStmt
 << pattern: ct=8
 << expr dispatch: TokKeyword "return" ct=8
 << returnWithDollar
->>*return atom: EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")
-<< exprNoLoop: e EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs"))
-<< expr dispatch: TokVRBrace ct=2
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")) rest Nothing
->>*exprStmt EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs"))
->>*doStmt: rt ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))
+>>*doBlock: (f:m)[Bind (PVar "e") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PVar "xs") (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]))]
+>>*doExprCore: stmts [Bind (PVar "e") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PVar "xs") (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]))]
+<< typeSigDecl: TokIdent "exportBlock"
+<< typeSigDecl:2 TokSymbol "="
+<< valueDecl: TokIdent "exportBlock"
+<< pattern: ct=46
+<< pattern:
+    (pAs <|> makeCons)PVar "exportBlock" ct=45
+<< expr dispatch: TokKeyword "do" ct=44
 << bindStmt
-<< pattern: ct=2
-<< expr dispatch: TokVRBrace ct=2
->>*doBlock: (f:m)[Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))]
->>*doExprCore: stmts [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))]
-<< expr dispatch: TokNewline ct=1
+<< pattern: ct=42
+<< pattern:
+    (pAs <|> makeCons)PVar "e" ct=41
+<< expr dispatch: TokIdent "exportItem" ct=40
+<< exprNoLoop: e EVar "exportItem"
+<< expr dispatch: TokSymbol ";" ct=39
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))] rest Nothing
-<< parseSimpleClause: e EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))] ct=1
-<< funClauseWithName: next token=TokNewline ct=1
->>*funDecl name "exportBlock" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))])) Nothing rest []
->>*declBody: e DeclFunGroup "exportBlock" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))])) Nothing]
-Just ([DeclModule "Decl.DeclParser.Module" (Just [ExportVar "moduleDecl"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "moduleDecl" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PApp (PVar "name") []) (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing],DeclTypeSig "exportWhere" (TFun (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))),DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PApp (PVar "exports") []) (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing],DeclTypeSig "exportItem" (TApp (TCon "Parser") (TCon "Export")),DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "t") []) (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PApp (PVar "name") []) (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PApp (PVar "hasAll") []) (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "True")),CaseAlt (PApp (PConstr "Nothing" []) []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EVarType "False")) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing],DeclTypeSig "exportList" (TApp (TCon "Parser") (TList (TCon "Export"))),DeclFunGroup "exportList" [FunClause [] Nothing (Just (EApp (EVar "parens") (EVar "exportBlock"))) Nothing],DeclTypeSig "exportBlock" (TApp (TCon "Parser") (TList (TCon "Export"))),DeclFunGroup "exportBlock" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "e") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PApp (PVar "xs") []) (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PApp (PVar "x") []) (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])),ExprStmt (EReturn (EApp (EApp (EVar "e") (EVar ":")) (EVar "xs")))])) Nothing]],[])
+<< expr: e EVar "exportItem" rest Nothing
+>>*bindStmt pat= PVar "e" e= EVar "exportItem"
+>>*doStmt: rt Bind (PVar "e") (EVar "exportItem")
+<< bindStmt
+<< pattern: ct=38
+<< pattern: ct=36
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString ","] ct=34
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "optional") [PApp (PVar "symbol") [PString ","]] ct=33
+<< expr dispatch: TokIdent "optional" ct=38
+<< exprNoLoop: e EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))
+<< expr dispatch: TokSymbol ";" ct=33
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "optional") (EApp (EVar "symbol") (EString ",")) rest Nothing
+>>*exprStmt EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))
+>>*doStmt: rt ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ",")))
+<< bindStmt
+<< pattern: ct=32
+<< pattern:
+    (pAs <|> makeCons)PVar "skipNL" ct=31
+<< expr dispatch: TokIdent "skipNL" ct=32
+<< exprNoLoop: e EVar "skipNL"
+<< expr dispatch: TokSymbol ";" ct=31
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "skipNL" rest Nothing
+>>*exprStmt EVar "skipNL"
+>>*doStmt: rt ExprStmt (EVar "skipNL")
+<< bindStmt
+<< pattern: ct=30
+<< pattern:
+    (pAs <|> makeCons)PVar "xs" ct=29
+<< expr dispatch: TokIdent "many" ct=28
+<< exprNoLoop: e EVar "many"
+<< expr dispatch: TokOperator "$" ct=27
+<< postfix: operator = Just "$"
+<< postfix: operator = $
+<< expr dispatch: TokKeyword "do" ct=26
+<< bindStmt
+<< pattern: ct=24
+<< pattern:
+    (pAs <|> makeCons)PVar "x" ct=23
+<< expr dispatch: TokIdent "exportItem" ct=22
+<< exprNoLoop: e EVar "exportItem"
+<< expr dispatch: TokSymbol ";" ct=21
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "exportItem" rest Nothing
+>>*bindStmt pat= PVar "x" e= EVar "exportItem"
+>>*doStmt: rt Bind (PVar "x") (EVar "exportItem")
+<< bindStmt
+<< pattern: ct=20
+<< pattern: ct=18
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "symbol") [PString ","] ct=16
+<< pattern:
+    (pAs <|> makeCons)PApp (PVar "optional") [PApp (PVar "symbol") [PString ","]] ct=15
+<< expr dispatch: TokIdent "optional" ct=20
+<< exprNoLoop: e EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))
+<< expr dispatch: TokSymbol ";" ct=15
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "optional") (EApp (EVar "symbol") (EString ",")) rest Nothing
+>>*exprStmt EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))
+>>*doStmt: rt ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ",")))
+<< bindStmt
+<< pattern: ct=14
+<< pattern:
+    (pAs <|> makeCons)PVar "skipNL" ct=13
+<< expr dispatch: TokIdent "skipNL" ct=14
+<< exprNoLoop: e EVar "skipNL"
+<< expr dispatch: TokSymbol ";" ct=13
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVar "skipNL" rest Nothing
+>>*exprStmt EVar "skipNL"
+>>*doStmt: rt ExprStmt (EVar "skipNL")
+<< bindStmt
+<< pattern: ct=12
+<< expr dispatch: TokKeyword "return" ct=12
+<< returnWithDollar
+>>*return atom: EVar "x"
+<< exprNoLoop: e EReturn (EVar "x")
+<< expr dispatch: TokVRBrace ct=10
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (EVar "x") rest Nothing
+>>*exprStmt EReturn (EVar "x")
+>>*doStmt: rt ExprStmt (EReturn (EVar "x"))
+<< bindStmt
+<< pattern: ct=10
+<< expr dispatch: TokVRBrace ct=10
+>>*doBlock: (f:m)[Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+>>*doExprCore: stmts [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+<< exprNoLoop: e EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+<< expr dispatch: TokNewline ct=9
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))] rest Nothing
+>> postfix: out rhs = EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]) rest Nothing
+>>*bindStmt pat= PVar "xs" e= EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))])
+>>*doStmt: rt Bind (PVar "xs") (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]))
+<< bindStmt
+<< pattern: ct=8
+<< expr dispatch: TokKeyword "return" ct=8
+<< returnWithDollar
+>>*doBlock: (f:m)[Bind (PVar "e") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PVar "xs") (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]))]
+>>*doExprCore: stmts [Bind (PVar "e") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),Bind (PVar "xs") (EApp (EApp (EVar "$") (EVar "many")) (EDo [Bind (PVar "x") (EVar "exportItem"),ExprStmt (EApp (EVar "optional") (EApp (EVar "symbol") (EString ","))),ExprStmt (EVar "skipNL"),ExprStmt (EReturn (EVar "x"))]))]
+Just ([DeclModule "Decl.DeclParser.Module" (Just [ExportVar "moduleDecl"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Constraint",ImportTypeAll "Type"]},DeclImport {importQualified = False, importModule = "Control.Applicative", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "empty",ImportVar "many",ImportVar "optional",ImportVar "some",ImportVar "(<|>)"]},DeclImport {importQualified = False, importModule = "Data.Char", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "isUpper"]},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "intercalate"]},DeclImport {importQualified = False, importModule = "Decl.DeclParser.Util", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Token"]},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Type.TypeParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "moduleDecl" (TApp (TCon "Parser") (TCon "Decl")),DeclFunGroup "moduleDecl" [FunClause [] Nothing (Just (EDo [ExprStmt (EApp (EVar "keyword") (EString "module")),Bind (PVar "name") (EVar "moduleName"),ExprStmt (EApp (EVar "exportWhere") (EVar "name"))])) Nothing],DeclTypeSig "exportWhere" (TArrow (TCon "String") (TApp (TCon "Parser") (TCon "Decl"))),DeclFunGroup "exportWhere" [FunClause [PVar "name"] Nothing (Just (EDo [ExprStmt (EVar "skipNL"),Bind (PVar "exports") (EApp (EVar "optional") (EVar "exportList")),ExprStmt (EVar "skipVNL"),ExprStmt (EApp (EVar "keyword") (EString "where")),ExprStmt (EReturn (EApp (EApp (EVarType "DeclModule") (EVar "name")) (EVar "exports")))])) Nothing],DeclTypeSig "exportItem" (TApp (TCon "Parser") (TCon "Export")),DeclFunGroup "exportItem" [FunClause [] Nothing (Just (EDo [Bind (PVar "t") (EApp (EVar "lookAhead") (EVar "anyToken")),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: next token=") (EApp (EVar "show") (EVar "t")))),Bind (PVar "name") (EBinOp BinOpAlt (EBinOp BinOpAlt (EBinOp BinOpAlt (EApp (EVar "try") (EVar "typeIdent")) (EVar "operatorIAsName")) (EVar "operatorEdName")) (EApp (EVar "try") (EVar "ident"))),ExprStmt (EApp (EVar "myTrace") (EBinOp BinOpConcat (EString "<< exportItem: name ") (EApp (EVar "show") (EVar "name")))),Bind (PVar "hasAll") (EApp (EVar "optional") (EApp (EVar "parens") (EApp (EVar "symbol") (EString "..")))),ExprStmt (EReturn (ECase (EVar "hasAll") [CaseAlt (PApp (PConstr "Just" []) [PVar "_"]) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool True)),CaseAlt (PConstr "Nothing" []) (EIf (EApp (EVar "isUpper") (EApp (EVar "head") (EVar "name"))) (EApp (EApp (EVarType "ExportType") (EVar "name")) (EBool False)) (EApp (EVarType "ExportVar") (EVar "name")))]))])) Nothing],DeclTypeSig "exportList" (TApp (TCon "Parser") (TList (TCon "Export"))),DeclFunGroup "exportList" [FunClause [] Nothing (Just (EApp (EVar "parens") (EVar "exportBlock"))) Nothing],DeclTypeSig "exportBlock" (TApp (TCon "Parser") (TList (TCon "Export")))],[TokIdent "exportBlock",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "e",TokSymbol "<-",TokIdent "exportItem",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "skipNL",TokSymbol ";",TokIdent "xs",TokSymbol "<-",TokIdent "many",TokOperator "$",TokKeyword "do",TokVLBrace,TokIdent "x",TokSymbol "<-",TokIdent "exportItem",TokSymbol ";",TokIdent "optional",TokSymbol "(",TokIdent "symbol",TokString ",",TokSymbol ")",TokSymbol ";",TokIdent "skipNL",TokSymbol ";",TokKeyword "return",TokIdent "x",TokVRBrace,TokNewline,TokKeyword "return",TokSymbol "(",TokIdent "e",TokOperator ":",TokIdent "xs",TokSymbol ")",TokVRBrace,TokNewline])
 
 -- src code --
 {-# LANGUAGE LambdaCase #-}
@@ -880,10 +1018,10 @@ exportBlock = do
 [100] TokSymbol "("       TokIdent "symbol"   TokString ".."      TokSymbol ")"       TokSymbol ")"       
 [95] TokSymbol ";"       TokKeyword "return" TokOperator "$"     TokKeyword "case"   TokIdent "hasAll"   
 [90] TokKeyword "of"     TokVLBrace          TokTypeIdent "Just" TokIdent "_"        TokArrow            
-[85] TokTypeIdent "ExportTokIdent "name"     TokTypeIdent "True" TokSymbol ";"       TokTypeIdent "Nothin
+[85] TokTypeIdent "ExportTokIdent "name"     TokKeyword "True"   TokSymbol ";"       TokTypeIdent "Nothin
 [80] TokArrow            TokSymbol ";"       TokKeyword "if"     TokIdent "isUpper"  TokSymbol "("       
 [75] TokIdent "head"     TokIdent "name"     TokSymbol ")"       TokKeyword "then"   TokTypeIdent "Export
-[70] TokIdent "name"     TokTypeIdent "False"TokKeyword "else"   TokTypeIdent "ExportTokIdent "name"     
+[70] TokIdent "name"     TokKeyword "False"  TokKeyword "else"   TokTypeIdent "ExportTokIdent "name"     
 [65] TokVRBrace          TokNewline          TokVRBrace          TokNewline          TokIdent "exportList
 [60] TokSymbol "::"      TokTypeIdent "ParserTokSymbol "["       TokTypeIdent "ExportTokSymbol "]"       
 [55] TokNewline          TokIdent "exportListTokSymbol "="       TokIdent "parens"   TokIdent "exportBloc

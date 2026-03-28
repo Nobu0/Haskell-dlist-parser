@@ -1,0 +1,812 @@
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 436 / 436
+Coverage: 100%
+
+-- AST----------------------------------
+
+-- AST (numbered) --
+[0] DeclModule "TypeInference.Infer.Expr.ExprFun" (Just [ExportVar "inferFunClause",ExportVar "inferFunBinding"])
+[1] DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl",ImportTypeAll "FunClause"]}
+[2] DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[3] DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportTypeAll "Stmt"]}
+[4] DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]}
+[5] DeclImport {importQualified = True, importModule = "AST.Type", importAlias = Just "AST", importHiding = False, importItems = Nothing}
+[6] DeclImport {importQualified = True, importModule = "Control.Exception", importAlias = Just "TypeInference", importHiding = False, importItems = Nothing}
+[7] DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM",ImportVar "replicateM",ImportVar "when",ImportVar "zipWithM"]}
+[8] DeclImport {importQualified = False, importModule = "Data.Bifunctor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "first"]}
+[9] DeclImport {importQualified = False, importModule = "Data.IORef", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[10] DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]}
+[11] DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
+[12] DeclImport {importQualified = False, importModule = "Debug.Trace", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "trace",ImportVar "traceIO",ImportVar "traceShowId"]}
+[13] DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[14] DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[15] DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprSQL", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[16] DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[17] DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[18] DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Type"]}
+[19] DeclImport {importQualified = True, importModule = "TypeInference.Type", importAlias = Just "TI", importHiding = False, importItems = Nothing}
+[20] DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[21] DeclImport {importQualified = True, importModule = "TypeInference.TypeEnv", importAlias = Just "TypeEnv", importHiding = False, importItems = Nothing}
+[22] DeclImport {importQualified = True, importModule = "TypeInference.Types", importAlias = Just "Types", importHiding = False, importItems = Nothing}
+[23] DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]}
+[24] DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[25] DeclFunGroup "inferFunBinding" [FunClause [PVar "inferExprFn",PVar "env",PTuple [PApp (PConstr "PApp" []) [PApp (PConstr "PVar" []) [PVar "f"],PVar "args"],PVar "body"]] Nothing (Just (EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))])) Nothing]
+[26] DeclTypeSig "inferFunClause" (TArrow (TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))) (TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))))
+[27] DeclFunGroup "inferFunClause" [FunClause [PVar "inferExprFn",PVar "env",PApp (PConstr "FunClause" []) [PVar "pats",PVar "_mbGuards",PApp (PConstr "Just" []) [PVar "body"],PVar "_mbWhere"]] Nothing (Just (EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))])) Nothing]
+[28] DeclFunGroup "inferFunClause" [FunClause [PVar "_",PVar "_",PApp (PConstr "FunClause" []) [PVar "_",PVar "_",PConstr "Nothing" [],PVar "_"]] Nothing (Just (EApp (EApp (EVar "$") (EVar "lift")) (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))))) Nothing]
+[DeclModule "TypeInference.Infer.Expr.ExprFun" (Just [ExportVar "inferFunClause",ExportVar "inferFunBinding"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl",ImportTypeAll "FunClause"]},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportTypeAll "Stmt"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = True, importModule = "AST.Type", importAlias = Just "AST", importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Control.Exception", importAlias = Just "TypeInference", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM",ImportVar "replicateM",ImportVar "when",ImportVar "zipWithM"]},DeclImport {importQualified = False, importModule = "Data.Bifunctor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "first"]},DeclImport {importQualified = False, importModule = "Data.IORef", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Debug.Trace", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "trace",ImportVar "traceIO",ImportVar "traceShowId"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprSQL", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Type"]},DeclImport {importQualified = True, importModule = "TypeInference.Type", importAlias = Just "TI", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "TypeInference.TypeEnv", importAlias = Just "TypeEnv", importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "TypeInference.Types", importAlias = Just "Types", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclFunGroup "inferFunBinding" [FunClause [PVar "inferExprFn",PVar "env",PTuple [PApp (PConstr "PApp" []) [PApp (PConstr "PVar" []) [PVar "f"],PVar "args"],PVar "body"]] Nothing (Just (EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))])) Nothing],DeclTypeSig "inferFunClause" (TArrow (TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))) (TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"]))))),DeclFunGroup "inferFunClause" [FunClause [PVar "inferExprFn",PVar "env",PApp (PConstr "FunClause" []) [PVar "pats",PVar "_mbGuards",PApp (PConstr "Just" []) [PVar "body"],PVar "_mbWhere"]] Nothing (Just (EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))])) Nothing],DeclFunGroup "inferFunClause" [FunClause [PVar "_",PVar "_",PApp (PConstr "FunClause" []) [PVar "_",PVar "_",PConstr "Nothing" [],PVar "_"]] Nothing (Just (EApp (EApp (EVar "$") (EVar "lift")) (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))))) Nothing]]
+
+-- Remaining-----------------------------
+[]
+
+-- Parsed AST log --
+<< decl next token: TokKeyword "module"
+<< decl parser called
+<< decl dispatch: TokKeyword "module" ct=436
+<< exportItem: next token=TokIdent "inferFunClause"
+<< exportItem: name "inferFunClause"
+<< exportItem: next token=TokIdent "inferFunBinding"
+<< exportItem: name "inferFunBinding"
+<< exportItem: next token=TokSymbol ")"
+>>*declBody: e DeclModule "TypeInference.Infer.Expr.ExprFun" (Just [ExportVar "inferFunClause",ExportVar "inferFunBinding"])
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=417
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+<< importIdent: next token TokTypeIdent "Decl"
+<< importIdent: m Just (ImportTypeAll "Decl")
+<< importIdent: next token TokTypeIdent "FunClause"
+<< importIdent: m Just (ImportTypeAll "FunClause")
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl",ImportTypeAll "FunClause"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=401
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=396
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+<< importIdent: next token TokTypeIdent "CaseAlt"
+<< importIdent: m Just (ImportTypeAll "CaseAlt")
+<< importIdent: next token TokTypeIdent "Expr"
+<< importIdent: m Just (ImportTypeAll "Expr")
+<< importIdent: next token TokTypeIdent "Stmt"
+<< importIdent: m Just (ImportTypeAll "Stmt")
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportTypeAll "Stmt"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=375
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+<< importIdent: next token TokTypeIdent "Pattern"
+<< importIdent: m Just (ImportTypeAll "Pattern")
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=364
+<< importDecl parser called
+<< importDecl: TokTypeIdent "AST"
+>>*declBody: e DeclImport {importQualified = True, importModule = "AST.Type", importAlias = Just "AST", importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=356
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Control"
+>>*declBody: e DeclImport {importQualified = True, importModule = "Control.Exception", importAlias = Just "TypeInference", importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=348
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Control"
+<< importIdent: next token TokIdent "foldM"
+<< getNameList: next token TokSymbol ","
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "replicateM"
+<< getNameList: next token TokSymbol ","
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "when"
+<< getNameList: next token TokSymbol ","
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "zipWithM"
+<< getNameList: next token TokSymbol ")"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM",ImportVar "replicateM",ImportVar "when",ImportVar "zipWithM"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=334
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Data"
+<< importIdent: next token TokIdent "first"
+<< getNameList: next token TokSymbol ")"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Data.Bifunctor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "first"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=326
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Data"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Data.IORef", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=321
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Data"
+<< importIdent: next token TokIdent "nub"
+<< getNameList: next token TokSymbol ","
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol "("
+<< getNameList: next token TokSymbol ")"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=309
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Data"
+>>*declBody: e DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=301
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Debug"
+<< importIdent: next token TokIdent "trace"
+<< getNameList: next token TokSymbol ","
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "traceIO"
+<< getNameList: next token TokSymbol ","
+<< importIdent: m Nothing
+<< importIdent: next token TokIdent "traceShowId"
+<< getNameList: next token TokSymbol ")"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Debug.Trace", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "trace",ImportVar "traceIO",ImportVar "traceShowId"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=289
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=284
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=277
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprSQL", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=268
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=261
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=256
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+<< importIdent: next token TokTypeIdent "Type"
+<< getNameList: next token TokSymbol ")"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Type"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=248
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = True, importModule = "TypeInference.Type", importAlias = Just "TI", importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=240
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=235
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = True, importModule = "TypeInference.TypeEnv", importAlias = Just "TypeEnv", importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=227
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = True, importModule = "TypeInference.Types", importAlias = Just "Types", importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=219
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+<< importIdent: next token TokIdent "unify"
+<< getNameList: next token TokSymbol ")"
+<< importIdent: m Nothing
+<< importIdent: next token TokSymbol ")"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=211
+<< importDecl parser called
+<< importDecl: TokTypeIdent "Utils"
+>>*declBody: e DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokIdent "inferFunBinding"
+<< decl parser called
+<< decl dispatch: TokIdent "inferFunBinding" ct=206
+<< funDecl: next token=TokIdent "inferFunBinding" ct=206
+<< pInfix: ct=205
+<< pPattern:
+    prased PVar "inferFunBinding"
+<< pInfix: ct=204
+<< pPattern:
+    prased PVar "inferExprFn"
+<< pInfix: ct=203
+<< pPattern:
+    prased PVar "env"
+<< pattern: ct=202
+<< pattern: ct=200
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "PVar" []) [PVar "f"] ct=198
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "PApp" []) [PApp (PConstr "PVar" []) [PVar "f"],PVar "args"] ct=196
+<< pattern: ct=195
+<< pattern:
+    (pAs <|> makeCons)PVar "body" ct=194
+<< pInfix: ct=193
+<< pPattern:
+    prased PTuple [PApp (PConstr "PApp" []) [PApp (PConstr "PVar" []) [PVar "f"],PVar "args"],PVar "body"]
+<< pattern: ct=193
+<< parseSimpleClause: next token=TokKeyword "do" ct=192
+<< expr dispatch: TokKeyword "do" ct=192
+<< bindStmt
+<< pattern: ct=190
+<< pattern: ct=189
+<< pattern:
+    (pAs <|> makeCons)PVar "s" ct=188
+<< pattern: ct=187
+<< pattern:
+    (pAs <|> makeCons)PVar "t" ct=186
+<< pattern:
+    (pAs <|> makeCons)PTuple [PVar "s",PVar "t"] ct=185
+<< expr dispatch: TokIdent "inferFunClause" ct=184
+<< exprNoLoop: e EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))
+<< expr dispatch: TokSymbol ";" ct=171
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing")) rest Nothing
+>>*bindStmt pat= PTuple [PVar "s",PVar "t"] e= EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))
+>>*doStmt: rt Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing")))
+<< bindStmt
+<< pattern: ct=170
+<< pattern: ct=168
+<< pattern:
+    (pAs <|> makeCons)PString "<< inferFunBinding: f " ct=167
+<< pattern:
+    (pAs <|> makeCons)PVar "myTraceE" ct=169
+<< expr dispatch: TokIdent "myTraceE" ct=170
+<< exprNoLoop: e EVar "myTraceE"
+<< expr dispatch: TokSymbol "(" ct=169
+<< parensExpr: ct=169
+<< expr dispatch: TokString "<< inferFunBinding: f " ct=168
+<< exprNoLoop: e EString "<< inferFunBinding: f "
+<< expr dispatch: TokOperator "++" ct=167
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokIdent "show" ct=166
+<< exprNoLoop: e EApp (EVar "show") (EVar "f")
+<< expr dispatch: TokOperator "++" ct=164
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokString " t " ct=163
+<< exprNoLoop: e EString " t "
+<< expr dispatch: TokOperator "++" ct=162
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokIdent "show" ct=161
+<< exprNoLoop: e EApp (EVar "show") (EVar "t")
+<< expr dispatch: TokSymbol ")" ct=159
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")) rest Nothing
+<< exprNoLoop: e EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f"))
+<< expr dispatch: TokSymbol ";" ct=158
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f"))) rest Nothing
+>>*exprStmt EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))
+>>*doStmt: rt ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f"))))
+<< bindStmt
+<< pattern: ct=157
+<< expr dispatch: TokKeyword "return" ct=157
+<< returnWithDollar
+>>*return atom: ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]
+<< exprNoLoop: e EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]])
+<< expr dispatch: TokVRBrace ct=144
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]) rest Nothing
+>>*exprStmt EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]])
+>>*doStmt: rt ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))
+<< bindStmt
+<< pattern: ct=144
+<< expr dispatch: TokVRBrace ct=144
+>>*doBlock: (f:m)[Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))]
+>>*doExprCore: stmts [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))]
+<< exprNoLoop: e EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))]
+<< expr dispatch: TokNewline ct=143
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))] rest Nothing
+<< parseSimpleClause: e EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))] ct=143
+<< funClauseWithName: next token=TokNewline ct=143
+>>*funDecl name "inferFunBinding" clause1 FunClause [PVar "inferExprFn",PVar "env",PTuple [PApp (PConstr "PApp" []) [PApp (PConstr "PVar" []) [PVar "f"],PVar "args"],PVar "body"]] Nothing (Just (EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))])) Nothing rest []
+>>*declBody: e DeclFunGroup "inferFunBinding" [FunClause [PVar "inferExprFn",PVar "env",PTuple [PApp (PConstr "PApp" []) [PApp (PConstr "PVar" []) [PVar "f"],PVar "args"],PVar "body"]] Nothing (Just (EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))])) Nothing]
+<< decl next token: TokIdent "inferFunClause"
+<< decl parser called
+<< decl dispatch: TokIdent "inferFunClause" ct=142
+<< funDecl: next token=TokIdent "inferFunClause" ct=142
+<< pInfix: ct=141
+<< pPattern:
+    prased PVar "inferFunClause"
+<< pattern: ct=141
+<< parseGuardedClause: next token=TokSymbol "::" ct=141
+<< parseGuardLine: next token=TokSymbol "::" ct=141
+<< typeSigDecl: TokIdent "inferFunClause"
+<< typeSigDecl:2 TokSymbol "::"
+<< parseType dispatch: TokSymbol "("
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "Expr"]
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
+<< parseTypeCore: TCon "Type"
+<< typeTerm: ts [TCon "InferM",TTuple [TCon "Subst",TCon "Type"]]
+<< parseTypeCore: TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])
+<< parseTypeCore: TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"]))
+<< parseTypeCore: TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))
+<< typeTerm: ts [TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))]
+<< typeTerm: ts [TCon "TypeEnv"]
+<< typeTerm: ts [TCon "FunClause"]
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Subst"]
+<< parseTypeCore: TCon "Subst"
+<< typeTerm: ts [TCon "Type"]
+<< parseTypeCore: TCon "Type"
+<< typeTerm: ts [TCon "InferM",TTuple [TCon "Subst",TCon "Type"]]
+<< parseTypeCore: TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])
+<< parseTypeCore: TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"]))
+<< parseTypeCore: TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))
+<< parseTypeCore: TArrow (TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))) (TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"]))))
+<< parsed type signature: inferFunClause :: TArrow (TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))) (TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"]))))
+<< returning DeclTypeSig: DeclTypeSig "inferFunClause" (TArrow (TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))) (TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))))
+>>*declBody: e DeclTypeSig "inferFunClause" (TArrow (TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))) (TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))))
+<< decl next token: TokIdent "inferFunClause"
+<< decl parser called
+<< decl dispatch: TokIdent "inferFunClause" ct=113
+<< funDecl: next token=TokIdent "inferFunClause" ct=113
+<< pInfix: ct=112
+<< pPattern:
+    prased PVar "inferFunClause"
+<< pInfix: ct=111
+<< pPattern:
+    prased PVar "inferExprFn"
+<< pInfix: ct=110
+<< pPattern:
+    prased PVar "env"
+<< pattern: ct=109
+<< pattern: ct=105
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "Just" []) [PVar "body"] ct=103
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "FunClause" []) [PVar "pats",PVar "_mbGuards",PApp (PConstr "Just" []) [PVar "body"],PVar "_mbWhere"] ct=101
+<< pInfix: ct=100
+<< pPattern:
+    prased PApp (PConstr "FunClause" []) [PVar "pats",PVar "_mbGuards",PApp (PConstr "Just" []) [PVar "body"],PVar "_mbWhere"]
+<< pattern: ct=100
+<< parseSimpleClause: next token=TokKeyword "do" ct=99
+<< expr dispatch: TokKeyword "do" ct=99
+<< bindStmt
+<< pattern: ct=97
+<< pattern: ct=96
+<< pattern:
+    (pAs <|> makeCons)PVar "sPats" ct=95
+<< pattern: ct=94
+<< pattern:
+    (pAs <|> makeCons)PVar "envPats" ct=93
+<< pattern: ct=92
+<< pattern:
+    (pAs <|> makeCons)PVar "patTypes" ct=91
+<< pattern:
+    (pAs <|> makeCons)PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"] ct=90
+<< expr dispatch: TokIdent "inferPatterns" ct=89
+<< exprNoLoop: e EApp (EVar "inferPatterns") (EVar "pats")
+<< expr dispatch: TokSymbol ";" ct=87
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "inferPatterns") (EVar "pats") rest Nothing
+>>*bindStmt pat= PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"] e= EApp (EVar "inferPatterns") (EVar "pats")
+>>*doStmt: rt Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats"))
+<< bindStmt
+<< pattern: ct=86
+<< letStmt
+<< pattern: ct=85
+<< pattern:
+    (pAs <|> makeCons)PVar "envPatApplied" ct=84
+<< expr dispatch: TokIdent "applyEnv" ct=83
+<< exprNoLoop: e EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")
+<< expr dispatch: TokSymbol ";" ct=80
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats") rest Nothing
+<< letStmt: b (PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats"))
+<< pattern: ct=79
+<< pattern:
+    (pAs <|> makeCons)PVar "env''" ct=78
+<< expr dispatch: TokIdent "mergeEnvs" ct=77
+<< exprNoLoop: e EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied")
+<< expr dispatch: TokSymbol ";" ct=74
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied") rest Nothing
+<< pattern: ct=73
+<< pattern: ct=72
+<< pattern:
+    (pAs <|> makeCons)PVar "sBody" ct=71
+<< pattern: ct=70
+<< pattern:
+    (pAs <|> makeCons)PVar "tBody" ct=69
+<< pattern:
+    (pAs <|> makeCons)PTuple [PVar "sBody",PVar "tBody"] ct=68
+>>*letStmt: binds [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))]
+>>*doStmt: rt LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))]
+<< bindStmt
+<< pattern: ct=73
+<< pattern: ct=72
+<< pattern:
+    (pAs <|> makeCons)PVar "sBody" ct=71
+<< pattern: ct=70
+<< pattern:
+    (pAs <|> makeCons)PVar "tBody" ct=69
+<< pattern:
+    (pAs <|> makeCons)PTuple [PVar "sBody",PVar "tBody"] ct=68
+<< expr dispatch: TokIdent "inferExprFn" ct=67
+<< exprNoLoop: e EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")
+<< expr dispatch: TokSymbol ";" ct=64
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body") rest Nothing
+>>*bindStmt pat= PTuple [PVar "sBody",PVar "tBody"] e= EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")
+>>*doStmt: rt Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body"))
+<< bindStmt
+<< pattern: ct=63
+<< pattern: ct=61
+<< pattern:
+    (pAs <|> makeCons)PString "<< inferFunClause: sBody " ct=60
+<< pattern:
+    (pAs <|> makeCons)PVar "myTraceE" ct=62
+<< expr dispatch: TokIdent "myTraceE" ct=63
+<< exprNoLoop: e EVar "myTraceE"
+<< expr dispatch: TokSymbol "(" ct=62
+<< parensExpr: ct=62
+<< expr dispatch: TokString "<< inferFunClause: sBody " ct=61
+<< exprNoLoop: e EString "<< inferFunClause: sBody "
+<< expr dispatch: TokOperator "++" ct=60
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokIdent "show" ct=59
+<< exprNoLoop: e EApp (EVar "show") (EVar "sBody")
+<< expr dispatch: TokOperator "++" ct=57
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokString " tBody " ct=56
+<< exprNoLoop: e EString " tBody "
+<< expr dispatch: TokOperator "++" ct=55
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpConcat
+<< expr dispatch: TokIdent "show" ct=54
+<< exprNoLoop: e EApp (EVar "show") (EVar "tBody")
+<< expr dispatch: TokSymbol ")" ct=52
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")) rest Nothing
+<< exprNoLoop: e EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody"))
+<< expr dispatch: TokSymbol ";" ct=51
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody"))) rest Nothing
+>>*exprStmt EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))
+>>*doStmt: rt ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody"))))
+<< bindStmt
+<< pattern: ct=50
+<< letStmt
+<< pattern: ct=49
+<< pattern:
+    (pAs <|> makeCons)PVar "s" ct=48
+<< expr dispatch: TokIdent "composeSubst" ct=47
+<< exprNoLoop: e EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")
+<< expr dispatch: TokSymbol ";" ct=44
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats") rest Nothing
+<< letStmt: b (PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats"))
+<< pattern: ct=43
+<< pattern:
+    (pAs <|> makeCons)PVar "argTypes" ct=42
+<< expr dispatch: TokIdent "map" ct=41
+<< exprNoLoop: e EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")
+<< expr dispatch: TokSymbol ";" ct=38
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes") rest Nothing
+<< pattern: ct=37
+<< pattern:
+    (pAs <|> makeCons)PVar "funType" ct=36
+<< expr dispatch: TokIdent "foldr" ct=35
+<< exprNoLoop: e EApp (EVar "foldr") (EVarType "TI")
+<< expr dispatch: TokOperator "." ct=33
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< infixOp: parsed as BinOpCompose
+<< expr dispatch: TokTypeIdent "TArrow" ct=32
+<< bracesExpr: nm "TArrow" ct=32
+<< exprNoLoop: e EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")
+<< expr dispatch: TokSymbol ";" ct=29
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")) rest Nothing
+<< pattern: ct=28
+>>*letStmt: binds [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))]
+>>*doStmt: rt LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))]
+<< bindStmt
+<< pattern: ct=28
+<< expr dispatch: TokKeyword "return" ct=28
+<< returnWithDollar
+>>*return atom: ETuple [EVar "s",EVar "funType"]
+<< exprNoLoop: e EReturn (ETuple [EVar "s",EVar "funType"])
+<< expr dispatch: TokVRBrace ct=22
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EReturn (ETuple [EVar "s",EVar "funType"]) rest Nothing
+>>*exprStmt EReturn (ETuple [EVar "s",EVar "funType"])
+>>*doStmt: rt ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))
+<< bindStmt
+<< pattern: ct=22
+<< expr dispatch: TokVRBrace ct=22
+>>*doBlock: (f:m)[Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))]
+>>*doExprCore: stmts [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))]
+<< exprNoLoop: e EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))]
+<< expr dispatch: TokNewline ct=21
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))] rest Nothing
+<< parseSimpleClause: e EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))] ct=21
+<< funClauseWithName: next token=TokNewline ct=21
+>>*funDecl name "inferFunClause" clause1 FunClause [PVar "inferExprFn",PVar "env",PApp (PConstr "FunClause" []) [PVar "pats",PVar "_mbGuards",PApp (PConstr "Just" []) [PVar "body"],PVar "_mbWhere"]] Nothing (Just (EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))])) Nothing rest []
+>>*declBody: e DeclFunGroup "inferFunClause" [FunClause [PVar "inferExprFn",PVar "env",PApp (PConstr "FunClause" []) [PVar "pats",PVar "_mbGuards",PApp (PConstr "Just" []) [PVar "body"],PVar "_mbWhere"]] Nothing (Just (EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))])) Nothing]
+<< decl next token: TokIdent "inferFunClause"
+<< decl parser called
+<< decl dispatch: TokIdent "inferFunClause" ct=20
+<< funDecl: next token=TokIdent "inferFunClause" ct=20
+<< pInfix: ct=19
+<< pPattern:
+    prased PVar "inferFunClause"
+<< pInfix: ct=18
+<< pPattern:
+    prased PVar "_"
+<< pInfix: ct=17
+<< pPattern:
+    prased PVar "_"
+<< pattern: ct=16
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "FunClause" []) [PVar "_",PVar "_",PConstr "Nothing" [],PVar "_"] ct=11
+<< pInfix: ct=10
+<< pPattern:
+    prased PApp (PConstr "FunClause" []) [PVar "_",PVar "_",PConstr "Nothing" [],PVar "_"]
+<< pattern: ct=10
+<< parseSimpleClause: next token=TokIdent "lift" ct=8
+<< expr dispatch: TokIdent "lift" ct=8
+<< exprNoLoop: e EVar "lift"
+<< expr dispatch: TokOperator "$" ct=7
+<< postfix: operator = Just "$"
+<< postfix: operator = $
+<< expr dispatch: TokTypeIdent "Left" ct=6
+<< bracesExpr: nm "Left" ct=6
+<< exprNoLoop: e EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))
+<< expr dispatch: TokNewline ct=1
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body")) rest Nothing
+>> postfix: out rhs = EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "$") (EVar "lift")) (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))) rest Nothing
+<< parseSimpleClause: e EApp (EApp (EVar "$") (EVar "lift")) (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))) ct=1
+<< funClauseWithName: next token=TokNewline ct=1
+>>*funDecl name "inferFunClause" clause1 FunClause [PVar "_",PVar "_",PApp (PConstr "FunClause" []) [PVar "_",PVar "_",PConstr "Nothing" [],PVar "_"]] Nothing (Just (EApp (EApp (EVar "$") (EVar "lift")) (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))))) Nothing rest []
+>>*declBody: e DeclFunGroup "inferFunClause" [FunClause [PVar "_",PVar "_",PApp (PConstr "FunClause" []) [PVar "_",PVar "_",PConstr "Nothing" [],PVar "_"]] Nothing (Just (EApp (EApp (EVar "$") (EVar "lift")) (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))))) Nothing]
+Just ([DeclModule "TypeInference.Infer.Expr.ExprFun" (Just [ExportVar "inferFunClause",ExportVar "inferFunBinding"]),DeclImport {importQualified = False, importModule = "AST.Decl", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Decl",ImportTypeAll "FunClause"]},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "CaseAlt",ImportTypeAll "Expr",ImportTypeAll "Stmt"]},DeclImport {importQualified = False, importModule = "AST.Pattern", importAlias = Nothing, importHiding = False, importItems = Just [ImportTypeAll "Pattern"]},DeclImport {importQualified = True, importModule = "AST.Type", importAlias = Just "AST", importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Control.Exception", importAlias = Just "TypeInference", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "foldM",ImportVar "replicateM",ImportVar "when",ImportVar "zipWithM"]},DeclImport {importQualified = False, importModule = "Data.Bifunctor", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "first"]},DeclImport {importQualified = False, importModule = "Data.IORef", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Data.List", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "nub",ImportVar "(\\)"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Debug.Trace", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "trace",ImportVar "traceIO",ImportVar "traceShowId"]},DeclImport {importQualified = False, importModule = "TypeInference.Error", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Core", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Expr.ExprSQL", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Infer.Pattern", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "Type"]},DeclImport {importQualified = True, importModule = "TypeInference.Type", importAlias = Just "TI", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.TypeEnv", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "TypeInference.TypeEnv", importAlias = Just "TypeEnv", importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "TypeInference.Types", importAlias = Just "Types", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Unify", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unify"]},DeclImport {importQualified = False, importModule = "Utils.MyTrace", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclFunGroup "inferFunBinding" [FunClause [PVar "inferExprFn",PVar "env",PTuple [PApp (PConstr "PApp" []) [PApp (PConstr "PVar" []) [PVar "f"],PVar "args"],PVar "body"]] Nothing (Just (EDo [Bind (PTuple [PVar "s",PVar "t"]) (EApp (EApp (EApp (EVar "inferFunClause") (EVar "inferExprFn")) (EVar "env")) (EApp (EApp (EApp (EApp (EVarType "FunClause") (EVar "args")) (EVarType "Nothing")) (EApp (EVarType "Just") (EVar "body"))) (EVarType "Nothing"))),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunBinding: f ") (EApp (EVar "show") (EVar "t"))) (EString " t ")) (EApp (EVar "show") (EVar "f")))),ExprStmt (EReturn (ETuple [EVar "s",EList [ETuple [EApp (EVarType "PVar") (EVar "f"),EVar "t"]]]))])) Nothing],DeclTypeSig "inferFunClause" (TArrow (TArrow (TCon "TypeEnv") (TArrow (TCon "Expr") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"])))) (TArrow (TCon "TypeEnv") (TArrow (TCon "FunClause") (TApp (TCon "InferM") (TTuple [TCon "Subst",TCon "Type"]))))),DeclFunGroup "inferFunClause" [FunClause [PVar "inferExprFn",PVar "env",PApp (PConstr "FunClause" []) [PVar "pats",PVar "_mbGuards",PApp (PConstr "Just" []) [PVar "body"],PVar "_mbWhere"]] Nothing (Just (EDo [Bind (PTuple [PVar "sPats",PVar "envPats",PVar "patTypes"]) (EApp (EVar "inferPatterns") (EVar "pats")),LetStmt [(PVar "envPatApplied",EApp (EApp (EVar "applyEnv") (EVar "sPats")) (EVar "envPats")),(PVar "env''",EApp (EApp (EVar "mergeEnvs") (EVar "env")) (EVar "envPatApplied"))],Bind (PTuple [PVar "sBody",PVar "tBody"]) (EApp (EApp (EVar "inferExprFn") (EVar "env''")) (EVar "body")),ExprStmt (EApp (EVar "myTraceE") (EBinOp BinOpConcat (EBinOp BinOpConcat (EBinOp BinOpConcat (EString "<< inferFunClause: sBody ") (EApp (EVar "show") (EVar "tBody"))) (EString " tBody ")) (EApp (EVar "show") (EVar "sBody")))),LetStmt [(PVar "s",EApp (EApp (EVar "composeSubst") (EVar "sBody")) (EVar "sPats")),(PVar "argTypes",EApp (EApp (EVar "map") (EVar "snd")) (EVar "patTypes")),(PVar "funType",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "TI")) (EApp (EApp (EVarType "TArrow") (EVar "tBody")) (EVar "argTypes")))],ExprStmt (EReturn (ETuple [EVar "s",EVar "funType"]))])) Nothing],DeclFunGroup "inferFunClause" [FunClause [PVar "_",PVar "_",PApp (PConstr "FunClause" []) [PVar "_",PVar "_",PConstr "Nothing" [],PVar "_"]] Nothing (Just (EApp (EApp (EVar "$") (EVar "lift")) (EApp (EVarType "Left") (EApp (EVarType "InferOther") (EString "Function clause missing body"))))) Nothing]],[])
+
+-- src code --
+module TypeInference.Infer.Expr.ExprFun
+  ( inferFunClause,
+    inferFunBinding,
+  )
+where
+
+import AST.Decl (Decl (..), FunClause (..))
+import AST.Expr
+import AST.Expr (CaseAlt (..), Expr (..), Stmt (..))
+import AST.Pattern (Pattern (..))
+-- import AST.Type
+-- import AST.Type (Type (..))
+
+import qualified AST.Type as AST
+import qualified Control.Exception as TypeInference
+-- (setTrace)
+-- import TypeInference.Types
+
+import Control.Monad (foldM, replicateM, when, zipWithM)
+import Data.Bifunctor (first)
+import Data.IORef
+import Data.List (nub, (\\))
+import qualified Data.Map as M
+import Debug.Trace (trace, traceIO, traceShowId)
+import TypeInference.Error
+import TypeInference.Infer.Core
+-- import TypeInference.Infer.Expr.ExprDispatch (inferExpr)
+import TypeInference.Infer.Expr.ExprSQL
+import TypeInference.Infer.Pattern
+import TypeInference.Subst
+import TypeInference.Type (Type)
+import qualified TypeInference.Type as TI
+import TypeInference.TypeEnv
+import qualified TypeInference.TypeEnv as TypeEnv
+import qualified TypeInference.Types as Types
+import TypeInference.Unify (unify)
+import Utils.MyTrace
+
+inferFunBinding inferExprFn env (PApp (PVar f) args, body) = do
+  (s, t) <- inferFunClause inferExprFn env (FunClause args Nothing (Just body) Nothing)
+  myTraceE ("<< inferFunBinding: f " ++ show f ++ " t " ++ show t)
+  return (s, [(PVar f, t)])
+
+inferFunClause ::
+  (TypeEnv -> Expr -> InferM (Subst, Type)) ->
+  TypeEnv ->
+  FunClause ->
+  InferM (Subst, Type)
+inferFunClause inferExprFn env (FunClause pats _mbGuards (Just body) _mbWhere) = do
+  (sPats, envPats, patTypes) <- inferPatterns pats
+  let envPatApplied = applyEnv sPats envPats
+      env'' = mergeEnvs env envPatApplied
+  (sBody, tBody) <- inferExprFn env'' body
+  myTraceE ("<< inferFunClause: sBody " ++ show sBody ++ " tBody " ++ show tBody)
+  let s = composeSubst sBody sPats
+      argTypes = map snd patTypes
+      funType = foldr TI.TArrow tBody argTypes
+  return (s, funType)
+inferFunClause _ _ (FunClause _ _ Nothing _) =
+  lift $ Left (InferOther "Function clause missing body")
+
+
+-- token --
+[435] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Infer"TokOperator "."     
+[430] TokTypeIdent "Expr" TokOperator "."     TokTypeIdent "ExprFuTokSymbol "("       TokIdent "inferFunCl
+[425] TokSymbol ","       TokSymbol ";"       TokIdent "inferFunBiTokSymbol ","       TokSymbol ";"       
+[420] TokSymbol ")"       TokNewline          TokKeyword "where"  TokNewline          TokKeyword "import" 
+[415] TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Decl" TokSymbol "("       TokTypeIdent "Decl" 
+[410] TokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ","       TokTypeIdent "FunCla
+[405] TokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       TokNewline          
+[400] TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Expr" TokNewline          
+[395] TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Expr" TokSymbol "("       
+[390] TokTypeIdent "CaseAlTokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ","       
+[385] TokTypeIdent "Expr" TokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ","       
+[380] TokTypeIdent "Stmt" TokSymbol "("       TokSymbol ".."      TokSymbol ")"       TokSymbol ")"       
+[375] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Patter
+[370] TokSymbol "("       TokTypeIdent "PatterTokSymbol "("       TokSymbol ".."      TokSymbol ")"       
+[365] TokSymbol ")"       TokNewline          TokKeyword "import" TokKeyword "qualifieTokTypeIdent "AST"  
+[360] TokOperator "."     TokTypeIdent "Type" TokKeyword "as"     TokTypeIdent "AST"  TokNewline          
+[355] TokKeyword "import" TokKeyword "qualifieTokTypeIdent "ControTokOperator "."     TokTypeIdent "Except
+[350] TokKeyword "as"     TokTypeIdent "TypeInTokNewline          TokKeyword "import" TokTypeIdent "Contro
+[345] TokOperator "."     TokTypeIdent "Monad"TokSymbol "("       TokIdent "foldM"    TokSymbol ","       
+[340] TokIdent "replicateMTokSymbol ","       TokIdent "when"     TokSymbol ","       TokIdent "zipWithM" 
+[335] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "Data" TokOperator "."     
+[330] TokTypeIdent "BifuncTokSymbol "("       TokIdent "first"    TokSymbol ")"       TokNewline          
+[325] TokKeyword "import" TokTypeIdent "Data" TokOperator "."     TokTypeIdent "IORef"TokNewline          
+[320] TokKeyword "import" TokTypeIdent "Data" TokOperator "."     TokTypeIdent "List" TokSymbol "("       
+[315] TokIdent "nub"      TokSymbol ","       TokSymbol "("       TokOperator "\\"    TokSymbol ")"       
+[310] TokSymbol ")"       TokNewline          TokKeyword "import" TokKeyword "qualifieTokTypeIdent "Data" 
+[305] TokOperator "."     TokTypeIdent "Map"  TokKeyword "as"     TokTypeIdent "M"    TokNewline          
+[300] TokKeyword "import" TokTypeIdent "Debug"TokOperator "."     TokTypeIdent "Trace"TokSymbol "("       
+[295] TokIdent "trace"    TokSymbol ","       TokIdent "traceIO"  TokSymbol ","       TokIdent "traceShowI
+[290] TokSymbol ")"       TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     
+[285] TokTypeIdent "Error"TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     
+[280] TokTypeIdent "Infer"TokOperator "."     TokTypeIdent "Core" TokNewline          TokKeyword "import" 
+[275] TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Infer"TokOperator "."     TokTypeIdent "Expr" 
+[270] TokOperator "."     TokTypeIdent "ExprSQTokNewline          TokKeyword "import" TokTypeIdent "TypeIn
+[265] TokOperator "."     TokTypeIdent "Infer"TokOperator "."     TokTypeIdent "PatterTokNewline          
+[260] TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Subst"TokNewline          
+[255] TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Type" TokSymbol "("       
+[250] TokTypeIdent "Type" TokSymbol ")"       TokNewline          TokKeyword "import" TokKeyword "qualifie
+[245] TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Type" TokKeyword "as"     TokTypeIdent "TI"   
+[240] TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "TypeEn
+[235] TokNewline          TokKeyword "import" TokKeyword "qualifieTokTypeIdent "TypeInTokOperator "."     
+[230] TokTypeIdent "TypeEnTokKeyword "as"     TokTypeIdent "TypeEnTokNewline          TokKeyword "import" 
+[225] TokKeyword "qualifieTokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Types"TokKeyword "as"     
+[220] TokTypeIdent "Types"TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     
+[215] TokTypeIdent "Unify"TokSymbol "("       TokIdent "unify"    TokSymbol ")"       TokNewline          
+[210] TokKeyword "import" TokTypeIdent "Utils"TokOperator "."     TokTypeIdent "MyTracTokNewline          
+[205] TokIdent "inferFunBiTokIdent "inferExprFTokIdent "env"      TokSymbol "("       TokTypeIdent "PApp" 
+[200] TokSymbol "("       TokTypeIdent "PVar" TokIdent "f"        TokSymbol ")"       TokIdent "args"     
+[195] TokSymbol ","       TokIdent "body"     TokSymbol ")"       TokSymbol "="       TokKeyword "do"     
+[190] TokVLBrace          TokSymbol "("       TokIdent "s"        TokSymbol ","       TokIdent "t"        
+[185] TokSymbol ")"       TokSymbol "<-"      TokIdent "inferFunClTokIdent "inferExprFTokIdent "env"      
+[180] TokSymbol "("       TokTypeIdent "FunClaTokIdent "args"     TokTypeIdent "NothinTokSymbol "("       
+[175] TokTypeIdent "Just" TokIdent "body"     TokSymbol ")"       TokTypeIdent "NothinTokSymbol ")"       
+[170] TokSymbol ";"       TokIdent "myTraceE" TokSymbol "("       TokString "<< inferFTokOperator "++"    
+[165] TokIdent "show"     TokIdent "f"        TokOperator "++"    TokString " t "     TokOperator "++"    
+[160] TokIdent "show"     TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokKeyword "return" 
+[155] TokSymbol "("       TokIdent "s"        TokSymbol ","       TokSymbol "["       TokSymbol "("       
+[150] TokTypeIdent "PVar" TokIdent "f"        TokSymbol ","       TokIdent "t"        TokSymbol ")"       
+[145] TokSymbol "]"       TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "inferFunCl
+[140] TokSymbol "::"      TokSymbol "("       TokTypeIdent "TypeEnTokArrow            TokTypeIdent "Expr" 
+[135] TokArrow            TokTypeIdent "InferMTokSymbol "("       TokTypeIdent "Subst"TokSymbol ","       
+[130] TokTypeIdent "Type" TokSymbol ")"       TokSymbol ")"       TokArrow            TokSymbol ";"       
+[125] TokTypeIdent "TypeEnTokArrow            TokSymbol ";"       TokTypeIdent "FunClaTokArrow            
+[120] TokSymbol ";"       TokTypeIdent "InferMTokSymbol "("       TokTypeIdent "Subst"TokSymbol ","       
+[115] TokTypeIdent "Type" TokSymbol ")"       TokNewline          TokIdent "inferFunClTokIdent "inferExprF
+[110] TokIdent "env"      TokSymbol "("       TokTypeIdent "FunClaTokIdent "pats"     TokIdent "_mbGuards"
+[105] TokSymbol "("       TokTypeIdent "Just" TokIdent "body"     TokSymbol ")"       TokIdent "_mbWhere" 
+[100] TokSymbol ")"       TokSymbol "="       TokKeyword "do"     TokVLBrace          TokSymbol "("       
+[95] TokIdent "sPats"    TokSymbol ","       TokIdent "envPats"  TokSymbol ","       TokIdent "patTypes" 
+[90] TokSymbol ")"       TokSymbol "<-"      TokIdent "inferPatteTokIdent "pats"     TokSymbol ";"       
+[85] TokKeyword "let"    TokIdent "envPatApplTokSymbol "="       TokIdent "applyEnv" TokIdent "sPats"    
+[80] TokIdent "envPats"  TokSymbol ";"       TokIdent "env''"    TokSymbol "="       TokIdent "mergeEnvs"
+[75] TokIdent "env"      TokIdent "envPatApplTokSymbol ";"       TokSymbol "("       TokIdent "sBody"    
+[70] TokSymbol ","       TokIdent "tBody"    TokSymbol ")"       TokSymbol "<-"      TokIdent "inferExprF
+[65] TokIdent "env''"    TokIdent "body"     TokSymbol ";"       TokIdent "myTraceE" TokSymbol "("       
+[60] TokString "<< inferFTokOperator "++"    TokIdent "show"     TokIdent "sBody"    TokOperator "++"    
+[55] TokString " tBody " TokOperator "++"    TokIdent "show"     TokIdent "tBody"    TokSymbol ")"       
+[50] TokSymbol ";"       TokKeyword "let"    TokIdent "s"        TokSymbol "="       TokIdent "composeSub
+[45] TokIdent "sBody"    TokIdent "sPats"    TokSymbol ";"       TokIdent "argTypes" TokSymbol "="       
+[40] TokIdent "map"      TokIdent "snd"      TokIdent "patTypes" TokSymbol ";"       TokIdent "funType"  
+[35] TokSymbol "="       TokIdent "foldr"    TokTypeIdent "TI"   TokOperator "."     TokTypeIdent "TArrow
+[30] TokIdent "tBody"    TokIdent "argTypes" TokSymbol ";"       TokKeyword "return" TokSymbol "("       
+[25] TokIdent "s"        TokSymbol ","       TokIdent "funType"  TokSymbol ")"       TokVRBrace          
+[20] TokNewline          TokIdent "inferFunClTokIdent "_"        TokIdent "_"        TokSymbol "("       
+[15] TokTypeIdent "FunClaTokIdent "_"        TokIdent "_"        TokTypeIdent "NothinTokIdent "_"        
+[10] TokSymbol ")"       TokSymbol "="       TokSymbol ";"       TokIdent "lift"     TokOperator "$"     
+[5] TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "InferOTokString "Function TokSymbol ")"       
+[0] TokNewline          

@@ -64,7 +64,6 @@ inferFunGroup env name clauses mTy = do
     Nothing -> freshType
 
   -- 2. 関数名と型スキームを環境に追加（再帰対応！）
-  -- let scheme = TypeEnv.generalize env ty
   let scheme = Forall [] ty
       env' = extendEnv env name scheme
 
@@ -97,7 +96,6 @@ inferFunClauses env clauses = do
   let expectedType = foldr TI.TArrow retType argTypes
 
   -- 3. 関数名を仮に使うために環境に追加（再帰対応）
-  -- let scheme = Forall [] (convertType (env expectedType))
   let scheme = TypeEnv.generalize env expectedType
       env' = extendEnv env "__self__" scheme -- "__self__" は仮の関数名（必要に応じて変更）
 
@@ -191,13 +189,6 @@ lookupTypeSig name decls =
   case [ty | DeclTypeSig n ty <- decls, n == name] of
     (ty : _) -> Just (convertType ty)
     [] -> Nothing
-
-{-}
-generalize :: TypeEnv -> Type -> Scheme
-generalize env t =
-  let vars = freeTypeVars t \\ freeTypeVarsEnv env
-   in Forall (nub vars) t
--}
 
 convertType :: AST.Type -> TI.Type
 convertType astTy = case astTy of

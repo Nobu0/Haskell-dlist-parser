@@ -1,0 +1,42 @@
+
+-- src --
+
+-- リストのマップ
+map :: (a -> b) -> [a] -> [b]
+map ff [] = []
+map ff (xx:xxs) = ff xx : map ff xxs
+
+
+-- Token list --
+[TokNewline,TokIdent "map",TokSymbol "::",TokSymbol "(",TokIdent "a",TokArrow,TokIdent "b",TokSymbol ")",TokArrow,TokSymbol "[",TokIdent "a",TokSymbol "]",TokArrow,TokSymbol "[",TokIdent "b",TokSymbol "]",TokNewline,TokIdent "map",TokIdent "ff",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokSymbol "[",TokSymbol "]",TokNewline,TokIdent "map",TokIdent "ff",TokSymbol "(",TokIdent "xx",TokOperator ":",TokIdent "xxs",TokSymbol ")",TokSymbol "=",TokIdent "ff",TokIdent "xx",TokOperator ":",TokIdent "map",TokIdent "ff",TokIdent "xxs",TokNewline]
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 40 / 40
+Coverage: 100%
+
+-- AST (numbered) --
+[0] DeclTypeSig "map" (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TList (TVar "a")) (TList (TVar "b"))))
+[1] DeclFunGroup "map" [FunClause [PVar "ff",PConstr "[]" []] Nothing (Just (EList [])) Nothing]
+[2] DeclFunGroup "map" [FunClause [PVar "ff",PCons (PVar "xx") (PVar "xxs")] Nothing (Just (EBinOp BinOpCons (EApp (EVar "ff") (EVar "xx")) (EApp (EApp (EVar "map") (EVar "ff")) (EVar "xxs")))) Nothing]
+
+-- Type Inference ------------------------
+<< inferProgram: groups fromList [("map",([FunClause [PVar "ff",PConstr "[]" []] Nothing (Just (EList [])) Nothing,FunClause [PVar "ff",PCons (PVar "xx") (PVar "xxs")] Nothing (Just (EBinOp BinOpCons (EApp (EVar "ff") (EVar "xx")) (EApp (EApp (EVar "map") (EVar "ff")) (EVar "xxs")))) Nothing],Just (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TList (TVar "a")) (TList (TVar "b"))))))]
+<< inferProgram: env TypeEnv (fromList [("$",Forall ["a","b"] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "b")))),("*",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("+",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("-",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("==",Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),(">",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),("False",Forall [] (TCon "Bool")),("True",Forall [] (TCon "Bool")),("print",Forall ["a"] (TArrow (TVar "a") (TCon "Unit")))])
+<< inferGroup: clauses [FunClause [PVar "ff",PConstr "[]" []] Nothing (Just (EList [])) Nothing,FunClause [PVar "ff",PCons (PVar "xx") (PVar "xxs")] Nothing (Just (EBinOp BinOpCons (EApp (EVar "ff") (EVar "xx")) (EApp (EApp (EVar "map") (EVar "ff")) (EVar "xxs")))) Nothing]
+<< inferFunGroup: extended env with map :: Forall [] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TList (TVar "a")) (TList (TVar "b"))))
+<< infrePattern: pat PVar "ff"
+<< infrePattern: pat PConstr "[]" []
+<< infrePattern: pat PVar "ff"
+<< infrePattern: pat PCons (PVar "xx") (PVar "xxs")
+<< inferExpr: name "ff"
+<< inferExpr: name "xx"
+<< inferExpr: name "map"
+<< inferExpr: name "ff"
+<< inferExpr: name "xxs"
+Type inference succeeded!
+TypeEnv (fromList [("$",Forall ["a","b"] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "b")))),("*",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("+",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("-",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("==",Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),(">",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),("False",Forall [] (TCon "Bool")),("True",Forall [] (TCon "Bool")),("map",Forall ["t8","t12"] (TArrow (TArrow (TVar "t8") (TVar "t12")) (TArrow (TList (TVar "t8")) (TList (TVar "t12"))))),("print",Forall ["a"] (TArrow (TVar "a") (TCon "Unit")))])
+
+-- Remaining Tokens ----------------------
+[]

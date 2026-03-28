@@ -1,3 +1,3 @@
 -- 恒等関数（多相型）
 id :: a -> a
-id x = x
+id xx = xx

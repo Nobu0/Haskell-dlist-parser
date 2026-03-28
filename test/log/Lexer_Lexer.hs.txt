@@ -13,9 +13,9 @@ Coverage: 100%
 [2] DeclImport {importQualified = False, importModule = "Lexer.SimpleLexer", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [3] DeclImport {importQualified = False, importModule = "Lexer.LayoutLexer", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [4] DeclImport {importQualified = False, importModule = "Layout.LayoutTransform", importAlias = Nothing, importHiding = False, importItems = Nothing}
-[5] DeclTypeSig "runLexer" (TFun (TCon "String") (TList (TCon "Token")))
-[6] DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EBinOp BinOpCompose (EVar "layoutTransform") (EVar "slexer")) (EVar "layoutLexer"))) Nothing]
-[DeclModule "Lexer.Lexer" (Just [ExportVar "runLexer"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.SimpleLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.LayoutLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Layout.LayoutTransform", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "runLexer" (TFun (TCon "String") (TList (TCon "Token"))),DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EBinOp BinOpCompose (EVar "layoutTransform") (EVar "slexer")) (EVar "layoutLexer"))) Nothing]]
+[5] DeclTypeSig "runLexer" (TArrow (TCon "String") (TList (TCon "Token")))
+[6] DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer")) Nothing]
+[DeclModule "Lexer.Lexer" (Just [ExportVar "runLexer"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.SimpleLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.LayoutLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Layout.LayoutTransform", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "runLexer" (TArrow (TCon "String") (TList (TCon "Token"))),DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer")) Nothing]]
 
 -- Remaining-----------------------------
 []
@@ -70,10 +70,10 @@ Coverage: 100%
 << parseTypeCore: TCon "Token"
 << typeTerm: ts [TList (TCon "Token")]
 << parseTypeCore: TList (TCon "Token")
-<< parseTypeCore: TFun (TCon "String") (TList (TCon "Token"))
-<< parsed type signature: runLexer :: TFun (TCon "String") (TList (TCon "Token"))
-<< returning DeclTypeSig: DeclTypeSig "runLexer" (TFun (TCon "String") (TList (TCon "Token")))
->>*declBody: e DeclTypeSig "runLexer" (TFun (TCon "String") (TList (TCon "Token")))
+<< parseTypeCore: TArrow (TCon "String") (TList (TCon "Token"))
+<< parsed type signature: runLexer :: TArrow (TCon "String") (TList (TCon "Token"))
+<< returning DeclTypeSig: DeclTypeSig "runLexer" (TArrow (TCon "String") (TList (TCon "Token")))
+>>*declBody: e DeclTypeSig "runLexer" (TArrow (TCon "String") (TList (TCon "Token")))
 << decl next token: TokIdent "runLexer"
 << decl parser called
 << decl dispatch: TokIdent "runLexer" ct=8
@@ -84,28 +84,16 @@ Coverage: 100%
 << pattern: ct=7
 << parseSimpleClause: next token=TokIdent "layoutTransform" ct=6
 << expr dispatch: TokIdent "layoutTransform" ct=6
-<< exprNoLoop: e EVar "layoutTransform"
-<< expr dispatch: TokOperator "." ct=5
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "layoutLexer" ct=4
-<< exprNoLoop: e EVar "layoutLexer"
-<< expr dispatch: TokOperator "." ct=3
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "slexer" ct=2
-<< exprNoLoop: e EVar "slexer"
+<< exprNoLoop: e EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer"
 << expr dispatch: TokNewline ct=1
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EBinOp BinOpCompose (EBinOp BinOpCompose (EVar "layoutTransform") (EVar "slexer")) (EVar "layoutLexer") rest Nothing
-<< parseSimpleClause: e EBinOp BinOpCompose (EBinOp BinOpCompose (EVar "layoutTransform") (EVar "slexer")) (EVar "layoutLexer") ct=1
+<< expr: e EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer" rest Nothing
+<< parseSimpleClause: e EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer" ct=1
 << funClauseWithName: next token=TokNewline ct=1
->>*funDecl name "runLexer" clause1 FunClause [] Nothing (Just (EBinOp BinOpCompose (EBinOp BinOpCompose (EVar "layoutTransform") (EVar "slexer")) (EVar "layoutLexer"))) Nothing rest []
->>*declBody: e DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EBinOp BinOpCompose (EVar "layoutTransform") (EVar "slexer")) (EVar "layoutLexer"))) Nothing]
-Just ([DeclModule "Lexer.Lexer" (Just [ExportVar "runLexer"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.SimpleLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.LayoutLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Layout.LayoutTransform", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "runLexer" (TFun (TCon "String") (TList (TCon "Token"))),DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EBinOp BinOpCompose (EVar "layoutTransform") (EVar "slexer")) (EVar "layoutLexer"))) Nothing]],[])
+>>*funDecl name "runLexer" clause1 FunClause [] Nothing (Just (EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer")) Nothing rest []
+>>*declBody: e DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer")) Nothing]
+Just ([DeclModule "Lexer.Lexer" (Just [ExportVar "runLexer"]),DeclImport {importQualified = False, importModule = "Lexer.Token", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.SimpleLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Lexer.LayoutLexer", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Layout.LayoutTransform", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "runLexer" (TArrow (TCon "String") (TList (TCon "Token"))),DeclFunGroup "runLexer" [FunClause [] Nothing (Just (EFieldAccess (EFieldAccess (EVar "layoutTransform") "layoutLexer") "slexer")) Nothing]],[])
 
 -- src code --
 module Lexer.Lexer

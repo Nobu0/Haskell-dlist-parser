@@ -14,14 +14,14 @@ where
 
 import AST.Expr
 import AST.Expr (BinOp (..), Expr (..))
-import Control.Applicative (empty, many, optional, (<|>))
 -- import Text.ParserCombinators.ReadP (skipSpaces)
 
+import Control.Applicative (empty, many, optional, some, (<|>))
 import Data.List (find, intercalate)
 import Lexer.Token (Token (..))
 import Parser.Core.Combinator
 import Parser.Core.TokenParser
-import Parser.Expr.PatternParser (pattern)
+import Parser.Expr.PatternParser -- (pattern)
 import Parser.SQL.SQLParser
 import Parser.Type.TypeParser (typeIdent)
 import Utils.MyTrace
@@ -86,13 +86,6 @@ exprCoreWithOp = do
   -- skipSeparatorsZ
   opChainPrec 0 operatorBinOpInfo EBinOp base
 
-{-}
--- 最下層：関数適用やリテラル、変数など
-exprLevel3Core :: Parser Expr
-exprLevel3Core = do
-  try lambdaExpr <|> appExprCore
--}
-
 exprCore2 :: Parser Expr
 exprCore2 = do
   rt <-
@@ -119,12 +112,23 @@ pRecordExpr = do
 -- ============================================
 --  関数適用
 -- ============================================
-
+{-}
 appExprCore :: Parser Expr
 appExprCore = do
   f <- atomCore
   args <- many atomCore
   return (foldl EApp f args)
+-}
+appExprCore :: Parser Expr
+appExprCore = do
+  f <- atomCore
+  args <- many atomCore
+  if null args
+    then return f
+    else case f of
+      EVar _ -> return (foldl EApp f args)
+      EApp {} -> return (foldl EApp f args)
+      _ -> empty
 
 fieldExpr :: Parser Expr
 fieldExpr = do
@@ -276,7 +280,7 @@ emptyListExpr = do
 lambdaExpr :: Parser Expr
 lambdaExpr = do
   symbol "\\"
-  arg <- pattern
+  arg <- some simplePattern
   myTrace ("<< lambdaExpr arg " ++ show arg)
   tokenIs (\case TokArrow -> Just (); _ -> Nothing)
   bracesV $ do

@@ -70,57 +70,6 @@ inferBranch inferExprFn env tScrut sScrut alt = do
       let sTotal = foldr composeSubst sMerged subs
       return (sTotal `composeSubst` s1, apply sTotal (head types))
 
-{-}
-inferBranch inferExprFn env tScrut sScrut alt = do
-  myTraceE ("<< inferBranch: tScurt " ++ show tScrut ++ " sScrut " ++ show sScrut ++ " alt " ++ show alt)
-  case alt of
-    CaseAlt pat expr -> do
-      (s1, env') <- inferPattern' pat tScrut
-      (s2, tBody) <- inferExprFn (mergeEnvs env' env) expr
-      return (s2 `composeSubst` s1, tBody)
-    CaseAltGuard pat guards -> do
-      (s1, env') <- inferPattern' pat tScrut
-      results <- forM guards $ \(cond, expr) -> do
-        -- 条件式の推論（EWhere に対応）
-        (sCond, tCond) <- case cond of
-          EWhere e binds -> inferWhere inferExprFn (mergeEnvs env' env) e binds
-          _ -> inferExprFn (mergeEnvs env' env) cond
-
-        sBool <- lift $ first InferUnifyError $ unify tCond (TCon "Bool")
-        let env'' = applyEnv (sBool `composeSubst` sCond) (mergeEnvs env' env)
-
-        -- 結果式の推論（EWhere に対応）
-        (sExpr, tExpr) <- case expr of
-          EWhere e binds -> inferWhere inferExprFn env'' e binds
-          _ -> inferExprFn env'' expr
-
-        let s = sExpr `composeSubst` sBool `composeSubst` sCond
-        return (s, apply s tExpr)
-      -- unify all result types
-      let (subs, types) = unzip results
-      -- sMerged <- unifyMany types
-      sMerged <- lift $ first InferUnifyError $ unifyMany types (replicate (length types) (head types))
-      let sTotal = foldr composeSubst sMerged subs
-      return (sTotal `composeSubst` s1, apply sTotal (head types))
--}
-{-}
-      results <- forM guards $ \(cond, expr) -> do
-        (sCond, tCond) <- inferExprFn (mergeEnvs env' env) cond
-        sBool <- lift $ first InferUnifyError $ unify tCond (TCon "Bool")
-        let env'' = applyEnv (sBool `composeSubst` sCond) (mergeEnvs env' env)
-        (sExpr, tExpr) <- inferExprFn env'' expr
-        let s = sExpr `composeSubst` sBool `composeSubst` sCond
-        return (s, apply s tExpr)
--}
-
-{-}
-inferBranch inferExprFn env tScrut sScrut (CaseAlt pat expr) = do
-  (sPat, envPat, tPat) <- inferPattern pat
-  sUnify <- lift $ first InferUnifyError (unify (apply sPat tPat) (apply sPat tScrut))
-  let s = sUnify `composeSubst` sPat `composeSubst` sScrut
-  inferExprFn (applyEnv s (mergeEnvs env envPat)) expr
--}
-
 unifyManyExpr :: [(Subst, Type)] -> InferM (Subst, Type)
 unifyManyExpr [] = lift $ Left (InferOther "empty case")
 unifyManyExpr ((s, t) : xs) = foldM step (s, t) xs

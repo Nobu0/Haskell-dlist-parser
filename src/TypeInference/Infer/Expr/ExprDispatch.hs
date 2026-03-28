@@ -48,15 +48,6 @@ inferExpr env (ESeq (e : es)) = do
   let env' = applyEnv s1 env
   (s2, t2) <- inferExpr env' (ESeq es)
   return (s2 `composeSubst` s1, t2)
-{-}
-inferExpr env (EVar name) = do
-  myTraceE ("<< inferExpr: name " ++ show name)
-  case lookupEnv env name of
-    Nothing -> lift $ Left (InferUnboundVariable name)
-    Just sigma -> do
-      t <- lift $ instantiate sigma
-      return (emptySubst, t)
--}
 inferExpr env (EVar name) = do
   myTraceE ("<< inferExpr: name " ++ show name)
   -- myTraceE ("<< inferExpr: name " ++ show name ++ " env " ++ show env)
@@ -187,6 +178,29 @@ inferQualifiers inferExprFn env (q : qs) = case q of
 inferELam ::
   (TypeEnv -> Expr -> InferM (Subst, Type)) ->
   TypeEnv ->
+  [Pattern] ->
+  Expr ->
+  InferM (Subst, Type)
+inferELam inferExprFn env pats body = do
+  myTraceE ("<< inferELam: pat " ++ show pats)
+
+  -- 各パターンの型と環境を推論
+  (s1, env1, ts) <- inferPatterns pats
+
+  -- 拡張環境で本体を推論
+  let env' = applyEnv s1 (env `mergeEnvs` env1)
+  (s2, tBody) <- inferExprFn env' body
+
+  let s = s2 `composeSubst` s1
+      argTypes = map (apply s . snd) ts
+      finalType = foldr TArrow tBody argTypes
+
+  return (s, finalType)
+
+{-}
+inferELam ::
+  (TypeEnv -> Expr -> InferM (Subst, Type)) ->
+  TypeEnv ->
   Pattern ->
   Expr ->
   InferM (Subst, Type)
@@ -200,6 +214,7 @@ inferELam inferExprFn env pat body = do
 
   let s = s2 `composeSubst` s1
   return (s, TArrow (apply s t1) t2)
+-}
 
 inferReturn ::
   (TypeEnv -> Expr -> InferM (Subst, Type)) ->

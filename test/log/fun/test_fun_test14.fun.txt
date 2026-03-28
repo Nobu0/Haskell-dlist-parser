@@ -1,0 +1,294 @@
+
+-- src --
+
+-- === 基本的な型推論 ===
+-- 定数
+42
+
+--
+"hello"
+
+--
+'a'
+
+--
+[]
+
+--
+()
+
+-- 変数
+x
+
+-- 関数適用
+f x
+f 1
+
+-- Simple let-return
+do { let x = 1; return x }
+
+-- Multiple lets
+do { let x = 1; let y = 2; return (x + y) }
+
+-- If in do
+do { let x = 10; if x > 5 then return x else return 0 }
+
+-- Nested do
+do { let x = 1; do { let y = x + 1; return y } }
+
+-- Do in if
+if cond then do { let x = 1; return x } else return 0
+
+-- Let with lambda
+do { let f = \\x -> x + 1 * 2; return (f 10) }
+
+-- Let without semicolon error case (AST test)
+do { let x = 1; return x }
+
+-- Do in case
+case v of Just x -> do { let y = x + 1; return y }; Nothing -> return 0
+
+-- Empty do
+-- do { }
+
+-- Case with as-pattern
+case v of
+  x@(Just y) -> return y
+  _ -> return 0
+
+-- x; y; z statements
+a;b;c
+
+-- Let with case
+do { let x = case v of Just n -> n; Nothing -> 0; return x }
+
+-- simple
+{ x = 1 }
+
+--
+{ x = 1, y = -2 }
+
+-- tag
+r { x = 3 }
+
+--
+r2 { x = 3, y = 4 }
+
+-- nest
+{ a = { b = 3 } }
+
+-- 2 equation
+{ x = 1 + 2, y = f 3 }
+
+-- error
+-- (f x) { y = 10 }
+-- error
+-- { x = 1, y = 2 } { x = 9 }
+
+-- etc
+(+ 1)
+
+--
+(1 +)
+
+-- OK: 関数合成
+((> 3) . (* 2))
+
+--
+((+ 1))
+
+--
+{ f = (+ 1) }
+
+--
+r3 { f = (1 +) }
+
+-- error
+-- ({ x = 1 } +)
+
+-- do1
+do { let r = { x = 1 }; return r }
+
+-- do2
+do { let r = { x = 1 }; return (r { x = 2 }) }
+
+-- do3
+do { let f = (+ 1); return (f 10) }
+
+-- case guard1
+case x of { p | cond1 -> 1; p2 | cond2 -> 2; p3 -> 3 }
+
+-- case guard2
+case x of n | n < 0 -> 1 
+
+-- case guard3
+case x of n | n < 0 -> -1 | n > 0 -> 1
+
+-- case guard4
+case x of n | n < 0 -> -1;  0 -> 0;  n | n > 0 -> 1
+
+--list1
+[1, 2, 3]
+
+--list2
+[x * 2 | x <- xs]
+
+--list3
+[x | x <- xs, x > 0]
+
+--list4
+[(x, y) | x <- xs, y <- ys]
+
+--list5
+[x | let y = f x, y]
+
+--list6
+[x | Just x <- xs]
+
+--list7
+do { let xs = [x | x <- ys]; return xs }
+
+--for1
+for x in xs -> x * 2
+
+--for2
+for x in xs, y in ys -> (x, y)
+
+--for3
+for x in xs, y in ys, z in zs -> (x,y,z)
+
+--for3
+for x in xs, y in ys, z in zs -> x + y + z
+
+--for4
+for x in xs, x > 0 -> x
+
+--for5
+[ y | x <- xs, let y = f x ]
+--do{ let xs = [1,2]; for x in xs, let y = f x -> y}
+
+--do1
+do {  (x, y) <- ft z;  return x }
+
+--do2
+do { let y = f x; z <- g y; return z }
+
+--do3
+--do { x <- xs; if x > 0 then return x else fail }
+
+--do2
+do {  let xs = [1,2];  for x in xs, x > 1 -> x}
+
+--nested do
+do {  let x = 1;  do {    let y = x + 1;    return y  }}
+
+--complex
+-- do {  let xs = [1,2];  for x in xs, let y = f x, y > 1 -> y}
+
+--list1
+[1 .. 10]
+[0 .. -5]
+
+--list2
+[1, 3 .. 10]
+[10, 8 .. 0]
+[0, 0 .. 0]
+
+--list3
+[1,2,3]
+[1, 2, 3,]
+[]
+[   ]
+
+--list4
+[1, 5 ..]
+[1, 2 .. 3]
+--[1 .. 2, 3]
+
+--func2
+case x of Just n | n > 0 -> n   | n < 1 -> 2  where n = 10
+
+-- func3
+do { x <- foo;  y <- bar;  x + y} where foo = 1; bar = 2
+
+--func4
+[x | Just x <- xs] where xs = [1..10]
+
+--func5
+let  fi x = x + 1;  g z = fi z * 2 in g 10
+
+--func6
+x + y where  ff x = x + 1;  y = ff 10
+
+--func7
+let f x = x + 1 in 
+  case f 3 of 
+    n | n > 3 -> n
+      | otherwise -> 0
+  where otherwise = True
+
+--sql1
+sql "SELECT * FROM users"
+
+--sql2
+sql "SELECT * FROM users WHERE id = {x}"
+
+--sql3
+sql "INSERT INTO t(a,b) VALUES({a}, {b})"
+
+--sql4
+sql "UPDATE t SET a={a}, b={b}, c={c}"
+
+--sqlx1
+let x = sql "SELECT * FROM t" in x
+
+--sqlx2
+-- f (sql "SELECT * FROM t WHERE id = {a}")
+
+--sqlx3
+x where y = sql "SELECT * FROM t WHERE a = {a}"
+
+--sqlx4
+do { x <- sql "SELECT * FROM t";  return x }
+
+--sqlx6
+let x = sql "SELECT {a}" in x where y = sql "SELECT {b}"
+
+--let1
+let (a, b) = (1, 2) in a + b
+
+--let1
+do {let (a, b) = (1, 2) in let f = a + b in f}
+
+--list1
+let x = [] in (1 : x)
+
+--$1
+-- print $ a b c
+
+--$2
+do { print "test" }
+
+--$3
+do { print "test"; return 0 }
+
+
+
+-- Token list --
+[TokNewline,TokNumber 42,TokNewline,TokString "hello",TokNewline,TokChar 'a',TokNewline,TokSymbol "[",TokSymbol "]",TokNewline,TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "x",TokNewline,TokIdent "f",TokIdent "x",TokNewline,TokIdent "f",TokNumber 1,TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "let",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 10,TokSymbol ";",TokKeyword "if",TokIdent "x",TokOperator ">",TokNumber 5,TokKeyword "then",TokKeyword "return",TokIdent "x",TokKeyword "else",TokKeyword "return",TokNumber 0,TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}",TokNewline,TokKeyword "if",TokIdent "cond",TokKeyword "then",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokKeyword "else",TokKeyword "return",TokNumber 0,TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokOperator "\\",TokIdent "x",TokArrow,TokIdent "x",TokOperator "+",TokNumber 1,TokOperator "*",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "x",TokArrow,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokNumber 0,TokNewline,TokKeyword "case",TokIdent "v",TokKeyword "of",TokVLBrace,TokIdent "x",TokSymbol "@",TokSymbol "(",TokTypeIdent "Just",TokIdent "y",TokSymbol ")",TokArrow,TokKeyword "return",TokIdent "y",TokSymbol ";",TokIdent "_",TokArrow,TokKeyword "return",TokNumber 0,TokVRBrace,TokNewline,TokIdent "a",TokSymbol ";",TokIdent "b",TokSymbol ";",TokIdent "c",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokArrow,TokIdent "n",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokNumber 0,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber (-2),TokSymbol "}",TokNewline,TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol "}",TokNewline,TokIdent "r2",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 4,TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "a",TokSymbol "=",TokSymbol "{",TokIdent "b",TokSymbol "=",TokNumber 3,TokSymbol "}",TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokOperator "+",TokNumber 2,TokSymbol ",",TokIdent "y",TokSymbol "=",TokIdent "f",TokNumber 3,TokSymbol "}",TokNewline,TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokNewline,TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")",TokNewline,TokSymbol "(",TokSymbol "(",TokOperator ">",TokNumber 3,TokSymbol ")",TokOperator ".",TokSymbol "(",TokOperator "*",TokNumber 2,TokSymbol ")",TokSymbol ")",TokNewline,TokSymbol "(",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ")",TokNewline,TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol "}",TokNewline,TokIdent "r3",TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokIdent "r",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 2,TokSymbol "}",TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokSymbol "{",TokIdent "p",TokSymbol "|",TokIdent "cond1",TokArrow,TokNumber 1,TokSymbol ";",TokIdent "p2",TokSymbol "|",TokIdent "cond2",TokArrow,TokNumber 2,TokSymbol ";",TokIdent "p3",TokArrow,TokNumber 3,TokSymbol "}",TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1,TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber (-1),TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1,TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber (-1),TokSymbol ";",TokNumber 0,TokArrow,TokNumber 0,TokSymbol ";",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1,TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokOperator "*",TokNumber 2,TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokSymbol "]",TokNewline,TokSymbol "[",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "y",TokSymbol "<-",TokIdent "ys",TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "ys",TokSymbol "]",TokSymbol ";",TokKeyword "return",TokIdent "xs",TokSymbol "}",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokArrow,TokIdent "x",TokOperator "*",TokNumber 2,TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol ")",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokIdent "x",TokOperator "+",TokIdent "y",TokOperator "+",TokIdent "z",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokArrow,TokIdent "x",TokNewline,TokSymbol "[",TokIdent "y",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol "]",TokNewline,TokKeyword "do",TokSymbol "{",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "<-",TokIdent "ft",TokIdent "z",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ";",TokIdent "z",TokSymbol "<-",TokIdent "g",TokIdent "y",TokSymbol ";",TokKeyword "return",TokIdent "z",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 1,TokArrow,TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 0,TokSymbol "..",TokNumber (-5),TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 3,TokSymbol "..",TokNumber 10,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 10,TokSymbol ",",TokNumber 8,TokSymbol "..",TokNumber 0,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 0,TokSymbol ",",TokNumber 0,TokSymbol "..",TokNumber 0,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol ",",TokSymbol "]",TokNewline,TokSymbol "[",TokSymbol "]",TokNewline,TokSymbol "[",TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 5,TokSymbol "..",TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 1,TokArrow,TokNumber 2,TokKeyword "where",TokIdent "n",TokSymbol "=",TokNumber 10,TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokIdent "foo",TokSymbol ";",TokIdent "y",TokSymbol "<-",TokIdent "bar",TokSymbol ";",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol "}",TokKeyword "where",TokIdent "foo",TokSymbol "=",TokNumber 1,TokSymbol ";",TokIdent "bar",TokSymbol "=",TokNumber 2,TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokKeyword "where",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokNewline,TokKeyword "let",TokIdent "fi",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "g",TokIdent "z",TokSymbol "=",TokIdent "fi",TokIdent "z",TokOperator "*",TokNumber 2,TokKeyword "in",TokIdent "g",TokNumber 10,TokNewline,TokIdent "x",TokOperator "+",TokIdent "y",TokKeyword "where",TokIdent "ff",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "y",TokSymbol "=",TokIdent "ff",TokNumber 10,TokNewline,TokKeyword "let",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokKeyword "in",TokSymbol ";",TokKeyword "case",TokIdent "f",TokNumber 3,TokKeyword "of",TokVLBrace,TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 3,TokArrow,TokIdent "n",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokArrow,TokNumber 0,TokVRBrace,TokNewline,TokKeyword "where",TokIdent "otherwise",TokSymbol "=",TokKeyword "True",TokNewline,TokKeyword "sql",TokString "SELECT * FROM users",TokNewline,TokKeyword "sql",TokString "SELECT * FROM users WHERE id = {x}",TokNewline,TokKeyword "sql",TokString "INSERT INTO t(a,b) VALUES({a}, {b})",TokNewline,TokKeyword "sql",TokString "UPDATE t SET a={a}, b={b}, c={c}",TokNewline,TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t",TokKeyword "in",TokIdent "x",TokNewline,TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t WHERE a = {a}",TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokKeyword "sql",TokString "SELECT * FROM t",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT {a}",TokKeyword "in",TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT {b}",TokNewline,TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokIdent "a",TokOperator "+",TokIdent "b",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokKeyword "let",TokIdent "f",TokSymbol "=",TokIdent "a",TokOperator "+",TokIdent "b",TokKeyword "in",TokIdent "f",TokSymbol "}",TokNewline,TokKeyword "let",TokIdent "x",TokSymbol "=",TokSymbol "[",TokSymbol "]",TokKeyword "in",TokSymbol "(",TokNumber 1,TokOperator ":",TokIdent "x",TokSymbol ")",TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "print",TokString "test",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "print",TokString "test",TokSymbol ";",TokKeyword "return",TokNumber 0,TokSymbol "}",TokNewline]
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 0 / 1016
+Coverage: 0%
+
+-- AST (numbered) --
+
+-- Type Inference ------------------------
+<< inferProgram: groups fromList []
+Type inference succeeded!
+TypeEnv (fromList [("$",Forall ["a","b"] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "b")))),("*",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("+",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("-",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("==",Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),(">",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),("False",Forall [] (TCon "Bool")),("True",Forall [] (TCon "Bool")),("print",Forall ["a"] (TArrow (TVar "a") (TCon "Unit")))])
+
+-- Remaining Tokens ----------------------
+[TokNewline,TokNumber 42,TokNewline,TokString "hello",TokNewline,TokChar 'a',TokNewline,TokSymbol "[",TokSymbol "]",TokNewline,TokSymbol "(",TokSymbol ")",TokNewline,TokIdent "x",TokNewline,TokIdent "f",TokIdent "x",TokNewline,TokIdent "f",TokNumber 1,TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "let",TokIdent "y",TokSymbol "=",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 10,TokSymbol ";",TokKeyword "if",TokIdent "x",TokOperator ">",TokNumber 5,TokKeyword "then",TokKeyword "return",TokIdent "x",TokKeyword "else",TokKeyword "return",TokNumber 0,TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}",TokNewline,TokKeyword "if",TokIdent "cond",TokKeyword "then",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokKeyword "else",TokKeyword "return",TokNumber 0,TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokOperator "\\",TokIdent "x",TokArrow,TokIdent "x",TokOperator "+",TokNumber 1,TokOperator "*",TokNumber 2,TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "x",TokArrow,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokKeyword "return",TokNumber 0,TokNewline,TokKeyword "case",TokIdent "v",TokKeyword "of",TokVLBrace,TokIdent "x",TokSymbol "@",TokSymbol "(",TokTypeIdent "Just",TokIdent "y",TokSymbol ")",TokArrow,TokKeyword "return",TokIdent "y",TokSymbol ";",TokIdent "_",TokArrow,TokKeyword "return",TokNumber 0,TokVRBrace,TokNewline,TokIdent "a",TokSymbol ";",TokIdent "b",TokSymbol ";",TokIdent "c",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "case",TokIdent "v",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokArrow,TokIdent "n",TokSymbol ";",TokTypeIdent "Nothing",TokArrow,TokNumber 0,TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber (-2),TokSymbol "}",TokNewline,TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol "}",TokNewline,TokIdent "r2",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 3,TokSymbol ",",TokIdent "y",TokSymbol "=",TokNumber 4,TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "a",TokSymbol "=",TokSymbol "{",TokIdent "b",TokSymbol "=",TokNumber 3,TokSymbol "}",TokSymbol "}",TokNewline,TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokOperator "+",TokNumber 2,TokSymbol ",",TokIdent "y",TokSymbol "=",TokIdent "f",TokNumber 3,TokSymbol "}",TokNewline,TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokNewline,TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")",TokNewline,TokSymbol "(",TokSymbol "(",TokOperator ">",TokNumber 3,TokSymbol ")",TokOperator ".",TokSymbol "(",TokOperator "*",TokNumber 2,TokSymbol ")",TokSymbol ")",TokNewline,TokSymbol "(",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ")",TokNewline,TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol "}",TokNewline,TokIdent "r3",TokSymbol "{",TokIdent "f",TokSymbol "=",TokSymbol "(",TokNumber 1,TokOperator "+",TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokIdent "r",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "r",TokSymbol "=",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol "}",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "r",TokSymbol "{",TokIdent "x",TokSymbol "=",TokNumber 2,TokSymbol "}",TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "f",TokSymbol "=",TokSymbol "(",TokOperator "+",TokNumber 1,TokSymbol ")",TokSymbol ";",TokKeyword "return",TokSymbol "(",TokIdent "f",TokNumber 10,TokSymbol ")",TokSymbol "}",TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokSymbol "{",TokIdent "p",TokSymbol "|",TokIdent "cond1",TokArrow,TokNumber 1,TokSymbol ";",TokIdent "p2",TokSymbol "|",TokIdent "cond2",TokArrow,TokNumber 2,TokSymbol ";",TokIdent "p3",TokArrow,TokNumber 3,TokSymbol "}",TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber 1,TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber (-1),TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1,TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 0,TokArrow,TokNumber (-1),TokSymbol ";",TokNumber 0,TokArrow,TokNumber 0,TokSymbol ";",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokNumber 1,TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokOperator "*",TokNumber 2,TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokSymbol "]",TokNewline,TokSymbol "[",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokIdent "y",TokSymbol "<-",TokIdent "ys",TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol "]",TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokIdent "x",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "ys",TokSymbol "]",TokSymbol ";",TokKeyword "return",TokIdent "xs",TokSymbol "}",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokArrow,TokIdent "x",TokOperator "*",TokNumber 2,TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ",",TokIdent "z",TokSymbol ")",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "y",TokKeyword "in",TokIdent "ys",TokSymbol ",",TokIdent "z",TokKeyword "in",TokIdent "zs",TokArrow,TokIdent "x",TokOperator "+",TokIdent "y",TokOperator "+",TokIdent "z",TokNewline,TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 0,TokArrow,TokIdent "x",TokNewline,TokSymbol "[",TokIdent "y",TokSymbol "|",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol ",",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol "]",TokNewline,TokKeyword "do",TokSymbol "{",TokSymbol "(",TokIdent "x",TokSymbol ",",TokIdent "y",TokSymbol ")",TokSymbol "<-",TokIdent "ft",TokIdent "z",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "f",TokIdent "x",TokSymbol ";",TokIdent "z",TokSymbol "<-",TokIdent "g",TokIdent "y",TokSymbol ";",TokKeyword "return",TokIdent "z",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "]",TokSymbol ";",TokKeyword "for",TokIdent "x",TokKeyword "in",TokIdent "xs",TokSymbol ",",TokIdent "x",TokOperator ">",TokNumber 1,TokArrow,TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "x",TokSymbol "=",TokNumber 1,TokSymbol ";",TokKeyword "do",TokSymbol "{",TokKeyword "let",TokIdent "y",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokKeyword "return",TokIdent "y",TokSymbol "}",TokSymbol "}",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 0,TokSymbol "..",TokNumber (-5),TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 3,TokSymbol "..",TokNumber 10,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 10,TokSymbol ",",TokNumber 8,TokSymbol "..",TokNumber 0,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 0,TokSymbol ",",TokNumber 0,TokSymbol "..",TokNumber 0,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ",",TokNumber 3,TokSymbol ",",TokSymbol "]",TokNewline,TokSymbol "[",TokSymbol "]",TokNewline,TokSymbol "[",TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 5,TokSymbol "..",TokSymbol "]",TokNewline,TokSymbol "[",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol "..",TokNumber 3,TokSymbol "]",TokNewline,TokKeyword "case",TokIdent "x",TokKeyword "of",TokTypeIdent "Just",TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 0,TokArrow,TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator "<",TokNumber 1,TokArrow,TokNumber 2,TokKeyword "where",TokIdent "n",TokSymbol "=",TokNumber 10,TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokIdent "foo",TokSymbol ";",TokIdent "y",TokSymbol "<-",TokIdent "bar",TokSymbol ";",TokIdent "x",TokOperator "+",TokIdent "y",TokSymbol "}",TokKeyword "where",TokIdent "foo",TokSymbol "=",TokNumber 1,TokSymbol ";",TokIdent "bar",TokSymbol "=",TokNumber 2,TokNewline,TokSymbol "[",TokIdent "x",TokSymbol "|",TokTypeIdent "Just",TokIdent "x",TokSymbol "<-",TokIdent "xs",TokSymbol "]",TokKeyword "where",TokIdent "xs",TokSymbol "=",TokSymbol "[",TokNumber 1,TokSymbol "..",TokNumber 10,TokSymbol "]",TokNewline,TokKeyword "let",TokIdent "fi",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "g",TokIdent "z",TokSymbol "=",TokIdent "fi",TokIdent "z",TokOperator "*",TokNumber 2,TokKeyword "in",TokIdent "g",TokNumber 10,TokNewline,TokIdent "x",TokOperator "+",TokIdent "y",TokKeyword "where",TokIdent "ff",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokSymbol ";",TokIdent "y",TokSymbol "=",TokIdent "ff",TokNumber 10,TokNewline,TokKeyword "let",TokIdent "f",TokIdent "x",TokSymbol "=",TokIdent "x",TokOperator "+",TokNumber 1,TokKeyword "in",TokSymbol ";",TokKeyword "case",TokIdent "f",TokNumber 3,TokKeyword "of",TokVLBrace,TokIdent "n",TokSymbol "|",TokIdent "n",TokOperator ">",TokNumber 3,TokArrow,TokIdent "n",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokArrow,TokNumber 0,TokVRBrace,TokNewline,TokKeyword "where",TokIdent "otherwise",TokSymbol "=",TokKeyword "True",TokNewline,TokKeyword "sql",TokString "SELECT * FROM users",TokNewline,TokKeyword "sql",TokString "SELECT * FROM users WHERE id = {x}",TokNewline,TokKeyword "sql",TokString "INSERT INTO t(a,b) VALUES({a}, {b})",TokNewline,TokKeyword "sql",TokString "UPDATE t SET a={a}, b={b}, c={c}",TokNewline,TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t",TokKeyword "in",TokIdent "x",TokNewline,TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT * FROM t WHERE a = {a}",TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "x",TokSymbol "<-",TokKeyword "sql",TokString "SELECT * FROM t",TokSymbol ";",TokKeyword "return",TokIdent "x",TokSymbol "}",TokNewline,TokKeyword "let",TokIdent "x",TokSymbol "=",TokKeyword "sql",TokString "SELECT {a}",TokKeyword "in",TokIdent "x",TokKeyword "where",TokIdent "y",TokSymbol "=",TokKeyword "sql",TokString "SELECT {b}",TokNewline,TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokIdent "a",TokOperator "+",TokIdent "b",TokNewline,TokKeyword "do",TokSymbol "{",TokKeyword "let",TokSymbol "(",TokIdent "a",TokSymbol ",",TokIdent "b",TokSymbol ")",TokSymbol "=",TokSymbol "(",TokNumber 1,TokSymbol ",",TokNumber 2,TokSymbol ")",TokKeyword "in",TokKeyword "let",TokIdent "f",TokSymbol "=",TokIdent "a",TokOperator "+",TokIdent "b",TokKeyword "in",TokIdent "f",TokSymbol "}",TokNewline,TokKeyword "let",TokIdent "x",TokSymbol "=",TokSymbol "[",TokSymbol "]",TokKeyword "in",TokSymbol "(",TokNumber 1,TokOperator ":",TokIdent "x",TokSymbol ")",TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "print",TokString "test",TokSymbol "}",TokNewline,TokKeyword "do",TokSymbol "{",TokIdent "print",TokString "test",TokSymbol ";",TokKeyword "return",TokNumber 0,TokSymbol "}",TokNewline]

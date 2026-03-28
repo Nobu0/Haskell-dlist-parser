@@ -16,6 +16,8 @@ unify :: Type -> Type -> Either UnifyError Subst
 unify (TVar a) t = bindVar a t
 unify t (TVar a) = bindVar a t
 unify TUnit TUnit = Right emptySubst
+unify (TCon "String") (TList (TVar _)) = return emptySubst
+unify (TList (TVar _)) (TCon "String") = return emptySubst
 unify (TCon a) (TCon b)
   | a == b = Right emptySubst
   | otherwise = Left (UnifyMismatch (TCon a) (TCon b))

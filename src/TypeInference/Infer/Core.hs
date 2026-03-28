@@ -104,12 +104,6 @@ groupDecls decls = foldr go M.empty decls
         acc
     go _ acc = acc -- 他のDeclは無視（必要なら拡張）
 
-{-}
-unifyMany :: [TI.Type] -> Either InferError Subst
-unifyMany [] = Right emptySubst
-unifyMany (t : ts) = foldM (unifyStep t) emptySubst ts
--}
-
 unifyStep :: TI.Type -> Subst -> TI.Type -> Either InferError Subst
 unifyStep t sacc t' =
   case unify (apply sacc t) (apply sacc t') of

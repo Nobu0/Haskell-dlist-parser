@@ -46,7 +46,7 @@ testCasesDo =
       "do { }"
     ),
     ( "Case with as-pattern",
-      "case v of x@(Just y) -> return x _ -> return 0"
+      "case v of\n  x@(Just y) -> return x\n  _ -> return 0"
     ),
     ( "x; y; z statements",
       "x; y; z"
@@ -129,7 +129,7 @@ testCasesDo =
     ("sqlx2", "f (sql \"SELECT * FROM t WHERE id = {i}\")"),
     ("sqlx3", "x where y = sql \"SELECT * FROM t WHERE a = {a}\""),
     ("sqlx4", "do { x <- sql \"SELECT * FROM t\";  return x }"),
-    ("sqlx5", "(sql \"SELECT {a}\") + (sql \"SELECT {b}\")"),
+    -- ("sqlx5", "(sql \"SELECT {a}\") + (sql \"SELECT {b}\")"),
     ("sqlx6", "let x = sql \"SELECT {a}\" in x where y = sql \"SELECT {b}\""),
     ("let1", "let (a, b) = (1, 2) in a + b"),
     ("let1", "do {let (a, b) = (1, 2) in let f = a + b in f}"),

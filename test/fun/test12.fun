@@ -1,3 +1,3 @@
--- 型不一致のエラー
+-- ERROR 型不一致の
 bad :: Int -> Bool
-bad x = x + True
+bad xx = xx + True

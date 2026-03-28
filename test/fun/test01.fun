@@ -1,3 +1,3 @@
-h :: [Int] -> Int
-h [] = 0
-h (x:xs) = x + h xs
+hh :: [Int] -> Int
+hh [] = 0
+hh (xx:xxs) = xx + hh xxs

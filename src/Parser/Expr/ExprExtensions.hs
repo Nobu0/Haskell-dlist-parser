@@ -28,7 +28,7 @@ import Parser.Expr.CaseParserCore (caseExprCore, lambdaCaseExpr)
 import Parser.Expr.DoParserCore (doExprCore)
 import Parser.Expr.ExprCore
 import Parser.Expr.ListParserCore (listExprCore)
-import Parser.Expr.PatternParser (pPattern, pattern)
+import Parser.Expr.PatternParser -- (pPattern, pattern)
 import Parser.SQL.SQLParser
 import Parser.Type.TypeParser
 import Utils.MyTrace
@@ -288,7 +288,7 @@ letExpr = do
 lambdaExpr :: Parser Expr
 lambdaExpr = do
   symbol "\\"
-  arg <- pattern
+  arg <- some simplePattern
   skipNL
   myTrace ("<< lambdaExpr arg " ++ show arg)
   tokenIs (\case TokArrow -> Just (); _ -> Nothing)

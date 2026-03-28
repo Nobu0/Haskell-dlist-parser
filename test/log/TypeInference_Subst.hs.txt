@@ -2,27 +2,27 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 283 / 283
+Consumed tokens: 292 / 292
 Coverage: 100%
 
 -- AST----------------------------------
 
 -- AST (numbered) --
-[0] DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"])
-[1] DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
-[2] DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
-[3] DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type"))
+[0] DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply",ExportVar "applyConstraint"])
+[1] DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "Map", importHiding = False, importItems = Nothing}
+[2] DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[3] DeclTypeAlias "Subst" [] (TApp (TApp (TCon "Map.Map") (TCon "String")) (TCon "Type"))
 [4] DeclTypeSig "emptySubst" (TCon "Subst")
-[5] DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing]
-[6] DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst")))
-[7] DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing]
-[8] DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst")))
-[9] DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")))) Nothing]
-[10] DeclTypeSig "apply" (TFun (TCon "Subst") (TFun (TCon "Type") (TCon "Type")))
-[11] DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))])) Nothing]
-[12] DeclTypeSig "applyConstraint" (TFun (TCon "Subst") (TFun (TCon "Constraint") (TCon "Constraint")))
+[5] DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "empty")) Nothing]
+[6] DeclTypeSig "singletonSubst" (TArrow (TCon "String") (TArrow (TCon "Type") (TCon "Subst")))
+[7] DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "singleton")) Nothing]
+[8] DeclTypeSig "composeSubst" (TArrow (TCon "Subst") (TArrow (TCon "Subst") (TCon "Subst")))
+[9] DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s1"))) (EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")))) Nothing]
+[10] DeclTypeSig "apply" (TArrow (TCon "Subst") (TArrow (TCon "Type") (TCon "Type")))
+[11] DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))])) Nothing]
+[12] DeclTypeSig "applyConstraint" (TArrow (TCon "Subst") (TArrow (TCon "Constraint") (TCon "Constraint")))
 [13] DeclFunGroup "applyConstraint" [FunClause [PVar "s",PApp (PConstr "Constraint" []) [PVar "cls",PVar "ts"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))) Nothing]
-[DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type")),DeclTypeSig "emptySubst" (TCon "Subst"),DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing],DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))),DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing],DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))),DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")))) Nothing],DeclTypeSig "apply" (TFun (TCon "Subst") (TFun (TCon "Type") (TCon "Type"))),DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))])) Nothing],DeclTypeSig "applyConstraint" (TFun (TCon "Subst") (TFun (TCon "Constraint") (TCon "Constraint"))),DeclFunGroup "applyConstraint" [FunClause [PVar "s",PApp (PConstr "Constraint" []) [PVar "cls",PVar "ts"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))) Nothing]]
+[DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply",ExportVar "applyConstraint"]),DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "Map", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TApp (TApp (TCon "Map.Map") (TCon "String")) (TCon "Type")),DeclTypeSig "emptySubst" (TCon "Subst"),DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "empty")) Nothing],DeclTypeSig "singletonSubst" (TArrow (TCon "String") (TArrow (TCon "Type") (TCon "Subst"))),DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "singleton")) Nothing],DeclTypeSig "composeSubst" (TArrow (TCon "Subst") (TArrow (TCon "Subst") (TCon "Subst"))),DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s1"))) (EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")))) Nothing],DeclTypeSig "apply" (TArrow (TCon "Subst") (TArrow (TCon "Type") (TCon "Type"))),DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))])) Nothing],DeclTypeSig "applyConstraint" (TArrow (TCon "Subst") (TArrow (TCon "Constraint") (TCon "Constraint"))),DeclFunGroup "applyConstraint" [FunClause [PVar "s",PApp (PConstr "Constraint" []) [PVar "cls",PVar "ts"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))) Nothing]]
 
 -- Remaining-----------------------------
 []
@@ -30,7 +30,7 @@ Coverage: 100%
 -- Parsed AST log --
 << decl next token: TokKeyword "module"
 << decl parser called
-<< decl dispatch: TokKeyword "module" ct=283
+<< decl dispatch: TokKeyword "module" ct=292
 << exportItem: next token=TokTypeIdent "Subst"
 << exportItem: name "Subst"
 << exportItem: next token=TokIdent "emptySubst"
@@ -41,36 +41,38 @@ Coverage: 100%
 << exportItem: name "composeSubst"
 << exportItem: next token=TokIdent "apply"
 << exportItem: name "apply"
+<< exportItem: next token=TokIdent "applyConstraint"
+<< exportItem: name "applyConstraint"
 << exportItem: next token=TokSymbol ")"
->>*declBody: e DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"])
+>>*declBody: e DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply",ExportVar "applyConstraint"])
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=259
-<< importDecl parser called
-<< importDecl: TokTypeIdent "AST"
->>*declBody: e DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
-<< decl next token: TokKeyword "import"
-<< decl parser called
-<< decl dispatch: TokKeyword "import" ct=254
+<< decl dispatch: TokKeyword "import" ct=265
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
->>*declBody: e DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
+>>*declBody: e DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "Map", importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=257
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "type"
 << decl parser called
-<< decl dispatch: TokKeyword "type" ct=246
+<< decl dispatch: TokKeyword "type" ct=252
 << typeDecl name "Subst" vars []
->>*typeDecl typ TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type")
->>*declBody: e DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type"))
+>>*typeDecl typ TApp (TApp (TCon "Map.Map") (TCon "String")) (TCon "Type")
+>>*declBody: e DeclTypeAlias "Subst" [] (TApp (TApp (TCon "Map.Map") (TCon "String")) (TCon "Type"))
 << decl next token: TokIdent "emptySubst"
 << decl parser called
-<< decl dispatch: TokIdent "emptySubst" ct=237
-<< funDecl: next token=TokIdent "emptySubst" ct=237
-<< pInfix: ct=236
+<< decl dispatch: TokIdent "emptySubst" ct=243
+<< funDecl: next token=TokIdent "emptySubst" ct=243
+<< pInfix: ct=242
 << pPattern:
     prased PVar "emptySubst"
-<< pattern: ct=236
-<< parseGuardedClause: next token=TokSymbol "::" ct=236
-<< parseGuardLine: next token=TokSymbol "::" ct=236
+<< pattern: ct=242
+<< parseGuardedClause: next token=TokSymbol "::" ct=242
+<< parseGuardLine: next token=TokSymbol "::" ct=242
 << typeSigDecl: TokIdent "emptySubst"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "Subst"
@@ -81,40 +83,34 @@ Coverage: 100%
 >>*declBody: e DeclTypeSig "emptySubst" (TCon "Subst")
 << decl next token: TokIdent "emptySubst"
 << decl parser called
-<< decl dispatch: TokIdent "emptySubst" ct=233
-<< funDecl: next token=TokIdent "emptySubst" ct=233
-<< pInfix: ct=232
+<< decl dispatch: TokIdent "emptySubst" ct=239
+<< funDecl: next token=TokIdent "emptySubst" ct=239
+<< pInfix: ct=238
 << pPattern:
     prased PVar "emptySubst"
-<< pattern: ct=232
-<< parseSimpleClause: next token=TokTypeIdent "M" ct=231
-<< expr dispatch: TokTypeIdent "M" ct=231
-<< bracesExpr: nm "M" ct=231
-<< exprNoLoop: e EVarType "M"
-<< expr dispatch: TokOperator "." ct=230
+<< pattern: ct=238
+<< parseSimpleClause: next token=TokTypeIdent "Map" ct=237
+<< expr dispatch: TokTypeIdent "Map" ct=237
+<< bracesExpr: nm "Map" ct=237
+<< exprNoLoop: e EFieldAccess (EVarType "Map") "empty"
+<< expr dispatch: TokNewline ct=234
 << postfix: operator = Nothing
 >> infixOp: out 
-<< infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "empty" ct=229
-<< exprNoLoop: e EVar "empty"
-<< expr dispatch: TokNewline ct=228
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpCompose (EVarType "M") (EVar "empty") rest Nothing
-<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EVar "empty") ct=228
-<< funClauseWithName: next token=TokNewline ct=228
->>*funDecl name "emptySubst" clause1 FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing rest []
->>*declBody: e DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing]
+<< expr: e EFieldAccess (EVarType "Map") "empty" rest Nothing
+<< parseSimpleClause: e EFieldAccess (EVarType "Map") "empty" ct=234
+<< funClauseWithName: next token=TokNewline ct=234
+>>*funDecl name "emptySubst" clause1 FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "empty")) Nothing rest []
+>>*declBody: e DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "empty")) Nothing]
 << decl next token: TokIdent "singletonSubst"
 << decl parser called
-<< decl dispatch: TokIdent "singletonSubst" ct=227
-<< funDecl: next token=TokIdent "singletonSubst" ct=227
-<< pInfix: ct=226
+<< decl dispatch: TokIdent "singletonSubst" ct=233
+<< funDecl: next token=TokIdent "singletonSubst" ct=233
+<< pInfix: ct=232
 << pPattern:
     prased PVar "singletonSubst"
-<< pattern: ct=226
-<< parseGuardedClause: next token=TokSymbol "::" ct=226
-<< parseGuardLine: next token=TokSymbol "::" ct=226
+<< pattern: ct=232
+<< parseGuardedClause: next token=TokSymbol "::" ct=232
+<< parseGuardLine: next token=TokSymbol "::" ct=232
 << typeSigDecl: TokIdent "singletonSubst"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "String"
@@ -122,47 +118,41 @@ Coverage: 100%
 << typeTerm: ts [TCon "Type"]
 << typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
-<< parseTypeCore: TFun (TCon "Type") (TCon "Subst")
-<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))
-<< parsed type signature: singletonSubst :: TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))
-<< returning DeclTypeSig: DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst")))
->>*declBody: e DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst")))
+<< parseTypeCore: TArrow (TCon "Type") (TCon "Subst")
+<< parseTypeCore: TArrow (TCon "String") (TArrow (TCon "Type") (TCon "Subst"))
+<< parsed type signature: singletonSubst :: TArrow (TCon "String") (TArrow (TCon "Type") (TCon "Subst"))
+<< returning DeclTypeSig: DeclTypeSig "singletonSubst" (TArrow (TCon "String") (TArrow (TCon "Type") (TCon "Subst")))
+>>*declBody: e DeclTypeSig "singletonSubst" (TArrow (TCon "String") (TArrow (TCon "Type") (TCon "Subst")))
 << decl next token: TokIdent "singletonSubst"
 << decl parser called
-<< decl dispatch: TokIdent "singletonSubst" ct=219
-<< funDecl: next token=TokIdent "singletonSubst" ct=219
-<< pInfix: ct=218
+<< decl dispatch: TokIdent "singletonSubst" ct=225
+<< funDecl: next token=TokIdent "singletonSubst" ct=225
+<< pInfix: ct=224
 << pPattern:
     prased PVar "singletonSubst"
-<< pattern: ct=218
-<< parseSimpleClause: next token=TokTypeIdent "M" ct=217
-<< expr dispatch: TokTypeIdent "M" ct=217
-<< bracesExpr: nm "M" ct=217
-<< exprNoLoop: e EVarType "M"
-<< expr dispatch: TokOperator "." ct=216
+<< pattern: ct=224
+<< parseSimpleClause: next token=TokTypeIdent "Map" ct=223
+<< expr dispatch: TokTypeIdent "Map" ct=223
+<< bracesExpr: nm "Map" ct=223
+<< exprNoLoop: e EFieldAccess (EVarType "Map") "singleton"
+<< expr dispatch: TokNewline ct=220
 << postfix: operator = Nothing
 >> infixOp: out 
-<< infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "singleton" ct=215
-<< exprNoLoop: e EVar "singleton"
-<< expr dispatch: TokNewline ct=214
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpCompose (EVarType "M") (EVar "singleton") rest Nothing
-<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EVar "singleton") ct=214
-<< funClauseWithName: next token=TokNewline ct=214
->>*funDecl name "singletonSubst" clause1 FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing rest []
->>*declBody: e DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing]
+<< expr: e EFieldAccess (EVarType "Map") "singleton" rest Nothing
+<< parseSimpleClause: e EFieldAccess (EVarType "Map") "singleton" ct=220
+<< funClauseWithName: next token=TokNewline ct=220
+>>*funDecl name "singletonSubst" clause1 FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "singleton")) Nothing rest []
+>>*declBody: e DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "singleton")) Nothing]
 << decl next token: TokIdent "composeSubst"
 << decl parser called
-<< decl dispatch: TokIdent "composeSubst" ct=213
-<< funDecl: next token=TokIdent "composeSubst" ct=213
-<< pInfix: ct=212
+<< decl dispatch: TokIdent "composeSubst" ct=219
+<< funDecl: next token=TokIdent "composeSubst" ct=219
+<< pInfix: ct=218
 << pPattern:
     prased PVar "composeSubst"
-<< pattern: ct=212
-<< parseGuardedClause: next token=TokSymbol "::" ct=212
-<< parseGuardLine: next token=TokSymbol "::" ct=212
+<< pattern: ct=218
+<< parseGuardedClause: next token=TokSymbol "::" ct=218
+<< parseGuardLine: next token=TokSymbol "::" ct=218
 << typeSigDecl: TokIdent "composeSubst"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "Subst"
@@ -170,53 +160,58 @@ Coverage: 100%
 << typeTerm: ts [TCon "Subst"]
 << typeTerm: ts [TCon "Subst"]
 << parseTypeCore: TCon "Subst"
-<< parseTypeCore: TFun (TCon "Subst") (TCon "Subst")
-<< parseTypeCore: TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))
-<< parsed type signature: composeSubst :: TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))
-<< returning DeclTypeSig: DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst")))
->>*declBody: e DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst")))
+<< parseTypeCore: TArrow (TCon "Subst") (TCon "Subst")
+<< parseTypeCore: TArrow (TCon "Subst") (TArrow (TCon "Subst") (TCon "Subst"))
+<< parsed type signature: composeSubst :: TArrow (TCon "Subst") (TArrow (TCon "Subst") (TCon "Subst"))
+<< returning DeclTypeSig: DeclTypeSig "composeSubst" (TArrow (TCon "Subst") (TArrow (TCon "Subst") (TCon "Subst")))
+>>*declBody: e DeclTypeSig "composeSubst" (TArrow (TCon "Subst") (TArrow (TCon "Subst") (TCon "Subst")))
 << decl next token: TokIdent "composeSubst"
 << decl parser called
-<< decl dispatch: TokIdent "composeSubst" ct=205
-<< funDecl: next token=TokIdent "composeSubst" ct=205
-<< pInfix: ct=204
+<< decl dispatch: TokIdent "composeSubst" ct=211
+<< funDecl: next token=TokIdent "composeSubst" ct=211
+<< pInfix: ct=210
 << pPattern:
     prased PVar "composeSubst"
-<< pInfix: ct=203
+<< pInfix: ct=209
 << pPattern:
     prased PVar "s1"
-<< pInfix: ct=202
+<< pInfix: ct=208
 << pPattern:
     prased PVar "s2"
-<< pattern: ct=202
-<< parseSimpleClause: next token=TokTypeIdent "M" ct=200
-<< expr dispatch: TokTypeIdent "M" ct=200
-<< bracesExpr: nm "M" ct=200
-<< exprNoLoop: e EVarType "M"
-<< expr dispatch: TokOperator "." ct=199
+<< pattern: ct=208
+<< parseSimpleClause: next token=TokTypeIdent "Map" ct=206
+<< expr dispatch: TokTypeIdent "Map" ct=206
+<< bracesExpr: nm "Map" ct=206
+<< exprNoLoop: e EFieldAccess (EVarType "Map") "map"
+<< expr dispatch: TokSymbol "(" ct=203
+<< parensExpr: ct=203
+<< expr dispatch: TokIdent "apply" ct=202
+<< exprNoLoop: e EApp (EVar "apply") (EVar "s1")
+<< expr dispatch: TokSymbol ")" ct=200
 << postfix: operator = Nothing
 >> infixOp: out 
-<< infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "map" ct=198
-<< exprNoLoop: e EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")
-<< expr dispatch: TokNewline ct=186
+<< expr: e EApp (EVar "apply") (EVar "s1") rest Nothing
+<< exprNoLoop: e EApp (EVar "apply") (EVar "s1")
+<< expr dispatch: TokIdent "s2" ct=199
+<< exprNoLoop: e EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")
+<< expr dispatch: TokNewline ct=192
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")) rest Nothing
-<< parseSimpleClause: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")) ct=186
-<< funClauseWithName: next token=TokNewline ct=186
->>*funDecl name "composeSubst" clause1 FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")))) Nothing rest []
->>*declBody: e DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")))) Nothing]
+<< expr: e EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s1"))) (EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")) rest Nothing
+<< parseSimpleClause: e EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s1"))) (EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")) ct=192
+<< funClauseWithName: next token=TokNewline ct=192
+>>*funDecl name "composeSubst" clause1 FunClause [PVar "s1",PVar "s2"] Nothing (Just (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s1"))) (EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")))) Nothing rest []
+>>*declBody: e DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s1"))) (EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")))) Nothing]
 << decl next token: TokIdent "apply"
 << decl parser called
-<< decl dispatch: TokIdent "apply" ct=185
-<< funDecl: next token=TokIdent "apply" ct=185
-<< pInfix: ct=184
+<< decl dispatch: TokIdent "apply" ct=191
+<< funDecl: next token=TokIdent "apply" ct=191
+<< pInfix: ct=190
 << pPattern:
     prased PVar "apply"
-<< pattern: ct=184
-<< parseGuardedClause: next token=TokSymbol "::" ct=184
-<< parseGuardLine: next token=TokSymbol "::" ct=184
+<< pattern: ct=190
+<< parseGuardedClause: next token=TokSymbol "::" ct=190
+<< parseGuardLine: next token=TokSymbol "::" ct=190
 << typeSigDecl: TokIdent "apply"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "Subst"
@@ -224,247 +219,278 @@ Coverage: 100%
 << typeTerm: ts [TCon "Type"]
 << typeTerm: ts [TCon "Type"]
 << parseTypeCore: TCon "Type"
-<< parseTypeCore: TFun (TCon "Type") (TCon "Type")
-<< parseTypeCore: TFun (TCon "Subst") (TFun (TCon "Type") (TCon "Type"))
-<< parsed type signature: apply :: TFun (TCon "Subst") (TFun (TCon "Type") (TCon "Type"))
-<< returning DeclTypeSig: DeclTypeSig "apply" (TFun (TCon "Subst") (TFun (TCon "Type") (TCon "Type")))
->>*declBody: e DeclTypeSig "apply" (TFun (TCon "Subst") (TFun (TCon "Type") (TCon "Type")))
+<< parseTypeCore: TArrow (TCon "Type") (TCon "Type")
+<< parseTypeCore: TArrow (TCon "Subst") (TArrow (TCon "Type") (TCon "Type"))
+<< parsed type signature: apply :: TArrow (TCon "Subst") (TArrow (TCon "Type") (TCon "Type"))
+<< returning DeclTypeSig: DeclTypeSig "apply" (TArrow (TCon "Subst") (TArrow (TCon "Type") (TCon "Type")))
+>>*declBody: e DeclTypeSig "apply" (TArrow (TCon "Subst") (TArrow (TCon "Type") (TCon "Type")))
 << decl next token: TokIdent "apply"
 << decl parser called
-<< decl dispatch: TokIdent "apply" ct=177
-<< funDecl: next token=TokIdent "apply" ct=177
-<< pInfix: ct=176
+<< decl dispatch: TokIdent "apply" ct=183
+<< funDecl: next token=TokIdent "apply" ct=183
+<< pInfix: ct=182
 << pPattern:
     prased PVar "apply"
-<< pInfix: ct=175
+<< pInfix: ct=181
 << pPattern:
     prased PVar "s"
-<< pInfix: ct=174
+<< pInfix: ct=180
 << pPattern:
     prased PVar "t"
-<< pattern: ct=174
-<< parseSimpleClause: next token=TokKeyword "case" ct=172
-<< expr dispatch: TokKeyword "case" ct=172
+<< pattern: ct=180
+<< parseSimpleClause: next token=TokKeyword "case" ct=179
+<< expr dispatch: TokKeyword "case" ct=179
 << caseExprCore:
-<< expr dispatch: TokIdent "t" ct=171
+<< expr dispatch: TokIdent "t" ct=178
 << exprNoLoop: e EVar "t"
-<< expr dispatch: TokKeyword "of" ct=170
+<< expr dispatch: TokKeyword "of" ct=177
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "t" rest Nothing
-<< pattern: ct=168
+<< pattern: ct=175
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TUnit" []) [] ct=167
-<< caseAlt: pat PApp (PConstr "TUnit" []) []
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TUnit" ct=165
-<< bracesExpr: nm "TUnit" ct=165
-<< exprNoLoop: e EVarType "TUnit"
-<< expr dispatch: TokSymbol ";" ct=164
-<< bracesExpr: nm "TVar" ct=163
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVarType "TUnit" rest Nothing
->>*caseAlt: pat PApp (PConstr "TUnit" []) [] body EVarType "TUnit"
-<< pattern: ct=163
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "v"] ct=161
+    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "v"] ct=173
 << caseAlt: pat PApp (PConstr "TVar" []) [PVar "v"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "case" ct=159
+<< expr dispatch: TokKeyword "case" ct=171
 << caseExprCore:
-<< expr dispatch: TokTypeIdent "M" ct=158
-<< bracesExpr: nm "M" ct=158
-<< exprNoLoop: e EVarType "M"
-<< expr dispatch: TokOperator "." ct=157
+<< expr dispatch: TokTypeIdent "Map" ct=170
+<< bracesExpr: nm "Map" ct=170
+<< exprNoLoop: e EFieldAccess (EVarType "Map") "lookup"
+<< expr dispatch: TokIdent "v" ct=167
+<< exprNoLoop: e EApp (EVar "v") (EVar "s")
+<< expr dispatch: TokKeyword "of" ct=165
 << postfix: operator = Nothing
 >> infixOp: out 
-<< infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "lookup" ct=156
-<< exprNoLoop: e EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s")
-<< expr dispatch: TokKeyword "of" ct=153
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s")) rest Nothing
-<< pattern: ct=151
+<< expr: e EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s")) rest Nothing
+<< pattern: ct=163
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "Just" []) [PVar "t'"] ct=149
+    (pAs <|> makeCons)PApp (PConstr "Just" []) [PVar "t'"] ct=161
 << caseAlt: pat PApp (PConstr "Just" []) [PVar "t'"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "t'" ct=148
+<< expr dispatch: TokIdent "t'" ct=160
 << exprNoLoop: e EVar "t'"
-<< expr dispatch: TokSymbol ";" ct=147
-<< bracesExpr: nm "Nothing" ct=146
+<< expr dispatch: TokSymbol ";" ct=159
+<< bracesExpr: nm "Nothing" ct=158
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "t'" rest Nothing
 >>*caseAlt: pat PApp (PConstr "Just" []) [PVar "t'"] body EVar "t'"
-<< pattern: ct=146
+<< pattern: ct=158
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "Nothing" []) [] ct=145
-<< caseAlt: pat PApp (PConstr "Nothing" []) []
+    (pAs <|> makeCons)PConstr "Nothing" [] ct=157
+<< caseAlt: pat PConstr "Nothing" []
 << guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TVar" ct=144
-<< bracesExpr: nm "TVar" ct=144
+<< expr dispatch: TokTypeIdent "TVar" ct=156
+<< bracesExpr: nm "TVar" ct=156
 << exprNoLoop: e EApp (EVarType "TVar") (EVar "v")
-<< expr dispatch: TokVRBrace ct=142
+<< expr dispatch: TokVRBrace ct=154
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "TVar") (EVar "v") rest Nothing
->>*caseAlt: pat PApp (PConstr "Nothing" []) [] body EApp (EVarType "TVar") (EVar "v")
-<< pattern: ct=142
->>*caseAltBlock: xs [CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]
->>*caseExprCore: alts [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]
-<< exprNoLoop: e ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]
-<< expr dispatch: TokNewline ct=141
+>>*caseAlt: pat PConstr "Nothing" [] body EApp (EVarType "TVar") (EVar "v")
+<< pattern: ct=154
+>>*caseAltBlock: xs [CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]
+<< exprNoLoop: e ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]
+<< expr dispatch: TokNewline ct=153
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))] rest Nothing
->>*caseAlt: pat PApp (PConstr "TVar" []) [PVar "v"] body ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]
-<< pattern: ct=140
+<< expr: e ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))] rest Nothing
+>>*caseAlt: pat PApp (PConstr "TVar" []) [PVar "v"] body ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]
+<< pattern: ct=152
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "c"] ct=138
+    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "c"] ct=150
 << caseAlt: pat PApp (PConstr "TCon" []) [PVar "c"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TCon" ct=136
-<< bracesExpr: nm "TCon" ct=136
+<< expr dispatch: TokTypeIdent "TCon" ct=149
+<< bracesExpr: nm "TCon" ct=149
 << exprNoLoop: e EApp (EVarType "TCon") (EVar "c")
-<< expr dispatch: TokSymbol ";" ct=134
-<< bracesExpr: nm "TArrow" ct=133
+<< expr dispatch: TokSymbol ";" ct=147
+<< bracesExpr: nm "TArrow" ct=146
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "TCon") (EVar "c") rest Nothing
 >>*caseAlt: pat PApp (PConstr "TCon" []) [PVar "c"] body EApp (EVarType "TCon") (EVar "c")
-<< pattern: ct=133
+<< pattern: ct=146
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] ct=130
+    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] ct=143
 << caseAlt: pat PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TArrow" ct=128
-<< bracesExpr: nm "TArrow" ct=128
+<< expr dispatch: TokTypeIdent "TArrow" ct=142
+<< bracesExpr: nm "TArrow" ct=142
 << exprNoLoop: e EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))
-<< expr dispatch: TokSymbol ";" ct=117
-<< bracesExpr: nm "TList" ct=116
+<< expr dispatch: TokSymbol ";" ct=131
+<< bracesExpr: nm "TList" ct=130
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2")) rest Nothing
 >>*caseAlt: pat PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] body EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))
-<< pattern: ct=116
+<< pattern: ct=130
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "t1"] ct=114
+    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "t1"] ct=128
 << caseAlt: pat PApp (PConstr "TList" []) [PVar "t1"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TList" ct=112
-<< bracesExpr: nm "TList" ct=112
+<< expr dispatch: TokTypeIdent "TList" ct=127
+<< bracesExpr: nm "TList" ct=127
 << exprNoLoop: e EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))
-<< expr dispatch: TokSymbol ";" ct=106
-<< bracesExpr: nm "TApp" ct=105
+<< expr dispatch: TokSymbol ";" ct=121
+<< bracesExpr: nm "TApp" ct=120
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1")) rest Nothing
 >>*caseAlt: pat PApp (PConstr "TList" []) [PVar "t1"] body EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))
-<< pattern: ct=105
+<< pattern: ct=120
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"] ct=102
+    (pAs <|> makeCons)PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"] ct=117
 << caseAlt: pat PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TApp" ct=100
-<< bracesExpr: nm "TApp" ct=100
+<< expr dispatch: TokTypeIdent "TApp" ct=116
+<< bracesExpr: nm "TApp" ct=116
 << exprNoLoop: e EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))
-<< expr dispatch: TokSymbol ";" ct=89
-<< bracesExpr: nm "TConstraint" ct=88
+<< expr dispatch: TokSymbol ";" ct=105
+<< bracesExpr: nm "TConstraint" ct=104
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2")) rest Nothing
 >>*caseAlt: pat PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"] body EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))
-<< pattern: ct=88
+<< pattern: ct=104
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"] ct=85
+    (pAs <|> makeCons)PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"] ct=101
 << caseAlt: pat PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TConstraint" ct=83
-<< bracesExpr: nm "TConstraint" ct=83
+<< expr dispatch: TokTypeIdent "TConstraint" ct=100
+<< bracesExpr: nm "TConstraint" ct=100
 << exprNoLoop: e EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))
-<< expr dispatch: TokSymbol ";" ct=69
-<< bracesExpr: nm "TForall" ct=68
+<< expr dispatch: TokSymbol ";" ct=86
+<< bracesExpr: nm "TForall" ct=85
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1")) rest Nothing
 >>*caseAlt: pat PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"] body EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))
-<< pattern: ct=68
+<< pattern: ct=85
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"] ct=65
+    (pAs <|> makeCons)PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"] ct=82
 << caseAlt: pat PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "let" ct=62
+<< expr dispatch: TokKeyword "let" ct=80
 << letBlock: next token TokKeyword "let"
 << letExpr: next token TokKeyword "let"
 << bindingBlock: next token TokIdent "s'"
 << binding: next token TokIdent "s'"
-<< pattern: ct=61
+<< pattern: ct=79
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "s'") [] ct=60
-<< valueBinding: pat PApp (PVar "s'") []
-<< expr dispatch: TokIdent "foldr" ct=59
-<< exprNoLoop: e EApp (EVar "foldr") (EVarType "M")
-<< expr dispatch: TokOperator "." ct=57
+    (pAs <|> makeCons)PVar "s'" ct=78
+<< valueBinding: pat PVar "s'"
+<< expr dispatch: TokIdent "foldr" ct=77
+<< exprNoLoop: e EApp (EVar "foldr") (EVarType "Map")
+<< expr dispatch: TokOperator "." ct=75
 << postfix: operator = Nothing
 >> infixOp: out 
 << infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "delete" ct=56
+<< expr dispatch: TokIdent "delete" ct=74
 << exprNoLoop: e EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")
-<< expr dispatch: TokSymbol ";" ct=53
+<< expr dispatch: TokSymbol ";" ct=71
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")) rest Nothing
->>*valueBinding: next token TokSymbol ";" body EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars"))
->>*binding: rt (PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))
+<< expr: e EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")) rest Nothing
+>>*valueBinding: next token TokSymbol ";" body EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars"))
+>>*binding: rt (PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))
 << binding: next token TokKeyword "in"
-<< pattern: ct=52
->>*bindingBlock next token TokSymbol ";" rt [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))]
-<< letExpr: next token TokKeyword "in" binds [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))]
-<< expr dispatch: TokTypeIdent "TForall" ct=51
-<< bracesExpr: nm "TForall" ct=51
+<< pattern: ct=70
+>>*bindingBlock next token TokSymbol ";" rt [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))]
+<< letExpr: next token TokKeyword "in" binds [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))]
+<< expr dispatch: TokTypeIdent "TForall" ct=69
+<< bracesExpr: nm "TForall" ct=69
 << exprNoLoop: e EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1"))
-<< expr dispatch: TokSymbol ";" ct=44
-<< bracesExpr: nm "TTuple" ct=43
+<< expr dispatch: TokSymbol ";" ct=62
+<< bracesExpr: nm "TTuple" ct=61
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")) rest Nothing
 >>*letExpr: in body EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1"))
->>*letBlock: rt ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))
-<< exprNoLoop: e ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))
-<< expr dispatch: TokSymbol ";" ct=44
-<< bracesExpr: nm "TTuple" ct=43
+>>*letBlock: rt ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))
+<< exprNoLoop: e ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))
+<< expr dispatch: TokSymbol ";" ct=62
+<< bracesExpr: nm "TTuple" ct=61
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1"))) rest Nothing
->>*caseAlt: pat PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"] body ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))
-<< pattern: ct=43
+<< expr: e ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1"))) rest Nothing
+>>*caseAlt: pat PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"] body ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))
+<< pattern: ct=61
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TTuple" []) [PVar "ts"] ct=41
+    (pAs <|> makeCons)PApp (PConstr "TTuple" []) [PVar "ts"] ct=59
 << caseAlt: pat PApp (PConstr "TTuple" []) [PVar "ts"]
 << guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "TTuple" ct=39
-<< bracesExpr: nm "TTuple" ct=39
+<< expr dispatch: TokTypeIdent "TTuple" ct=58
+<< bracesExpr: nm "TTuple" ct=58
 << exprNoLoop: e EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))
-<< expr dispatch: TokVRBrace ct=30
+<< expr dispatch: TokSymbol ";" ct=49
+<< bracesExpr: nm "TUnit" ct=48
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")) rest Nothing
 >>*caseAlt: pat PApp (PConstr "TTuple" []) [PVar "ts"] body EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))
+<< pattern: ct=48
+<< pattern:
+    (pAs <|> makeCons)PConstr "TUnit" [] ct=47
+<< caseAlt: pat PConstr "TUnit" []
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokTypeIdent "TUnit" ct=46
+<< bracesExpr: nm "TUnit" ct=46
+<< exprNoLoop: e EVarType "TUnit"
+<< expr dispatch: TokSymbol ";" ct=45
+<< bracesExpr: nm "TRecord" ct=44
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EVarType "TUnit" rest Nothing
+>>*caseAlt: pat PConstr "TUnit" [] body EVarType "TUnit"
+<< pattern: ct=44
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TRecord" []) [PVar "fields"] ct=42
+<< caseAlt: pat PApp (PConstr "TRecord" []) [PVar "fields"]
+<< guardExpr next token: TokArrow
+<< expr dispatch: TokTypeIdent "TRecord" ct=41
+<< bracesExpr: nm "TRecord" ct=41
+<< exprNoLoop: e EVarType "TRecord"
+<< expr dispatch: TokSymbol "(" ct=40
+<< parensExpr: ct=40
+<< expr dispatch: TokTypeIdent "Map" ct=39
+<< bracesExpr: nm "Map" ct=39
+<< exprNoLoop: e EFieldAccess (EVarType "Map") "map"
+<< expr dispatch: TokSymbol "(" ct=36
+<< parensExpr: ct=36
+<< expr dispatch: TokIdent "apply" ct=35
+<< exprNoLoop: e EApp (EVar "apply") (EVar "s")
+<< expr dispatch: TokSymbol ")" ct=33
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVar "apply") (EVar "s") rest Nothing
+<< exprNoLoop: e EApp (EVar "apply") (EVar "s")
+<< expr dispatch: TokIdent "fields" ct=32
+<< exprNoLoop: e EVar "fields"
+<< expr dispatch: TokSymbol ")" ct=31
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields") rest Nothing
+<< exprNoLoop: e EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")
+<< expr dispatch: TokVRBrace ct=30
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")) rest Nothing
+>>*caseAlt: pat PApp (PConstr "TRecord" []) [PVar "fields"] body EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields"))
 << pattern: ct=30
->>*caseAltBlock: xs [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))]
->>*caseExprCore: alts [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))]
-<< exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))]
+>>*caseAltBlock: xs [CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))]
+>>*caseExprCore: alts [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))]
+<< exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))]
 << expr dispatch: TokNewline ct=29
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))] rest Nothing
-<< parseSimpleClause: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))] ct=29
+<< expr: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))] rest Nothing
+<< parseSimpleClause: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))] ct=29
 << funClauseWithName: next token=TokNewline ct=29
->>*funDecl name "apply" clause1 FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))])) Nothing rest []
->>*declBody: e DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))])) Nothing]
+>>*funDecl name "apply" clause1 FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))])) Nothing]
 << decl next token: TokIdent "applyConstraint"
 << decl parser called
 << decl dispatch: TokIdent "applyConstraint" ct=28
@@ -482,11 +508,11 @@ Coverage: 100%
 << typeTerm: ts [TCon "Constraint"]
 << typeTerm: ts [TCon "Constraint"]
 << parseTypeCore: TCon "Constraint"
-<< parseTypeCore: TFun (TCon "Constraint") (TCon "Constraint")
-<< parseTypeCore: TFun (TCon "Subst") (TFun (TCon "Constraint") (TCon "Constraint"))
-<< parsed type signature: applyConstraint :: TFun (TCon "Subst") (TFun (TCon "Constraint") (TCon "Constraint"))
-<< returning DeclTypeSig: DeclTypeSig "applyConstraint" (TFun (TCon "Subst") (TFun (TCon "Constraint") (TCon "Constraint")))
->>*declBody: e DeclTypeSig "applyConstraint" (TFun (TCon "Subst") (TFun (TCon "Constraint") (TCon "Constraint")))
+<< parseTypeCore: TArrow (TCon "Constraint") (TCon "Constraint")
+<< parseTypeCore: TArrow (TCon "Subst") (TArrow (TCon "Constraint") (TCon "Constraint"))
+<< parsed type signature: applyConstraint :: TArrow (TCon "Subst") (TArrow (TCon "Constraint") (TCon "Constraint"))
+<< returning DeclTypeSig: DeclTypeSig "applyConstraint" (TArrow (TCon "Subst") (TArrow (TCon "Constraint") (TCon "Constraint")))
+>>*declBody: e DeclTypeSig "applyConstraint" (TArrow (TCon "Subst") (TArrow (TCon "Constraint") (TCon "Constraint")))
 << decl next token: TokIdent "applyConstraint"
 << decl parser called
 << decl dispatch: TokIdent "applyConstraint" ct=20
@@ -516,7 +542,7 @@ Coverage: 100%
 << funClauseWithName: next token=TokNewline ct=1
 >>*funDecl name "applyConstraint" clause1 FunClause [PVar "s",PApp (PConstr "Constraint" []) [PVar "cls",PVar "ts"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))) Nothing rest []
 >>*declBody: e DeclFunGroup "applyConstraint" [FunClause [PVar "s",PApp (PConstr "Constraint" []) [PVar "cls",PVar "ts"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))) Nothing]
-Just ([DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply"]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TApp (TApp (TCon "M.Map") (TCon "String")) (TCon "Type")),DeclTypeSig "emptySubst" (TCon "Subst"),DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "empty"))) Nothing],DeclTypeSig "singletonSubst" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Subst"))),DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EVar "singleton"))) Nothing],DeclTypeSig "composeSubst" (TFun (TCon "Subst") (TFun (TCon "Subst") (TCon "Subst"))),DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "s2")) (EVar "M.union")) (EVar "s1")))) Nothing],DeclTypeSig "apply" (TFun (TCon "Subst") (TFun (TCon "Type") (TCon "Type"))),DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TUnit" []) []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "lookup") (EVar "v")) (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PApp (PConstr "Nothing" []) []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PApp (PVar "s'") [],EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "M")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))])) Nothing],DeclTypeSig "applyConstraint" (TFun (TCon "Subst") (TFun (TCon "Constraint") (TCon "Constraint"))),DeclFunGroup "applyConstraint" [FunClause [PVar "s",PApp (PConstr "Constraint" []) [PVar "cls",PVar "ts"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))) Nothing]],[])
+Just ([DeclModule "TypeInference.Subst" (Just [ExportType "Subst" False,ExportVar "emptySubst",ExportVar "singletonSubst",ExportVar "composeSubst",ExportVar "apply",ExportVar "applyConstraint"]),DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "Map", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeAlias "Subst" [] (TApp (TApp (TCon "Map.Map") (TCon "String")) (TCon "Type")),DeclTypeSig "emptySubst" (TCon "Subst"),DeclFunGroup "emptySubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "empty")) Nothing],DeclTypeSig "singletonSubst" (TArrow (TCon "String") (TArrow (TCon "Type") (TCon "Subst"))),DeclFunGroup "singletonSubst" [FunClause [] Nothing (Just (EFieldAccess (EVarType "Map") "singleton")) Nothing],DeclTypeSig "composeSubst" (TArrow (TCon "Subst") (TArrow (TCon "Subst") (TCon "Subst"))),DeclFunGroup "composeSubst" [FunClause [PVar "s1",PVar "s2"] Nothing (Just (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s1"))) (EApp (EApp (EVar "s2") (EVar "Map.union")) (EVar "s1")))) Nothing],DeclTypeSig "apply" (TArrow (TCon "Subst") (TArrow (TCon "Type") (TCon "Type"))),DeclFunGroup "apply" [FunClause [PVar "s",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "v"]) (ECase (EApp (EFieldAccess (EVarType "Map") "lookup") (EApp (EVar "v") (EVar "s"))) [CaseAlt (PApp (PConstr "Just" []) [PVar "t'"]) (EVar "t'"),CaseAlt (PConstr "Nothing" []) (EApp (EVarType "TVar") (EVar "v"))]),CaseAlt (PApp (PConstr "TCon" []) [PVar "c"]) (EApp (EVarType "TCon") (EVar "c")),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TArrow") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EVarType "TList") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EApp (EApp (EVarType "TApp") (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EApp (EApp (EVarType "TConstraint") (EApp (EApp (EVar "map") (EApp (EVar "applyConstraint") (EVar "s"))) (EVar "cs"))) (EApp (EApp (EVar "apply") (EVar "s")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vars",PVar "t1"]) (ELetBlock [(PVar "s'",EBinOp BinOpCompose (EApp (EVar "foldr") (EVarType "Map")) (EApp (EApp (EVar "delete") (EVar "s")) (EVar "vars")))] (EApp (EApp (EVarType "TForall") (EVar "vars")) (EApp (EApp (EVar "apply") (EVar "s'")) (EVar "t1")))),CaseAlt (PApp (PConstr "TTuple" []) [PVar "ts"]) (EApp (EVarType "TTuple") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts"))),CaseAlt (PConstr "TUnit" []) (EVarType "TUnit"),CaseAlt (PApp (PConstr "TRecord" []) [PVar "fields"]) (EApp (EVarType "TRecord") (EApp (EApp (EFieldAccess (EVarType "Map") "map") (EApp (EVar "apply") (EVar "s"))) (EVar "fields")))])) Nothing],DeclTypeSig "applyConstraint" (TArrow (TCon "Subst") (TArrow (TCon "Constraint") (TCon "Constraint"))),DeclFunGroup "applyConstraint" [FunClause [PVar "s",PApp (PConstr "Constraint" []) [PVar "cls",PVar "ts"]] Nothing (Just (EApp (EApp (EVarType "Constraint") (EVar "cls")) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s"))) (EVar "ts")))) Nothing]],[])
 
 -- src code --
 module TypeInference.Subst
@@ -525,55 +551,46 @@ module TypeInference.Subst
     singletonSubst,
     composeSubst,
     apply,
+    applyConstraint,
   )
 where
 
-import AST.Type
-import qualified Data.Map as M
+import qualified Data.Map as Map
+import TypeInference.Type
 
--- 型代入：型変数名 → 型
-type Subst = M.Map String Type
+type Subst = Map.Map String Type
 
 -- 空の代入
 emptySubst :: Subst
-emptySubst = M.empty
+emptySubst = Map.empty
 
 -- 単一代入
 singletonSubst :: String -> Type -> Subst
-singletonSubst = M.singleton
+singletonSubst = Map.singleton
 
 -- 代入の合成
--- s1 を先に適用し、その結果に s2 を適用する
 composeSubst :: Subst -> Subst -> Subst
 composeSubst s1 s2 =
-  M.map (apply s1) s2 `M.union` s1
+  Map.map (apply s1) s2 `Map.union` s1
 
 -- 型への代入適用
 apply :: Subst -> Type -> Type
-apply s t = 
-  case t of
-    TUnit ->
-      TUnit
-    TVar v ->
-      case M.lookup v s of
-        Just t' -> t'
-        Nothing -> TVar v
-    TCon c ->
-      TCon c
-    TArrow t1 t2 ->
-      TArrow (apply s t1) (apply s t2)
-    TList t1 ->
-      TList (apply s t1)
-    TApp t1 t2 ->
-      TApp (apply s t1) (apply s t2)
-    TConstraint cs t1 ->
-      TConstraint (map (applyConstraint s) cs) (apply s t1)
-    TForall vars t1 ->
-      -- Forall の束縛変数には代入を適用しない
-      let s' = foldr M.delete s vars
-      in TForall vars (apply s' t1)
-    TTuple ts ->
-      TTuple (map (apply s) ts)
+apply s t = case t of
+  TVar v ->
+    case Map.lookup v s of
+      Just t' -> t'
+      Nothing -> TVar v
+  TCon c -> TCon c
+  TArrow t1 t2 -> TArrow (apply s t1) (apply s t2)
+  TList t1 -> TList (apply s t1)
+  TApp t1 t2 -> TApp (apply s t1) (apply s t2)
+  TConstraint cs t1 -> TConstraint (map (applyConstraint s) cs) (apply s t1)
+  TForall vars t1 ->
+    let s' = foldr Map.delete s vars
+     in TForall vars (apply s' t1)
+  TTuple ts -> TTuple (map (apply s) ts)
+  TUnit -> TUnit
+  TRecord fields -> TRecord (Map.map (apply s) fields)
 
 -- 制約への代入適用
 applyConstraint :: Subst -> Constraint -> Constraint
@@ -582,60 +599,62 @@ applyConstraint s (Constraint cls ts) =
 
 
 -- token --
-[280] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Subst"TokSymbol "("       
-[275] TokTypeIdent "Subst"TokSymbol ","       TokSymbol ";"       TokIdent "emptySubstTokSymbol ","       
-[270] TokSymbol ";"       TokIdent "singletonSTokSymbol ","       TokSymbol ";"       TokIdent "composeSub
-[265] TokSymbol ","       TokSymbol ";"       TokIdent "apply"    TokSymbol ","       TokSymbol ";"       
-[260] TokSymbol ")"       TokNewline          TokKeyword "where"  TokNewline          TokKeyword "import" 
-[255] TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Type" TokNewline          TokKeyword "import" 
-[250] TokKeyword "qualifieTokTypeIdent "Data" TokOperator "."     TokTypeIdent "Map"  TokKeyword "as"     
-[245] TokTypeIdent "M"    TokNewline          TokKeyword "type"   TokTypeIdent "Subst"TokSymbol "="       
-[240] TokTypeIdent "M"    TokOperator "."     TokTypeIdent "Map"  TokTypeIdent "StringTokTypeIdent "Type" 
-[235] TokNewline          TokIdent "emptySubstTokSymbol "::"      TokTypeIdent "Subst"TokNewline          
-[230] TokIdent "emptySubstTokSymbol "="       TokTypeIdent "M"    TokOperator "."     TokIdent "empty"    
-[225] TokNewline          TokIdent "singletonSTokSymbol "::"      TokTypeIdent "StringTokArrow            
-[220] TokTypeIdent "Type" TokArrow            TokTypeIdent "Subst"TokNewline          TokIdent "singletonS
-[215] TokSymbol "="       TokTypeIdent "M"    TokOperator "."     TokIdent "singleton"TokNewline          
-[210] TokIdent "composeSubTokSymbol "::"      TokTypeIdent "Subst"TokArrow            TokTypeIdent "Subst"
-[205] TokArrow            TokTypeIdent "Subst"TokNewline          TokIdent "composeSubTokIdent "s1"       
-[200] TokIdent "s2"       TokSymbol "="       TokSymbol ";"       TokTypeIdent "M"    TokOperator "."     
-[195] TokIdent "map"      TokSymbol "("       TokIdent "apply"    TokIdent "s1"       TokSymbol ")"       
-[190] TokIdent "s2"       TokSymbol "`"       TokTypeIdent "M"    TokOperator "."     TokIdent "union"    
-[185] TokSymbol "`"       TokIdent "s1"       TokNewline          TokIdent "apply"    TokSymbol "::"      
-[180] TokTypeIdent "Subst"TokArrow            TokTypeIdent "Type" TokArrow            TokTypeIdent "Type" 
-[175] TokNewline          TokIdent "apply"    TokIdent "s"        TokIdent "t"        TokSymbol "="       
-[170] TokSymbol ";"       TokKeyword "case"   TokIdent "t"        TokKeyword "of"     TokVLBrace          
-[165] TokTypeIdent "TUnit"TokArrow            TokSymbol ";"       TokTypeIdent "TUnit"TokSymbol ";"       
-[160] TokTypeIdent "TVar" TokIdent "v"        TokArrow            TokSymbol ";"       TokKeyword "case"   
-[155] TokTypeIdent "M"    TokOperator "."     TokIdent "lookup"   TokIdent "v"        TokIdent "s"        
-[150] TokKeyword "of"     TokVLBrace          TokTypeIdent "Just" TokIdent "t'"       TokArrow            
-[145] TokIdent "t'"       TokSymbol ";"       TokTypeIdent "NothinTokArrow            TokTypeIdent "TVar" 
-[140] TokIdent "v"        TokVRBrace          TokNewline          TokTypeIdent "TCon" TokIdent "c"        
-[135] TokArrow            TokSymbol ";"       TokTypeIdent "TCon" TokIdent "c"        TokSymbol ";"       
-[130] TokTypeIdent "TArrowTokIdent "t1"       TokIdent "t2"       TokArrow            TokSymbol ";"       
-[125] TokTypeIdent "TArrowTokSymbol "("       TokIdent "apply"    TokIdent "s"        TokIdent "t1"       
-[120] TokSymbol ")"       TokSymbol "("       TokIdent "apply"    TokIdent "s"        TokIdent "t2"       
-[115] TokSymbol ")"       TokSymbol ";"       TokTypeIdent "TList"TokIdent "t1"       TokArrow            
-[110] TokSymbol ";"       TokTypeIdent "TList"TokSymbol "("       TokIdent "apply"    TokIdent "s"        
-[105] TokIdent "t1"       TokSymbol ")"       TokSymbol ";"       TokTypeIdent "TApp" TokIdent "t1"       
-[100] TokIdent "t2"       TokArrow            TokSymbol ";"       TokTypeIdent "TApp" TokSymbol "("       
-[95] TokIdent "apply"    TokIdent "s"        TokIdent "t1"       TokSymbol ")"       TokSymbol "("       
-[90] TokIdent "apply"    TokIdent "s"        TokIdent "t2"       TokSymbol ")"       TokSymbol ";"       
-[85] TokTypeIdent "TConstTokIdent "cs"       TokIdent "t1"       TokArrow            TokSymbol ";"       
-[80] TokTypeIdent "TConstTokSymbol "("       TokIdent "map"      TokSymbol "("       TokIdent "applyConst
-[75] TokIdent "s"        TokSymbol ")"       TokIdent "cs"       TokSymbol ")"       TokSymbol "("       
-[70] TokIdent "apply"    TokIdent "s"        TokIdent "t1"       TokSymbol ")"       TokSymbol ";"       
-[65] TokTypeIdent "TForalTokIdent "vars"     TokIdent "t1"       TokArrow            TokSymbol ";"       
-[60] TokSymbol ";"       TokKeyword "let"    TokIdent "s'"       TokSymbol "="       TokIdent "foldr"    
-[55] TokTypeIdent "M"    TokOperator "."     TokIdent "delete"   TokIdent "s"        TokIdent "vars"     
-[50] TokSymbol ";"       TokKeyword "in"     TokTypeIdent "TForalTokIdent "vars"     TokSymbol "("       
-[45] TokIdent "apply"    TokIdent "s'"       TokIdent "t1"       TokSymbol ")"       TokSymbol ";"       
-[40] TokTypeIdent "TTupleTokIdent "ts"       TokArrow            TokSymbol ";"       TokTypeIdent "TTuple
-[35] TokSymbol "("       TokIdent "map"      TokSymbol "("       TokIdent "apply"    TokIdent "s"        
-[30] TokSymbol ")"       TokIdent "ts"       TokSymbol ")"       TokVRBrace          TokNewline          
-[25] TokIdent "applyConstTokSymbol "::"      TokTypeIdent "Subst"TokArrow            TokTypeIdent "Constr
-[20] TokArrow            TokTypeIdent "ConstrTokNewline          TokIdent "applyConstTokIdent "s"        
-[15] TokSymbol "("       TokTypeIdent "ConstrTokIdent "cls"      TokIdent "ts"       TokSymbol ")"       
-[10] TokSymbol "="       TokSymbol ";"       TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "("       
-[5] TokIdent "map"      TokSymbol "("       TokIdent "apply"    TokIdent "s"        TokSymbol ")"       
-[0] TokIdent "ts"       TokSymbol ")"       TokNewline          
+[290] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Subst"TokSymbol "("       
+[285] TokTypeIdent "Subst"TokSymbol ","       TokSymbol ";"       TokIdent "emptySubstTokSymbol ","       
+[280] TokSymbol ";"       TokIdent "singletonSTokSymbol ","       TokSymbol ";"       TokIdent "composeSub
+[275] TokSymbol ","       TokSymbol ";"       TokIdent "apply"    TokSymbol ","       TokSymbol ";"       
+[270] TokIdent "applyConstTokSymbol ","       TokSymbol ";"       TokSymbol ")"       TokNewline          
+[265] TokKeyword "where"  TokNewline          TokKeyword "import" TokKeyword "qualifieTokTypeIdent "Data" 
+[260] TokOperator "."     TokTypeIdent "Map"  TokKeyword "as"     TokTypeIdent "Map"  TokNewline          
+[255] TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Type" TokNewline          
+[250] TokKeyword "type"   TokTypeIdent "Subst"TokSymbol "="       TokTypeIdent "Map"  TokOperator "."     
+[245] TokTypeIdent "Map"  TokTypeIdent "StringTokTypeIdent "Type" TokNewline          TokIdent "emptySubst
+[240] TokSymbol "::"      TokTypeIdent "Subst"TokNewline          TokIdent "emptySubstTokSymbol "="       
+[235] TokTypeIdent "Map"  TokOperator "."     TokIdent "empty"    TokNewline          TokIdent "singletonS
+[230] TokSymbol "::"      TokTypeIdent "StringTokArrow            TokTypeIdent "Type" TokArrow            
+[225] TokTypeIdent "Subst"TokNewline          TokIdent "singletonSTokSymbol "="       TokTypeIdent "Map"  
+[220] TokOperator "."     TokIdent "singleton"TokNewline          TokIdent "composeSubTokSymbol "::"      
+[215] TokTypeIdent "Subst"TokArrow            TokTypeIdent "Subst"TokArrow            TokTypeIdent "Subst"
+[210] TokNewline          TokIdent "composeSubTokIdent "s1"       TokIdent "s2"       TokSymbol "="       
+[205] TokSymbol ";"       TokTypeIdent "Map"  TokOperator "."     TokIdent "map"      TokSymbol "("       
+[200] TokIdent "apply"    TokIdent "s1"       TokSymbol ")"       TokIdent "s2"       TokSymbol "`"       
+[195] TokTypeIdent "Map"  TokOperator "."     TokIdent "union"    TokSymbol "`"       TokIdent "s1"       
+[190] TokNewline          TokIdent "apply"    TokSymbol "::"      TokTypeIdent "Subst"TokArrow            
+[185] TokTypeIdent "Type" TokArrow            TokTypeIdent "Type" TokNewline          TokIdent "apply"    
+[180] TokIdent "s"        TokIdent "t"        TokSymbol "="       TokKeyword "case"   TokIdent "t"        
+[175] TokKeyword "of"     TokVLBrace          TokTypeIdent "TVar" TokIdent "v"        TokArrow            
+[170] TokSymbol ";"       TokKeyword "case"   TokTypeIdent "Map"  TokOperator "."     TokIdent "lookup"   
+[165] TokIdent "v"        TokIdent "s"        TokKeyword "of"     TokVLBrace          TokTypeIdent "Just" 
+[160] TokIdent "t'"       TokArrow            TokIdent "t'"       TokSymbol ";"       TokTypeIdent "Nothin
+[155] TokArrow            TokTypeIdent "TVar" TokIdent "v"        TokVRBrace          TokNewline          
+[150] TokTypeIdent "TCon" TokIdent "c"        TokArrow            TokTypeIdent "TCon" TokIdent "c"        
+[145] TokSymbol ";"       TokTypeIdent "TArrowTokIdent "t1"       TokIdent "t2"       TokArrow            
+[140] TokTypeIdent "TArrowTokSymbol "("       TokIdent "apply"    TokIdent "s"        TokIdent "t1"       
+[135] TokSymbol ")"       TokSymbol "("       TokIdent "apply"    TokIdent "s"        TokIdent "t2"       
+[130] TokSymbol ")"       TokSymbol ";"       TokTypeIdent "TList"TokIdent "t1"       TokArrow            
+[125] TokTypeIdent "TList"TokSymbol "("       TokIdent "apply"    TokIdent "s"        TokIdent "t1"       
+[120] TokSymbol ")"       TokSymbol ";"       TokTypeIdent "TApp" TokIdent "t1"       TokIdent "t2"       
+[115] TokArrow            TokTypeIdent "TApp" TokSymbol "("       TokIdent "apply"    TokIdent "s"        
+[110] TokIdent "t1"       TokSymbol ")"       TokSymbol "("       TokIdent "apply"    TokIdent "s"        
+[105] TokIdent "t2"       TokSymbol ")"       TokSymbol ";"       TokTypeIdent "TConstTokIdent "cs"       
+[100] TokIdent "t1"       TokArrow            TokTypeIdent "TConstTokSymbol "("       TokIdent "map"      
+[95] TokSymbol "("       TokIdent "applyConstTokIdent "s"        TokSymbol ")"       TokIdent "cs"       
+[90] TokSymbol ")"       TokSymbol "("       TokIdent "apply"    TokIdent "s"        TokIdent "t1"       
+[85] TokSymbol ")"       TokSymbol ";"       TokTypeIdent "TForalTokIdent "vars"     TokIdent "t1"       
+[80] TokArrow            TokSymbol ";"       TokKeyword "let"    TokIdent "s'"       TokSymbol "="       
+[75] TokIdent "foldr"    TokTypeIdent "Map"  TokOperator "."     TokIdent "delete"   TokIdent "s"        
+[70] TokIdent "vars"     TokSymbol ";"       TokKeyword "in"     TokTypeIdent "TForalTokIdent "vars"     
+[65] TokSymbol "("       TokIdent "apply"    TokIdent "s'"       TokIdent "t1"       TokSymbol ")"       
+[60] TokSymbol ";"       TokTypeIdent "TTupleTokIdent "ts"       TokArrow            TokTypeIdent "TTuple
+[55] TokSymbol "("       TokIdent "map"      TokSymbol "("       TokIdent "apply"    TokIdent "s"        
+[50] TokSymbol ")"       TokIdent "ts"       TokSymbol ")"       TokSymbol ";"       TokTypeIdent "TUnit"
+[45] TokArrow            TokTypeIdent "TUnit"TokSymbol ";"       TokTypeIdent "TRecorTokIdent "fields"   
+[40] TokArrow            TokTypeIdent "TRecorTokSymbol "("       TokTypeIdent "Map"  TokOperator "."     
+[35] TokIdent "map"      TokSymbol "("       TokIdent "apply"    TokIdent "s"        TokSymbol ")"       
+[30] TokIdent "fields"   TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "applyConst
+[25] TokSymbol "::"      TokTypeIdent "Subst"TokArrow            TokTypeIdent "ConstrTokArrow            
+[20] TokTypeIdent "ConstrTokNewline          TokIdent "applyConstTokIdent "s"        TokSymbol "("       
+[15] TokTypeIdent "ConstrTokIdent "cls"      TokIdent "ts"       TokSymbol ")"       TokSymbol "="       
+[10] TokSymbol ";"       TokTypeIdent "ConstrTokIdent "cls"      TokSymbol "("       TokIdent "map"      
+[5] TokSymbol "("       TokIdent "apply"    TokIdent "s"        TokSymbol ")"       TokIdent "ts"       
+[0] TokSymbol ")"       TokNewline          

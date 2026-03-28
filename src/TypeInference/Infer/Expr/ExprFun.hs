@@ -58,20 +58,3 @@ inferFunClause inferExprFn env (FunClause pats _mbGuards (Just body) _mbWhere) =
   return (s, funType)
 inferFunClause _ _ (FunClause _ _ Nothing _) =
   lift $ Left (InferOther "Function clause missing body")
-
-{-}
-inferFunClause :: TypeEnv -> FunClause -> InferM (Subst, Type)
-inferFunClause env (FunClause pats _mbGuards (Just body) _mbWhere) = do
-  (sPats, envPats, argTypes) <- inferPatterns pats
-  let envPatApplied = applyEnv sPats envPats
-  let env'' = mergeEnvs env envPatApplied
-  (sBody, tBody) <- inferExpr env'' body
-  myTraceE ("<< inferFunClause: sBody " ++ show sBody ++ " tBody " ++ show tBody)
-  -- let env' = mergeEnvs env envPats
-  -- (sBody, tBody) <- inferExpr (applyEnv sPats env') body
-  let s = composeSubst sBody sPats
-  let funType = foldr TI.TArrow tBody argTypes
-  return (s, funType)
-inferFunClause _ (FunClause _ _ Nothing _) =
-  lift $ Left (InferOther "Function clause missing body")
--}

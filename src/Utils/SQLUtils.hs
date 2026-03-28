@@ -1,12 +1,11 @@
 module Utils.SQLUtils (extractSQLVars) where
 
 extractSQLVars :: String -> (String, [String])
-extractSQLVars = go "" [] ""
+extractSQLVars = go "" []
   where
-    go acc vars current [] =
-      (acc, reverse vars)
-    go acc vars current ('{' : xs) =
+    go acc vars [] = (acc, reverse vars)
+    go acc vars ('{' : xs) =
       let (var, rest) = span (/= '}') xs
-       in go (acc ++ "?") (var : vars) "" (drop 1 rest)
-    go acc vars current (x : xs) =
-      go (acc ++ [x]) vars current xs
+       in go (acc ++ "?") (var : vars) (drop 1 rest)
+    go acc vars (x : xs) =
+      go (acc ++ [x]) (vars ++ []) xs

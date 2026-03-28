@@ -49,7 +49,7 @@ data Expr
   | ELet Pattern Expr Expr
   | ELetBlock [(Pattern, Expr)] Expr
   | EIf Expr Expr Expr
-  | ELam Pattern Expr
+  | ELam [Pattern] Expr
   | EApp Expr Expr
   | ECase Expr [CaseAlt]
   | EList [Expr]

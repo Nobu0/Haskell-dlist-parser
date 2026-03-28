@@ -1,0 +1,31 @@
+
+-- src --
+
+-- ERROR 無限型（Occurs check）エラー
+loop :: a -> a
+loop xx = xx xx
+
+
+-- Token list --
+[TokNewline,TokIdent "loop",TokSymbol "::",TokIdent "a",TokArrow,TokIdent "a",TokNewline,TokIdent "loop",TokIdent "xx",TokSymbol "=",TokIdent "xx",TokIdent "xx",TokNewline]
+
+-- Parsed AST --
+
+-- Parse Coverage --
+Consumed tokens: 13 / 13
+Coverage: 100%
+
+-- AST (numbered) --
+[0] DeclTypeSig "loop" (TArrow (TVar "a") (TVar "a"))
+[1] DeclFunGroup "loop" [FunClause [PVar "xx"] Nothing (Just (EApp (EVar "xx") (EVar "xx"))) Nothing]
+
+-- Type Inference ------------------------
+<< inferProgram: groups fromList [("loop",([FunClause [PVar "xx"] Nothing (Just (EApp (EVar "xx") (EVar "xx"))) Nothing],Just (TArrow (TVar "a") (TVar "a"))))]
+<< inferProgram: env TypeEnv (fromList [("$",Forall ["a","b"] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "b")))),("*",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("+",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("-",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),("==",Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),(">",Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),("False",Forall [] (TCon "Bool")),("True",Forall [] (TCon "Bool")),("print",Forall ["a"] (TArrow (TVar "a") (TCon "Unit")))])
+<< inferGroup: clauses [FunClause [PVar "xx"] Nothing (Just (EApp (EVar "xx") (EVar "xx"))) Nothing]
+<< inferFunGroup: extended env with loop :: Forall [] (TArrow (TVar "a") (TVar "a"))
+<< infrePattern: pat PVar "xx"
+<< inferExpr: name "xx"
+<< inferExpr: name "xx"
+Type inference failed:
+InferUnifyError (UnifyOccursCheckFailed "t0" (TArrow (TVar "t0") (TVar "t3")))

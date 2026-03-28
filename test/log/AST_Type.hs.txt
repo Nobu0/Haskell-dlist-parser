@@ -10,10 +10,11 @@ Coverage: 100%
 -- AST (numbered) --
 [0] DeclModule "AST.Type" Nothing
 [1] DeclImport {importQualified = False, importModule = "AST.BinOp", importAlias = Nothing, importHiding = False, importItems = Nothing}
-[2] DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TFun" [TCon "Type",TCon "Type"],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"]
-[3] DeclData "Constraint" [] [Constraint "Constraint" [TCon "String",TList (TCon "Type")],Constraint "ConstraintRecord" [TCon "String",TList (TCon "Field")]] ["Show","Eq"]
-[4] DeclData "Field" [] [Constraint "Field" [TCon "String",TCon "Type"]] ["Show","Eq"]
-[DeclModule "AST.Type" Nothing,DeclImport {importQualified = False, importModule = "AST.BinOp", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TFun" [TCon "Type",TCon "Type"],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"],DeclData "Constraint" [] [Constraint "Constraint" [TCon "String",TList (TCon "Type")],Constraint "ConstraintRecord" [TCon "String",TList (TCon "Field")]] ["Show","Eq"],DeclData "Field" [] [Constraint "Field" [TCon "String",TCon "Type"]] ["Show","Eq"]]
+[2] DeclTypeAlias "Name" [] (TCon "String")
+[3] DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"]
+[4] DeclData "Constraint" [] [Constraint "Constraint" [TCon "String",TList (TCon "Type")],Constraint "ConstraintRecord" [TCon "String",TList (TCon "Field")]] ["Show","Eq"]
+[5] DeclData "Field" [] [Constraint "Field" [TCon "String",TCon "Type"]] ["Show","Eq"]
+[DeclModule "AST.Type" Nothing,DeclImport {importQualified = False, importModule = "AST.BinOp", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeAlias "Name" [] (TCon "String"),DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"],DeclData "Constraint" [] [Constraint "Constraint" [TCon "String",TList (TCon "Type")],Constraint "ConstraintRecord" [TCon "String",TList (TCon "Field")]] ["Show","Eq"],DeclData "Field" [] [Constraint "Field" [TCon "String",TCon "Type"]] ["Show","Eq"]]
 
 -- Remaining-----------------------------
 []
@@ -29,9 +30,15 @@ Coverage: 100%
 << importDecl parser called
 << importDecl: TokTypeIdent "AST"
 >>*declBody: e DeclImport {importQualified = False, importModule = "AST.BinOp", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "type"
+<< decl parser called
+<< decl dispatch: TokKeyword "type" ct=105
+<< typeDecl name "Name" vars []
+>>*typeDecl typ TCon "String"
+>>*declBody: e DeclTypeAlias "Name" [] (TCon "String")
 << decl next token: TokKeyword "data"
 << decl parser called
-<< decl dispatch: TokKeyword "data" ct=105
+<< decl dispatch: TokKeyword "data" ct=100
 << dataConstrRecord: TokTypeIdent "String"
 << dataConstrNormal: "TVar" [TCon "String"]
 << dataConstrRecord: TokTypeIdent "String"
@@ -56,11 +63,9 @@ Coverage: 100%
 << dataConstrNormal: "TTuple" [TList (TCon "Type")]
 << dataConstrRecord: TokSymbol "|"
 << dataConstrNormal: "TUnit" []
-<< dataConstrRecord: TokTypeIdent "Type"
-<< dataConstrNormal: "TFun" [TCon "Type",TCon "Type"]
 << dataConstrRecord: TokTypeIdent "BinOp"
 << dataConstrNormal: "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]
->>*declBody: e DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TFun" [TCon "Type",TCon "Type"],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"]
+>>*declBody: e DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"]
 << decl next token: TokKeyword "data"
 << decl parser called
 << decl dispatch: TokKeyword "data" ct=39
@@ -79,12 +84,14 @@ Coverage: 100%
 << dataConstrRecord: TokTypeIdent "String"
 << dataConstrNormal: "Field" [TCon "String",TCon "Type"]
 >>*declBody: e DeclData "Field" [] [Constraint "Field" [TCon "String",TCon "Type"]] ["Show","Eq"]
-Just ([DeclModule "AST.Type" Nothing,DeclImport {importQualified = False, importModule = "AST.BinOp", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TFun" [TCon "Type",TCon "Type"],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"],DeclData "Constraint" [] [Constraint "Constraint" [TCon "String",TList (TCon "Type")],Constraint "ConstraintRecord" [TCon "String",TList (TCon "Field")]] ["Show","Eq"],DeclData "Field" [] [Constraint "Field" [TCon "String",TCon "Type"]] ["Show","Eq"]],[])
+Just ([DeclModule "AST.Type" Nothing,DeclImport {importQualified = False, importModule = "AST.BinOp", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeAlias "Name" [] (TCon "String"),DeclData "Type" [] [Constraint "TVar" [TCon "String"],Constraint "TCon" [TCon "String"],Constraint "TArrow" [TCon "Type",TCon "Type"],Constraint "TList" [TCon "Type"],Constraint "TApp" [TCon "Type",TCon "Type"],Constraint "TConstraint" [TList (TCon "Constraint"),TCon "Type"],Constraint "TForall" [TList (TCon "String"),TCon "Type"],Constraint "TTuple" [TList (TCon "Type")],Constraint "TUnit" [],Constraint "TBinOp" [TCon "BinOp",TCon "Type",TCon "Type"]] ["Eq","Show"],DeclData "Constraint" [] [Constraint "Constraint" [TCon "String",TList (TCon "Type")],Constraint "ConstraintRecord" [TCon "String",TList (TCon "Field")]] ["Show","Eq"],DeclData "Field" [] [Constraint "Field" [TCon "String",TCon "Type"]] ["Show","Eq"]],[])
 
 -- src code --
 module AST.Type where
 
 import AST.BinOp
+
+type Name = String
 
 data Type
   = TVar String
@@ -96,7 +103,6 @@ data Type
   | TForall [String] Type
   | TTuple [Type]
   | TUnit
-  | TFun Type Type
   | TBinOp BinOp Type Type
   deriving (Eq, Show)
 
@@ -113,17 +119,17 @@ data Field
 -- token --
 [115] TokKeyword "module" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "Type" TokKeyword "where"  
 [110] TokNewline          TokKeyword "import" TokTypeIdent "AST"  TokOperator "."     TokTypeIdent "BinOp"
-[105] TokNewline          TokKeyword "data"   TokTypeIdent "Type" TokSymbol ";"       TokSymbol "="       
-[100] TokTypeIdent "TVar" TokTypeIdent "StringTokSymbol ";"       TokSymbol "|"       TokTypeIdent "TCon" 
-[95] TokTypeIdent "StringTokSymbol ";"       TokSymbol "|"       TokTypeIdent "TArrowTokTypeIdent "Type" 
-[90] TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TList"TokTypeIdent "Type" 
-[85] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TApp" TokTypeIdent "Type" TokTypeIdent "Type" 
-[80] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TConstTokSymbol "["       TokTypeIdent "Constr
-[75] TokSymbol "]"       TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TForal
-[70] TokSymbol "["       TokTypeIdent "StringTokSymbol "]"       TokTypeIdent "Type" TokSymbol ";"       
-[65] TokSymbol "|"       TokTypeIdent "TTupleTokSymbol "["       TokTypeIdent "Type" TokSymbol "]"       
-[60] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TUnit"TokSymbol ";"       TokSymbol "|"       
-[55] TokTypeIdent "TFun" TokTypeIdent "Type" TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       
+[105] TokNewline          TokKeyword "type"   TokTypeIdent "Name" TokSymbol "="       TokTypeIdent "String
+[100] TokNewline          TokKeyword "data"   TokTypeIdent "Type" TokSymbol ";"       TokSymbol "="       
+[95] TokTypeIdent "TVar" TokTypeIdent "StringTokSymbol ";"       TokSymbol "|"       TokTypeIdent "TCon" 
+[90] TokTypeIdent "StringTokSymbol ";"       TokSymbol "|"       TokTypeIdent "TArrowTokTypeIdent "Type" 
+[85] TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TList"TokTypeIdent "Type" 
+[80] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TApp" TokTypeIdent "Type" TokTypeIdent "Type" 
+[75] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TConstTokSymbol "["       TokTypeIdent "Constr
+[70] TokSymbol "]"       TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TForal
+[65] TokSymbol "["       TokTypeIdent "StringTokSymbol "]"       TokTypeIdent "Type" TokSymbol ";"       
+[60] TokSymbol "|"       TokTypeIdent "TTupleTokSymbol "["       TokTypeIdent "Type" TokSymbol "]"       
+[55] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "TUnit"TokSymbol ";"       TokSymbol "|"       
 [50] TokTypeIdent "TBinOpTokTypeIdent "BinOp"TokTypeIdent "Type" TokTypeIdent "Type" TokSymbol ";"       
 [45] TokKeyword "derivingTokSymbol "("       TokTypeIdent "Eq"   TokSymbol ","       TokTypeIdent "Show" 
 [40] TokSymbol ")"       TokNewline          TokKeyword "data"   TokTypeIdent "ConstrTokSymbol ";"       

@@ -53,38 +53,13 @@ inferBinOp inferExprFn env op e1 e2 = do
     BinOpCons -> do
       tv <- freshTypeVar
       return (tv, TList tv, TList tv)
-  sA <- lift $ first InferUnifyError $ unify (apply s12 t1) arg1
-  sB <- lift $ first InferUnifyError $ unify (apply sA (apply s12 t2)) (apply sA arg2)
-  let s = sB `composeSubst` sA `composeSubst` s12
-  return (s, apply s result)
-
-{-}
-inferBinOp inferExprFn env op e1 e2 = do
-  -- myTraceE ("inferBinOp: " ++ show op ++ " with " ++ show e1 ++ " and " ++ show e2)
-  (s1, t1) <- inferExprFn env e1
-  (s2, t2) <- inferExprFn (applyEnv s1 env) e2
-  let s12 = s2 `composeSubst` s1
-  (arg1, arg2, result) <- case op of
-    BinOpAdd -> return (TCon "Int", TCon "Int", TCon "Int")
-    BinOpSub -> return (TCon "Int", TCon "Int", TCon "Int")
-    BinOpMul -> return (TCon "Int", TCon "Int", TCon "Int")
-    BinOpDiv -> return (TCon "Int", TCon "Int", TCon "Int")
-    BinOpAnd -> return (TCon "Bool", TCon "Bool", TCon "Bool")
-    BinOpOr -> return (TCon "Bool", TCon "Bool", TCon "Bool")
-    BinOpEq -> do tv <- freshTypeVar; return (tv, tv, TCon "Bool")
-    BinOpNeq -> do tv <- freshTypeVar; return (tv, tv, TCon "Bool")
-    BinOpLt -> return (TCon "Int", TCon "Int", TCon "Bool")
-    BinOpGt -> return (TCon "Int", TCon "Int", TCon "Bool")
-    BinOpLe -> return (TCon "Int", TCon "Int", TCon "Bool")
-    BinOpGe -> return (TCon "Int", TCon "Int", TCon "Bool")
-    BinOpCons -> do
+    BinOpConcat -> do
       tv <- freshTypeVar
-      return (tv, TList tv, TList tv)
+      return (TList tv, TList tv, TList tv)
   sA <- lift $ first InferUnifyError $ unify (apply s12 t1) arg1
   sB <- lift $ first InferUnifyError $ unify (apply sA (apply s12 t2)) (apply sA arg2)
   let s = sB `composeSubst` sA `composeSubst` s12
   return (s, apply s result)
--}
 
 inferOpSectionL ::
   (TypeEnv -> Expr -> InferM (Subst, Type)) ->

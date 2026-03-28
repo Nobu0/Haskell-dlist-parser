@@ -2,7 +2,7 @@
 
 module Parser.Expr.PatternParser
   ( pattern,
-    -- patternParser,
+    simplePattern,
     patternStart,
     pConstrOrVar,
     patternVar,
@@ -34,6 +34,47 @@ pattern = do
   myTrace ("<< pattern:\n    (pAs <|> makeCons)" ++ show p ++ " ct=" ++ show ct)
   -- stopPattern
   return p
+
+pattern2 :: Parser Pattern
+pattern2 = pInfixNoApp <|> pAtomNoApp
+
+simplePattern :: Parser Pattern
+simplePattern = pInfixNoApp <|> pAtomNoApp
+
+pAtomNoApp :: Parser Pattern
+pAtomNoApp = do
+  t <- lookAhead anyToken
+  case t of
+    TokKeyword _ -> empty
+    _ -> pure ()
+  pEmptyList
+    <|> pListNoApp
+    <|> pParenOrTupleNoApp
+    <|> pConstrOrVar
+    <|> pInt
+    <|> pChar
+    <|> pString
+    <|> (symbol "_" >> return PWildcard)
+
+pInfixNoApp :: Parser Pattern
+pInfixNoApp = chainl1 pAtomNoApp infixOp
+  where
+    infixOp = do
+      ct <- getRemainingCount
+      myTrace ("<< pInfixNoApp: ct=" ++ show ct)
+      op <- try operatorI <|> operatorIAsName
+      myTrace ("<< pInfixNoApp: op " ++ show op ++ " ct=" ++ show ct)
+      return (\a b -> PInfix a op b)
+
+pListNoApp :: Parser Pattern
+pListNoApp = PList <$> brackets (simplePattern `sepBy` symbol ",")
+
+pParenOrTupleNoApp :: Parser Pattern
+pParenOrTupleNoApp = parens $ do
+  pats <- simplePattern `sepBy1` symbol ","
+  return $ case pats of
+    [single] -> single
+    _ -> PTuple pats
 
 patternStart :: Parser ()
 patternStart =

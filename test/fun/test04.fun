@@ -1,3 +1,3 @@
 -- 関数合成
 compose :: (b -> c) -> (a -> b) -> a -> c
-compose f g x = f (g x)
+compose ff gg xx = ff (gg xx)

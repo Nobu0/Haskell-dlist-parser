@@ -22,17 +22,6 @@ inferDo ::
   InferM (Subst, Type)
 inferDo inferExprFn env [] =
   lift $ Left (InferOther "Empty do block")
-{-}
-inferDo inferExprFn env [ExprStmt e] = do
-  myTraceE ("<< inferDo: env " ++ show env ++ " e " ++ show e)
-  inferExprFn env e
-inferDo inferExprFn env (stmt : rest) = do
-  myTraceE ("<< inferDo: env " ++ show env ++ " stmt " ++ show stmt)
-  (s1, env1) <- inferStmt inferExprFn env stmt
-  let env' = applyEnv s1 env1
-  (s2, t2) <- inferDo inferExprFn env' rest
-  return (s2 `composeSubst` s1, t2)
--}
 inferDo inferExprFn env (Bind pat expr : rest) = do
   (s1, t1) <- inferExprFn env expr
   (s2, env') <- inferPattern' pat t1

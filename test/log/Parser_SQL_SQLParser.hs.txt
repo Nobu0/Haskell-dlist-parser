@@ -14,8 +14,8 @@ Coverage: 100%
 [3] DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [4] DeclImport {importQualified = False, importModule = "Utils.SQLUtils", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [5] DeclTypeSig "parseSQL" (TApp (TCon "Parser") (TCon "Expr"))
-[6] DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]
-[DeclModule "Parser.SQL.SQLParser" (Just [ExportVar "parseSQL"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.SQLUtils", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseSQL" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]]
+[6] DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]
+[DeclModule "Parser.SQL.SQLParser" (Just [ExportVar "parseSQL"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.SQLUtils", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseSQL" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]]
 
 -- Remaining-----------------------------
 []
@@ -83,49 +83,49 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=31
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "_") [] ct=30
+    (pAs <|> makeCons)PVar "_" ct=30
 << expr dispatch: TokIdent "keyword" ct=29
 << exprNoLoop: e EApp (EVar "keyword") (EString "sql")
 << expr dispatch: TokSymbol ";" ct=27
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVar "keyword") (EString "sql") rest Nothing
->>*bindStmt pat= PApp (PVar "_") [] e= EApp (EVar "keyword") (EString "sql")
->>*doStmt: rt Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql"))
+>>*bindStmt pat= PVar "_" e= EApp (EVar "keyword") (EString "sql")
+>>*doStmt: rt Bind (PVar "_") (EApp (EVar "keyword") (EString "sql"))
 << bindStmt
 << pattern: ct=26
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "sqlText") [] ct=25
+    (pAs <|> makeCons)PVar "sqlText" ct=25
 << expr dispatch: TokIdent "stringLiteralExpr" ct=24
 << exprNoLoop: e EVar "stringLiteralExpr"
 << expr dispatch: TokSymbol ";" ct=23
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "stringLiteralExpr" rest Nothing
->>*bindStmt pat= PApp (PVar "sqlText") [] e= EVar "stringLiteralExpr"
->>*doStmt: rt Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr")
+>>*bindStmt pat= PVar "sqlText" e= EVar "stringLiteralExpr"
+>>*doStmt: rt Bind (PVar "sqlText") (EVar "stringLiteralExpr")
 << bindStmt
 << pattern: ct=22
 << letStmt
 << pattern: ct=21
 << pattern: ct=20
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "sqlBody") [] ct=19
+    (pAs <|> makeCons)PVar "sqlBody" ct=19
 << pattern: ct=18
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "vars") [] ct=17
+    (pAs <|> makeCons)PVar "vars" ct=17
 << pattern:
-    (pAs <|> makeCons)PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [] ct=16
+    (pAs <|> makeCons)PTuple [PVar "sqlBody",PVar "vars"] ct=16
 << expr dispatch: TokIdent "extractSQLVars" ct=15
 << exprNoLoop: e EApp (EVar "extractSQLVars") (EVar "sqlText")
 << expr dispatch: TokSymbol ";" ct=13
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVar "extractSQLVars") (EVar "sqlText") rest Nothing
-<< letStmt: b (PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))
+<< letStmt: b (PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))
 << pattern: ct=12
->>*letStmt: binds [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))]
->>*doStmt: rt LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))]
+>>*letStmt: binds [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))]
+>>*doStmt: rt LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))]
 << bindStmt
 << pattern: ct=12
 << expr dispatch: TokKeyword "return" ct=12
@@ -141,18 +141,18 @@ Coverage: 100%
 << bindStmt
 << pattern: ct=2
 << expr dispatch: TokVRBrace ct=2
->>*doBlock: (f:m)[Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))]
->>*doExprCore: stmts [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))]
+>>*doBlock: (f:m)[Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))]
+>>*doExprCore: stmts [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))]
+<< exprNoLoop: e EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))]
 << expr dispatch: TokNewline ct=1
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))] rest Nothing
-<< parseSimpleClause: e EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))] ct=1
+<< expr: e EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))] rest Nothing
+<< parseSimpleClause: e EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))] ct=1
 << funClauseWithName: next token=TokNewline ct=1
->>*funDecl name "parseSQL" clause1 FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing rest []
->>*declBody: e DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]
-Just ([DeclModule "Parser.SQL.SQLParser" (Just [ExportVar "parseSQL"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.SQLUtils", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseSQL" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PApp (PVar "_") []) (EApp (EVar "keyword") (EString "sql")),Bind (PApp (PVar "sqlText") []) (EVar "stringLiteralExpr"),LetStmt [(PApp (PTuple [PApp (PVar "sqlBody") [],PApp (PVar "vars") []]) [],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]],[])
+>>*funDecl name "parseSQL" clause1 FunClause [] Nothing (Just (EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing rest []
+>>*declBody: e DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]
+Just ([DeclModule "Parser.SQL.SQLParser" (Just [ExportVar "parseSQL"]),DeclImport {importQualified = False, importModule = "AST.Expr", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.Combinator", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Parser.Core.TokenParser", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Utils.SQLUtils", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclTypeSig "parseSQL" (TApp (TCon "Parser") (TCon "Expr")),DeclFunGroup "parseSQL" [FunClause [] Nothing (Just (EDo [Bind (PVar "_") (EApp (EVar "keyword") (EString "sql")),Bind (PVar "sqlText") (EVar "stringLiteralExpr"),LetStmt [(PTuple [PVar "sqlBody",PVar "vars"],EApp (EVar "extractSQLVars") (EVar "sqlText"))],ExprStmt (EReturn (EApp (EApp (EVarType "ESQL") (EVar "sqlBody")) (EApp (EApp (EVar "map") (EVarType "EVar")) (EVar "vars"))))])) Nothing]],[])
 
 -- src code --
 module Parser.SQL.SQLParser (parseSQL) where

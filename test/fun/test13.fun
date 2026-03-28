@@ -1,3 +1,3 @@
--- 無限型（Occurs check）エラー
+-- ERROR 無限型（Occurs check）エラー
 loop :: a -> a
-loop x = x x
+loop xx = xx xx

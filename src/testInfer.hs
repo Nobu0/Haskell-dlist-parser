@@ -56,7 +56,7 @@ main = do
   results <- mapM runDeclBlock numbered
   putStrLn ""
   putStrLn $ "Ran " ++ show (length results) ++ " tests."
-
+  exitFailure
   let file = "./test/fun/test14.fun"
   handle <- openFile file ReadMode
   hSetEncoding handle utf8
@@ -94,7 +94,7 @@ runExprTest (n, lines) = do
           putStrLn $ " AST " ++ show ast
           putStrLn "\n-- Type Inference ------------------------"
           setTrace True
-          case runInfer (inferExpr primitiveEnv ast) of
+          case runInfer (inferExpr withTestEnv ast) of
             Left err -> do
               putStrLn "Type inference failed:"
               print err
@@ -118,6 +118,7 @@ runDeclBlock (n, lines) = do
   let totalTokens = length toks3
   putStrLn $ "\n-- Token list --\n" ++ show toks3
   setTrace False
+  --setTrace True
 
   putStrLn "\n-- Parsed AST --"
   case runParser program toks3 of

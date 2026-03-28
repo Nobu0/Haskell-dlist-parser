@@ -2,72 +2,50 @@
 -- Parsed AST --
 
 -- Parse Coverage --
-Consumed tokens: 614 / 614
-Coverage: 100%
+Consumed tokens: 324 / 845
+Coverage: 38%
 
 -- AST----------------------------------
 
 -- AST (numbered) --
-[0] DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False])
-[1] DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
-[2] DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]}
-[3] DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
-[4] DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[0] DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False,ExportVar "unifyMany"])
+[1] DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]}
+[2] DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
+[3] DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
+[4] DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
 [5] DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"]
-[6] DeclTypeSig "unify" (TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
-[7] DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing]
-[8] DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing]
+[6] DeclTypeSig "unify" (TArrow (TCon "Type") (TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
+[7] DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing]
+[8] DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing]
 [9] DeclFunGroup "unify" [FunClause [PConstr "TUnit" [],PConstr "TUnit" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing]
 [10] DeclFunGroup "unify" [FunClause [PApp (PConstr "TCon" []) [PVar "a"],PApp (PConstr "TCon" []) [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing]
-[11] DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
+[11] DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
 [12] DeclFunGroup "unify" [FunClause [PApp (PConstr "TTuple" []) [PVar "xs"],PApp (PConstr "TTuple" []) [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing]
 [13] DeclFunGroup "unify" [FunClause [PApp (PConstr "TList" []) [PVar "a"],PApp (PConstr "TList" []) [PVar "b"]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing]
-[14] DeclFunGroup "unify" [FunClause [PVar "t1",PVar "t2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing]
-[15] DeclTypeSig "varBind" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
-[16] DeclFunGroup "varBind" [FunClause [PVar "a",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a")),EApp (EVarType "Right") (EVar "emptySubst")),(EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))),(EVar "otherwise",EApp (EVarType "Right") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t"))))]) Nothing Nothing]
-[17] DeclTypeSig "occursCheck" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool")))
-[18] DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TVar" []) [PVar "b"]] Nothing (Just (EBinOp BinOpEq (EVar "a") (EVar "b"))) Nothing]
-[19] DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TCon" []) [PVar "_"]] Nothing (Just (EVarType "False")) Nothing]
-[20] DeclFunGroup "occursCheck" [FunClause [PVar "a",PConstr "TUnit" []] Nothing (Just (EVarType "False")) Nothing]
-[21] DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TList" []) [PVar "t"]] Nothing (Just (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"))) Nothing]
-[22] DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TTuple" []) [PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts"))) Nothing]
-[23] DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]] Nothing (Just (EBinOp BinOpOr (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")) (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")))) Nothing]
-[24] DeclTypeSig "unifyMany" (TFun (TList (TCon "Type")) (TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
-[25] DeclFunGroup "unifyMany" [FunClause [PConstr "[]" [],PConstr "[]" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing]
-[26] DeclFunGroup "unifyMany" [FunClause [PCons (PApp (PVar "t1") []) (PApp (PVar "ts1") []),PCons (PApp (PVar "t2") []) (PApp (PVar "ts2") [])] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
-[27] DeclFunGroup "unifyMany" [FunClause [PVar "ts1",PVar "ts2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2"))))) Nothing]
-[28] DeclTypeSig "bindVar" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
-[29] DeclFunGroup "bindVar" [FunClause [PVar "v",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v")),EReturn (EVar "emptySubst")),(EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t"))),(EVar "otherwise",EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t")))]) Nothing Nothing]
-[30] DeclTypeSig "occursIn" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool")))
-[31] DeclFunGroup "occursIn" [FunClause [PVar "v",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))])) Nothing]
-[32] DeclTypeSig "occursInConstraint" (TFun (TCon "String") (TFun (TCon "Constraint") (TCon "Bool")))
-[33] DeclFunGroup "occursInConstraint" [FunClause [PVar "v",PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts"))) Nothing]
-[DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"],DeclTypeSig "unify" (TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PConstr "TUnit" [],PConstr "TUnit" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TCon" []) [PVar "a"],PApp (PConstr "TCon" []) [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TTuple" []) [PVar "xs"],PApp (PConstr "TTuple" []) [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TList" []) [PVar "a"],PApp (PConstr "TList" []) [PVar "b"]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing],DeclFunGroup "unify" [FunClause [PVar "t1",PVar "t2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing],DeclTypeSig "varBind" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "varBind" [FunClause [PVar "a",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a")),EApp (EVarType "Right") (EVar "emptySubst")),(EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))),(EVar "otherwise",EApp (EVarType "Right") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t"))))]) Nothing Nothing],DeclTypeSig "occursCheck" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))),DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TVar" []) [PVar "b"]] Nothing (Just (EBinOp BinOpEq (EVar "a") (EVar "b"))) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TCon" []) [PVar "_"]] Nothing (Just (EVarType "False")) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PConstr "TUnit" []] Nothing (Just (EVarType "False")) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TList" []) [PVar "t"]] Nothing (Just (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TTuple" []) [PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts"))) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]] Nothing (Just (EBinOp BinOpOr (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")) (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")))) Nothing],DeclTypeSig "unifyMany" (TFun (TList (TCon "Type")) (TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unifyMany" [FunClause [PConstr "[]" [],PConstr "[]" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unifyMany" [FunClause [PCons (PApp (PVar "t1") []) (PApp (PVar "ts1") []),PCons (PApp (PVar "t2") []) (PApp (PVar "ts2") [])] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unifyMany" [FunClause [PVar "ts1",PVar "ts2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2"))))) Nothing],DeclTypeSig "bindVar" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "bindVar" [FunClause [PVar "v",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v")),EReturn (EVar "emptySubst")),(EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t"))),(EVar "otherwise",EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t")))]) Nothing Nothing],DeclTypeSig "occursIn" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))),DeclFunGroup "occursIn" [FunClause [PVar "v",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))])) Nothing],DeclTypeSig "occursInConstraint" (TFun (TCon "String") (TFun (TCon "Constraint") (TCon "Bool"))),DeclFunGroup "occursInConstraint" [FunClause [PVar "v",PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts"))) Nothing]]
+[14] DeclFunGroup "unify" [FunClause [PApp (PConstr "TApp" []) [PVar "f1",PVar "a1"],PApp (PConstr "TApp" []) [PVar "f2",PVar "a2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
+[15] DeclFunGroup "unify" [FunClause [PApp (PConstr "TConstraint" []) [PVar "cs1",PVar "t1"],PApp (PConstr "TConstraint" []) [PVar "cs2",PVar "t2"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2")),EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])]) Nothing Nothing]
+[DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False,ExportVar "unifyMany"]),DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"],DeclTypeSig "unify" (TArrow (TCon "Type") (TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PConstr "TUnit" [],PConstr "TUnit" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TCon" []) [PVar "a"],PApp (PConstr "TCon" []) [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TTuple" []) [PVar "xs"],PApp (PConstr "TTuple" []) [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TList" []) [PVar "a"],PApp (PConstr "TList" []) [PVar "b"]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TApp" []) [PVar "f1",PVar "a1"],PApp (PConstr "TApp" []) [PVar "f2",PVar "a2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TConstraint" []) [PVar "cs1",PVar "t1"],PApp (PConstr "TConstraint" []) [PVar "cs2",PVar "t2"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2")),EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])]) Nothing Nothing]]
 
 -- Remaining-----------------------------
-[]
+[TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs1",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs2",TokIdent "t2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs1",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs2",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "vs1",TokOperator "==",TokIdent "vs2",TokSymbol "=",TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs1",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs2",TokIdent "t2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokTypeIdent "M",TokOperator ".",TokIdent "keys",TokIdent "f1",TokOperator "==",TokTypeIdent "M",TokOperator ".",TokIdent "keys",TokIdent "f2",TokSymbol "=",TokIdent "unifyMany",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "f1",TokSymbol ")",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "f2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokIdent "t1",TokIdent "t2",TokSymbol ")",TokNewline,TokIdent "bindVar",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "bindVar",TokIdent "v",TokIdent "t",TokSymbol ";",TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "v",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "v",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Right",TokSymbol "(",TokIdent "singletonSubst",TokIdent "v",TokIdent "t",TokSymbol ")",TokNewline,TokIdent "occursIn",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursIn",TokIdent "v",TokIdent "t",TokSymbol "=",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TVar",TokIdent "x",TokArrow,TokIdent "x",TokOperator "==",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "_",TokArrow,TokKeyword "False",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokKeyword "False",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokIdent "ts",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokOperator "||",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokOperator "||",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursInConstraint",TokIdent "v",TokSymbol ")",TokIdent "cs",TokOperator "||",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t1",TokArrow,TokKeyword "if",TokIdent "v",TokSymbol "`",TokIdent "elem",TokSymbol "`",TokIdent "vs",TokKeyword "then",TokKeyword "False",TokKeyword "else",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TRecord",TokIdent "fields",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursInConstraint",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursInConstraint",TokIdent "v",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "_",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokIdent "ts",TokNewline,TokIdent "unifyConstraints",TokSymbol "::",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unifyConstraints",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unifyConstraints",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "c1",TokIdent "ts1",TokOperator ":",TokIdent "cs1",TokSymbol ")",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "c2",TokIdent "ts2",TokOperator ":",TokIdent "cs2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "c1",TokOperator "==",TokIdent "c2",TokOperator "&&",TokIdent "length",TokIdent "ts1",TokOperator "==",TokIdent "length",TokIdent "ts2",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unifyMany",TokIdent "ts1",TokIdent "ts2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unifyConstraints",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s1",TokSymbol ")",TokIdent "cs1",TokSymbol ")",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s1",TokSymbol ")",TokIdent "cs2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokSymbol "`",TokIdent "composeSubst",TokSymbol "`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TCon",TokIdent "c1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokIdent "c2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unifyConstraints",TokIdent "_",TokIdent "_",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TCon",TokString "constraint",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "constraint",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unifyMany",TokSymbol "::",TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unifyMany",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unifyMany",TokSymbol "(",TokIdent "t1",TokOperator ":",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "t2",TokOperator ":",TokIdent "ts2",TokSymbol ")",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unifyMany",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokSymbol "`",TokIdent "composeSubst",TokSymbol "`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unifyMany",TokIdent "ts1",TokIdent "ts2",TokSymbol "=",TokSymbol ";",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts2",TokSymbol ")",TokSymbol ")",TokNewline]
 
 -- Parsed AST log --
 << decl next token: TokKeyword "module"
 << decl parser called
-<< decl dispatch: TokKeyword "module" ct=614
+<< decl dispatch: TokKeyword "module" ct=845
 << exportItem: next token=TokTypeIdent "Subst"
 << exportItem: name "Subst"
 << exportItem: next token=TokIdent "unify"
 << exportItem: name "unify"
 << exportItem: next token=TokTypeIdent "UnifyError"
 << exportItem: name "UnifyError"
+<< exportItem: next token=TokIdent "unifyMany"
+<< exportItem: name "unifyMany"
 << exportItem: next token=TokSymbol ")"
->>*declBody: e DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False])
+>>*declBody: e DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False,ExportVar "unifyMany"])
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=601
-<< importDecl parser called
-<< importDecl: TokTypeIdent "AST"
->>*declBody: e DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
-<< decl next token: TokKeyword "import"
-<< decl parser called
-<< decl dispatch: TokKeyword "import" ct=596
+<< decl dispatch: TokKeyword "import" ct=830
 << importDecl parser called
 << importDecl: TokTypeIdent "Control"
 << importIdent: next token TokIdent "unless"
@@ -77,19 +55,25 @@ Coverage: 100%
 >>*declBody: e DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=588
+<< decl dispatch: TokKeyword "import" ct=822
 << importDecl parser called
 << importDecl: TokTypeIdent "Data"
 >>*declBody: e DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "import"
 << decl parser called
-<< decl dispatch: TokKeyword "import" ct=580
+<< decl dispatch: TokKeyword "import" ct=814
 << importDecl parser called
 << importDecl: TokTypeIdent "TypeInference"
 >>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing}
+<< decl next token: TokKeyword "import"
+<< decl parser called
+<< decl dispatch: TokKeyword "import" ct=809
+<< importDecl parser called
+<< importDecl: TokTypeIdent "TypeInference"
+>>*declBody: e DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing}
 << decl next token: TokKeyword "data"
 << decl parser called
-<< decl dispatch: TokKeyword "data" ct=575
+<< decl dispatch: TokKeyword "data" ct=804
 << dataConstrRecord: TokTypeIdent "Type"
 << dataConstrNormal: "UnifyMismatch" [TCon "Type",TCon "Type"]
 << dataConstrRecord: TokTypeIdent "String"
@@ -97,14 +81,14 @@ Coverage: 100%
 >>*declBody: e DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=555
-<< funDecl: next token=TokIdent "unify" ct=555
-<< pInfix: ct=554
+<< decl dispatch: TokIdent "unify" ct=784
+<< funDecl: next token=TokIdent "unify" ct=784
+<< pInfix: ct=783
 << pPattern:
     prased PVar "unify"
-<< pattern: ct=554
-<< parseGuardedClause: next token=TokSymbol "::" ct=554
-<< parseGuardLine: next token=TokSymbol "::" ct=554
+<< pattern: ct=783
+<< parseGuardedClause: next token=TokSymbol "::" ct=783
+<< parseGuardLine: next token=TokSymbol "::" ct=783
 << typeSigDecl: TokIdent "unify"
 << typeSigDecl:2 TokSymbol "::"
 << parseType dispatch: TokTypeIdent "Type"
@@ -112,1124 +96,485 @@ Coverage: 100%
 << typeTerm: ts [TCon "Type"]
 << typeTerm: ts [TCon "Either",TCon "UnifyError",TCon "Subst"]
 << parseTypeCore: TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")
-<< parseTypeCore: TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))
-<< parseTypeCore: TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< parsed type signature: unify :: TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< returning DeclTypeSig: DeclTypeSig "unify" (TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
->>*declBody: e DeclTypeSig "unify" (TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
+<< parseTypeCore: TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))
+<< parseTypeCore: TArrow (TCon "Type") (TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
+<< parsed type signature: unify :: TArrow (TCon "Type") (TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
+<< returning DeclTypeSig: DeclTypeSig "unify" (TArrow (TCon "Type") (TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
+>>*declBody: e DeclTypeSig "unify" (TArrow (TCon "Type") (TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=545
-<< funDecl: next token=TokIdent "unify" ct=545
-<< pInfix: ct=544
+<< decl dispatch: TokIdent "unify" ct=774
+<< funDecl: next token=TokIdent "unify" ct=774
+<< pInfix: ct=773
 << pPattern:
     prased PVar "unify"
-<< pattern: ct=543
+<< pattern: ct=772
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "a"] ct=541
-<< pInfix: ct=540
+    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "a"] ct=770
+<< pInfix: ct=769
 << pPattern:
     prased PApp (PConstr "TVar" []) [PVar "a"]
-<< pInfix: ct=539
+<< pInfix: ct=768
 << pPattern:
     prased PVar "t"
-<< pattern: ct=539
-<< parseSimpleClause: next token=TokIdent "varBind" ct=538
-<< expr dispatch: TokIdent "varBind" ct=538
-<< exprNoLoop: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
-<< expr dispatch: TokNewline ct=535
+<< pattern: ct=768
+<< parseSimpleClause: next token=TokIdent "bindVar" ct=767
+<< expr dispatch: TokIdent "bindVar" ct=767
+<< exprNoLoop: e EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t")
+<< expr dispatch: TokNewline ct=764
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t") rest Nothing
-<< parseSimpleClause: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t") ct=535
-<< funClauseWithName: next token=TokNewline ct=535
->>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing rest []
->>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing]
+<< expr: e EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t") rest Nothing
+<< parseSimpleClause: e EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t") ct=764
+<< funClauseWithName: next token=TokNewline ct=764
+>>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing rest []
+>>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=534
-<< funDecl: next token=TokIdent "unify" ct=534
-<< pInfix: ct=533
+<< decl dispatch: TokIdent "unify" ct=763
+<< funDecl: next token=TokIdent "unify" ct=763
+<< pInfix: ct=762
 << pPattern:
     prased PVar "unify"
-<< pInfix: ct=532
+<< pInfix: ct=761
 << pPattern:
     prased PVar "t"
-<< pattern: ct=531
+<< pattern: ct=760
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "a"] ct=529
-<< pInfix: ct=528
+    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "a"] ct=758
+<< pInfix: ct=757
 << pPattern:
     prased PApp (PConstr "TVar" []) [PVar "a"]
-<< pattern: ct=528
-<< parseSimpleClause: next token=TokIdent "varBind" ct=527
-<< expr dispatch: TokIdent "varBind" ct=527
-<< exprNoLoop: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t")
-<< expr dispatch: TokNewline ct=524
+<< pattern: ct=757
+<< parseSimpleClause: next token=TokIdent "bindVar" ct=756
+<< expr dispatch: TokIdent "bindVar" ct=756
+<< exprNoLoop: e EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t")
+<< expr dispatch: TokNewline ct=753
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t") rest Nothing
-<< parseSimpleClause: e EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t") ct=524
-<< funClauseWithName: next token=TokNewline ct=524
->>*funDecl name "unify" clause1 FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing rest []
->>*declBody: e DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing]
+<< expr: e EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t") rest Nothing
+<< parseSimpleClause: e EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t") ct=753
+<< funClauseWithName: next token=TokNewline ct=753
+>>*funDecl name "unify" clause1 FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing rest []
+>>*declBody: e DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=523
-<< funDecl: next token=TokIdent "unify" ct=523
-<< pInfix: ct=522
+<< decl dispatch: TokIdent "unify" ct=752
+<< funDecl: next token=TokIdent "unify" ct=752
+<< pInfix: ct=751
 << pPattern:
     prased PVar "unify"
-<< pInfix: ct=521
+<< pInfix: ct=750
 << pPattern:
     prased PConstr "TUnit" []
-<< pInfix: ct=520
+<< pInfix: ct=749
 << pPattern:
     prased PConstr "TUnit" []
-<< pattern: ct=520
-<< parseSimpleClause: next token=TokTypeIdent "Right" ct=519
-<< expr dispatch: TokTypeIdent "Right" ct=519
-<< bracesExpr: nm "Right" ct=519
+<< pattern: ct=749
+<< parseSimpleClause: next token=TokTypeIdent "Right" ct=748
+<< expr dispatch: TokTypeIdent "Right" ct=748
+<< bracesExpr: nm "Right" ct=748
 << exprNoLoop: e EApp (EVarType "Right") (EVar "emptySubst")
-<< expr dispatch: TokNewline ct=517
+<< expr dispatch: TokNewline ct=746
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (EVar "emptySubst") rest Nothing
-<< parseSimpleClause: e EApp (EVarType "Right") (EVar "emptySubst") ct=517
-<< funClauseWithName: next token=TokNewline ct=517
+<< parseSimpleClause: e EApp (EVarType "Right") (EVar "emptySubst") ct=746
+<< funClauseWithName: next token=TokNewline ct=746
 >>*funDecl name "unify" clause1 FunClause [PConstr "TUnit" [],PConstr "TUnit" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing rest []
 >>*declBody: e DeclFunGroup "unify" [FunClause [PConstr "TUnit" [],PConstr "TUnit" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=516
-<< funDecl: next token=TokIdent "unify" ct=516
-<< pInfix: ct=515
+<< decl dispatch: TokIdent "unify" ct=745
+<< funDecl: next token=TokIdent "unify" ct=745
+<< pInfix: ct=744
 << pPattern:
     prased PVar "unify"
-<< pattern: ct=514
+<< pattern: ct=743
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "a"] ct=512
-<< pInfix: ct=511
+    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "a"] ct=741
+<< pInfix: ct=740
 << pPattern:
     prased PApp (PConstr "TCon" []) [PVar "a"]
-<< pattern: ct=510
+<< pattern: ct=739
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "b"] ct=508
-<< pInfix: ct=507
+    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "b"] ct=737
+<< pInfix: ct=736
 << pPattern:
     prased PApp (PConstr "TCon" []) [PVar "b"]
-<< pattern: ct=507
-<< parseGuardedClause: next token=TokSymbol "|" ct=506
-<< parseGuardLine: next token=TokSymbol "|" ct=506
-<< expr dispatch: TokIdent "a" ct=505
+<< pattern: ct=736
+<< parseGuardedClause: next token=TokSymbol "|" ct=735
+<< parseGuardLine: next token=TokSymbol "|" ct=735
+<< expr dispatch: TokIdent "a" ct=734
 << exprNoLoop: e EBinOp BinOpEq (EVar "a") (EVar "b")
-<< expr dispatch: TokSymbol "=" ct=502
+<< expr dispatch: TokSymbol "=" ct=731
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpEq (EVar "a") (EVar "b") rest Nothing
-<< expr dispatch: TokTypeIdent "Right" ct=501
-<< bracesExpr: nm "Right" ct=501
+<< expr dispatch: TokTypeIdent "Right" ct=730
+<< bracesExpr: nm "Right" ct=730
 << exprNoLoop: e EApp (EVarType "Right") (EVar "emptySubst")
-<< expr dispatch: TokSymbol ";" ct=499
+<< expr dispatch: TokSymbol ";" ct=728
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (EVar "emptySubst") rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")) ct=506
-<< parseGuardLine: next token=TokSymbol "|" ct=498
-<< expr dispatch: TokIdent "otherwise" ct=497
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")) ct=735
+<< parseGuardLine: next token=TokSymbol "|" ct=727
+<< expr dispatch: TokIdent "otherwise" ct=726
 << exprNoLoop: e EVar "otherwise"
-<< expr dispatch: TokSymbol "=" ct=496
+<< expr dispatch: TokSymbol "=" ct=725
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "otherwise" rest Nothing
-<< expr dispatch: TokTypeIdent "Left" ct=495
-<< bracesExpr: nm "Left" ct=495
+<< expr dispatch: TokTypeIdent "Left" ct=724
+<< bracesExpr: nm "Left" ct=724
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))
-<< expr dispatch: TokNewline ct=483
+<< expr dispatch: TokNewline ct=712
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))) rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))) ct=498
-<< parseGuardLine: next token=TokNewline ct=483
-<< funClauseWithName: next token=TokNewline ct=483
+<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b")))) ct=727
+<< parseGuardLine: next token=TokNewline ct=712
+<< funClauseWithName: next token=TokNewline ct=712
 >>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TCon" []) [PVar "a"],PApp (PConstr "TCon" []) [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing rest []
 >>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TCon" []) [PVar "a"],PApp (PConstr "TCon" []) [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=482
-<< funDecl: next token=TokIdent "unify" ct=482
-<< pInfix: ct=481
+<< decl dispatch: TokIdent "unify" ct=711
+<< funDecl: next token=TokIdent "unify" ct=711
+<< pInfix: ct=710
 << pPattern:
     prased PVar "unify"
-<< pattern: ct=480
+<< pattern: ct=709
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"] ct=477
-<< pInfix: ct=476
+    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"] ct=706
+<< pInfix: ct=705
 << pPattern:
     prased PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"]
-<< pattern: ct=475
+<< pattern: ct=704
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"] ct=472
-<< pInfix: ct=471
+    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"] ct=701
+<< pInfix: ct=700
 << pPattern:
     prased PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]
-<< pattern: ct=471
-<< parseSimpleClause: next token=TokKeyword "do" ct=470
-<< expr dispatch: TokKeyword "do" ct=470
+<< pattern: ct=700
+<< parseSimpleClause: next token=TokKeyword "do" ct=699
+<< expr dispatch: TokKeyword "do" ct=699
 << bindStmt
-<< pattern: ct=468
+<< pattern: ct=697
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "s1") [] ct=467
-<< expr dispatch: TokIdent "unify" ct=466
+    (pAs <|> makeCons)PVar "s1" ct=696
+<< expr dispatch: TokIdent "unify" ct=695
 << exprNoLoop: e EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")
-<< expr dispatch: TokSymbol ";" ct=463
+<< expr dispatch: TokSymbol ";" ct=692
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2") rest Nothing
->>*bindStmt pat= PApp (PVar "s1") [] e= EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")
->>*doStmt: rt Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2"))
+>>*bindStmt pat= PVar "s1" e= EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")
+>>*doStmt: rt Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2"))
 << bindStmt
-<< pattern: ct=462
+<< pattern: ct=691
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "s2") [] ct=461
-<< expr dispatch: TokIdent "unify" ct=460
+    (pAs <|> makeCons)PVar "s2" ct=690
+<< expr dispatch: TokIdent "unify" ct=689
 << exprNoLoop: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))
-<< expr dispatch: TokSymbol ";" ct=449
-<< bracesExpr: nm "Right" ct=448
+<< expr dispatch: TokSymbol ";" ct=678
+<< bracesExpr: nm "Right" ct=677
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")) rest Nothing
->>*bindStmt pat= PApp (PVar "s2") [] e= EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))
->>*doStmt: rt Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")))
+>>*bindStmt pat= PVar "s2" e= EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))
+>>*doStmt: rt Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2")))
 << bindStmt
-<< pattern: ct=448
-<< pattern: ct=446
+<< pattern: ct=677
+<< pattern: ct=675
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "s2") [] ct=445
+    (pAs <|> makeCons)PVar "s2" ct=674
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "Right" []) [] ct=447
-<< expr dispatch: TokTypeIdent "Right" ct=448
-<< bracesExpr: nm "Right" ct=448
+    (pAs <|> makeCons)PConstr "Right" [] ct=676
+<< expr dispatch: TokTypeIdent "Right" ct=677
+<< bracesExpr: nm "Right" ct=677
 << exprNoLoop: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1"))
-<< expr dispatch: TokVRBrace ct=440
+<< expr dispatch: TokVRBrace ct=669
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")) rest Nothing
 >>*exprStmt EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1"))
 >>*doStmt: rt ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))
 << bindStmt
-<< pattern: ct=440
-<< expr dispatch: TokVRBrace ct=440
->>*doBlock: (f:m)[Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
->>*doExprCore: stmts [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
-<< expr dispatch: TokNewline ct=439
+<< pattern: ct=669
+<< expr dispatch: TokVRBrace ct=669
+>>*doBlock: (f:m)[Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+>>*doExprCore: stmts [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+<< exprNoLoop: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+<< expr dispatch: TokNewline ct=668
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] rest Nothing
-<< parseSimpleClause: e EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] ct=439
-<< funClauseWithName: next token=TokNewline ct=439
->>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing rest []
->>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
+<< expr: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] rest Nothing
+<< parseSimpleClause: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] ct=668
+<< funClauseWithName: next token=TokNewline ct=668
+>>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=438
-<< funDecl: next token=TokIdent "unify" ct=438
-<< pInfix: ct=437
+<< decl dispatch: TokIdent "unify" ct=667
+<< funDecl: next token=TokIdent "unify" ct=667
+<< pInfix: ct=666
 << pPattern:
     prased PVar "unify"
-<< pattern: ct=436
+<< pattern: ct=665
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TTuple" []) [PVar "xs"] ct=434
-<< pInfix: ct=433
+    (pAs <|> makeCons)PApp (PConstr "TTuple" []) [PVar "xs"] ct=663
+<< pInfix: ct=662
 << pPattern:
     prased PApp (PConstr "TTuple" []) [PVar "xs"]
-<< pattern: ct=432
+<< pattern: ct=661
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TTuple" []) [PVar "ys"] ct=430
-<< pInfix: ct=429
+    (pAs <|> makeCons)PApp (PConstr "TTuple" []) [PVar "ys"] ct=659
+<< pInfix: ct=658
 << pPattern:
     prased PApp (PConstr "TTuple" []) [PVar "ys"]
-<< pattern: ct=429
-<< parseGuardedClause: next token=TokSymbol "|" ct=428
-<< parseGuardLine: next token=TokSymbol "|" ct=428
-<< expr dispatch: TokIdent "length" ct=427
+<< pattern: ct=658
+<< parseGuardedClause: next token=TokSymbol "|" ct=657
+<< parseGuardLine: next token=TokSymbol "|" ct=657
+<< expr dispatch: TokIdent "length" ct=656
 << exprNoLoop: e EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys"))
-<< expr dispatch: TokSymbol "=" ct=422
+<< expr dispatch: TokSymbol "=" ct=651
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")) rest Nothing
-<< expr dispatch: TokIdent "unifyMany" ct=421
+<< expr dispatch: TokIdent "unifyMany" ct=650
 << exprNoLoop: e EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")
-<< expr dispatch: TokSymbol ";" ct=418
+<< expr dispatch: TokSymbol ";" ct=647
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys") rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")) ct=428
-<< parseGuardLine: next token=TokSymbol "|" ct=417
-<< expr dispatch: TokIdent "otherwise" ct=416
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")) ct=657
+<< parseGuardLine: next token=TokSymbol "|" ct=646
+<< expr dispatch: TokIdent "otherwise" ct=645
 << exprNoLoop: e EVar "otherwise"
-<< expr dispatch: TokSymbol "=" ct=415
+<< expr dispatch: TokSymbol "=" ct=644
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EVar "otherwise" rest Nothing
-<< expr dispatch: TokTypeIdent "Left" ct=414
-<< bracesExpr: nm "Left" ct=414
+<< expr dispatch: TokTypeIdent "Left" ct=643
+<< bracesExpr: nm "Left" ct=643
 << exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))
-<< expr dispatch: TokNewline ct=402
+<< expr dispatch: TokNewline ct=631
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))) rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))) ct=417
-<< parseGuardLine: next token=TokNewline ct=402
-<< funClauseWithName: next token=TokNewline ct=402
+<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys")))) ct=646
+<< parseGuardLine: next token=TokNewline ct=631
+<< funClauseWithName: next token=TokNewline ct=631
 >>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TTuple" []) [PVar "xs"],PApp (PConstr "TTuple" []) [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing rest []
 >>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TTuple" []) [PVar "xs"],PApp (PConstr "TTuple" []) [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=401
-<< funDecl: next token=TokIdent "unify" ct=401
-<< pInfix: ct=400
+<< decl dispatch: TokIdent "unify" ct=630
+<< funDecl: next token=TokIdent "unify" ct=630
+<< pInfix: ct=629
 << pPattern:
     prased PVar "unify"
-<< pattern: ct=399
+<< pattern: ct=628
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "a"] ct=397
-<< pInfix: ct=396
+    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "a"] ct=626
+<< pInfix: ct=625
 << pPattern:
     prased PApp (PConstr "TList" []) [PVar "a"]
-<< pattern: ct=395
+<< pattern: ct=624
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "b"] ct=393
-<< pInfix: ct=392
+    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "b"] ct=622
+<< pInfix: ct=621
 << pPattern:
     prased PApp (PConstr "TList" []) [PVar "b"]
-<< pattern: ct=392
-<< parseSimpleClause: next token=TokIdent "unify" ct=391
-<< expr dispatch: TokIdent "unify" ct=391
+<< pattern: ct=621
+<< parseSimpleClause: next token=TokIdent "unify" ct=620
+<< expr dispatch: TokIdent "unify" ct=620
 << exprNoLoop: e EApp (EApp (EVar "unify") (EVar "a")) (EVar "b")
-<< expr dispatch: TokNewline ct=388
+<< expr dispatch: TokNewline ct=617
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EApp (EVar "unify") (EVar "a")) (EVar "b") rest Nothing
-<< parseSimpleClause: e EApp (EApp (EVar "unify") (EVar "a")) (EVar "b") ct=388
-<< funClauseWithName: next token=TokNewline ct=388
+<< parseSimpleClause: e EApp (EApp (EVar "unify") (EVar "a")) (EVar "b") ct=617
+<< funClauseWithName: next token=TokNewline ct=617
 >>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TList" []) [PVar "a"],PApp (PConstr "TList" []) [PVar "b"]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing rest []
 >>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TList" []) [PVar "a"],PApp (PConstr "TList" []) [PVar "b"]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing]
 << decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unify" ct=387
-<< funDecl: next token=TokIdent "unify" ct=387
-<< pInfix: ct=386
+<< decl dispatch: TokIdent "unify" ct=616
+<< funDecl: next token=TokIdent "unify" ct=616
+<< pInfix: ct=615
 << pPattern:
     prased PVar "unify"
-<< pInfix: ct=385
-<< pPattern:
-    prased PVar "t1"
-<< pInfix: ct=384
-<< pPattern:
-    prased PVar "t2"
-<< pattern: ct=384
-<< parseSimpleClause: next token=TokTypeIdent "Left" ct=383
-<< expr dispatch: TokTypeIdent "Left" ct=383
-<< bracesExpr: nm "Left" ct=383
-<< exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2"))
-<< expr dispatch: TokNewline ct=377
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")) rest Nothing
-<< parseSimpleClause: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")) ct=377
-<< funClauseWithName: next token=TokNewline ct=377
->>*funDecl name "unify" clause1 FunClause [PVar "t1",PVar "t2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing rest []
->>*declBody: e DeclFunGroup "unify" [FunClause [PVar "t1",PVar "t2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing]
-<< decl next token: TokIdent "varBind"
-<< decl parser called
-<< decl dispatch: TokIdent "varBind" ct=376
-<< funDecl: next token=TokIdent "varBind" ct=376
-<< pInfix: ct=375
-<< pPattern:
-    prased PVar "varBind"
-<< pattern: ct=375
-<< parseGuardedClause: next token=TokSymbol "::" ct=375
-<< parseGuardLine: next token=TokSymbol "::" ct=375
-<< typeSigDecl: TokIdent "varBind"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "String"
-<< typeTerm: ts [TCon "String"]
-<< typeTerm: ts [TCon "Type"]
-<< typeTerm: ts [TCon "Either",TCon "UnifyError",TCon "Subst"]
-<< parseTypeCore: TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")
-<< parseTypeCore: TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))
-<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< parsed type signature: varBind :: TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< returning DeclTypeSig: DeclTypeSig "varBind" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
->>*declBody: e DeclTypeSig "varBind" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
-<< decl next token: TokIdent "varBind"
-<< decl parser called
-<< decl dispatch: TokIdent "varBind" ct=366
-<< funDecl: next token=TokIdent "varBind" ct=366
-<< pInfix: ct=365
-<< pPattern:
-    prased PVar "varBind"
-<< pInfix: ct=364
-<< pPattern:
-    prased PVar "a"
-<< pInfix: ct=363
-<< pPattern:
-    prased PVar "t"
-<< pattern: ct=363
-<< parseGuardedClause: next token=TokSymbol "|" ct=362
-<< parseGuardLine: next token=TokSymbol "|" ct=362
-<< expr dispatch: TokIdent "t" ct=361
-<< exprNoLoop: e EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a"))
-<< expr dispatch: TokSymbol "=" ct=357
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a")) rest Nothing
-<< expr dispatch: TokTypeIdent "Right" ct=356
-<< bracesExpr: nm "Right" ct=356
-<< exprNoLoop: e EApp (EVarType "Right") (EVar "emptySubst")
-<< expr dispatch: TokSymbol ";" ct=354
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EVarType "Right") (EVar "emptySubst") rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a")),EApp (EVarType "Right") (EVar "emptySubst")) ct=362
-<< parseGuardLine: next token=TokSymbol "|" ct=353
-<< expr dispatch: TokIdent "occursCheck" ct=352
-<< exprNoLoop: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t")
-<< expr dispatch: TokSymbol "=" ct=349
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t") rest Nothing
-<< expr dispatch: TokTypeIdent "Left" ct=348
-<< bracesExpr: nm "Left" ct=348
-<< exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))
-<< expr dispatch: TokSymbol ";" ct=342
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t")) rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))) ct=353
-<< parseGuardLine: next token=TokSymbol "|" ct=341
-<< expr dispatch: TokIdent "otherwise" ct=340
-<< exprNoLoop: e EVar "otherwise"
-<< expr dispatch: TokSymbol "=" ct=339
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVar "otherwise" rest Nothing
-<< expr dispatch: TokTypeIdent "Right" ct=338
-<< bracesExpr: nm "Right" ct=338
-<< exprNoLoop: e EVarType "Right"
-<< expr dispatch: TokSymbol "(" ct=337
-<< parensExpr: ct=337
-<< expr dispatch: TokTypeIdent "M" ct=336
-<< bracesExpr: nm "M" ct=336
-<< exprNoLoop: e EVarType "M"
-<< expr dispatch: TokOperator "." ct=335
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpCompose
-<< expr dispatch: TokIdent "singleton" ct=334
-<< exprNoLoop: e EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t")
-<< expr dispatch: TokSymbol ")" ct=331
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t")) rest Nothing
-<< exprNoLoop: e EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t"))
-<< expr dispatch: TokNewline ct=330
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EVarType "Right") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t"))) rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EApp (EVarType "Right") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t")))) ct=341
-<< parseGuardLine: next token=TokNewline ct=330
-<< funClauseWithName: next token=TokNewline ct=330
->>*funDecl name "varBind" clause1 FunClause [PVar "a",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a")),EApp (EVarType "Right") (EVar "emptySubst")),(EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))),(EVar "otherwise",EApp (EVarType "Right") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t"))))]) Nothing Nothing rest []
->>*declBody: e DeclFunGroup "varBind" [FunClause [PVar "a",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a")),EApp (EVarType "Right") (EVar "emptySubst")),(EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))),(EVar "otherwise",EApp (EVarType "Right") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t"))))]) Nothing Nothing]
-<< decl next token: TokIdent "occursCheck"
-<< decl parser called
-<< decl dispatch: TokIdent "occursCheck" ct=329
-<< funDecl: next token=TokIdent "occursCheck" ct=329
-<< pInfix: ct=328
-<< pPattern:
-    prased PVar "occursCheck"
-<< pattern: ct=328
-<< parseGuardedClause: next token=TokSymbol "::" ct=328
-<< parseGuardLine: next token=TokSymbol "::" ct=328
-<< typeSigDecl: TokIdent "occursCheck"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "String"
-<< typeTerm: ts [TCon "String"]
-<< typeTerm: ts [TCon "Type"]
-<< typeTerm: ts [TCon "Bool"]
-<< parseTypeCore: TCon "Bool"
-<< parseTypeCore: TFun (TCon "Type") (TCon "Bool")
-<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))
-<< parsed type signature: occursCheck :: TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))
-<< returning DeclTypeSig: DeclTypeSig "occursCheck" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool")))
->>*declBody: e DeclTypeSig "occursCheck" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool")))
-<< decl next token: TokIdent "occursCheck"
-<< decl parser called
-<< decl dispatch: TokIdent "occursCheck" ct=321
-<< funDecl: next token=TokIdent "occursCheck" ct=321
-<< pInfix: ct=320
-<< pPattern:
-    prased PVar "occursCheck"
-<< pInfix: ct=319
-<< pPattern:
-    prased PVar "a"
-<< pattern: ct=318
+<< pattern: ct=614
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "b"] ct=316
-<< pInfix: ct=315
+    (pAs <|> makeCons)PApp (PConstr "TApp" []) [PVar "f1",PVar "a1"] ct=611
+<< pInfix: ct=610
 << pPattern:
-    prased PApp (PConstr "TVar" []) [PVar "b"]
-<< pattern: ct=315
-<< parseSimpleClause: next token=TokIdent "a" ct=314
-<< expr dispatch: TokIdent "a" ct=314
-<< exprNoLoop: e EBinOp BinOpEq (EVar "a") (EVar "b")
-<< expr dispatch: TokNewline ct=311
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpEq (EVar "a") (EVar "b") rest Nothing
-<< parseSimpleClause: e EBinOp BinOpEq (EVar "a") (EVar "b") ct=311
-<< funClauseWithName: next token=TokNewline ct=311
->>*funDecl name "occursCheck" clause1 FunClause [PVar "a",PApp (PConstr "TVar" []) [PVar "b"]] Nothing (Just (EBinOp BinOpEq (EVar "a") (EVar "b"))) Nothing rest []
->>*declBody: e DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TVar" []) [PVar "b"]] Nothing (Just (EBinOp BinOpEq (EVar "a") (EVar "b"))) Nothing]
-<< decl next token: TokIdent "occursCheck"
-<< decl parser called
-<< decl dispatch: TokIdent "occursCheck" ct=310
-<< funDecl: next token=TokIdent "occursCheck" ct=310
-<< pInfix: ct=309
-<< pPattern:
-    prased PVar "occursCheck"
-<< pInfix: ct=308
-<< pPattern:
-    prased PVar "a"
-<< pattern: ct=307
+    prased PApp (PConstr "TApp" []) [PVar "f1",PVar "a1"]
+<< pattern: ct=609
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "_"] ct=305
-<< pInfix: ct=304
+    (pAs <|> makeCons)PApp (PConstr "TApp" []) [PVar "f2",PVar "a2"] ct=606
+<< pInfix: ct=605
 << pPattern:
-    prased PApp (PConstr "TCon" []) [PVar "_"]
-<< pattern: ct=304
-<< parseSimpleClause: next token=TokTypeIdent "False" ct=303
-<< expr dispatch: TokTypeIdent "False" ct=303
-<< bracesExpr: nm "False" ct=303
-<< exprNoLoop: e EVarType "False"
-<< expr dispatch: TokNewline ct=302
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVarType "False" rest Nothing
-<< parseSimpleClause: e EVarType "False" ct=302
-<< funClauseWithName: next token=TokNewline ct=302
->>*funDecl name "occursCheck" clause1 FunClause [PVar "a",PApp (PConstr "TCon" []) [PVar "_"]] Nothing (Just (EVarType "False")) Nothing rest []
->>*declBody: e DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TCon" []) [PVar "_"]] Nothing (Just (EVarType "False")) Nothing]
-<< decl next token: TokIdent "occursCheck"
-<< decl parser called
-<< decl dispatch: TokIdent "occursCheck" ct=301
-<< funDecl: next token=TokIdent "occursCheck" ct=301
-<< pInfix: ct=300
-<< pPattern:
-    prased PVar "occursCheck"
-<< pInfix: ct=299
-<< pPattern:
-    prased PVar "a"
-<< pInfix: ct=298
-<< pPattern:
-    prased PConstr "TUnit" []
-<< pattern: ct=298
-<< parseSimpleClause: next token=TokTypeIdent "False" ct=297
-<< expr dispatch: TokTypeIdent "False" ct=297
-<< bracesExpr: nm "False" ct=297
-<< exprNoLoop: e EVarType "False"
-<< expr dispatch: TokNewline ct=296
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVarType "False" rest Nothing
-<< parseSimpleClause: e EVarType "False" ct=296
-<< funClauseWithName: next token=TokNewline ct=296
->>*funDecl name "occursCheck" clause1 FunClause [PVar "a",PConstr "TUnit" []] Nothing (Just (EVarType "False")) Nothing rest []
->>*declBody: e DeclFunGroup "occursCheck" [FunClause [PVar "a",PConstr "TUnit" []] Nothing (Just (EVarType "False")) Nothing]
-<< decl next token: TokIdent "occursCheck"
-<< decl parser called
-<< decl dispatch: TokIdent "occursCheck" ct=295
-<< funDecl: next token=TokIdent "occursCheck" ct=295
-<< pInfix: ct=294
-<< pPattern:
-    prased PVar "occursCheck"
-<< pInfix: ct=293
-<< pPattern:
-    prased PVar "a"
-<< pattern: ct=292
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "t"] ct=290
-<< pInfix: ct=289
-<< pPattern:
-    prased PApp (PConstr "TList" []) [PVar "t"]
-<< pattern: ct=289
-<< parseSimpleClause: next token=TokIdent "occursCheck" ct=288
-<< expr dispatch: TokIdent "occursCheck" ct=288
-<< exprNoLoop: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t")
-<< expr dispatch: TokNewline ct=285
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t") rest Nothing
-<< parseSimpleClause: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t") ct=285
-<< funClauseWithName: next token=TokNewline ct=285
->>*funDecl name "occursCheck" clause1 FunClause [PVar "a",PApp (PConstr "TList" []) [PVar "t"]] Nothing (Just (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"))) Nothing rest []
->>*declBody: e DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TList" []) [PVar "t"]] Nothing (Just (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"))) Nothing]
-<< decl next token: TokIdent "occursCheck"
-<< decl parser called
-<< decl dispatch: TokIdent "occursCheck" ct=284
-<< funDecl: next token=TokIdent "occursCheck" ct=284
-<< pInfix: ct=283
-<< pPattern:
-    prased PVar "occursCheck"
-<< pInfix: ct=282
-<< pPattern:
-    prased PVar "a"
-<< pattern: ct=281
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TTuple" []) [PVar "ts"] ct=279
-<< pInfix: ct=278
-<< pPattern:
-    prased PApp (PConstr "TTuple" []) [PVar "ts"]
-<< pattern: ct=278
-<< parseSimpleClause: next token=TokIdent "any" ct=277
-<< expr dispatch: TokIdent "any" ct=277
-<< exprNoLoop: e EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts")
-<< expr dispatch: TokNewline ct=271
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts") rest Nothing
-<< parseSimpleClause: e EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts") ct=271
-<< funClauseWithName: next token=TokNewline ct=271
->>*funDecl name "occursCheck" clause1 FunClause [PVar "a",PApp (PConstr "TTuple" []) [PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts"))) Nothing rest []
->>*declBody: e DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TTuple" []) [PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts"))) Nothing]
-<< decl next token: TokIdent "occursCheck"
-<< decl parser called
-<< decl dispatch: TokIdent "occursCheck" ct=270
-<< funDecl: next token=TokIdent "occursCheck" ct=270
-<< pInfix: ct=269
-<< pPattern:
-    prased PVar "occursCheck"
-<< pInfix: ct=268
-<< pPattern:
-    prased PVar "a"
-<< pattern: ct=267
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] ct=264
-<< pInfix: ct=263
-<< pPattern:
-    prased PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]
-<< pattern: ct=263
-<< parseSimpleClause: next token=TokIdent "occursCheck" ct=262
-<< expr dispatch: TokIdent "occursCheck" ct=262
-<< exprNoLoop: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")
-<< expr dispatch: TokOperator "||" ct=259
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpOr
-<< expr dispatch: TokIdent "occursCheck" ct=258
-<< exprNoLoop: e EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")
-<< expr dispatch: TokNewline ct=255
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpOr (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")) (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")) rest Nothing
-<< parseSimpleClause: e EBinOp BinOpOr (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")) (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")) ct=255
-<< funClauseWithName: next token=TokNewline ct=255
->>*funDecl name "occursCheck" clause1 FunClause [PVar "a",PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]] Nothing (Just (EBinOp BinOpOr (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")) (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")))) Nothing rest []
->>*declBody: e DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]] Nothing (Just (EBinOp BinOpOr (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")) (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")))) Nothing]
-<< decl next token: TokIdent "unifyMany"
-<< decl parser called
-<< decl dispatch: TokIdent "unifyMany" ct=254
-<< funDecl: next token=TokIdent "unifyMany" ct=254
-<< pInfix: ct=253
-<< pPattern:
-    prased PVar "unifyMany"
-<< pattern: ct=253
-<< parseGuardedClause: next token=TokSymbol "::" ct=253
-<< parseGuardLine: next token=TokSymbol "::" ct=253
-<< typeSigDecl: TokIdent "unifyMany"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokSymbol "["
-<< typeTerm: ts [TCon "Type"]
-<< parseTypeCore: TCon "Type"
-<< typeTerm: ts [TList (TCon "Type")]
-<< typeTerm: ts [TCon "Type"]
-<< parseTypeCore: TCon "Type"
-<< typeTerm: ts [TList (TCon "Type")]
-<< typeTerm: ts [TCon "Either",TCon "UnifyError",TCon "Subst"]
-<< parseTypeCore: TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")
-<< parseTypeCore: TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))
-<< parseTypeCore: TFun (TList (TCon "Type")) (TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< parsed type signature: unifyMany :: TFun (TList (TCon "Type")) (TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< returning DeclTypeSig: DeclTypeSig "unifyMany" (TFun (TList (TCon "Type")) (TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
->>*declBody: e DeclTypeSig "unifyMany" (TFun (TList (TCon "Type")) (TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
-<< decl next token: TokIdent "unifyMany"
-<< decl parser called
-<< decl dispatch: TokIdent "unifyMany" ct=240
-<< funDecl: next token=TokIdent "unifyMany" ct=240
-<< pInfix: ct=239
-<< pPattern:
-    prased PVar "unifyMany"
-<< pInfix: ct=237
-<< pPattern:
-    prased PConstr "[]" []
-<< pInfix: ct=235
-<< pPattern:
-    prased PConstr "[]" []
-<< pattern: ct=235
-<< parseSimpleClause: next token=TokTypeIdent "Right" ct=234
-<< expr dispatch: TokTypeIdent "Right" ct=234
-<< bracesExpr: nm "Right" ct=234
-<< exprNoLoop: e EApp (EVarType "Right") (EVar "emptySubst")
-<< expr dispatch: TokNewline ct=232
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EVarType "Right") (EVar "emptySubst") rest Nothing
-<< parseSimpleClause: e EApp (EVarType "Right") (EVar "emptySubst") ct=232
-<< funClauseWithName: next token=TokNewline ct=232
->>*funDecl name "unifyMany" clause1 FunClause [PConstr "[]" [],PConstr "[]" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing rest []
->>*declBody: e DeclFunGroup "unifyMany" [FunClause [PConstr "[]" [],PConstr "[]" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing]
-<< decl next token: TokIdent "unifyMany"
-<< decl parser called
-<< decl dispatch: TokIdent "unifyMany" ct=231
-<< funDecl: next token=TokIdent "unifyMany" ct=231
-<< pInfix: ct=230
-<< pPattern:
-    prased PVar "unifyMany"
-<< pattern: ct=229
-<< pattern:
-    (pAs <|> makeCons)PCons (PApp (PVar "t1") []) (PApp (PVar "ts1") []) ct=226
-<< pInfix: ct=225
-<< pPattern:
-    prased PCons (PApp (PVar "t1") []) (PApp (PVar "ts1") [])
-<< pattern: ct=224
-<< pattern:
-    (pAs <|> makeCons)PCons (PApp (PVar "t2") []) (PApp (PVar "ts2") []) ct=221
-<< pInfix: ct=220
-<< pPattern:
-    prased PCons (PApp (PVar "t2") []) (PApp (PVar "ts2") [])
-<< pattern: ct=220
-<< parseSimpleClause: next token=TokKeyword "do" ct=219
-<< expr dispatch: TokKeyword "do" ct=219
+    prased PApp (PConstr "TApp" []) [PVar "f2",PVar "a2"]
+<< pattern: ct=605
+<< parseSimpleClause: next token=TokKeyword "do" ct=604
+<< expr dispatch: TokKeyword "do" ct=604
 << bindStmt
-<< pattern: ct=217
+<< pattern: ct=602
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "s1") [] ct=216
-<< expr dispatch: TokIdent "unify" ct=215
-<< exprNoLoop: e EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")
-<< expr dispatch: TokSymbol ";" ct=212
+    (pAs <|> makeCons)PVar "s1" ct=601
+<< expr dispatch: TokIdent "unify" ct=600
+<< exprNoLoop: e EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")
+<< expr dispatch: TokSymbol ";" ct=597
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2") rest Nothing
->>*bindStmt pat= PApp (PVar "s1") [] e= EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")
->>*doStmt: rt Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2"))
+<< expr: e EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2") rest Nothing
+>>*bindStmt pat= PVar "s1" e= EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")
+>>*doStmt: rt Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2"))
 << bindStmt
-<< pattern: ct=211
+<< pattern: ct=596
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "s2") [] ct=210
-<< expr dispatch: TokIdent "unifyMany" ct=209
-<< exprNoLoop: e EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))
-<< expr dispatch: TokSymbol ";" ct=192
-<< bracesExpr: nm "Right" ct=191
+    (pAs <|> makeCons)PVar "s2" ct=595
+<< expr dispatch: TokIdent "unify" ct=594
+<< exprNoLoop: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))
+<< expr dispatch: TokSymbol ";" ct=583
+<< bracesExpr: nm "Right" ct=582
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2")) rest Nothing
->>*bindStmt pat= PApp (PVar "s2") [] e= EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))
->>*doStmt: rt Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2")))
+<< expr: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2")) rest Nothing
+>>*bindStmt pat= PVar "s2" e= EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))
+>>*doStmt: rt Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2")))
 << bindStmt
-<< pattern: ct=191
-<< pattern: ct=189
+<< pattern: ct=582
+<< pattern: ct=580
 << pattern:
-    (pAs <|> makeCons)PApp (PVar "s2") [] ct=188
+    (pAs <|> makeCons)PVar "s2" ct=579
 << pattern:
-    (pAs <|> makeCons)PApp (PConstr "Right" []) [] ct=190
-<< expr dispatch: TokTypeIdent "Right" ct=191
-<< bracesExpr: nm "Right" ct=191
+    (pAs <|> makeCons)PConstr "Right" [] ct=581
+<< expr dispatch: TokTypeIdent "Right" ct=582
+<< bracesExpr: nm "Right" ct=582
 << exprNoLoop: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1"))
-<< expr dispatch: TokVRBrace ct=183
+<< expr dispatch: TokVRBrace ct=574
 << postfix: operator = Nothing
 >> infixOp: out 
 << expr: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")) rest Nothing
 >>*exprStmt EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1"))
 >>*doStmt: rt ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))
 << bindStmt
-<< pattern: ct=183
-<< expr dispatch: TokVRBrace ct=183
->>*doBlock: (f:m)[Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
->>*doExprCore: stmts [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
-<< exprNoLoop: e EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
-<< expr dispatch: TokNewline ct=182
+<< pattern: ct=574
+<< expr dispatch: TokVRBrace ct=574
+>>*doBlock: (f:m)[Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+>>*doExprCore: stmts [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+<< exprNoLoop: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+<< expr dispatch: TokNewline ct=573
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] rest Nothing
-<< parseSimpleClause: e EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] ct=182
-<< funClauseWithName: next token=TokNewline ct=182
->>*funDecl name "unifyMany" clause1 FunClause [PCons (PApp (PVar "t1") []) (PApp (PVar "ts1") []),PCons (PApp (PVar "t2") []) (PApp (PVar "ts2") [])] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing rest []
->>*declBody: e DeclFunGroup "unifyMany" [FunClause [PCons (PApp (PVar "t1") []) (PApp (PVar "ts1") []),PCons (PApp (PVar "t2") []) (PApp (PVar "ts2") [])] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
-<< decl next token: TokIdent "unifyMany"
+<< expr: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] rest Nothing
+<< parseSimpleClause: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] ct=573
+<< funClauseWithName: next token=TokNewline ct=573
+>>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TApp" []) [PVar "f1",PVar "a1"],PApp (PConstr "TApp" []) [PVar "f2",PVar "a2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing rest []
+>>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TApp" []) [PVar "f1",PVar "a1"],PApp (PConstr "TApp" []) [PVar "f2",PVar "a2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing]
+<< decl next token: TokIdent "unify"
 << decl parser called
-<< decl dispatch: TokIdent "unifyMany" ct=181
-<< funDecl: next token=TokIdent "unifyMany" ct=181
-<< pInfix: ct=180
+<< decl dispatch: TokIdent "unify" ct=572
+<< funDecl: next token=TokIdent "unify" ct=572
+<< pInfix: ct=571
 << pPattern:
-    prased PVar "unifyMany"
-<< pInfix: ct=179
+    prased PVar "unify"
+<< pattern: ct=570
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TConstraint" []) [PVar "cs1",PVar "t1"] ct=567
+<< pInfix: ct=566
 << pPattern:
-    prased PVar "ts1"
-<< pInfix: ct=178
+    prased PApp (PConstr "TConstraint" []) [PVar "cs1",PVar "t1"]
+<< pattern: ct=565
+<< pattern:
+    (pAs <|> makeCons)PApp (PConstr "TConstraint" []) [PVar "cs2",PVar "t2"] ct=562
+<< pInfix: ct=561
 << pPattern:
-    prased PVar "ts2"
-<< pattern: ct=178
-<< parseSimpleClause: next token=TokTypeIdent "Left" ct=176
-<< expr dispatch: TokTypeIdent "Left" ct=176
-<< bracesExpr: nm "Left" ct=176
-<< exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2")))
-<< expr dispatch: TokNewline ct=164
+    prased PApp (PConstr "TConstraint" []) [PVar "cs2",PVar "t2"]
+<< pattern: ct=561
+<< parseGuardedClause: next token=TokSymbol "|" ct=560
+<< parseGuardLine: next token=TokSymbol "|" ct=560
+<< expr dispatch: TokIdent "length" ct=559
+<< exprNoLoop: e EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2"))
+<< expr dispatch: TokSymbol "=" ct=554
 << postfix: operator = Nothing
 >> infixOp: out 
-<< expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2"))) rest Nothing
-<< parseSimpleClause: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2"))) ct=164
-<< funClauseWithName: next token=TokNewline ct=164
->>*funDecl name "unifyMany" clause1 FunClause [PVar "ts1",PVar "ts2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2"))))) Nothing rest []
->>*declBody: e DeclFunGroup "unifyMany" [FunClause [PVar "ts1",PVar "ts2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2"))))) Nothing]
-<< decl next token: TokIdent "bindVar"
+<< expr: e EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2")) rest Nothing
+<< expr dispatch: TokKeyword "do" ct=553
+<< bindStmt
+<< pattern: ct=551
+<< pattern:
+    (pAs <|> makeCons)PVar "s1" ct=550
+<< expr dispatch: TokIdent "unifyConstraints" ct=549
+<< exprNoLoop: e EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")
+<< expr dispatch: TokSymbol ";" ct=546
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2") rest Nothing
+>>*bindStmt pat= PVar "s1" e= EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")
+>>*doStmt: rt Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2"))
+<< bindStmt
+<< pattern: ct=545
+<< pattern:
+    (pAs <|> makeCons)PVar "s2" ct=544
+<< expr dispatch: TokIdent "unify" ct=543
+<< exprNoLoop: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))
+<< expr dispatch: TokSymbol ";" ct=532
+<< bracesExpr: nm "Right" ct=531
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2")) rest Nothing
+>>*bindStmt pat= PVar "s2" e= EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))
+>>*doStmt: rt Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2")))
+<< bindStmt
+<< pattern: ct=531
+<< pattern: ct=529
+<< pattern:
+    (pAs <|> makeCons)PVar "s2" ct=528
+<< pattern:
+    (pAs <|> makeCons)PConstr "Right" [] ct=530
+<< expr dispatch: TokTypeIdent "Right" ct=531
+<< bracesExpr: nm "Right" ct=531
+<< exprNoLoop: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1"))
+<< expr dispatch: TokVRBrace ct=523
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")) rest Nothing
+>>*exprStmt EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1"))
+>>*doStmt: rt ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))
+<< bindStmt
+<< pattern: ct=523
+<< expr dispatch: TokVRBrace ct=523
+>>*doBlock: (f:m)[Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+>>*doExprCore: stmts [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+<< exprNoLoop: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]
+<< expr dispatch: TokNewline ct=522
+<< postfix: operator = Nothing
+>> infixOp: out 
+<< expr: e EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))] rest Nothing
+<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2")),EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))]) ct=560
+<< parseGuardLine: next token=TokNewline ct=522
+<< funClauseWithName: next token=TokNewline ct=522
+>>*funDecl name "unify" clause1 FunClause [PApp (PConstr "TConstraint" []) [PVar "cs1",PVar "t1"],PApp (PConstr "TConstraint" []) [PVar "cs2",PVar "t2"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2")),EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])]) Nothing Nothing rest []
+>>*declBody: e DeclFunGroup "unify" [FunClause [PApp (PConstr "TConstraint" []) [PVar "cs1",PVar "t1"],PApp (PConstr "TConstraint" []) [PVar "cs2",PVar "t2"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2")),EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])]) Nothing Nothing]
+<< decl next token: TokSymbol "|"
 << decl parser called
-<< decl dispatch: TokIdent "bindVar" ct=163
-<< funDecl: next token=TokIdent "bindVar" ct=163
-<< pInfix: ct=162
-<< pPattern:
-    prased PVar "bindVar"
-<< pattern: ct=162
-<< parseGuardedClause: next token=TokSymbol "::" ct=162
-<< parseGuardLine: next token=TokSymbol "::" ct=162
-<< typeSigDecl: TokIdent "bindVar"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "String"
-<< typeTerm: ts [TCon "String"]
-<< typeTerm: ts [TCon "Type"]
-<< typeTerm: ts [TCon "Either",TCon "UnifyError",TCon "Subst"]
-<< parseTypeCore: TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")
-<< parseTypeCore: TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))
-<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< parsed type signature: bindVar :: TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))
-<< returning DeclTypeSig: DeclTypeSig "bindVar" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
->>*declBody: e DeclTypeSig "bindVar" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst"))))
-<< decl next token: TokIdent "bindVar"
-<< decl parser called
-<< decl dispatch: TokIdent "bindVar" ct=153
-<< funDecl: next token=TokIdent "bindVar" ct=153
-<< pInfix: ct=152
-<< pPattern:
-    prased PVar "bindVar"
-<< pInfix: ct=151
-<< pPattern:
-    prased PVar "v"
-<< pInfix: ct=150
-<< pPattern:
-    prased PVar "t"
-<< pattern: ct=150
-<< parseGuardedClause: next token=TokSymbol "|" ct=149
-<< parseGuardLine: next token=TokSymbol "|" ct=149
-<< expr dispatch: TokIdent "t" ct=148
-<< exprNoLoop: e EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v"))
-<< expr dispatch: TokSymbol "=" ct=144
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v")) rest Nothing
-<< expr dispatch: TokKeyword "return" ct=143
-<< returnWithDollar
->>*return atom: EVar "emptySubst"
-<< exprNoLoop: e EReturn (EVar "emptySubst")
-<< expr dispatch: TokSymbol ";" ct=141
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EReturn (EVar "emptySubst") rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v")),EReturn (EVar "emptySubst")) ct=149
-<< parseGuardLine: next token=TokSymbol "|" ct=140
-<< expr dispatch: TokIdent "v" ct=139
-<< exprNoLoop: e EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t")
-<< expr dispatch: TokSymbol "=" ct=134
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t") rest Nothing
-<< expr dispatch: TokTypeIdent "Left" ct=133
-<< bracesExpr: nm "Left" ct=133
-<< exprNoLoop: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t"))
-<< expr dispatch: TokSymbol ";" ct=127
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t")) rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t"))) ct=140
-<< parseGuardLine: next token=TokSymbol "|" ct=126
-<< expr dispatch: TokIdent "otherwise" ct=125
-<< exprNoLoop: e EVar "otherwise"
-<< expr dispatch: TokSymbol "=" ct=124
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVar "otherwise" rest Nothing
-<< expr dispatch: TokKeyword "return" ct=123
-<< returnWithDollar
->>*return atom: EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t")
-<< exprNoLoop: e EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t"))
-<< expr dispatch: TokNewline ct=117
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t")) rest Nothing
-<< guardedRhs: next token = TokSymbol "|" e (EVar "otherwise",EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t"))) ct=126
-<< parseGuardLine: next token=TokNewline ct=117
-<< funClauseWithName: next token=TokNewline ct=117
->>*funDecl name "bindVar" clause1 FunClause [PVar "v",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v")),EReturn (EVar "emptySubst")),(EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t"))),(EVar "otherwise",EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t")))]) Nothing Nothing rest []
->>*declBody: e DeclFunGroup "bindVar" [FunClause [PVar "v",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v")),EReturn (EVar "emptySubst")),(EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t"))),(EVar "otherwise",EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t")))]) Nothing Nothing]
-<< decl next token: TokIdent "occursIn"
-<< decl parser called
-<< decl dispatch: TokIdent "occursIn" ct=116
-<< funDecl: next token=TokIdent "occursIn" ct=116
-<< pInfix: ct=115
-<< pPattern:
-    prased PVar "occursIn"
-<< pattern: ct=115
-<< parseGuardedClause: next token=TokSymbol "::" ct=115
-<< parseGuardLine: next token=TokSymbol "::" ct=115
-<< typeSigDecl: TokIdent "occursIn"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "String"
-<< typeTerm: ts [TCon "String"]
-<< typeTerm: ts [TCon "Type"]
-<< typeTerm: ts [TCon "Bool"]
-<< parseTypeCore: TCon "Bool"
-<< parseTypeCore: TFun (TCon "Type") (TCon "Bool")
-<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))
-<< parsed type signature: occursIn :: TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))
-<< returning DeclTypeSig: DeclTypeSig "occursIn" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool")))
->>*declBody: e DeclTypeSig "occursIn" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool")))
-<< decl next token: TokIdent "occursIn"
-<< decl parser called
-<< decl dispatch: TokIdent "occursIn" ct=108
-<< funDecl: next token=TokIdent "occursIn" ct=108
-<< pInfix: ct=107
-<< pPattern:
-    prased PVar "occursIn"
-<< pInfix: ct=106
-<< pPattern:
-    prased PVar "v"
-<< pInfix: ct=105
-<< pPattern:
-    prased PVar "t"
-<< pattern: ct=105
-<< parseSimpleClause: next token=TokKeyword "case" ct=104
-<< expr dispatch: TokKeyword "case" ct=104
-<< caseExprCore:
-<< expr dispatch: TokIdent "t" ct=103
-<< exprNoLoop: e EVar "t"
-<< expr dispatch: TokKeyword "of" ct=102
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVar "t" rest Nothing
-<< pattern: ct=100
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TVar" []) [PVar "x"] ct=98
-<< caseAlt: pat PApp (PConstr "TVar" []) [PVar "x"]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "x" ct=97
-<< exprNoLoop: e EBinOp BinOpEq (EVar "x") (EVar "v")
-<< expr dispatch: TokSymbol ";" ct=94
-<< bracesExpr: nm "TCon" ct=93
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpEq (EVar "x") (EVar "v") rest Nothing
->>*caseAlt: pat PApp (PConstr "TVar" []) [PVar "x"] body EBinOp BinOpEq (EVar "x") (EVar "v")
-<< pattern: ct=93
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TCon" []) [PVar "_"] ct=91
-<< caseAlt: pat PApp (PConstr "TCon" []) [PVar "_"]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokTypeIdent "False" ct=90
-<< bracesExpr: nm "False" ct=90
-<< exprNoLoop: e EVarType "False"
-<< expr dispatch: TokSymbol ";" ct=89
-<< bracesExpr: nm "TArrow" ct=88
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVarType "False" rest Nothing
->>*caseAlt: pat PApp (PConstr "TCon" []) [PVar "_"] body EVarType "False"
-<< pattern: ct=88
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] ct=85
-<< caseAlt: pat PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "occursIn" ct=84
-<< exprNoLoop: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")
-<< expr dispatch: TokOperator "||" ct=81
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpOr
-<< expr dispatch: TokIdent "occursIn" ct=80
-<< exprNoLoop: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2")
-<< expr dispatch: TokSymbol ";" ct=77
-<< bracesExpr: nm "TList" ct=76
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2")) rest Nothing
->>*caseAlt: pat PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"] body EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))
-<< pattern: ct=76
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TList" []) [PVar "t1"] ct=74
-<< caseAlt: pat PApp (PConstr "TList" []) [PVar "t1"]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "occursIn" ct=73
-<< exprNoLoop: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")
-<< expr dispatch: TokSymbol ";" ct=70
-<< bracesExpr: nm "TApp" ct=69
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1") rest Nothing
->>*caseAlt: pat PApp (PConstr "TList" []) [PVar "t1"] body EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")
-<< pattern: ct=69
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"] ct=66
-<< caseAlt: pat PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "occursIn" ct=65
-<< exprNoLoop: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")
-<< expr dispatch: TokOperator "||" ct=62
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpOr
-<< expr dispatch: TokIdent "occursIn" ct=61
-<< exprNoLoop: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2")
-<< expr dispatch: TokSymbol ";" ct=58
-<< bracesExpr: nm "TConstraint" ct=57
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2")) rest Nothing
->>*caseAlt: pat PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"] body EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))
-<< pattern: ct=57
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"] ct=54
-<< caseAlt: pat PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokIdent "any" ct=53
-<< exprNoLoop: e EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")
-<< expr dispatch: TokOperator "||" ct=47
-<< postfix: operator = Nothing
->> infixOp: out 
-<< infixOp: parsed as BinOpOr
-<< expr dispatch: TokIdent "occursIn" ct=46
-<< exprNoLoop: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")
-<< expr dispatch: TokSymbol ";" ct=43
-<< bracesExpr: nm "TForall" ct=42
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) rest Nothing
->>*caseAlt: pat PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"] body EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))
-<< pattern: ct=42
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"] ct=39
-<< caseAlt: pat PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]
-<< guardExpr next token: TokArrow
-<< expr dispatch: TokKeyword "if" ct=38
-<< ifExpr
-<< expr dispatch: TokIdent "v" ct=37
-<< exprNoLoop: e EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")
-<< expr dispatch: TokKeyword "then" ct=32
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs") rest Nothing
-<< ifExpr cond EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")
-<< expr dispatch: TokTypeIdent "False" ct=31
-<< bracesExpr: nm "False" ct=31
-<< exprNoLoop: e EVarType "False"
-<< expr dispatch: TokKeyword "else" ct=30
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EVarType "False" rest Nothing
-<< ifExpr th EVarType "False"
-<< expr dispatch: TokIdent "occursIn" ct=29
-<< exprNoLoop: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")
-<< expr dispatch: TokVRBrace ct=26
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1") rest Nothing
-<< ifExpr el EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")
-<< exprNoLoop: e EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))
-<< expr dispatch: TokVRBrace ct=26
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) rest Nothing
->>*caseAlt: pat PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"] body EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))
-<< pattern: ct=26
->>*caseAltBlock: xs [CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))]
->>*caseExprCore: alts [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))]
-<< exprNoLoop: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))]
-<< expr dispatch: TokNewline ct=25
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))] rest Nothing
-<< parseSimpleClause: e ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))] ct=25
-<< funClauseWithName: next token=TokNewline ct=25
->>*funDecl name "occursIn" clause1 FunClause [PVar "v",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))])) Nothing rest []
->>*declBody: e DeclFunGroup "occursIn" [FunClause [PVar "v",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))])) Nothing]
-<< decl next token: TokIdent "occursInConstraint"
-<< decl parser called
-<< decl dispatch: TokIdent "occursInConstraint" ct=24
-<< funDecl: next token=TokIdent "occursInConstraint" ct=24
-<< pInfix: ct=23
-<< pPattern:
-    prased PVar "occursInConstraint"
-<< pattern: ct=23
-<< parseGuardedClause: next token=TokSymbol "::" ct=23
-<< parseGuardLine: next token=TokSymbol "::" ct=23
-<< typeSigDecl: TokIdent "occursInConstraint"
-<< typeSigDecl:2 TokSymbol "::"
-<< parseType dispatch: TokTypeIdent "String"
-<< typeTerm: ts [TCon "String"]
-<< typeTerm: ts [TCon "Constraint"]
-<< typeTerm: ts [TCon "Bool"]
-<< parseTypeCore: TCon "Bool"
-<< parseTypeCore: TFun (TCon "Constraint") (TCon "Bool")
-<< parseTypeCore: TFun (TCon "String") (TFun (TCon "Constraint") (TCon "Bool"))
-<< parsed type signature: occursInConstraint :: TFun (TCon "String") (TFun (TCon "Constraint") (TCon "Bool"))
-<< returning DeclTypeSig: DeclTypeSig "occursInConstraint" (TFun (TCon "String") (TFun (TCon "Constraint") (TCon "Bool")))
->>*declBody: e DeclTypeSig "occursInConstraint" (TFun (TCon "String") (TFun (TCon "Constraint") (TCon "Bool")))
-<< decl next token: TokIdent "occursInConstraint"
-<< decl parser called
-<< decl dispatch: TokIdent "occursInConstraint" ct=16
-<< funDecl: next token=TokIdent "occursInConstraint" ct=16
-<< pInfix: ct=15
-<< pPattern:
-    prased PVar "occursInConstraint"
-<< pInfix: ct=14
-<< pPattern:
-    prased PVar "v"
-<< pattern: ct=13
-<< pattern:
-    (pAs <|> makeCons)PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"] ct=10
-<< pInfix: ct=9
-<< pPattern:
-    prased PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]
-<< pattern: ct=9
-<< parseSimpleClause: next token=TokIdent "any" ct=7
-<< expr dispatch: TokIdent "any" ct=7
-<< exprNoLoop: e EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts")
-<< expr dispatch: TokNewline ct=1
-<< postfix: operator = Nothing
->> infixOp: out 
-<< expr: e EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts") rest Nothing
-<< parseSimpleClause: e EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts") ct=1
-<< funClauseWithName: next token=TokNewline ct=1
->>*funDecl name "occursInConstraint" clause1 FunClause [PVar "v",PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts"))) Nothing rest []
->>*declBody: e DeclFunGroup "occursInConstraint" [FunClause [PVar "v",PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts"))) Nothing]
-Just ([DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False]),DeclImport {importQualified = False, importModule = "AST.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"],DeclTypeSig "unify" (TFun (TCon "Type") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "varBind") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PConstr "TUnit" [],PConstr "TUnit" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TCon" []) [PVar "a"],PApp (PConstr "TCon" []) [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TTuple" []) [PVar "xs"],PApp (PConstr "TTuple" []) [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TList" []) [PVar "a"],PApp (PConstr "TList" []) [PVar "b"]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing],DeclFunGroup "unify" [FunClause [PVar "t1",PVar "t2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EVar "t1")) (EVar "t2")))) Nothing],DeclTypeSig "varBind" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "varBind" [FunClause [PVar "a",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "a")),EApp (EVarType "Right") (EVar "emptySubst")),(EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "a")) (EVar "t"))),(EVar "otherwise",EApp (EVarType "Right") (EBinOp BinOpCompose (EVarType "M") (EApp (EApp (EVar "singleton") (EVar "a")) (EVar "t"))))]) Nothing Nothing],DeclTypeSig "occursCheck" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))),DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TVar" []) [PVar "b"]] Nothing (Just (EBinOp BinOpEq (EVar "a") (EVar "b"))) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TCon" []) [PVar "_"]] Nothing (Just (EVarType "False")) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PConstr "TUnit" []] Nothing (Just (EVarType "False")) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TList" []) [PVar "t"]] Nothing (Just (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TTuple" []) [PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursCheck") (EVar "a"))) (EVar "ts"))) Nothing],DeclFunGroup "occursCheck" [FunClause [PVar "a",PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]] Nothing (Just (EBinOp BinOpOr (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t1")) (EApp (EApp (EVar "occursCheck") (EVar "a")) (EVar "t2")))) Nothing],DeclTypeSig "unifyMany" (TFun (TList (TCon "Type")) (TFun (TList (TCon "Type")) (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unifyMany" [FunClause [PConstr "[]" [],PConstr "[]" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unifyMany" [FunClause [PCons (PApp (PVar "t1") []) (PApp (PVar "ts1") []),PCons (PApp (PVar "t2") []) (PApp (PVar "ts2") [])] Nothing (Just (EDo [Bind (PApp (PVar "s1") []) (EApp (EApp (EVar "unify") (EVar "t1")) (EVar "t2")),Bind (PApp (PVar "s2") []) (EApp (EApp (EVar "unifyMany") (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts1"))) (EApp (EApp (EVar "map") (EApp (EVar "apply") (EVar "s1"))) (EVar "ts2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unifyMany" [FunClause [PVar "ts1",PVar "ts2"] Nothing (Just (EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "ts1"))) (EApp (EVarType "TTuple") (EVar "ts2"))))) Nothing],DeclTypeSig "bindVar" (TFun (TCon "String") (TFun (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "bindVar" [FunClause [PVar "v",PVar "t"] (Just [(EBinOp BinOpEq (EVar "t") (EApp (EVarType "TVar") (EVar "v")),EReturn (EVar "emptySubst")),(EApp (EApp (EVar "v") (EVar "occursIn")) (EVar "t"),EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyOccursCheckFailed") (EVar "v")) (EVar "t"))),(EVar "otherwise",EReturn (EApp (EApp (EVar "singletonSubst") (EVar "v")) (EVar "t")))]) Nothing Nothing],DeclTypeSig "occursIn" (TFun (TCon "String") (TFun (TCon "Type") (TCon "Bool"))),DeclFunGroup "occursIn" [FunClause [PVar "v",PVar "t"] Nothing (Just (ECase (EVar "t") [CaseAlt (PApp (PConstr "TVar" []) [PVar "x"]) (EBinOp BinOpEq (EVar "x") (EVar "v")),CaseAlt (PApp (PConstr "TCon" []) [PVar "_"]) (EVarType "False"),CaseAlt (PApp (PConstr "TArrow" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TList" []) [PVar "t1"]) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")),CaseAlt (PApp (PConstr "TApp" []) [PVar "t1",PVar "t2"]) (EBinOp BinOpOr (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t2"))),CaseAlt (PApp (PConstr "TConstraint" []) [PVar "cs",PVar "t1"]) (EBinOp BinOpOr (EApp (EApp (EVar "any") (EApp (EVar "occursInConstraint") (EVar "v"))) (EVar "cs")) (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1"))),CaseAlt (PApp (PConstr "TForall" []) [PVar "vs",PVar "t1"]) (EIf (EApp (EApp (EVar "v") (EVar "elem")) (EVar "vs")) (EVarType "False") (EApp (EApp (EVar "occursIn") (EVar "v")) (EVar "t1")))])) Nothing],DeclTypeSig "occursInConstraint" (TFun (TCon "String") (TFun (TCon "Constraint") (TCon "Bool"))),DeclFunGroup "occursInConstraint" [FunClause [PVar "v",PApp (PConstr "Constraint" []) [PVar "_",PVar "ts"]] Nothing (Just (EApp (EApp (EVar "any") (EApp (EVar "occursIn") (EVar "v"))) (EVar "ts"))) Nothing]],[])
+<< decl dispatch: TokSymbol "|" ct=521
+<< unknown token in decl: TokSymbol "|"
+Just ([DeclModule "TypeInference.Unify" (Just [ExportType "Subst" False,ExportVar "unify",ExportType "UnifyError" False,ExportVar "unifyMany"]),DeclImport {importQualified = False, importModule = "Control.Monad", importAlias = Nothing, importHiding = False, importItems = Just [ImportVar "unless"]},DeclImport {importQualified = True, importModule = "Data.Map", importAlias = Just "M", importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Subst", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclImport {importQualified = False, importModule = "TypeInference.Type", importAlias = Nothing, importHiding = False, importItems = Nothing},DeclData "UnifyError" [] [Constraint "UnifyMismatch" [TCon "Type",TCon "Type"],Constraint "UnifyOccursCheckFailed" [TCon "String",TCon "Type"]] ["Show","Eq"],DeclTypeSig "unify" (TArrow (TCon "Type") (TArrow (TCon "Type") (TApp (TApp (TCon "Either") (TCon "UnifyError")) (TCon "Subst")))),DeclFunGroup "unify" [FunClause [PApp (PConstr "TVar" []) [PVar "a"],PVar "t"] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PVar "t",PApp (PConstr "TVar" []) [PVar "a"]] Nothing (Just (EApp (EApp (EVar "bindVar") (EVar "a")) (EVar "t"))) Nothing],DeclFunGroup "unify" [FunClause [PConstr "TUnit" [],PConstr "TUnit" []] Nothing (Just (EApp (EVarType "Right") (EVar "emptySubst"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TCon" []) [PVar "a"],PApp (PConstr "TCon" []) [PVar "b"]] (Just [(EBinOp BinOpEq (EVar "a") (EVar "b"),EApp (EVarType "Right") (EVar "emptySubst")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TCon") (EVar "a"))) (EApp (EVarType "TCon") (EVar "b"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TArrow" []) [PVar "a1",PVar "b1"],PApp (PConstr "TArrow" []) [PVar "a2",PVar "b2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "a1")) (EVar "a2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "b2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TTuple" []) [PVar "xs"],PApp (PConstr "TTuple" []) [PVar "ys"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "xs")) (EApp (EVar "length") (EVar "ys")),EApp (EApp (EVar "unifyMany") (EVar "xs")) (EVar "ys")),(EVar "otherwise",EApp (EVarType "Left") (EApp (EApp (EVarType "UnifyMismatch") (EApp (EVarType "TTuple") (EVar "xs"))) (EApp (EVarType "TTuple") (EVar "ys"))))]) Nothing Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TList" []) [PVar "a"],PApp (PConstr "TList" []) [PVar "b"]] Nothing (Just (EApp (EApp (EVar "unify") (EVar "a")) (EVar "b"))) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TApp" []) [PVar "f1",PVar "a1"],PApp (PConstr "TApp" []) [PVar "f2",PVar "a2"]] Nothing (Just (EDo [Bind (PVar "s1") (EApp (EApp (EVar "unify") (EVar "f1")) (EVar "f2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "a2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])) Nothing],DeclFunGroup "unify" [FunClause [PApp (PConstr "TConstraint" []) [PVar "cs1",PVar "t1"],PApp (PConstr "TConstraint" []) [PVar "cs2",PVar "t2"]] (Just [(EBinOp BinOpEq (EApp (EVar "length") (EVar "cs1")) (EApp (EVar "length") (EVar "cs2")),EDo [Bind (PVar "s1") (EApp (EApp (EVar "unifyConstraints") (EVar "cs1")) (EVar "cs2")),Bind (PVar "s2") (EApp (EApp (EVar "unify") (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t1"))) (EApp (EApp (EVar "apply") (EVar "s1")) (EVar "t2"))),ExprStmt (EApp (EVarType "Right") (EApp (EApp (EVar "s2") (EVar "composeSubst")) (EVar "s1")))])]) Nothing Nothing]],[TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs1",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TConstraint",TokIdent "cs2",TokIdent "t2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs1",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs2",TokIdent "t2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "vs1",TokOperator "==",TokIdent "vs2",TokSymbol "=",TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs1",TokIdent "t1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TForall",TokIdent "vs2",TokIdent "t2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unify",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokTypeIdent "M",TokOperator ".",TokIdent "keys",TokIdent "f1",TokOperator "==",TokTypeIdent "M",TokOperator ".",TokIdent "keys",TokIdent "f2",TokSymbol "=",TokIdent "unifyMany",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "f1",TokSymbol ")",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "f2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TRecord",TokIdent "f2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokIdent "t1",TokIdent "t2",TokSymbol ")",TokNewline,TokIdent "bindVar",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "bindVar",TokIdent "v",TokIdent "t",TokSymbol ";",TokSymbol "|",TokIdent "t",TokOperator "==",TokTypeIdent "TVar",TokIdent "v",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokSymbol ";",TokSymbol "|",TokIdent "occursIn",TokIdent "v",TokIdent "t",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyOccursCheckFailed",TokIdent "v",TokIdent "t",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Right",TokSymbol "(",TokIdent "singletonSubst",TokIdent "v",TokIdent "t",TokSymbol ")",TokNewline,TokIdent "occursIn",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Type",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursIn",TokIdent "v",TokIdent "t",TokSymbol "=",TokKeyword "case",TokIdent "t",TokKeyword "of",TokVLBrace,TokTypeIdent "TVar",TokIdent "x",TokArrow,TokIdent "x",TokOperator "==",TokIdent "v",TokSymbol ";",TokTypeIdent "TCon",TokIdent "_",TokArrow,TokKeyword "False",TokSymbol ";",TokTypeIdent "TUnit",TokArrow,TokKeyword "False",TokSymbol ";",TokTypeIdent "TList",TokIdent "t1",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TTuple",TokIdent "ts",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokIdent "ts",TokSymbol ";",TokTypeIdent "TArrow",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokOperator "||",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TApp",TokIdent "t1",TokIdent "t2",TokArrow,TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokOperator "||",TokIdent "occursIn",TokIdent "v",TokIdent "t2",TokSymbol ";",TokTypeIdent "TConstraint",TokIdent "cs",TokIdent "t1",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursInConstraint",TokIdent "v",TokSymbol ")",TokIdent "cs",TokOperator "||",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TForall",TokIdent "vs",TokIdent "t1",TokArrow,TokKeyword "if",TokIdent "v",TokSymbol "`",TokIdent "elem",TokSymbol "`",TokIdent "vs",TokKeyword "then",TokKeyword "False",TokKeyword "else",TokIdent "occursIn",TokIdent "v",TokIdent "t1",TokSymbol ";",TokTypeIdent "TRecord",TokIdent "fields",TokArrow,TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokSymbol "(",TokTypeIdent "M",TokOperator ".",TokIdent "elems",TokIdent "fields",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "occursInConstraint",TokSymbol "::",TokTypeIdent "String",TokArrow,TokTypeIdent "Constraint",TokArrow,TokTypeIdent "Bool",TokNewline,TokIdent "occursInConstraint",TokIdent "v",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "_",TokIdent "ts",TokSymbol ")",TokSymbol "=",TokSymbol ";",TokIdent "any",TokSymbol "(",TokIdent "occursIn",TokIdent "v",TokSymbol ")",TokIdent "ts",TokNewline,TokIdent "unifyConstraints",TokSymbol "::",TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Constraint",TokSymbol "]",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unifyConstraints",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unifyConstraints",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "c1",TokIdent "ts1",TokOperator ":",TokIdent "cs1",TokSymbol ")",TokSymbol "(",TokTypeIdent "Constraint",TokIdent "c2",TokIdent "ts2",TokOperator ":",TokIdent "cs2",TokSymbol ")",TokSymbol ";",TokSymbol "|",TokIdent "c1",TokOperator "==",TokIdent "c2",TokOperator "&&",TokIdent "length",TokIdent "ts1",TokOperator "==",TokIdent "length",TokIdent "ts2",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unifyMany",TokIdent "ts1",TokIdent "ts2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unifyConstraints",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s1",TokSymbol ")",TokIdent "cs1",TokSymbol ")",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "applyConstraint",TokIdent "s1",TokSymbol ")",TokIdent "cs2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokSymbol "`",TokIdent "composeSubst",TokSymbol "`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokSymbol "|",TokIdent "otherwise",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TCon",TokIdent "c1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokIdent "c2",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unifyConstraints",TokIdent "_",TokIdent "_",TokSymbol "=",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TCon",TokString "constraint",TokSymbol ")",TokSymbol "(",TokTypeIdent "TCon",TokString "constraint",TokSymbol ")",TokSymbol ")",TokNewline,TokIdent "unifyMany",TokSymbol "::",TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokSymbol "[",TokTypeIdent "Type",TokSymbol "]",TokArrow,TokTypeIdent "Either",TokTypeIdent "UnifyError",TokTypeIdent "Subst",TokNewline,TokIdent "unifyMany",TokSymbol "[",TokSymbol "]",TokSymbol "[",TokSymbol "]",TokSymbol "=",TokTypeIdent "Right",TokIdent "emptySubst",TokNewline,TokIdent "unifyMany",TokSymbol "(",TokIdent "t1",TokOperator ":",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "t2",TokOperator ":",TokIdent "ts2",TokSymbol ")",TokSymbol "=",TokKeyword "do",TokVLBrace,TokIdent "s1",TokSymbol "<-",TokIdent "unify",TokIdent "t1",TokIdent "t2",TokSymbol ";",TokIdent "s2",TokSymbol "<-",TokIdent "unifyMany",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokIdent "map",TokSymbol "(",TokIdent "apply",TokIdent "s1",TokSymbol ")",TokIdent "ts2",TokSymbol ")",TokSymbol ";",TokTypeIdent "Right",TokSymbol "(",TokIdent "s2",TokSymbol "`",TokIdent "composeSubst",TokSymbol "`",TokIdent "s1",TokSymbol ")",TokVRBrace,TokNewline,TokIdent "unifyMany",TokIdent "ts1",TokIdent "ts2",TokSymbol "=",TokSymbol ";",TokTypeIdent "Left",TokSymbol "(",TokTypeIdent "UnifyMismatch",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts1",TokSymbol ")",TokSymbol "(",TokTypeIdent "TTuple",TokIdent "ts2",TokSymbol ")",TokSymbol ")",TokNewline])
 
 -- src code --
-module TypeInference.Unify (Subst, unify, UnifyError) where
+module TypeInference.Unify (Subst, unify, UnifyError, unifyMany) where
 
-import AST.Type
 import Control.Monad (unless)
 import qualified Data.Map as M
 import TypeInference.Subst
+import TypeInference.Type
 
 -- å^ÇÃàÍívÇ…é∏îsÇµÇΩÇ∆Ç´ÇÃÉGÉâÅ[
 data UnifyError
@@ -1237,45 +582,78 @@ data UnifyError
   | UnifyOccursCheckFailed String Type
   deriving (Show, Eq)
 
+-- å^ÇÃìùàÍ
 unify :: Type -> Type -> Either UnifyError Subst
--- å^ïœêî
-unify (TVar a) t = varBind a t
-unify t (TVar a) = varBind a t
--- Unit
+unify (TVar a) t = bindVar a t
+unify t (TVar a) = bindVar a t
 unify TUnit TUnit = Right emptySubst
--- å^ÉRÉìÉXÉgÉâÉNÉ^
 unify (TCon a) (TCon b)
   | a == b = Right emptySubst
   | otherwise = Left (UnifyMismatch (TCon a) (TCon b))
--- ä÷êîå^
 unify (TArrow a1 b1) (TArrow a2 b2) = do
   s1 <- unify a1 a2
   s2 <- unify (apply s1 b1) (apply s1 b2)
   Right (s2 `composeSubst` s1)
-
--- É^ÉvÉã
 unify (TTuple xs) (TTuple ys)
   | length xs == length ys = unifyMany xs ys
   | otherwise = Left (UnifyMismatch (TTuple xs) (TTuple ys))
--- ÉäÉXÉg
 unify (TList a) (TList b) = unify a b
--- ÉfÉtÉHÉãÉg
+unify (TApp f1 a1) (TApp f2 a2) = do
+  s1 <- unify f1 f2
+  s2 <- unify (apply s1 a1) (apply s1 a2)
+  Right (s2 `composeSubst` s1)
+unify (TConstraint cs1 t1) (TConstraint cs2 t2)
+  | length cs1 == length cs2 = do
+      s1 <- unifyConstraints cs1 cs2
+      s2 <- unify (apply s1 t1) (apply s1 t2)
+      Right (s2 `composeSubst` s1)
+  | otherwise = Left (UnifyMismatch (TConstraint cs1 t1) (TConstraint cs2 t2))
+unify (TForall vs1 t1) (TForall vs2 t2)
+  | vs1 == vs2 = unify t1 t2
+  | otherwise = Left (UnifyMismatch (TForall vs1 t1) (TForall vs2 t2))
+unify (TRecord f1) (TRecord f2)
+  | M.keys f1 == M.keys f2 = unifyMany (M.elems f1) (M.elems f2)
+  | otherwise = Left (UnifyMismatch (TRecord f1) (TRecord f2))
 unify t1 t2 = Left (UnifyMismatch t1 t2)
 
-varBind :: String -> Type -> Either UnifyError Subst
-varBind a t
-  | t == TVar a = Right emptySubst
-  | occursCheck a t = Left (UnifyOccursCheckFailed a t)
-  | otherwise = Right (M.singleton a t)
+-- å^ïœêîÇ∆å^ÇåãÇ—Ç¬ÇØÇÈÅioccurs check Ç†ÇËÅj
+bindVar :: String -> Type -> Either UnifyError Subst
+bindVar v t
+  | t == TVar v = Right emptySubst
+  | occursIn v t = Left (UnifyOccursCheckFailed v t)
+  | otherwise = Right (singletonSubst v t)
 
-occursCheck :: String -> Type -> Bool
-occursCheck a (TVar b) = a == b
-occursCheck a (TCon _) = False
-occursCheck a TUnit = False
-occursCheck a (TList t) = occursCheck a t
-occursCheck a (TTuple ts) = any (occursCheck a) ts
-occursCheck a (TArrow t1 t2) = occursCheck a t1 || occursCheck a t2
+-- å^ïœêî v Ç™å^ t ÇÃíÜÇ…åªÇÍÇÈÇ©Åiñ≥å¿å^ÇñhÇÆÅj
+occursIn :: String -> Type -> Bool
+occursIn v t = case t of
+  TVar x -> x == v
+  TCon _ -> False
+  TUnit -> False
+  TList t1 -> occursIn v t1
+  TTuple ts -> any (occursIn v) ts
+  TArrow t1 t2 -> occursIn v t1 || occursIn v t2
+  TApp t1 t2 -> occursIn v t1 || occursIn v t2
+  TConstraint cs t1 -> any (occursInConstraint v) cs || occursIn v t1
+  TForall vs t1 -> if v `elem` vs then False else occursIn v t1
+  TRecord fields -> any (occursIn v) (M.elems fields)
 
+-- êßñÒì‡Ç…ïœêîÇ™åªÇÍÇÈÇ©
+occursInConstraint :: String -> Constraint -> Bool
+occursInConstraint v (Constraint _ ts) =
+  any (occursIn v) ts
+
+-- êßñÒÇÃìùàÍÅiíPèÉÇ»ç\ë¢ÇÃàÍívÇâºíËÅj
+unifyConstraints :: [Constraint] -> [Constraint] -> Either UnifyError Subst
+unifyConstraints [] [] = Right emptySubst
+unifyConstraints (Constraint c1 ts1 : cs1) (Constraint c2 ts2 : cs2)
+  | c1 == c2 && length ts1 == length ts2 = do
+      s1 <- unifyMany ts1 ts2
+      s2 <- unifyConstraints (map (applyConstraint s1) cs1) (map (applyConstraint s1) cs2)
+      Right (s2 `composeSubst` s1)
+  | otherwise = Left (UnifyMismatch (TCon c1) (TCon c2))
+unifyConstraints _ _ = Left (UnifyMismatch (TCon "constraint") (TCon "constraint"))
+
+-- å^ÇÃÉäÉXÉgÇèáÇ…ìùàÍ
 unifyMany :: [Type] -> [Type] -> Either UnifyError Subst
 unifyMany [] [] = Right emptySubst
 unifyMany (t1 : ts1) (t2 : ts2) = do
@@ -1285,150 +663,174 @@ unifyMany (t1 : ts1) (t2 : ts2) = do
 unifyMany ts1 ts2 =
   Left (UnifyMismatch (TTuple ts1) (TTuple ts2))
 
--- å^ïœêîÇ∆å^ÇåãÇ—Ç¬ÇØÇÈÅioccurs check Ç†ÇËÅj
-bindVar :: String -> Type -> Either UnifyError Subst
-bindVar v t
-  | t == TVar v = return emptySubst
-  | v `occursIn` t = Left (UnifyOccursCheckFailed v t)
-  | otherwise = return (singletonSubst v t)
-
--- å^ïœêî v Ç™å^ t ÇÃíÜÇ…åªÇÍÇÈÇ©Åiñ≥å¿å^ÇñhÇÆÅj
-occursIn :: String -> Type -> Bool
-occursIn v t = case t of
-  TVar x -> x == v
-  TCon _ -> False
-  TArrow t1 t2 -> occursIn v t1 || occursIn v t2
-  TList t1 -> occursIn v t1
-  TApp t1 t2 -> occursIn v t1 || occursIn v t2
-  TConstraint cs t1 -> any (occursInConstraint v) cs || occursIn v t1
-  TForall vs t1 -> if v `elem` vs then False else occursIn v t1
-
-occursInConstraint :: String -> Constraint -> Bool
-occursInConstraint v (Constraint _ ts) =
-  any (occursIn v) ts
-
 
 -- token --
-[610] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Unify"TokSymbol "("       
-[605] TokTypeIdent "Subst"TokSymbol ","       TokIdent "unify"    TokSymbol ","       TokTypeIdent "UnifyE
-[600] TokSymbol ")"       TokKeyword "where"  TokNewline          TokKeyword "import" TokTypeIdent "AST"  
-[595] TokOperator "."     TokTypeIdent "Type" TokNewline          TokKeyword "import" TokTypeIdent "Contro
-[590] TokOperator "."     TokTypeIdent "Monad"TokSymbol "("       TokIdent "unless"   TokSymbol ")"       
-[585] TokNewline          TokKeyword "import" TokKeyword "qualifieTokTypeIdent "Data" TokOperator "."     
-[580] TokTypeIdent "Map"  TokKeyword "as"     TokTypeIdent "M"    TokNewline          TokKeyword "import" 
-[575] TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Subst"TokNewline          TokKeyword "data"   
-[570] TokTypeIdent "UnifyETokSymbol ";"       TokSymbol "="       TokTypeIdent "UnifyMTokTypeIdent "Type" 
-[565] TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       TokTypeIdent "UnifyOTokTypeIdent "String
-[560] TokTypeIdent "Type" TokSymbol ";"       TokKeyword "derivingTokSymbol "("       TokTypeIdent "Show" 
-[555] TokSymbol ","       TokTypeIdent "Eq"   TokSymbol ")"       TokNewline          TokIdent "unify"    
-[550] TokSymbol "::"      TokTypeIdent "Type" TokArrow            TokTypeIdent "Type" TokArrow            
-[545] TokTypeIdent "EitherTokTypeIdent "UnifyETokTypeIdent "Subst"TokNewline          TokIdent "unify"    
-[540] TokSymbol "("       TokTypeIdent "TVar" TokIdent "a"        TokSymbol ")"       TokIdent "t"        
-[535] TokSymbol "="       TokIdent "varBind"  TokIdent "a"        TokIdent "t"        TokNewline          
-[530] TokIdent "unify"    TokIdent "t"        TokSymbol "("       TokTypeIdent "TVar" TokIdent "a"        
-[525] TokSymbol ")"       TokSymbol "="       TokIdent "varBind"  TokIdent "a"        TokIdent "t"        
-[520] TokNewline          TokIdent "unify"    TokTypeIdent "TUnit"TokTypeIdent "TUnit"TokSymbol "="       
-[515] TokTypeIdent "Right"TokIdent "emptySubstTokNewline          TokIdent "unify"    TokSymbol "("       
-[510] TokTypeIdent "TCon" TokIdent "a"        TokSymbol ")"       TokSymbol "("       TokTypeIdent "TCon" 
-[505] TokIdent "b"        TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       TokIdent "a"        
-[500] TokOperator "=="    TokIdent "b"        TokSymbol "="       TokTypeIdent "Right"TokIdent "emptySubst
-[495] TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       TokTypeIdent "Left" 
-[490] TokSymbol "("       TokTypeIdent "UnifyMTokSymbol "("       TokTypeIdent "TCon" TokIdent "a"        
-[485] TokSymbol ")"       TokSymbol "("       TokTypeIdent "TCon" TokIdent "b"        TokSymbol ")"       
-[480] TokSymbol ")"       TokNewline          TokIdent "unify"    TokSymbol "("       TokTypeIdent "TArrow
-[475] TokIdent "a1"       TokIdent "b1"       TokSymbol ")"       TokSymbol "("       TokTypeIdent "TArrow
-[470] TokIdent "a2"       TokIdent "b2"       TokSymbol ")"       TokSymbol "="       TokKeyword "do"     
-[465] TokVLBrace          TokIdent "s1"       TokSymbol "<-"      TokIdent "unify"    TokIdent "a1"       
-[460] TokIdent "a2"       TokSymbol ";"       TokIdent "s2"       TokSymbol "<-"      TokIdent "unify"    
-[455] TokSymbol "("       TokIdent "apply"    TokIdent "s1"       TokIdent "b1"       TokSymbol ")"       
-[450] TokSymbol "("       TokIdent "apply"    TokIdent "s1"       TokIdent "b2"       TokSymbol ")"       
-[445] TokSymbol ";"       TokTypeIdent "Right"TokSymbol "("       TokIdent "s2"       TokSymbol "`"       
-[440] TokIdent "composeSubTokSymbol "`"       TokIdent "s1"       TokSymbol ")"       TokVRBrace          
-[435] TokNewline          TokIdent "unify"    TokSymbol "("       TokTypeIdent "TTupleTokIdent "xs"       
-[430] TokSymbol ")"       TokSymbol "("       TokTypeIdent "TTupleTokIdent "ys"       TokSymbol ")"       
-[425] TokSymbol ";"       TokSymbol "|"       TokIdent "length"   TokIdent "xs"       TokOperator "=="    
-[420] TokIdent "length"   TokIdent "ys"       TokSymbol "="       TokIdent "unifyMany"TokIdent "xs"       
-[415] TokIdent "ys"       TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       
-[410] TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyMTokSymbol "("       TokTypeIdent "TTuple
-[405] TokIdent "xs"       TokSymbol ")"       TokSymbol "("       TokTypeIdent "TTupleTokIdent "ys"       
-[400] TokSymbol ")"       TokSymbol ")"       TokNewline          TokIdent "unify"    TokSymbol "("       
-[395] TokTypeIdent "TList"TokIdent "a"        TokSymbol ")"       TokSymbol "("       TokTypeIdent "TList"
-[390] TokIdent "b"        TokSymbol ")"       TokSymbol "="       TokIdent "unify"    TokIdent "a"        
-[385] TokIdent "b"        TokNewline          TokIdent "unify"    TokIdent "t1"       TokIdent "t2"       
-[380] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyMTokIdent "t1"       
-[375] TokIdent "t2"       TokSymbol ")"       TokNewline          TokIdent "varBind"  TokSymbol "::"      
-[370] TokTypeIdent "StringTokArrow            TokTypeIdent "Type" TokArrow            TokTypeIdent "Either
-[365] TokTypeIdent "UnifyETokTypeIdent "Subst"TokNewline          TokIdent "varBind"  TokIdent "a"        
-[360] TokIdent "t"        TokSymbol ";"       TokSymbol "|"       TokIdent "t"        TokOperator "=="    
-[355] TokTypeIdent "TVar" TokIdent "a"        TokSymbol "="       TokTypeIdent "Right"TokIdent "emptySubst
-[350] TokSymbol ";"       TokSymbol "|"       TokIdent "occursChecTokIdent "a"        TokIdent "t"        
-[345] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyOTokIdent "a"        
-[340] TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"
-[335] TokSymbol "="       TokTypeIdent "Right"TokSymbol "("       TokTypeIdent "M"    TokOperator "."     
-[330] TokIdent "singleton"TokIdent "a"        TokIdent "t"        TokSymbol ")"       TokNewline          
-[325] TokIdent "occursChecTokSymbol "::"      TokTypeIdent "StringTokArrow            TokTypeIdent "Type" 
-[320] TokArrow            TokTypeIdent "Bool" TokNewline          TokIdent "occursChecTokIdent "a"        
-[315] TokSymbol "("       TokTypeIdent "TVar" TokIdent "b"        TokSymbol ")"       TokSymbol "="       
-[310] TokIdent "a"        TokOperator "=="    TokIdent "b"        TokNewline          TokIdent "occursChec
-[305] TokIdent "a"        TokSymbol "("       TokTypeIdent "TCon" TokIdent "_"        TokSymbol ")"       
-[300] TokSymbol "="       TokTypeIdent "False"TokNewline          TokIdent "occursChecTokIdent "a"        
-[295] TokTypeIdent "TUnit"TokSymbol "="       TokTypeIdent "False"TokNewline          TokIdent "occursChec
-[290] TokIdent "a"        TokSymbol "("       TokTypeIdent "TList"TokIdent "t"        TokSymbol ")"       
-[285] TokSymbol "="       TokIdent "occursChecTokIdent "a"        TokIdent "t"        TokNewline          
-[280] TokIdent "occursChecTokIdent "a"        TokSymbol "("       TokTypeIdent "TTupleTokIdent "ts"       
-[275] TokSymbol ")"       TokSymbol "="       TokIdent "any"      TokSymbol "("       TokIdent "occursChec
-[270] TokIdent "a"        TokSymbol ")"       TokIdent "ts"       TokNewline          TokIdent "occursChec
-[265] TokIdent "a"        TokSymbol "("       TokTypeIdent "TArrowTokIdent "t1"       TokIdent "t2"       
-[260] TokSymbol ")"       TokSymbol "="       TokIdent "occursChecTokIdent "a"        TokIdent "t1"       
-[255] TokOperator "||"    TokIdent "occursChecTokIdent "a"        TokIdent "t2"       TokNewline          
-[250] TokIdent "unifyMany"TokSymbol "::"      TokSymbol "["       TokTypeIdent "Type" TokSymbol "]"       
-[245] TokArrow            TokSymbol "["       TokTypeIdent "Type" TokSymbol "]"       TokArrow            
-[240] TokTypeIdent "EitherTokTypeIdent "UnifyETokTypeIdent "Subst"TokNewline          TokIdent "unifyMany"
-[235] TokSymbol "["       TokSymbol "]"       TokSymbol "["       TokSymbol "]"       TokSymbol "="       
-[230] TokTypeIdent "Right"TokIdent "emptySubstTokNewline          TokIdent "unifyMany"TokSymbol "("       
-[225] TokIdent "t1"       TokOperator ":"     TokIdent "ts1"      TokSymbol ")"       TokSymbol "("       
-[220] TokIdent "t2"       TokOperator ":"     TokIdent "ts2"      TokSymbol ")"       TokSymbol "="       
-[215] TokKeyword "do"     TokVLBrace          TokIdent "s1"       TokSymbol "<-"      TokIdent "unify"    
-[210] TokIdent "t1"       TokIdent "t2"       TokSymbol ";"       TokIdent "s2"       TokSymbol "<-"      
-[205] TokIdent "unifyMany"TokSymbol "("       TokIdent "map"      TokSymbol "("       TokIdent "apply"    
-[200] TokIdent "s1"       TokSymbol ")"       TokIdent "ts1"      TokSymbol ")"       TokSymbol "("       
-[195] TokIdent "map"      TokSymbol "("       TokIdent "apply"    TokIdent "s1"       TokSymbol ")"       
-[190] TokIdent "ts2"      TokSymbol ")"       TokSymbol ";"       TokTypeIdent "Right"TokSymbol "("       
-[185] TokIdent "s2"       TokSymbol "`"       TokIdent "composeSubTokSymbol "`"       TokIdent "s1"       
-[180] TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "unifyMany"TokIdent "ts1"      
-[175] TokIdent "ts2"      TokSymbol "="       TokSymbol ";"       TokTypeIdent "Left" TokSymbol "("       
-[170] TokTypeIdent "UnifyMTokSymbol "("       TokTypeIdent "TTupleTokIdent "ts1"      TokSymbol ")"       
-[165] TokSymbol "("       TokTypeIdent "TTupleTokIdent "ts2"      TokSymbol ")"       TokSymbol ")"       
-[160] TokNewline          TokIdent "bindVar"  TokSymbol "::"      TokTypeIdent "StringTokArrow            
-[155] TokTypeIdent "Type" TokArrow            TokTypeIdent "EitherTokTypeIdent "UnifyETokTypeIdent "Subst"
-[150] TokNewline          TokIdent "bindVar"  TokIdent "v"        TokIdent "t"        TokSymbol ";"       
-[145] TokSymbol "|"       TokIdent "t"        TokOperator "=="    TokTypeIdent "TVar" TokIdent "v"        
-[140] TokSymbol "="       TokKeyword "return" TokIdent "emptySubstTokSymbol ";"       TokSymbol "|"       
-[135] TokIdent "v"        TokSymbol "`"       TokIdent "occursIn" TokSymbol "`"       TokIdent "t"        
-[130] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyOTokIdent "v"        
-[125] TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"
-[120] TokSymbol "="       TokKeyword "return" TokSymbol "("       TokIdent "singletonSTokIdent "v"        
-[115] TokIdent "t"        TokSymbol ")"       TokNewline          TokIdent "occursIn" TokSymbol "::"      
-[110] TokTypeIdent "StringTokArrow            TokTypeIdent "Type" TokArrow            TokTypeIdent "Bool" 
-[105] TokNewline          TokIdent "occursIn" TokIdent "v"        TokIdent "t"        TokSymbol "="       
-[100] TokKeyword "case"   TokIdent "t"        TokKeyword "of"     TokVLBrace          TokTypeIdent "TVar" 
-[95] TokIdent "x"        TokArrow            TokIdent "x"        TokOperator "=="    TokIdent "v"        
-[90] TokSymbol ";"       TokTypeIdent "TCon" TokIdent "_"        TokArrow            TokTypeIdent "False"
-[85] TokSymbol ";"       TokTypeIdent "TArrowTokIdent "t1"       TokIdent "t2"       TokArrow            
-[80] TokIdent "occursIn" TokIdent "v"        TokIdent "t1"       TokOperator "||"    TokIdent "occursIn" 
-[75] TokIdent "v"        TokIdent "t2"       TokSymbol ";"       TokTypeIdent "TList"TokIdent "t1"       
-[70] TokArrow            TokIdent "occursIn" TokIdent "v"        TokIdent "t1"       TokSymbol ";"       
-[65] TokTypeIdent "TApp" TokIdent "t1"       TokIdent "t2"       TokArrow            TokIdent "occursIn" 
-[60] TokIdent "v"        TokIdent "t1"       TokOperator "||"    TokIdent "occursIn" TokIdent "v"        
-[55] TokIdent "t2"       TokSymbol ";"       TokTypeIdent "TConstTokIdent "cs"       TokIdent "t1"       
-[50] TokArrow            TokIdent "any"      TokSymbol "("       TokIdent "occursInCoTokIdent "v"        
-[45] TokSymbol ")"       TokIdent "cs"       TokOperator "||"    TokIdent "occursIn" TokIdent "v"        
-[40] TokIdent "t1"       TokSymbol ";"       TokTypeIdent "TForalTokIdent "vs"       TokIdent "t1"       
-[35] TokArrow            TokKeyword "if"     TokIdent "v"        TokSymbol "`"       TokIdent "elem"     
-[30] TokSymbol "`"       TokIdent "vs"       TokKeyword "then"   TokTypeIdent "False"TokKeyword "else"   
-[25] TokIdent "occursIn" TokIdent "v"        TokIdent "t1"       TokVRBrace          TokNewline          
-[20] TokIdent "occursInCoTokSymbol "::"      TokTypeIdent "StringTokArrow            TokTypeIdent "Constr
-[15] TokArrow            TokTypeIdent "Bool" TokNewline          TokIdent "occursInCoTokIdent "v"        
-[10] TokSymbol "("       TokTypeIdent "ConstrTokIdent "_"        TokIdent "ts"       TokSymbol ")"       
-[5] TokSymbol "="       TokSymbol ";"       TokIdent "any"      TokSymbol "("       TokIdent "occursIn" 
-[0] TokIdent "v"        TokSymbol ")"       TokIdent "ts"       TokNewline          
+[840] TokKeyword "module" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Unify"TokSymbol "("       
+[835] TokTypeIdent "Subst"TokSymbol ","       TokIdent "unify"    TokSymbol ","       TokTypeIdent "UnifyE
+[830] TokSymbol ","       TokIdent "unifyMany"TokSymbol ")"       TokKeyword "where"  TokNewline          
+[825] TokKeyword "import" TokTypeIdent "ControTokOperator "."     TokTypeIdent "Monad"TokSymbol "("       
+[820] TokIdent "unless"   TokSymbol ")"       TokNewline          TokKeyword "import" TokKeyword "qualifie
+[815] TokTypeIdent "Data" TokOperator "."     TokTypeIdent "Map"  TokKeyword "as"     TokTypeIdent "M"    
+[810] TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Subst"
+[805] TokNewline          TokKeyword "import" TokTypeIdent "TypeInTokOperator "."     TokTypeIdent "Type" 
+[800] TokNewline          TokKeyword "data"   TokTypeIdent "UnifyETokSymbol ";"       TokSymbol "="       
+[795] TokTypeIdent "UnifyMTokTypeIdent "Type" TokTypeIdent "Type" TokSymbol ";"       TokSymbol "|"       
+[790] TokTypeIdent "UnifyOTokTypeIdent "StringTokTypeIdent "Type" TokSymbol ";"       TokKeyword "deriving
+[785] TokSymbol "("       TokTypeIdent "Show" TokSymbol ","       TokTypeIdent "Eq"   TokSymbol ")"       
+[780] TokNewline          TokIdent "unify"    TokSymbol "::"      TokTypeIdent "Type" TokArrow            
+[775] TokTypeIdent "Type" TokArrow            TokTypeIdent "EitherTokTypeIdent "UnifyETokTypeIdent "Subst"
+[770] TokNewline          TokIdent "unify"    TokSymbol "("       TokTypeIdent "TVar" TokIdent "a"        
+[765] TokSymbol ")"       TokIdent "t"        TokSymbol "="       TokIdent "bindVar"  TokIdent "a"        
+[760] TokIdent "t"        TokNewline          TokIdent "unify"    TokIdent "t"        TokSymbol "("       
+[755] TokTypeIdent "TVar" TokIdent "a"        TokSymbol ")"       TokSymbol "="       TokIdent "bindVar"  
+[750] TokIdent "a"        TokIdent "t"        TokNewline          TokIdent "unify"    TokTypeIdent "TUnit"
+[745] TokTypeIdent "TUnit"TokSymbol "="       TokTypeIdent "Right"TokIdent "emptySubstTokNewline          
+[740] TokIdent "unify"    TokSymbol "("       TokTypeIdent "TCon" TokIdent "a"        TokSymbol ")"       
+[735] TokSymbol "("       TokTypeIdent "TCon" TokIdent "b"        TokSymbol ")"       TokSymbol ";"       
+[730] TokSymbol "|"       TokIdent "a"        TokOperator "=="    TokIdent "b"        TokSymbol "="       
+[725] TokTypeIdent "Right"TokIdent "emptySubstTokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"
+[720] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyMTokSymbol "("       
+[715] TokTypeIdent "TCon" TokIdent "a"        TokSymbol ")"       TokSymbol "("       TokTypeIdent "TCon" 
+[710] TokIdent "b"        TokSymbol ")"       TokSymbol ")"       TokNewline          TokIdent "unify"    
+[705] TokSymbol "("       TokTypeIdent "TArrowTokIdent "a1"       TokIdent "b1"       TokSymbol ")"       
+[700] TokSymbol "("       TokTypeIdent "TArrowTokIdent "a2"       TokIdent "b2"       TokSymbol ")"       
+[695] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "s1"       TokSymbol "<-"      
+[690] TokIdent "unify"    TokIdent "a1"       TokIdent "a2"       TokSymbol ";"       TokIdent "s2"       
+[685] TokSymbol "<-"      TokIdent "unify"    TokSymbol "("       TokIdent "apply"    TokIdent "s1"       
+[680] TokIdent "b1"       TokSymbol ")"       TokSymbol "("       TokIdent "apply"    TokIdent "s1"       
+[675] TokIdent "b2"       TokSymbol ")"       TokSymbol ";"       TokTypeIdent "Right"TokSymbol "("       
+[670] TokIdent "s2"       TokSymbol "`"       TokIdent "composeSubTokSymbol "`"       TokIdent "s1"       
+[665] TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "unify"    TokSymbol "("       
+[660] TokTypeIdent "TTupleTokIdent "xs"       TokSymbol ")"       TokSymbol "("       TokTypeIdent "TTuple
+[655] TokIdent "ys"       TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       TokIdent "length"   
+[650] TokIdent "xs"       TokOperator "=="    TokIdent "length"   TokIdent "ys"       TokSymbol "="       
+[645] TokIdent "unifyMany"TokIdent "xs"       TokIdent "ys"       TokSymbol ";"       TokSymbol "|"       
+[640] TokIdent "otherwise"TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyM
+[635] TokSymbol "("       TokTypeIdent "TTupleTokIdent "xs"       TokSymbol ")"       TokSymbol "("       
+[630] TokTypeIdent "TTupleTokIdent "ys"       TokSymbol ")"       TokSymbol ")"       TokNewline          
+[625] TokIdent "unify"    TokSymbol "("       TokTypeIdent "TList"TokIdent "a"        TokSymbol ")"       
+[620] TokSymbol "("       TokTypeIdent "TList"TokIdent "b"        TokSymbol ")"       TokSymbol "="       
+[615] TokIdent "unify"    TokIdent "a"        TokIdent "b"        TokNewline          TokIdent "unify"    
+[610] TokSymbol "("       TokTypeIdent "TApp" TokIdent "f1"       TokIdent "a1"       TokSymbol ")"       
+[605] TokSymbol "("       TokTypeIdent "TApp" TokIdent "f2"       TokIdent "a2"       TokSymbol ")"       
+[600] TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "s1"       TokSymbol "<-"      
+[595] TokIdent "unify"    TokIdent "f1"       TokIdent "f2"       TokSymbol ";"       TokIdent "s2"       
+[590] TokSymbol "<-"      TokIdent "unify"    TokSymbol "("       TokIdent "apply"    TokIdent "s1"       
+[585] TokIdent "a1"       TokSymbol ")"       TokSymbol "("       TokIdent "apply"    TokIdent "s1"       
+[580] TokIdent "a2"       TokSymbol ")"       TokSymbol ";"       TokTypeIdent "Right"TokSymbol "("       
+[575] TokIdent "s2"       TokSymbol "`"       TokIdent "composeSubTokSymbol "`"       TokIdent "s1"       
+[570] TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "unify"    TokSymbol "("       
+[565] TokTypeIdent "TConstTokIdent "cs1"      TokIdent "t1"       TokSymbol ")"       TokSymbol "("       
+[560] TokTypeIdent "TConstTokIdent "cs2"      TokIdent "t2"       TokSymbol ")"       TokSymbol ";"       
+[555] TokSymbol "|"       TokIdent "length"   TokIdent "cs1"      TokOperator "=="    TokIdent "length"   
+[550] TokIdent "cs2"      TokSymbol "="       TokKeyword "do"     TokVLBrace          TokIdent "s1"       
+[545] TokSymbol "<-"      TokIdent "unifyConstTokIdent "cs1"      TokIdent "cs2"      TokSymbol ";"       
+[540] TokIdent "s2"       TokSymbol "<-"      TokIdent "unify"    TokSymbol "("       TokIdent "apply"    
+[535] TokIdent "s1"       TokIdent "t1"       TokSymbol ")"       TokSymbol "("       TokIdent "apply"    
+[530] TokIdent "s1"       TokIdent "t2"       TokSymbol ")"       TokSymbol ";"       TokTypeIdent "Right"
+[525] TokSymbol "("       TokIdent "s2"       TokSymbol "`"       TokIdent "composeSubTokSymbol "`"       
+[520] TokIdent "s1"       TokSymbol ")"       TokVRBrace          TokNewline          TokSymbol "|"       
+[515] TokIdent "otherwise"TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyM
+[510] TokSymbol "("       TokTypeIdent "TConstTokIdent "cs1"      TokIdent "t1"       TokSymbol ")"       
+[505] TokSymbol "("       TokTypeIdent "TConstTokIdent "cs2"      TokIdent "t2"       TokSymbol ")"       
+[500] TokSymbol ")"       TokNewline          TokIdent "unify"    TokSymbol "("       TokTypeIdent "TForal
+[495] TokIdent "vs1"      TokIdent "t1"       TokSymbol ")"       TokSymbol "("       TokTypeIdent "TForal
+[490] TokIdent "vs2"      TokIdent "t2"       TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       
+[485] TokIdent "vs1"      TokOperator "=="    TokIdent "vs2"      TokSymbol "="       TokIdent "unify"    
+[480] TokIdent "t1"       TokIdent "t2"       TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"
+[475] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyMTokSymbol "("       
+[470] TokTypeIdent "TForalTokIdent "vs1"      TokIdent "t1"       TokSymbol ")"       TokSymbol "("       
+[465] TokTypeIdent "TForalTokIdent "vs2"      TokIdent "t2"       TokSymbol ")"       TokSymbol ")"       
+[460] TokNewline          TokIdent "unify"    TokSymbol "("       TokTypeIdent "TRecorTokIdent "f1"       
+[455] TokSymbol ")"       TokSymbol "("       TokTypeIdent "TRecorTokIdent "f2"       TokSymbol ")"       
+[450] TokSymbol ";"       TokSymbol "|"       TokTypeIdent "M"    TokOperator "."     TokIdent "keys"     
+[445] TokIdent "f1"       TokOperator "=="    TokTypeIdent "M"    TokOperator "."     TokIdent "keys"     
+[440] TokIdent "f2"       TokSymbol "="       TokIdent "unifyMany"TokSymbol "("       TokTypeIdent "M"    
+[435] TokOperator "."     TokIdent "elems"    TokIdent "f1"       TokSymbol ")"       TokSymbol "("       
+[430] TokTypeIdent "M"    TokOperator "."     TokIdent "elems"    TokIdent "f2"       TokSymbol ")"       
+[425] TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       TokTypeIdent "Left" 
+[420] TokSymbol "("       TokTypeIdent "UnifyMTokSymbol "("       TokTypeIdent "TRecorTokIdent "f1"       
+[415] TokSymbol ")"       TokSymbol "("       TokTypeIdent "TRecorTokIdent "f2"       TokSymbol ")"       
+[410] TokSymbol ")"       TokNewline          TokIdent "unify"    TokIdent "t1"       TokIdent "t2"       
+[405] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyMTokIdent "t1"       
+[400] TokIdent "t2"       TokSymbol ")"       TokNewline          TokIdent "bindVar"  TokSymbol "::"      
+[395] TokTypeIdent "StringTokArrow            TokTypeIdent "Type" TokArrow            TokTypeIdent "Either
+[390] TokTypeIdent "UnifyETokTypeIdent "Subst"TokNewline          TokIdent "bindVar"  TokIdent "v"        
+[385] TokIdent "t"        TokSymbol ";"       TokSymbol "|"       TokIdent "t"        TokOperator "=="    
+[380] TokTypeIdent "TVar" TokIdent "v"        TokSymbol "="       TokTypeIdent "Right"TokIdent "emptySubst
+[375] TokSymbol ";"       TokSymbol "|"       TokIdent "occursIn" TokIdent "v"        TokIdent "t"        
+[370] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyOTokIdent "v"        
+[365] TokIdent "t"        TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       TokIdent "otherwise"
+[360] TokSymbol "="       TokTypeIdent "Right"TokSymbol "("       TokIdent "singletonSTokIdent "v"        
+[355] TokIdent "t"        TokSymbol ")"       TokNewline          TokIdent "occursIn" TokSymbol "::"      
+[350] TokTypeIdent "StringTokArrow            TokTypeIdent "Type" TokArrow            TokTypeIdent "Bool" 
+[345] TokNewline          TokIdent "occursIn" TokIdent "v"        TokIdent "t"        TokSymbol "="       
+[340] TokKeyword "case"   TokIdent "t"        TokKeyword "of"     TokVLBrace          TokTypeIdent "TVar" 
+[335] TokIdent "x"        TokArrow            TokIdent "x"        TokOperator "=="    TokIdent "v"        
+[330] TokSymbol ";"       TokTypeIdent "TCon" TokIdent "_"        TokArrow            TokKeyword "False"  
+[325] TokSymbol ";"       TokTypeIdent "TUnit"TokArrow            TokKeyword "False"  TokSymbol ";"       
+[320] TokTypeIdent "TList"TokIdent "t1"       TokArrow            TokIdent "occursIn" TokIdent "v"        
+[315] TokIdent "t1"       TokSymbol ";"       TokTypeIdent "TTupleTokIdent "ts"       TokArrow            
+[310] TokIdent "any"      TokSymbol "("       TokIdent "occursIn" TokIdent "v"        TokSymbol ")"       
+[305] TokIdent "ts"       TokSymbol ";"       TokTypeIdent "TArrowTokIdent "t1"       TokIdent "t2"       
+[300] TokArrow            TokIdent "occursIn" TokIdent "v"        TokIdent "t1"       TokOperator "||"    
+[295] TokIdent "occursIn" TokIdent "v"        TokIdent "t2"       TokSymbol ";"       TokTypeIdent "TApp" 
+[290] TokIdent "t1"       TokIdent "t2"       TokArrow            TokIdent "occursIn" TokIdent "v"        
+[285] TokIdent "t1"       TokOperator "||"    TokIdent "occursIn" TokIdent "v"        TokIdent "t2"       
+[280] TokSymbol ";"       TokTypeIdent "TConstTokIdent "cs"       TokIdent "t1"       TokArrow            
+[275] TokIdent "any"      TokSymbol "("       TokIdent "occursInCoTokIdent "v"        TokSymbol ")"       
+[270] TokIdent "cs"       TokOperator "||"    TokIdent "occursIn" TokIdent "v"        TokIdent "t1"       
+[265] TokSymbol ";"       TokTypeIdent "TForalTokIdent "vs"       TokIdent "t1"       TokArrow            
+[260] TokKeyword "if"     TokIdent "v"        TokSymbol "`"       TokIdent "elem"     TokSymbol "`"       
+[255] TokIdent "vs"       TokKeyword "then"   TokKeyword "False"  TokKeyword "else"   TokIdent "occursIn" 
+[250] TokIdent "v"        TokIdent "t1"       TokSymbol ";"       TokTypeIdent "TRecorTokIdent "fields"   
+[245] TokArrow            TokIdent "any"      TokSymbol "("       TokIdent "occursIn" TokIdent "v"        
+[240] TokSymbol ")"       TokSymbol "("       TokTypeIdent "M"    TokOperator "."     TokIdent "elems"    
+[235] TokIdent "fields"   TokSymbol ")"       TokVRBrace          TokNewline          TokIdent "occursInCo
+[230] TokSymbol "::"      TokTypeIdent "StringTokArrow            TokTypeIdent "ConstrTokArrow            
+[225] TokTypeIdent "Bool" TokNewline          TokIdent "occursInCoTokIdent "v"        TokSymbol "("       
+[220] TokTypeIdent "ConstrTokIdent "_"        TokIdent "ts"       TokSymbol ")"       TokSymbol "="       
+[215] TokSymbol ";"       TokIdent "any"      TokSymbol "("       TokIdent "occursIn" TokIdent "v"        
+[210] TokSymbol ")"       TokIdent "ts"       TokNewline          TokIdent "unifyConstTokSymbol "::"      
+[205] TokSymbol "["       TokTypeIdent "ConstrTokSymbol "]"       TokArrow            TokSymbol "["       
+[200] TokTypeIdent "ConstrTokSymbol "]"       TokArrow            TokTypeIdent "EitherTokTypeIdent "UnifyE
+[195] TokTypeIdent "Subst"TokNewline          TokIdent "unifyConstTokSymbol "["       TokSymbol "]"       
+[190] TokSymbol "["       TokSymbol "]"       TokSymbol "="       TokTypeIdent "Right"TokIdent "emptySubst
+[185] TokNewline          TokIdent "unifyConstTokSymbol "("       TokTypeIdent "ConstrTokIdent "c1"       
+[180] TokIdent "ts1"      TokOperator ":"     TokIdent "cs1"      TokSymbol ")"       TokSymbol "("       
+[175] TokTypeIdent "ConstrTokIdent "c2"       TokIdent "ts2"      TokOperator ":"     TokIdent "cs2"      
+[170] TokSymbol ")"       TokSymbol ";"       TokSymbol "|"       TokIdent "c1"       TokOperator "=="    
+[165] TokIdent "c2"       TokOperator "&&"    TokIdent "length"   TokIdent "ts1"      TokOperator "=="    
+[160] TokIdent "length"   TokIdent "ts2"      TokSymbol "="       TokKeyword "do"     TokVLBrace          
+[155] TokIdent "s1"       TokSymbol "<-"      TokIdent "unifyMany"TokIdent "ts1"      TokIdent "ts2"      
+[150] TokSymbol ";"       TokIdent "s2"       TokSymbol "<-"      TokIdent "unifyConstTokSymbol "("       
+[145] TokIdent "map"      TokSymbol "("       TokIdent "applyConstTokIdent "s1"       TokSymbol ")"       
+[140] TokIdent "cs1"      TokSymbol ")"       TokSymbol "("       TokIdent "map"      TokSymbol "("       
+[135] TokIdent "applyConstTokIdent "s1"       TokSymbol ")"       TokIdent "cs2"      TokSymbol ")"       
+[130] TokSymbol ";"       TokTypeIdent "Right"TokSymbol "("       TokIdent "s2"       TokSymbol "`"       
+[125] TokIdent "composeSubTokSymbol "`"       TokIdent "s1"       TokSymbol ")"       TokVRBrace          
+[120] TokNewline          TokSymbol "|"       TokIdent "otherwise"TokSymbol "="       TokTypeIdent "Left" 
+[115] TokSymbol "("       TokTypeIdent "UnifyMTokSymbol "("       TokTypeIdent "TCon" TokIdent "c1"       
+[110] TokSymbol ")"       TokSymbol "("       TokTypeIdent "TCon" TokIdent "c2"       TokSymbol ")"       
+[105] TokSymbol ")"       TokNewline          TokIdent "unifyConstTokIdent "_"        TokIdent "_"        
+[100] TokSymbol "="       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyMTokSymbol "("       
+[95] TokTypeIdent "TCon" TokString "constrainTokSymbol ")"       TokSymbol "("       TokTypeIdent "TCon" 
+[90] TokString "constrainTokSymbol ")"       TokSymbol ")"       TokNewline          TokIdent "unifyMany"
+[85] TokSymbol "::"      TokSymbol "["       TokTypeIdent "Type" TokSymbol "]"       TokArrow            
+[80] TokSymbol "["       TokTypeIdent "Type" TokSymbol "]"       TokArrow            TokTypeIdent "Either
+[75] TokTypeIdent "UnifyETokTypeIdent "Subst"TokNewline          TokIdent "unifyMany"TokSymbol "["       
+[70] TokSymbol "]"       TokSymbol "["       TokSymbol "]"       TokSymbol "="       TokTypeIdent "Right"
+[65] TokIdent "emptySubstTokNewline          TokIdent "unifyMany"TokSymbol "("       TokIdent "t1"       
+[60] TokOperator ":"     TokIdent "ts1"      TokSymbol ")"       TokSymbol "("       TokIdent "t2"       
+[55] TokOperator ":"     TokIdent "ts2"      TokSymbol ")"       TokSymbol "="       TokKeyword "do"     
+[50] TokVLBrace          TokIdent "s1"       TokSymbol "<-"      TokIdent "unify"    TokIdent "t1"       
+[45] TokIdent "t2"       TokSymbol ";"       TokIdent "s2"       TokSymbol "<-"      TokIdent "unifyMany"
+[40] TokSymbol "("       TokIdent "map"      TokSymbol "("       TokIdent "apply"    TokIdent "s1"       
+[35] TokSymbol ")"       TokIdent "ts1"      TokSymbol ")"       TokSymbol "("       TokIdent "map"      
+[30] TokSymbol "("       TokIdent "apply"    TokIdent "s1"       TokSymbol ")"       TokIdent "ts2"      
+[25] TokSymbol ")"       TokSymbol ";"       TokTypeIdent "Right"TokSymbol "("       TokIdent "s2"       
+[20] TokSymbol "`"       TokIdent "composeSubTokSymbol "`"       TokIdent "s1"       TokSymbol ")"       
+[15] TokVRBrace          TokNewline          TokIdent "unifyMany"TokIdent "ts1"      TokIdent "ts2"      
+[10] TokSymbol "="       TokSymbol ";"       TokTypeIdent "Left" TokSymbol "("       TokTypeIdent "UnifyM
+[5] TokSymbol "("       TokTypeIdent "TTupleTokIdent "ts1"      TokSymbol ")"       TokSymbol "("       
+[0] TokTypeIdent "TTupleTokIdent "ts2"      TokSymbol ")"       TokSymbol ")"       TokNewline          

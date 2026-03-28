@@ -27,9 +27,9 @@ import Text.Printf (printf)
 import TypeInference.Pretty
 import Utils.MyTrace
 
-printExpr :: Expr -> String
-printExpr (EVar name) = name
-printExpr (EAnn e ty) = printExpr e ++ " :: " ++ prettyType ty
+-- printExpr :: Expr -> String
+-- printExpr (EVar name) = name
+-- printExpr (EAnn e ty) = printExpr e ++ " :: " ++ prettyType ty
 
 main :: IO ()
 main = do

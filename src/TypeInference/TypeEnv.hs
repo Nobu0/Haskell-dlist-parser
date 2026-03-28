@@ -4,6 +4,8 @@ module TypeInference.TypeEnv
     emptyEnv,
     -- mergeEnvs,
     primitiveEnv,
+    testEnv,
+    withTestEnv,
     extendEnv,
     lookupEnv,
     generalize,
@@ -20,6 +22,7 @@ where
 import Data.List (nub, (\\))
 import qualified Data.Map as M
 import qualified Data.Map as Map
+import Data.Monoid ((<>))
 import Debug.Trace (trace)
 import TypeInference.Error (InferError (..))
 import TypeInference.Subst (Subst, apply)
@@ -35,6 +38,12 @@ data Scheme = Forall [Name] Type
 newtype TypeEnv = TypeEnv (M.Map Name Scheme)
   deriving (Show, Eq)
 
+instance Semigroup TypeEnv where
+  (TypeEnv env1) <> (TypeEnv env2) = TypeEnv (env1 <> env2)
+
+instance Monoid TypeEnv where
+  mempty = TypeEnv M.empty
+
 fromList :: [(String, Scheme)] -> TypeEnv
 fromList = TypeEnv . Map.fromList
 
@@ -47,8 +56,6 @@ extendEnv :: TypeEnv -> Name -> Scheme -> TypeEnv
 extendEnv (TypeEnv env) x s = TypeEnv (M.insert x s env)
 
 -- 環境から変数のスキームを取得
--- lookupEnv :: TypeEnv -> Name -> Maybe Scheme
--- lookupEnv (TypeEnv env) x = M.lookup x env
 lookupEnv :: TypeEnv -> Name -> Maybe Scheme
 lookupEnv (TypeEnv m) name = Map.lookup name m
 
@@ -99,18 +106,49 @@ applyEnv s (TypeEnv env) =
 -- 初期のプリミティブ環境（必要に応じて使う）
 primitiveEnv :: TypeEnv
 primitiveEnv =
+  TypeEnv $
+    M.fromList
+      [ ("+", Forall [] (intBinOp)),
+        ("-", Forall [] (intBinOp)),
+        ("*", Forall [] (intBinOp)),
+        ("div", Forall [] (intBinOp)),
+        ("mod", Forall [] (intBinOp)),
+        ("==", Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),
+        ("/=", Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),
+        ("<", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),
+        ("<=", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),
+        (">", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),
+        (">=", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),
+        ("&&", Forall [] (TArrow (TCon "Bool") (TArrow (TCon "Bool") (TCon "Bool")))),
+        ("||", Forall [] (TArrow (TCon "Bool") (TArrow (TCon "Bool") (TCon "Bool")))),
+        ("not", Forall [] (TArrow (TCon "Bool") (TCon "Bool"))),
+        ("$", Forall ["a", "b"] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "b")))),
+        (".", Forall ["a", "b", "c"] (TArrow (TArrow (TVar "b") (TVar "c")) (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "c"))))),
+        ("True", Forall [] (TCon "Bool")),
+        ("False", Forall [] (TCon "Bool")),
+        ("Nothing", Forall ["a"] (TApp (TCon "Maybe") (TVar "a"))),
+        ("Just", Forall ["a"] (TArrow (TVar "a") (TApp (TCon "Maybe") (TVar "a")))),
+        ("[]", Forall ["a"] (TList (TVar "a"))),
+        (":", Forall ["a"] (TArrow (TVar "a") (TArrow (TList (TVar "a")) (TList (TVar "a"))))),
+        ("()", Forall [] (TTuple [])),
+        ("(,)", Forall ["a", "b"] (TArrow (TVar "a") (TArrow (TVar "b") (TTuple [TVar "a", TVar "b"])))),
+        ("print", Forall ["a"] (TArrow (TVar "a") (TCon "Unit"))),
+        ("reverse", Forall ["a"] (TArrow (TList (TVar "a")) (TList (TVar "a")))),
+        ("span", Forall ["a"] (TArrow (TArrow (TVar "a") (TCon "Bool")) (TArrow (TList (TVar "a")) (TTuple [TList (TVar "a"), TList (TVar "a")])))),
+        ("drop", Forall ["a"] (TArrow (TCon "Int") (TArrow (TList (TVar "a")) (TList (TVar "a"))))),
+        ("++", Forall ["a"] (TArrow (TList (TVar "a")) (TArrow (TList (TVar "a")) (TList (TVar "a")))))
+      ]
+  where
+    intBinOp = TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int"))
+
+withTestEnv :: TypeEnv
+withTestEnv = primitiveEnv <> testEnv
+
+testEnv :: TypeEnv
+testEnv =
   TypeEnv
     ( M.fromList
-        [ ("+", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
-          ("-", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
-          ("*", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Int")))),
-          ("==", Forall ["a"] (TArrow (TVar "a") (TArrow (TVar "a") (TCon "Bool")))),
-          (">", Forall [] (TArrow (TCon "Int") (TArrow (TCon "Int") (TCon "Bool")))),
-          ("$", Forall ["a", "b"] (TArrow (TArrow (TVar "a") (TVar "b")) (TArrow (TVar "a") (TVar "b")))),
-          ("print", Forall ["a"] (TArrow (TVar "a") (TCon "Unit"))),
-          ("True", Forall [] (TCon "Bool")),
-          ("False", Forall [] (TCon "Bool")),
-          ("x", Forall [] (TCon "Int")),
+        [ ("x", Forall [] (TCon "Int")),
           ("a", Forall [] (TCon "Int")),
           ("b", Forall [] (TCon "Int")),
           ("c", Forall [] (TCon "Int")),
