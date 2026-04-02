@@ -87,7 +87,7 @@ inferPattern' (PVar x) expectedType = do
   return (emptySubst, env)
 -- 関数適用パターン
 inferPattern' (PApp fnPat args) expectedType = do
-  retType <- freshTypeVar
+  -- retType <- freshTypeVar
   (sArgs, envArgs, argTypes) <- inferPatterns args
   let fnExpectedType = foldr TArrow expectedType (map snd argTypes)
   (sFn, envFn) <- inferPattern' fnPat fnExpectedType

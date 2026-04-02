@@ -1,3 +1,4 @@
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
 module TypeInference.Types where
@@ -25,6 +26,7 @@ class Types a where
 
 -- Type に対するインスタンス
 instance Types Type where
+  ftv :: Type -> [Name]
   ftv (TVar n) = [n]
   ftv (TCon _) = []
   ftv (TArrow t1 t2) = ftv t1 ++ ftv t2
@@ -35,6 +37,7 @@ instance Types Type where
   ftv (TTuple ts) = concatMap ftv ts
   ftv TUnit = []
 
+  apply :: Subst -> Type -> Type
   apply s (TVar n) = case M.lookup n s of
     Just t -> t
     Nothing -> TVar n
@@ -51,7 +54,9 @@ instance Types Type where
 
 -- Scheme に対するインスタンス
 instance Types Scheme where
+  ftv :: Scheme -> [Name]
   ftv (Forall vars t) = filter (`notElem` vars) (ftv t)
+  apply :: Subst -> Scheme -> Scheme
   apply s (Forall vars t) =
     let s' = foldr M.delete s vars
      in Forall vars (apply s' t)
@@ -63,5 +68,7 @@ instance Types TypeEnv where
   apply s env = M.map (apply s) env
 -}
 instance Types TypeEnv where
+  ftv :: TypeEnv -> [Name]
   ftv (TypeEnv env) = concatMap ftv (M.elems env)
+  apply :: Subst -> TypeEnv -> TypeEnv
   apply s (TypeEnv env) = TypeEnv (M.map (apply s) env)

@@ -46,7 +46,7 @@ testCasesDo =
       "do { }"
     ),
     ( "Case with as-pattern",
-      "case v of\n  x@(Just y) -> return x\n  _ -> return 0"
+      "case v of\n  x@(Just y) -> return x;  _ -> return 0;"
     ),
     ( "x; y; z statements",
       "x; y; z"
