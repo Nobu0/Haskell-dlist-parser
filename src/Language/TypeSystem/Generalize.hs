@@ -1,4 +1,8 @@
-module Language.TypeSystem.Generalize where
+module Language.TypeSystem.Generalize
+  ( generalizeType,
+    instantiateScheme,
+  )
+where
 
 import qualified Data.Map as Map
 import qualified Data.Set as Set

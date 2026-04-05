@@ -5,21 +5,41 @@ module Language.TypeSystem.InferM
     emptyInferState,
     freshTVar,
     freshTypeVar,
+    freshName,
     addPred,
     gets,
+    getEnv,
+    putEnv,
     modify,
     DataEnv,
+    extendEnvWithPattern,
+    localEnv,
+    extendEnvRaw,
+    mergeEnvs,
+    -- initialEnv,
+    evalInferM,
+    emptyInferState,
     -- 他に必要な関数や型
   )
 where
 
+-- import Language.TypeSystem.Class
+
+-- import Language.TypeSystem.InferInstances
+
+-- import Language.TypeSystem.EnvInstance
+
+import Control.Applicative (Alternative (empty))
 import Control.Monad.Except
 import Control.Monad.State
 import qualified Data.Map as Map
 import Language.TypeSystem.BaseType
--- import Language.TypeSystem.Class
+-- import Language.TypeSystem.DataEnv (preludeDataEnv)
+import Language.TypeSystem.Env
 import Language.TypeSystem.Error
--- import Language.TypeSystem.InferInstances
+import Language.TypeSystem.Expr
+import Language.TypeSystem.Pattern
+import Language.TypeSystem.Prelude
 import Language.TypeSystem.Syntax
 
 -- | 構築子の型情報
@@ -29,11 +49,47 @@ type DataEnv = Map.Map Name Scheme
 data InferState = InferState
   { count :: Int,
     constraints :: [Pred],
-    dataEnv :: DataEnv
+    dataEnv :: DataEnv,
+    env :: TypeEnv
   }
 
 -- | 推論モナド
 type InferM = ExceptT InferError (State InferState)
+
+evalInferM :: TypeEnv -> InferM a -> Either InferError a
+evalInferM env m =
+  evalState (runExceptT m) (emptyInferState {env = env})
+
+extendTypeEnv :: Name -> Scheme -> TypeEnv -> TypeEnv
+extendTypeEnv name scheme (TypeEnv env) = TypeEnv (Map.insert name scheme env)
+
+localEnv :: TypeEnv -> InferM a -> InferM a
+localEnv env' action = do
+  st <- get
+  put st {env = env'}
+  result <- action
+  modify (\s -> s {env = env st}) -- 元に戻す
+  return result
+
+extendEnvWithPattern :: Pattern -> Scheme -> InferM a -> InferM a
+extendEnvWithPattern (PVar name) scheme action = do
+  oldEnv <- getEnv
+  let newEnv = extendTypeEnv name scheme oldEnv
+  localEnv newEnv action
+extendEnvWithPattern _ _ _ =
+  throwError $ OtherError "Only simple variable patterns are supported in extendEnvWithPattern"
+
+getEnv :: InferM TypeEnv
+getEnv = gets env
+
+putEnv :: TypeEnv -> InferM ()
+putEnv e = modify (\st -> st {env = e})
+
+extendEnvRaw :: TypeEnv -> InferM ()
+extendEnvRaw newEnv = modify (\st -> st {env = newEnv `mergeEnvs` env st})
+
+mergeEnvs :: TypeEnv -> TypeEnv -> TypeEnv
+mergeEnvs (TypeEnv new) (TypeEnv old) = TypeEnv (Map.union new old)
 
 -- | 初期状態
 emptyInferState :: InferState
@@ -41,7 +97,8 @@ emptyInferState =
   InferState
     { count = 0,
       constraints = [],
-      dataEnv = Map.empty
+      dataEnv = preludeDataEnv,
+      env = initialEnv
     }
 
 freshTVar :: InferM Type
@@ -58,6 +115,18 @@ freshTypeVar = do
   let n = count st
   put st {count = n + 1}
   return $ TVar ("a" ++ show n)
+
+freshId :: InferM Int
+freshId = do
+  st <- get
+  let n = count st
+  put st {count = n + 1}
+  return n
+
+freshName :: InferM Name
+freshName = do
+  n <- freshId
+  return ("x" ++ show n)
 
 -- | 制約を追加
 addPred :: Pred -> InferM ()

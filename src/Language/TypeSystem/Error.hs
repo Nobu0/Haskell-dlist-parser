@@ -1,4 +1,8 @@
-module Language.TypeSystem.Error where
+module Language.TypeSystem.Error
+  ( InferError (..),
+    prettyInferError,
+  )
+where
 
 import Language.TypeSystem.BaseType
 import Language.TypeSystem.Syntax

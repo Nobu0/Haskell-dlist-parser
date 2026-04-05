@@ -41,7 +41,7 @@ data Type
   | TTuple [Type]
   | TUnit
   | TBinOp BinOp Type Type
-  | TRecord (Map.Map String Type)
+  | TRecord (Map.Map String Type) (Maybe Type) -- フィールド + 行変数
   deriving (Eq, Ord, Show)
 
 -- data BinOp = Add | Mul | Sub | And | Or

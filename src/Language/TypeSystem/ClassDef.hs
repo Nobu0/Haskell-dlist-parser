@@ -15,11 +15,11 @@ class SchemeLike scheme where
   instantiate :: scheme -> InferM Type
   generalize :: TypeEnv -> Type -> scheme
 
+class ConstraintLike c where
+  unifyConstraint :: c -> InferM Subst
+
 class EnvLike env where
   lookupEnv :: Name -> env -> Maybe Scheme
   extendEnv :: Name -> Scheme -> env -> env
   freeTypeVarsEnv :: env -> Set.Set Name
   applySubstEnv :: Subst -> env -> env
-
-class ConstraintLike c where
-  unifyConstraint :: c -> InferM Subst

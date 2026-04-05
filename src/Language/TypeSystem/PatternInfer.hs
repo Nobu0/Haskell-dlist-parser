@@ -1,6 +1,6 @@
 module Language.TypeSystem.PatternInfer where
 
-import AST.Pattern
+-- import AST.Pattern
 import Control.Monad
 -- (TypeLike (..))
 
@@ -14,9 +14,11 @@ import Language.TypeSystem.Env
 import Language.TypeSystem.Error
 import Language.TypeSystem.InferInstances
 import Language.TypeSystem.InferM
+import Language.TypeSystem.Pattern
 import Language.TypeSystem.Subst
 import Language.TypeSystem.Syntax
 import Language.TypeSystem.Unify
+
 
 inferPattern :: Pattern -> InferM (Subst, TypeEnv, Type)
 inferPattern pat = case pat of

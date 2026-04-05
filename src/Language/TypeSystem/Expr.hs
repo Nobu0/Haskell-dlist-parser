@@ -1,9 +1,14 @@
-module Language.TypeSystem.Expr where
+module Language.TypeSystem.Expr
+  ( Expr (..),
+    Binding,
+    CaseAlt (..),
+  )
+where
 
 import qualified Data.Map as Map
 import Language.TypeSystem.BaseType
 import Language.TypeSystem.BinOp (BinOp (..))
-import Language.TypeSystem.Pattern (Pattern)
+import Language.TypeSystem.Pattern (Pattern (..))
 import Language.TypeSystem.Syntax
 
 -- | 式（推論対象のAST）
@@ -41,3 +46,5 @@ data CaseAlt
   = CaseAlt Pattern Expr
   | CaseAltGuard Pattern [(Expr, Expr)] -- ガード付き
   deriving (Eq, Show)
+
+-- 他の演算子もここに追加！
