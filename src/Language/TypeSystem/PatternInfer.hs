@@ -7,20 +7,38 @@ import Control.Monad
 import Control.Monad.Except (throwError)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
+-- import Debug.Trace (myTraceE, traceShow)
 import Language.TypeSystem.BaseType
 import Language.TypeSystem.Class
 import Language.TypeSystem.DataEnv
 import Language.TypeSystem.Env
+import Language.TypeSystem.EnvInstance
 import Language.TypeSystem.Error
 import Language.TypeSystem.InferInstances
 import Language.TypeSystem.InferM
+import Language.TypeSystem.MyTrace
 import Language.TypeSystem.Pattern
 import Language.TypeSystem.Subst
 import Language.TypeSystem.Syntax
 import Language.TypeSystem.Unify
 
-
 inferPattern :: Pattern -> InferM (Subst, TypeEnv, Type)
+inferPattern (PRecord fields) = do
+  inferred <-
+    mapM
+      ( \(name, pat) -> do
+          (s, env, t) <- inferPattern pat
+          return (s, env, name, t)
+      )
+      fields
+  let s = composeMany [s | (s, _, _, _) <- inferred]
+      env = foldr envMerge emptyEnv [env | (_, env, _, _) <- inferred]
+      fieldTypes = Map.fromList [(name, t) | (_, _, name, t) <- inferred]
+  return (s, env, TRecord fieldTypes Nothing)
+inferPattern (PAs name pat) = do
+  (s1, env1, t1) <- inferPattern pat
+  let env2 = extendEnv name (Forall [] [] t1) emptyEnv
+  return (s1, env1 `envMerge` env2, t1)
 inferPattern pat = case pat of
   PVar name -> do
     tv <- freshTypeVar
@@ -38,6 +56,7 @@ inferPattern pat = case pat of
     let s = composeMany [s3, s2, s1]
     return (s, combineEnvs [env1, env2], applySubst s t2)
   PList ps -> do
+    myTraceE ("[inferList] ps = " ++ show ps)
     results <- mapM inferPattern ps
     let (subs, envs, types) = unzip3 results
     tv <- freshTypeVar
@@ -65,13 +84,16 @@ inferConstrPattern name args = do
   case mScheme of
     Nothing -> throwError $ UnboundVariable name
     Just scheme -> do
-      t <- instantiate scheme
+      -- t <- instantiate scheme
+      -- inferConstrApp t args
+      (t, _) <- instantiate scheme
       inferConstrApp t args
 
 -- | 構築子型に引数パターンを適用して型を推論
 inferConstrApp :: Type -> [Pattern] -> InferM (Subst, TypeEnv, Type)
 inferConstrApp t [] = return (emptySubst, TypeEnv Map.empty, t)
 inferConstrApp t (p : ps) = do
+  myTraceE ("[inferConstrApp] t = " ++ show t ++ ", ps = " ++ show ps)
   tv <- freshTypeVar
   let tExpected = TArrow tv (TVar "res")
   s1 <- unify t tExpected

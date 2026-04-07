@@ -21,6 +21,34 @@ instance SchemeLike Scheme where
 -}
 instance SchemeLike Scheme where
   instantiate (Forall vars preds t) = do
+    tvs <- mapM (const freshTypeVar) vars
+    let s = Map.fromList (zip vars tvs)
+    return (applySubst s t, applySubst s preds)
+
+  generalize env preds t =
+    let vars = Set.toList $ ftv t Set.\\ ftv env
+     in Forall vars preds t
+
+{-}
+instance SchemeLike Scheme where
+  instantiate (Forall vars preds t) = do
+    tvs <- mapM (const freshTypeVar) vars
+    let s = Map.fromList (zip vars tvs)
+    return (applySubst s t, applySubst s preds)
+
+    generalize env preds t =
+      let vars = ftv t \\ ftv env
+      in Forall vars preds t
+-}
+{-}
+  generalize env t =
+    let vars = ftv t `Set.difference` ftv env
+     in Forall (Set.toList vars) [] t
+
+-- generalize env t = generalizeScheme env t
+
+instance SchemeLike Scheme where
+  instantiate (Forall vars preds t) = do
     newVars <- mapM (const freshTVar) vars
     let s = Map.fromList (zip vars newVars)
         t' = applySubst s t
@@ -31,7 +59,7 @@ instance SchemeLike Scheme where
   generalize env t =
     let vars = ftv t `Set.difference` ftv env
      in Forall (Set.toList vars) [] t
-
+-}
 {-}
   generalize (TypeEnv env) t =
     let vars = ftv t `Set.difference` ftv env

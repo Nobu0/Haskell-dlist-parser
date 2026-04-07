@@ -14,7 +14,7 @@ import Language.TypeSystem.Syntax
 data Decl
   = DeclFunGroup Name [FunClause]
   | DeclValue Pattern Expr
-  | DeclTypeSig Name Type
+  | DeclTypeSig Name Scheme -- Type
   | DeclData Name [Name] [Constraint] [Name]
   | DeclNewtype Name [Name] Constraint (Maybe [Name]) -- deriving節
   | DeclModule String (Maybe [Export])

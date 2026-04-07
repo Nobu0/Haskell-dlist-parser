@@ -11,10 +11,22 @@ class Types a where
   applySubst :: Subst -> a -> a
   ftv :: a -> Set.Set Name
 
+{-}
 class SchemeLike scheme where
   instantiate :: scheme -> InferM Type
   generalize :: TypeEnv -> Type -> scheme
+-}
+class SchemeLike scheme where
+  instantiate :: scheme -> InferM (Type, [Pred])
+  generalize :: TypeEnv -> [Pred] -> Type -> scheme
 
+{-}
+class SchemeLike scheme where
+  instantiate :: scheme -> InferM (Type, [Pred])
+
+  -- generalize :: TypeEnv -> Type -> scheme
+  generalize :: TypeEnv -> [Pred] -> Type -> Scheme
+-}
 class ConstraintLike c where
   unifyConstraint :: c -> InferM Subst
 

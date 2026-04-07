@@ -15,6 +15,7 @@ import Language.TypeSystem.BaseType
 import Language.TypeSystem.Syntax
 
 newtype TypeEnv = TypeEnv (Map.Map Name Scheme)
+  deriving (Eq, Show)
 
 envMerge :: TypeEnv -> TypeEnv -> TypeEnv
 envMerge (TypeEnv a) (TypeEnv b) = TypeEnv (Map.union a b)
