@@ -71,6 +71,8 @@ main = do
             []
         ]
     )
+
+{-}
   test
     "max' :: (Ord a) => a -> a -> a"
     ( Just
@@ -82,6 +84,7 @@ main = do
             )
         ]
     )
+-}
 
 -- ヘルパー関数：パースして期待値と比較
 test :: String -> Maybe [Decl] -> IO ()

@@ -23,6 +23,7 @@ import Language.TypeSystem.InferM
 import Language.TypeSystem.Pattern
 import Language.TypeSystem.Syntax
 
+
 freeTypeVars :: (Types a) => a -> Set.Set Name
 freeTypeVars = ftv
 

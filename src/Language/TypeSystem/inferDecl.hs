@@ -13,6 +13,7 @@ import Data.IntMap.Lazy (empty)
 import qualified Data.Map as Map
 import Language.TypeSystem.BaseType
 import Language.TypeSystem.Class
+import Language.TypeSystem.ClassEnv
 import Language.TypeSystem.DataEnv
 import Language.TypeSystem.Decl
 import Language.TypeSystem.Env
@@ -43,7 +44,7 @@ inferValueDecl decl = case decl of
     (s, ps, ty) <- inferFunGroupDecl name clauses
     env <- getEnv
     let sch = generalize env ps ty
-    checkPredicates (applySubst s ps) -- ← ここで制約をチェック！
+    checkPredicates initialClassEnv (applySubst s ps) -- ← ここで制約をチェック！
     return (s, ps, singletonEnv name sch)
 
   {-}
@@ -89,14 +90,14 @@ clauseToExpr (FunClause pats Nothing (Just body) Nothing) =
 clauseToExpr (FunClause _ _ _ (Just _)) =
   error "where declarations not yet supported"
 
-checkPredicates :: [Pred] -> InferM ()
-checkPredicates preds = mapM_ check preds
+checkPredicates :: ClassEnv -> [Pred] -> InferM ()
+checkPredicates env preds = mapM_ check preds
   where
     check (IsIn cls ty) =
       case ty of
-        TVar _ -> return () -- 型変数なら保留（OK）
+        TVar _ -> return ()
         _ ->
-          if isValidInstance cls ty
+          if isValidInstance env cls ty
             then return ()
             else throwError $ UnificationFail ty (TCon ("<" ++ cls ++ " instance>"))
 
@@ -111,14 +112,6 @@ checkPredicates preds = do
         then return ()
         else throwError $ UnificationFail ty (TCon ("<" ++ cls ++ " instance>"))
 -}
-
-isValidInstance :: String -> Type -> Bool
-isValidInstance "Num" (TCon "Int") = True
-isValidInstance "Num" (TCon "Float") = True
-isValidInstance "Num" (TCon "Double") = True
-isValidInstance "Eq" (TCon "Int") = True
-isValidInstance "Eq" (TCon "Bool") = True
-isValidInstance _ _ = False
 
 {-}
 inferDecl :: Decl -> InferM (Subst, [Pred], TypeEnv)

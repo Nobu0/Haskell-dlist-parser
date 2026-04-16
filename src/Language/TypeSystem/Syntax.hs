@@ -40,6 +40,7 @@ data Type
   | TForall [String] Type
   | TTuple [Type]
   | TUnit
+  | TFun Type Type
   | TBinOp BinOp Type Type
   | TRecord (Map.Map String Type) (Maybe Type) -- フィールド + 行変数
   deriving (Eq, Ord, Show)

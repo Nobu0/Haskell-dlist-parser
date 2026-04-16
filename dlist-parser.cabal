@@ -348,16 +348,22 @@ common shared-lang
   default-language: Haskell2010
   other-modules:
     Language.TypeSystem.MyTrace
+    Language.TypeSystem.Topo
     Language.TypeSystem.Class
+    Language.TypeSystem.ClassEnv
     Language.TypeSystem.Prelude
     Language.TypeSystem.Pretty
     Language.TypeSystem.Utils
     Language.TypeSystem.ClassDef
     Language.TypeSystem.Expr
     Language.TypeSystem.Decl
+    Language.TypeSystem.DeclDef
+    Language.TypeSystem.DeclInstance
     Language.TypeSystem.Env
     Language.TypeSystem.BinOp
     Language.TypeSystem.BaseType
+    Language.TypeSystem.TypeDB
+    Language.TypeSystem.ParseType
     Language.TypeSystem.Infer
     Language.TypeSystem.InferExpr
     Language.TypeSystem.InferDecl
@@ -384,3 +390,51 @@ executable inferD
 executable inferE
   import: shared-lang
   main-is: MainExpr.hs
+
+
+executable readType
+  import: shared-lang
+  main-is: readTypes.hs
+
+
+executable loadDB
+  import: shared-lang
+  main-is: testDB.hs
+
+
+executable filejson
+  main-is: extract-types.hs
+  --exposed-modules:     MyModule
+  hs-source-dirs:      src
+  build-depends:       base >=4.7 && <5,
+                       process,
+                       aeson,
+                       filepath,
+                       regex-tdfa,
+                       bytestring
+  default-language:    Haskell2010
+  other-modules:       MyModule
+
+
+executable json2db
+  main-is: mainJson.hs
+  --exposed-modules:     MyModule
+  hs-source-dirs:      src
+  build-depends:       base >=4.7 && <5,
+                       process,
+                       parsec,
+                       filepath,
+                       containers,
+                       regex-tdfa,
+                       aeson,
+                       bytestring
+  default-language:    Haskell2010
+  other-modules:       Language.Tool.Load
+                       Language.Tool.Type
+                       Language.Tool.TypeParser
+                       Language.TypeSystem.ClassEnv
+                       Language.TypeSystem.BaseType
+                       Language.TypeSystem.Syntax
+                       Language.TypeSystem.BinOp
+                       Language.TypeSystem.TypeDB 
+
