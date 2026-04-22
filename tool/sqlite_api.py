@@ -77,7 +77,7 @@ def save_to_db(items):
 
 
 if __name__ == "__main__":
-    init_db()
+    #init_db()
 
     items = parse_browse_output("base-types.txt")
     save_to_db(items)

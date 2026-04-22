@@ -5,6 +5,8 @@ DB = "tool/typeDB.sqlite"
 conn = sqlite3.connect(DB)
 cur = conn.cursor()
 
+cur.execute("DROP TABLE items")
+
 cur.execute("""
 CREATE TABLE IF NOT EXISTS items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -9,16 +9,25 @@ def parse_classes(path):
     pattern = re.compile(r"^class\s+(?:.*=>\s+)?([A-Za-z0-9_']+)\b")
 
     results = []
+    current_module = ""
 
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
 
+            # モジュール名を検出
+            if line.startswith(":module"):
+                parts = line.split()
+                if len(parts) >= 2:
+                    current_module = parts[1]
+                continue
+
+            # class を検出
             m = pattern.match(line)
             if m:
-                class_name = m.group(1)   # Applicative, Monad, Eq, etc.
+                class_name = m.group(1)
                 class_def  = line
-                results.append((class_name, class_def))
+                results.append((current_module, class_name, class_def))
 
     return results
 
@@ -27,10 +36,10 @@ def save_classes_to_db(classes):
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
 
-    for name, class_def in classes:
+    for module, name, class_def in classes:
         cur.execute(
             "INSERT INTO items (module, name, type, kind) VALUES (?, ?, ?, ?)",
-            ("", name, class_def, "class")
+            (module, name, class_def, "class")
         )
 
     conn.commit()

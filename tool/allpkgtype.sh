@@ -4,6 +4,54 @@ set -e
 
 (
   echo ":browse! Prelude"
+  echo ":browse! Data.List"
+  echo ":browse! Data.Maybe"
+  echo ":browse! Data.Either"
+  echo ":browse! Data.Foldable"
+  echo ":browse! Control.Monad"
+  echo ":browse! System.IO"
+  echo ":browse! System.Environment"
+) | ghci > tool/browse_fun.txt
+
+
+# 1. ghc-pkg list からパッケージ名だけをクリーンに抽出
+# ユニットIDやバージョン番号(base-4.18.0.0等)を分離し、名前部分だけを取得
+PACKAGES=$(ghc-pkg list --simple-output | sed 's/-[0-9.]*//g')
+
+echo "Starting massive type extraction..."
+
+# 2. GHCiスクリプトの基本設定
+cat <<EOF > .gen_ghci_script
+:set -fno-print-explicit-foralls
+:set -fno-print-explicit-kinds
+EOF
+
+# 3. 全パッケージの全モジュールを走査
+for pkg in $PACKAGES; do
+    # 各パッケージの公開モジュールを取得
+    MODULES=$(ghc-pkg field "$pkg" exposed-modules --simple-output 2>/dev/null | sed 's/,//g')
+    
+    if [ -n "$MODULES" ]; then
+        echo "Adding package: $pkg"
+        for mod in $MODULES; do
+            echo "putStrLn \"--- Package: $pkg | Module: $mod ---\"" >> .gen_ghci_script
+            echo ":module $mod" >> .gen_ghci_script
+            echo ":browse! $mod" >> .gen_ghci_script
+        done
+    fi
+done
+
+# 4. cabal repl を使って実行
+# プロジェクト(dumpapi)のコンテキストで実行することで、cabalで入れたライブラリも認識させます
+cabal repl dlist-parser < .gen_ghci_script > tool/browse_all.txt 2>/dev/null
+
+rm .gen_ghci_script
+echo "Done! Full dictionary saved to browse_all.txt"
+
+exit
+
+(
+  echo ":browse! Prelude"
   echo ":browse! GHC.Base"
   for m in $(ghc-pkg field base exposed-modules --simple-output | sed 's/,//g'); do
       echo ":browse! $m"

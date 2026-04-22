@@ -43,9 +43,38 @@ def get_all_classes():
     return classes
 
 
+#def parse_instances(info_text):
+#    pattern = re.compile(r"instance\s+(.+)")
+#    return [m.group(1) for m in map(pattern.match, info_text.splitlines()) if m]
+
 def parse_instances(info_text):
-    pattern = re.compile(r"instance\s+(.+)")
-    return [m.group(1) for m in map(pattern.match, info_text.splitlines()) if m]
+    lines = info_text.splitlines()
+    instances = []
+    buffer = None
+
+    for line in lines:
+        line = line.strip()
+
+        # instance の開始行
+        if line.startswith("instance "):
+            # 前の instance を保存
+            if buffer is not None:
+                instances.append(buffer.strip())
+
+            buffer = line  # 新しい instance 開始
+            continue
+
+        # instance の継続行（括弧が閉じていない）
+        if buffer is not None:
+            # 次の instance が始まるまで結合
+            buffer += " " + line
+            continue
+
+    # 最後の instance を保存
+    if buffer is not None:
+        instances.append(buffer.strip())
+
+    return instances
 
 
 def save_instances_to_db(class_name, instances):
