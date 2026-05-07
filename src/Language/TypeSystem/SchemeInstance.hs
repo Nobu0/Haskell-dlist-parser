@@ -4,8 +4,8 @@ import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Language.TypeSystem.Class
 import Language.TypeSystem.InferM
-import Language.TypeSystem.Subst (Subst)
-import qualified Language.TypeSystem.Subst as SB
+import Language.TypeSystem.Infer.Subst (Subst)
+import qualified Language.TypeSystem.Infer.Subst as SB
 import Language.TypeSystem.Syntax
 
 -- | Scheme に対する SchemeLike インスタンス

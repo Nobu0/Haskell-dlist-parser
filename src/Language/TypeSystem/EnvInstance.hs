@@ -4,8 +4,8 @@ import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Language.TypeSystem.Class
 import Language.TypeSystem.Env
-import Language.TypeSystem.Subst
-import qualified Language.TypeSystem.Subst as SB
+import Language.TypeSystem.Infer.Subst
+import qualified Language.TypeSystem.Infer.Subst as SB
 import Language.TypeSystem.Syntax
 
 instance EnvLike TypeEnv where

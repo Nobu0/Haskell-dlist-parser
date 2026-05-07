@@ -16,7 +16,7 @@ import Language.TypeSystem.DeclDef
 import Language.TypeSystem.DeclInstance
 import Language.TypeSystem.Error (InferError (..))
 import Language.TypeSystem.Expr
-import Language.TypeSystem.InferExpr
+import Language.TypeSystem.Infer.Expr
 import Language.TypeSystem.InferM
 import Language.TypeSystem.Pattern
 import Language.TypeSystem.Syntax

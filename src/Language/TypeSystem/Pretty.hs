@@ -9,9 +9,9 @@ import Language.TypeSystem.BaseType
 import Language.TypeSystem.Class
 import Language.TypeSystem.Env
 import Language.TypeSystem.Infer
-import Language.TypeSystem.Subst
+import Language.TypeSystem.Infer.Subst
 import Language.TypeSystem.Syntax
-import Language.TypeSystem.Utils
+import Language.TypeSystem.Utils.Utils
 
 showField :: (Name, Type) -> String
 showField (name, ty) = name ++ " : " ++ ppType ty

@@ -1,27 +1,39 @@
-module Language.TypeSystem.DeclInstance where
-
--- import Language.TypeSystem.Class
-
--- import Language.TypeSystem.ClassDef
+module Language.TypeSystem.DeclInstance (generalize) where
 
 import Control.Monad (foldM, forM)
 import Control.Monad.Combinators (empty)
 import Control.Monad.Except (throwError)
+import Data.IntMap (null)
+import Data.IntMap.Lazy (empty)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Language.TypeSystem.BaseType
+-- import Language.TypeSystem.Class
+
+-- import Language.TypeSystem.Generalize
+
+import Language.TypeSystem.ClassDef (SchemeLike (generalize))
 import Language.TypeSystem.ClassDef hiding (generalize)
+import Language.TypeSystem.ClassEnv
+import Language.TypeSystem.DataEnv
+import Language.TypeSystem.Decl
 import Language.TypeSystem.Decl (Decl (..))
 import qualified Language.TypeSystem.Decl as D
 import Language.TypeSystem.DeclDef
+import Language.TypeSystem.Env
+import Language.TypeSystem.EnvInstance
+import Language.TypeSystem.Error
 import Language.TypeSystem.Error (InferError (..))
 import Language.TypeSystem.Expr
--- import System.Environment (getEnv)
-
-import Language.TypeSystem.InferExpr
+import Language.TypeSystem.Infer.Expr
 import Language.TypeSystem.InferM
+import Language.TypeSystem.Utils.MyTrace
 import Language.TypeSystem.Pattern
+import qualified Language.TypeSystem.Pattern as TP
+import Language.TypeSystem.PatternInfer
+import Language.TypeSystem.Infer.Subst
 import Language.TypeSystem.Syntax
+import Language.TypeSystem.Infer.Unify
 
 instance HasType Expr where
   infer expr = do
@@ -32,21 +44,6 @@ instance HasType D.Decl where
   infer (D.DeclValue _ expr) = infer expr
   -- infer _ = throwError "Unsupported Decl form for inference"
   infer _ = throwError (OtherError "Unsupported Decl form for inference")
-
-instance InferDecl Decl where
-  inferDecl (DeclValue pat expr) = do
-    env <- getEnv
-    t <- infer expr
-    let scheme = generalize env t
-    case pat of
-      PVar name -> return [(name, scheme)]
-      _ -> throwError (OtherError "Only simple variable patterns are supported in DeclValue")
-  inferDecl _ = return [] -- 他の Decl は今は無視
-
-instance Generalizable Type where
-  generalize env t =
-    let vars = Set.toList $ ftv t `Set.difference` ftv env
-     in Forall vars [] t
 
 instance Dependency Decl where
   freeVars (D.DeclValue _ expr) = freeVars expr

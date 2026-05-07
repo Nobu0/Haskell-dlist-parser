@@ -10,12 +10,12 @@ import Language.TypeSystem.Error
 import Language.TypeSystem.Expr
 import Language.TypeSystem.Infer
 import Language.TypeSystem.InferM
-import Language.TypeSystem.MyTrace
+import Language.TypeSystem.Utils.MyTrace
 import Language.TypeSystem.Pattern
 import Language.TypeSystem.Prelude (initialEnv)
 import Language.TypeSystem.Pretty (ppType, printInferResult)
 import Language.TypeSystem.Syntax
-import Language.TypeSystem.Utils (simplifyPreds)
+import Language.TypeSystem.Utils.Utils (simplifyPreds)
 
 fromList :: (Ord k) => [(k, v)] -> Map.Map k v
 fromList = Map.fromList

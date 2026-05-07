@@ -14,13 +14,13 @@ import Language.TypeSystem.DataEnv
 import Language.TypeSystem.Env
 import Language.TypeSystem.EnvInstance
 import Language.TypeSystem.Error
+import Language.TypeSystem.Infer.Subst
+import Language.TypeSystem.Infer.Unify
 import Language.TypeSystem.InferInstances
 import Language.TypeSystem.InferM
-import Language.TypeSystem.MyTrace
 import Language.TypeSystem.Pattern
-import Language.TypeSystem.Subst
 import Language.TypeSystem.Syntax
-import Language.TypeSystem.Unify
+import Language.TypeSystem.Utils.MyTrace
 
 inferPattern :: Pattern -> InferM (Subst, TypeEnv, Type)
 inferPattern (PRecord fields) = do

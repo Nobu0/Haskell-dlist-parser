@@ -21,6 +21,6 @@ sqlite3 tool/typeDB.sqlite "SELECT kind,name,type,id,module FROM items ORDER BY 
 sqlite3 tool/typeDB.sqlite "SELECT kind,name,type,id,module FROM items WHERE kind='function' ORDER BY name;" > tool/fun.txt
 sqlite3 tool/typeDB.sqlite "SELECT kind,name,type,id,module FROM items WHERE kind='instance' ORDER BY name;" > tool/ins.txt
 sqlite3 tool/typeDB.sqlite "SELECT kind,name,type,id,module FROM items WHERE kind='class' ORDER BY name;" > tool/cls.txt
-sqlite3 tool/typeDB.sqlite "SELECT kind,name,type,id,module FROM items WHERE kind like 'type%' ORDER BY name;" > tool/typ.txt
+sqlite3 tool/typeDB.sqlite "SELECT kind,name,type,id,module FROM items WHERE kind like '%type%' ORDER BY name;" > tool/typ.txt
 sqlite3 tool/typeDB.sqlite "SELECT kind,name,type,id,module FROM items WHERE kind like 'data' ORDER BY name;" > tool/dat.txt
 

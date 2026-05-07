@@ -6,7 +6,7 @@ import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Language.TypeSystem.ClassDef
 import Language.TypeSystem.InferM
-import Language.TypeSystem.Subst
+import Language.TypeSystem.Infer.Subst
 import Language.TypeSystem.Syntax
 
 {-}

@@ -4,5 +4,6 @@ module Language.TypeSystem.Infer
   )
 where
 
-import Language.TypeSystem.InferDecl
-import Language.TypeSystem.InferExpr
+-- import Language.TypeSystem.DeclInstance
+import Language.TypeSystem.Infer.Decl
+import Language.TypeSystem.Infer.Expr

@@ -73,12 +73,6 @@ evalInferM :: TypeEnv -> InferM a -> IO (Either InferError a)
 evalInferM env (InferM m) =
   evalStateT (runExceptT m) (emptyInferState {env = env})
 
-{-}
-evalInferM :: TypeEnv -> InferM a -> Either InferError a
-evalInferM env m =
-  evalState (runExceptT m) (emptyInferState {env = env})
--}
-
 extendTypeEnv :: Name -> Scheme -> TypeEnv -> TypeEnv
 extendTypeEnv name scheme (TypeEnv env) = TypeEnv (Map.insert name scheme env)
 
@@ -150,13 +144,6 @@ freshName = do
 -- | 制約を追加
 addPred :: Pred -> InferM ()
 addPred p = modify $ \st -> st {constraints = p : constraints st}
-
-{-}
--- | 推論を実行
-runInferWithDataEnv :: DataEnv -> InferM a -> Either InferError a
-runInferWithDataEnv denv m =
-  evalState (runExceptT m) (emptyInferState {dataEnv = denv})
--}
 
 runInferWithDataEnv :: DataEnv -> InferM a -> IO (Either InferError a)
 runInferWithDataEnv denv (InferM m) =
